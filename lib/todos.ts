@@ -1,23 +1,21 @@
-interface SmartContract {
-  name: string;
-  code: string;
+interface Todo {
+  [key: string]: string;
 }
+type TodosType = Todo[];
 
-type SmartContractsType = SmartContract[];
+let todos: TodosType = [];
 
-let smartContracts: SmartContractsType = [];
-
-export const getSmartContracts = (): SmartContractsType => {
-  return smartContracts;
+export const getTodos = (): TodosType => {
+  return todos;
 };
 
-export const createSmartContract = (smartContract: SmartContract) => {
-  smartContracts = [...smartContracts, smartContract];
+export const createTodo = (todo: Todo) => {
+  todos = [...todos, todo];
 };
 
-export const deleteSmartContract = (smartContract: SmartContract): void => {
-  const index = smartContracts.findIndex((item) => item.name === smartContract.name);
+export const deleteTodo = (todo: Todo): void => {
+  const index = todos.findIndex((item) => item.todo === todo.todo);
   if (index !== -1) {
-    smartContracts.splice(index, 1);
+    todos.splice(index, 1);
   }
 };

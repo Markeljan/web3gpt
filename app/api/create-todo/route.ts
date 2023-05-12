@@ -1,11 +1,11 @@
-// app/api/delete-todo/route.ts
+// app/api/create-todo/route.ts
 import { NextResponse, NextRequest } from "next/server";
-import { createSmartContract } from "@/lib/todos";
+import { createTodo } from "@/lib/todos";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
   console.log("body: ", body);
-  createSmartContract(body);
+  createTodo(body);
   return NextResponse.json(
     { success: true },
     {
