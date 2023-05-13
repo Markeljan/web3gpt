@@ -1,73 +1,122 @@
 openapi: 3.0.1
 info:
-  title: TODO Plugin
-  description: A plugin that allows the user to create and manage a TODO list using ChatGPT.
+  title: CONTRACT Plugin
+  description: A plugin that allows the user to create and manage a CONTRACT list using ChatGPT.
   version: "v1"
 servers:
   - url: http://localhost:3000
 paths:
-  /api/todos:
+  /api/contracts:
     get:
-      operationId: getTodos
-      summary: Get the list of todos
+      operationId: getContracts
+      summary: Get the list of contracts
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getTodosResponse"
-  /api/create-todo:
+                $ref: "#/components/schemas/getContractsResponse"
+  /api/create-contract:
     post:
-      operationId: addTodo
-      summary: add a new todo
+      operationId: addContract
+      summary: add a new contract
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/addTodoRequest"
+              $ref: "#/components/schemas/addContractRequest"
       responses:
         "200":
           description: OK
-  /api/delete-todo:
+  /api/delete-contract:
     post:
-      operationId: deleteTodo
-      summary: delete a todo
+      operationId: deleteContract
+      summary: delete a contract
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/deleteTodoRequest"
+              $ref: "#/components/schemas/deleteContractRequest"
+      responses:
+        "200":
+          description: OK
+  /api/deploy-contract:
+    post:
+      operationId: deployContract
+      summary: deploy a contract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/deployContractRequest"
       responses:
         "200":
           description: OK
 components:
   schemas:
-    deleteTodoRequest:
+    Contract:
       type: object
       required:
-        - todo
+        - address
+        - chain
+        - sourceCode
       properties:
-        todo:
+        address:
           type: string
-          description: The todo to delete from the list.
-          required: true
-    addTodoRequest:
+          description: The address of the contract.
+        chain:
+          type: string
+          description: The blockchain network of the contract.
+        sourceCode:
+          type: string
+          description: The source code of the contract.
+        name:
+          type: string
+          description: The name of the contract.
+        compilerVersion:
+          type: string
+          description: The version of the Solidity compiler used to compile the contract.
+    deleteContractRequest:
       type: object
       required:
-        - todo
+        - contract
       properties:
-        todo:
-          type: string
-          description: The todo to add to the list.
-          required: true
-    getTodosResponse:
+        contract:
+          $ref: "#/components/schemas/Contract"
+    addContractRequest:
+      type: object
+      required:
+        - contract
+      properties:
+        contract:
+          $ref: "#/components/schemas/Contract"
+    getContractsResponse:
       type: object
       properties:
-        todos:
+        contracts:
           type: array
           items:
-            type: string
-          description: The list of todos.
+            $ref: "#/components/schemas/Contract"
+          description: The list of contracts.
+    deployContractRequest:
+      type: object
+      required:
+        - chain
+        - sourceCode
+      properties:
+        chain:
+          type: string
+          description: The blockchain network of the contract.
+        sourceCode:
+          type: string
+          description: The source code of the contract.
+        name:
+          type: string
+          description: The name of the contract.
+        compilerVersion:
+          type: string
+          description: The version of the Solidity compiler used to compile the contract.

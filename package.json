@@ -18,9 +18,11 @@
     "@types/react-dom": "18.2.4",
     "eslint": "8.40.0",
     "eslint-config-next": "13.4.2",
+    "ethers": "^6.3.0",
     "next": "13.4.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "solc": "^0.8.20",
     "typescript": "5.0.4"
   }
 }
