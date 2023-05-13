@@ -1,13 +1,7 @@
 const solc = require("solc");
-import { Networkish, ethers } from "ethers";
-import chains from "./chains.json";
-
-export interface Contract {
-  address: string;
-  chain: string;
-  sourceCode: string;
-  name?: string;
-}
+import { ethers } from "ethers";
+import chains from "@/lib/chains.json";
+import { ChainData, Contract } from "@/lib/types";
 
 type ContractsType = Contract[];
 
@@ -29,24 +23,26 @@ export const deleteContract = (contract: Contract): void => {
 };
 
 export const deployContract = async (
+  name: string,
   chain: string,
-  sourceCode: string,
-  name?: string
-): Promise<Contract> => {
+  sourceCode: string
+): Promise<Contract | Error> => {
   // get the chain object from the chains.json file
-  const chainData = <Networkish>(
+  const chainData = <ChainData>(
     chains.find((item) => item.name.toLowerCase() === chain.toLowerCase())
   );
 
   if (!chainData) {
-    throw new Error("Chain not found");
+    return new Error("Chain not found");
   }
+
+  const fileName = (name ? name.replace(/[^a-z0-9]/gi, "_").toLowerCase() : "contract") + ".sol";
 
   // Compile the contract
   const input = {
     language: "Solidity",
     sources: {
-      [name ? `${name}.sol` : "contract.sol"]: {
+      [fileName]: {
         content: sourceCode,
       },
     },
@@ -59,31 +55,64 @@ export const deployContract = async (
     },
   };
   const output = JSON.parse(solc.compile(JSON.stringify(input)));
-  const contract = output.contracts["contract.sol"];
+  const contract = output.contracts[fileName];
 
   // Get the contract ABI and bytecode
   const contractName = Object.keys(contract)[0];
   const abi = contract[contractName].abi;
   const bytecode = contract[contractName].evm.bytecode.object;
+  console.log("Compiling contract OK");
 
   // Prepare network, signer, and contract instance
-  const provider = ethers.getDefaultProvider(chainData);
+  const provider =
+    chainData.rpc[0] && chainData.chainId
+      ? new ethers.JsonRpcProvider(chainData.rpc[0], chainData.chainId)
+      : ethers.getDefaultProvider(chainData.chainId);
+  console.log("Provider OK");
   const signer = new ethers.Wallet("0x" + process.env.PRIVATE_KEY, provider);
+  console.log("Signer OK");
+
   const ContractFactory = new ethers.ContractFactory(abi, bytecode, signer);
 
-  // Deploy the contract
-  const contractInstance = await ContractFactory.deploy();
-  const deployTx = await contractInstance.deploymentTransaction();
-  console.log("deployTransaction", deployTx);
-  const deployedReceipt = await deployTx?.wait();
-  console.log("receipt", deployedReceipt);
+  // Gas estimation TODO: dynamic gas estimation based on the network
+  const EIP1559 = chainData.features?.find((item) => item.name === "EIP1559") ? true : false;
+  console.log("EIP1559:", EIP1559);
+  const gasFeeData = await provider.getFeeData();
+  console.log("Gas fee data: ", gasFeeData);
+  const gasOptions = EIP1559
+    ? {
+        maxFeePerGas: gasFeeData.maxFeePerGas,
+        maxPriorityFeePerGas: gasFeeData.maxPriorityFeePerGas,
+      }
+    : { gasPrice: gasFeeData.gasPrice };
 
+  // const simulateTxLegacy = await ContractFactory.getDeployTransaction({
+  //   ...gasOptionsLegacy,
+  // });
+  // const simulateTxEIP1559 = await ContractFactory.getDeployTransaction({
+  //   ...gasOptionsEIP1559,
+  // });
+
+  console.log("SimulateTx OK");
+  //const estimatedGas = await estimateGasOnMainnet(simulateTxEIP1559);
+  const estimatedGas = 7000000n;
+
+  // Deploy the contract
+  const contractDeployment = await ContractFactory.deploy({
+    gasLimit: estimatedGas,
+    gasOptions,
+  });
+  console.log("Contract deployment OK");
+  const deployTx = await contractDeployment.deploymentTransaction();
+  console.log("DeployTx hash: ", deployTx?.hash);
+  const deployedReceipt = await deployTx?.wait();
   const contractAddress = deployedReceipt?.contractAddress;
+  console.log("Contract address: ", contractAddress);
 
   if (!contractAddress) {
-    throw new Error("Contract deployment failed");
+    return new Error("Contract deployment failed");
   }
-  createContract({ address: contractAddress, chain, sourceCode, name });
+  createContract({ name, address: contractAddress, chain, sourceCode });
 
-  return { address: contractAddress, chain, sourceCode, name };
+  return { name, address: contractAddress, chain, sourceCode };
 };

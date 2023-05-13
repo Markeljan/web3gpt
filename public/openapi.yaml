@@ -61,10 +61,14 @@ components:
     Contract:
       type: object
       required:
+        - name
         - address
         - chain
         - sourceCode
       properties:
+        name:
+          type: string
+          description: The name of the contract.
         address:
           type: string
           description: The address of the contract.
@@ -74,12 +78,6 @@ components:
         sourceCode:
           type: string
           description: The source code of the contract.
-        name:
-          type: string
-          description: The name of the contract.
-        compilerVersion:
-          type: string
-          description: The version of the Solidity compiler used to compile the contract.
     deleteContractRequest:
       type: object
       required:
@@ -105,18 +103,16 @@ components:
     deployContractRequest:
       type: object
       required:
+        - name
         - chain
         - sourceCode
       properties:
+        name:
+          type: string
+          description: The name of the contract.
         chain:
           type: string
           description: The blockchain network of the contract.
         sourceCode:
           type: string
           description: The source code of the contract.
-        name:
-          type: string
-          description: The name of the contract.
-        compilerVersion:
-          type: string
-          description: The version of the Solidity compiler used to compile the contract.
