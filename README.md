@@ -3,8 +3,7 @@
 
 Web3 GPT-4 simplifies smart contract deployment. Users input Solidity code into the Chat GPT interface, select an EVM-compatible blockchain, and the tool handles the rest. It's a user-friendly, interactive asset for blockchain development.
 
-[ETHGlobal Lisbon submission](https://ethglobal.com/showcase/web3-gpt4-jkaja)
-[Video Demo](https://www.loom.com/share/03353775e91e4627b62ea4bf8f3efad5)
+[ETHGlobal Lisbon Showcase](https://ethglobal.com/showcase/web3-gpt4-jkaja)
 
 ## Project Description
 
