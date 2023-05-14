@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
-  title: CONTRACT Plugin
-  description: A plugin that allows the user to create and manage a CONTRACT list using ChatGPT.
+  title: Web3-GPT4 Contract Deployer
+  description: A plugin to deploy Solidity smart contracts to ANY EVM chainand manage deployments.
   version: "v1"
 servers:
   - url: http://localhost:3000
