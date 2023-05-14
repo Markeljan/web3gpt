@@ -108,7 +108,7 @@ export const deployContract = async (
   }
   console.log(`Signer for chain ${chainData.name} OK`);
 
-  const estimatedGas = 1000000n;
+  const estimatedGas = BigNumber.from("7000000");
   // Gas estimation TODO: dynamic gasLimit estimation
 
   const gasFeeData = await provider.getFeeData();
@@ -147,7 +147,6 @@ export const deployContract = async (
   console.log(`Contract factory for chain ${chainData.name} OK`);
 
   const contractDeployment = await factory.getDeployTransaction(gasOptions);
-  const totalGas = provider.estimateGas(contractDeployment);
   console.log(`Contract deployment gas estimation for chain ${chainData.name} OK`);
   const deploymentResponse = await signer.sendTransaction({
     ...contractDeployment,
