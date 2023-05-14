@@ -7,6 +7,9 @@ Web3 GPT-4 simplifies smart contract deployment. Users input Solidity code into 
 [ETHGlobal Lisbon submission](https://ethglobal.com/showcase/web3-gpt4-jkaja)
 [Video Demo](https://www.loom.com/share/03353775e91e4627b62ea4bf8f3efad5)
 
+
+![image](https://github.com/Markeljan/web3-gpt4/assets/12901349/7c29ec0a-aa06-40ba-a073-d13e8e0c860d)
+
 ## Project Description
 
 The Web3 GPT-4 plugin, operating without user authentication, offers easy access and secure handling of user data through a locally hosted open API. It simplifies the management of blockchain contracts with key features:
@@ -21,6 +24,5 @@ In essence, Web3 GPT-4 is an invaluable asset for anyone in the blockchain spher
 
 Web3 GPT-4 is a unique project that leverages Chat GPT-4 Plugins, NextJS, Ethers.js, and solc.js to create a conversational interface for managing blockchain contracts. The GPT-4 model, powered by OpenAI, provides an interactive user experience, while NextJS ensures an efficient and scalable frontend. Ethers.js handles Ethereum blockchain interactions, and solc.js compiles Solidity code within the application. The integration of these technologies allows users to manage contracts through natural language conversations, making the process more accessible and user-friendly. The innovative use of GPT-4 Plugins to manage blockchain contracts is a notable feature of this project.
 
-![image](https://github.com/Markeljan/web3-gpt4/assets/12901349/7c29ec0a-aa06-40ba-a073-d13e8e0c860d)
 
 ```bash
