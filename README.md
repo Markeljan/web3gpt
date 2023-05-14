@@ -6,7 +6,6 @@ Web3 GPT-4 simplifies smart contract deployment. Users input Solidity code into 
 [ETHGlobal Lisbon submission](https://ethglobal.com/showcase/web3-gpt4-jkaja)
 [Video Demo](https://www.loom.com/share/03353775e91e4627b62ea4bf8f3efad5)
 
-
 ## Project Description
 
 The Web3 GPT-4 plugin, operating without user authentication, offers easy access and secure handling of user data through a locally hosted open API. It simplifies the management of blockchain contracts with key features:
