@@ -60,6 +60,7 @@ export const deployContract = async (
       },
     },
     settings: {
+      evmVersion: "london",
       outputSelection: {
         "*": {
           "*": ["*"],
@@ -122,10 +123,10 @@ export const deployContract = async (
     const gasOptions: any = {
       gasLimit: estimatedGas,
     };
-    if (Number(maxFeePerGas) > 0) {
+    if (maxFeePerGas) {
       gasOptions["maxFeePerGas"] = maxFeePerGas;
     }
-    if (Number(maxPriorityFeePerGas) > 0) {
+    if (maxPriorityFeePerGas) {
       gasOptions["maxPriorityFeePerGas"] = maxPriorityFeePerGas;
     }
     if (!EIP1559) {
@@ -140,32 +141,34 @@ export const deployContract = async (
   console.log({
     chain,
     maxFeePerGas,
+    maxPriorityFeePerGas,
     EIP1559,
     gasOptions,
   });
   const factory = await new ethers.ContractFactory(abi, bytecode, signer);
   console.log(`Contract factory for chain ${chainData.name} OK`);
 
-  const contractDeployment = await factory.getDeployTransaction({ gasLimit: estimatedGas });
-  console.log(`Contract deployment gas estimation for chain ${chainData.name} OK`);
-  const deploymentResponse = await signer.sendTransaction({
-    ...contractDeployment,
-    ...gasOptions,
-  });
+  console.log("Deployment in progress...");
+  const contractDeployment = await factory.deploy();
+  const contractAddress = contractDeployment.address;
+
+  // const contractDeployment = await factory.getDeployTransaction({ gasLimit: estimatedGas });
+  // console.log(`Contract deployment gas estimation for chain ${chainData.name} OK`);
+  // const deploymentResponse = await signer.sendTransaction({
+  //   ...contractDeployment,
+  //   ...gasOptions,
+  // });
   console.log("Deployment transaction sent. Waiting for confirmation...");
 
   // Wait for the contract deployment transaction to be mined
-  console.log("Deployment in progress...");
-  const receipt = await deploymentResponse.wait();
-
-  const contractAddress = receipt?.contractAddress;
+  // const receipt = await deploymentResponse.wait();
 
   console.log(`Contract deployment for chain ${chainData.name} OK`);
   createContract({ name, address: contractAddress, chain, sourceCode });
 
   const explorerUrl = `${chainData?.explorers?.[0].url}/address/${contractAddress}`;
 
-  const deploymentData = { name, chain, contractAddress, explorerUrl };
+  const deploymentData = { name, chain: chainData?.name, contractAddress, explorerUrl };
   console.log(`Deployment data: `, deploymentData);
   return deploymentData;
 };

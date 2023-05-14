@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Web3-GPT4 Contract Deployer
-  description: A plugin to deploy Solidity smart contracts to ANY EVM chainand manage deployments.
+  description: A plugin to deploy Solidity smart contracts to ANY EVM chain and manage deployments.  Solidity version 0.8.0 or higher is required.
   version: "v1"
 servers:
   - url: http://localhost:3000
@@ -46,7 +46,7 @@ paths:
   /api/deploy-contract:
     post:
       operationId: deployContract
-      summary: deploy a contract
+      summary: deploy a contract, currently cannot be made with constructor args or imports. Solidity version 0.8.7 or higher is required.
       requestBody:
         required: true
         content:
@@ -74,10 +74,10 @@ components:
           description: The address of the contract.
         chain:
           type: string
-          description: The blockchain network of the contract.
+          description: The blockchain network name of the contract.
         sourceCode:
           type: string
-          description: The source code of the contract.
+          description: The source code of the contract. Contracts currently cannot be made with constructor args or imports. Solidity version 0.8.7 or higher is required.
     deleteContractRequest:
       type: object
       required:
@@ -109,12 +109,12 @@ components:
       properties:
         name:
           type: string
-          description: The name of the contract.
+          description: The name of the contract.  Only letters no spaces or special characters.
         chains:
           type: array
           items:
             type: string
-          description: The blockchain networks of the contract.
+          description: The blockchain networks to deploy the contract to.  No special characters.
         sourceCode:
           type: string
           description: The source code of the contract.
