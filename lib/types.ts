@@ -5,13 +5,20 @@ export interface Contract {
   sourceCode: string;
 }
 
+export interface DeployResults {
+  name: string;
+  chain: string;
+  contractAddress: string;
+  explorerUrl?: string;
+}
+
 export type ChainData = {
   name: string;
   chain: string;
-  icon: string;
+  icon?: string;
   rpc: string[];
   features?: { name: string }[];
-  faucets: any[];
+  faucets: string[];
   nativeCurrency: {
     name: string;
     symbol: string;
@@ -21,13 +28,14 @@ export type ChainData = {
   shortName: string;
   chainId: number;
   networkId: number;
-  slip44: number;
-  ens: {
+  slip44?: number;
+  ens?: {
     registry: string;
   };
-  explorers: {
+  explorers?: {
     name: string;
     url: string;
-    standard: string;
+    standard?: string;
+    icon?: string;
   }[];
 };
