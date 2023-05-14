@@ -3,7 +3,6 @@ import { findBestMatch } from "string-similarity";
 import { BigNumber, ethers } from "ethers";
 import chains from "@/lib/chains.json";
 import { ChainData, Contract, DeployResults } from "@/lib/types";
-import { formatUnits } from "ethers/lib/utils";
 
 type ContractsType = Contract[];
 

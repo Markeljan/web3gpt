@@ -3314,7 +3314,14 @@
     "infoURL": "https://optimism.io",
     "shortName": "ogor",
     "chainId": 420,
-    "networkId": 420
+    "networkId": 420,
+    "explorers": [
+      {
+        "name": "Optimistic Goerli Explorer",
+        "url": "https://goerli-optimistic.etherscan.io",
+        "standard": "EIP3091"
+      }
+    ]
   },
   {
     "name": "Zeeth Chain",
@@ -5480,46 +5487,6 @@
     "explorers": [
       { "name": "amstarscan", "url": "https://mainnet.amstarscan.com", "standard": "EIP3091" }
     ]
-  },
-  {
-    "name": "Polygon zkEVM Testnet old",
-    "title": "Polygon zkEVM Testnet",
-    "chain": "Polygon",
-    "rpc": [],
-    "faucets": [],
-    "nativeCurrency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
-    "infoURL": "https://polygon.technology/solutions/polygon-zkevm/",
-    "shortName": "zkevmtest",
-    "chainId": 1402,
-    "networkId": 1402,
-    "explorers": [
-      {
-        "name": "blockscout",
-        "url": "https://explorer.public.zkevm-test.net",
-        "standard": "EIP3091"
-      }
-    ],
-    "status": "deprecated"
-  },
-  {
-    "name": "Polygon zkEVM Testnet Pre Audit-Upgraded",
-    "title": "Polygon zkEVM Testnet Pre Audit-Upgraded",
-    "chain": "Polygon",
-    "rpc": [],
-    "faucets": [],
-    "nativeCurrency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
-    "infoURL": "https://polygon.technology/solutions/polygon-zkevm/",
-    "shortName": "testnet-zkEVM-mango-pre-audit-upgraded",
-    "chainId": 1422,
-    "networkId": 1422,
-    "explorers": [
-      {
-        "name": "Polygon zkEVM explorer",
-        "url": "https://explorer.public.zkevm-test.net",
-        "standard": "EIP3091"
-      }
-    ],
-    "status": "deprecated"
   },
   {
     "name": "Rikeza Network Mainnet",
