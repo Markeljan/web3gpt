@@ -146,13 +146,20 @@ export const deployContract = async (
   const factory = await new ethers.ContractFactory(abi, bytecode, signer);
   console.log(`Contract factory for chain ${chainData.name} OK`);
 
-  const contractDeployment = await factory.deploy(gasOptions);
-  console.log("Contract deployment OK");
-  const deployTx = await contractDeployment.deploymentTransaction();
-  console.log("DeployTx hash: ", deployTx?.hash);
-  const deployedReceipt = await deployTx?.wait();
+  const contractDeployment = await factory.getDeployTransaction({ gasLimit: estimatedGas });
+  console.log(`Contract deployment gas estimation for chain ${chainData.name} OK`);
+  const deploymentResponse = await signer.sendTransaction({
+    ...contractDeployment,
+    ...gasOptions,
+  });
+  console.log("Deployment transaction sent. Waiting for confirmation...");
 
-  const contractAddress = deployedReceipt?.contractAddress;
+  // Wait for the contract deployment transaction to be mined
+  console.log("Deployment in progress...");
+  const receipt = await deploymentResponse.wait();
+
+  const contractAddress = receipt?.contractAddress;
+
   console.log(`Contract deployment for chain ${chainData.name} OK`);
   createContract({ name, address: contractAddress, chain, sourceCode });
 
