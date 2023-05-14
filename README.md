@@ -1,6 +1,5 @@
-![image](https://github.com/Markeljan/web3-gpt4/assets/12901349/7c29ec0a-aa06-40ba-a073-d13e8e0c860d)
-
 # web3-gpt4
+![image](https://github.com/Markeljan/web3-gpt4/assets/12901349/7c29ec0a-aa06-40ba-a073-d13e8e0c860d)
 
 Web3 GPT-4 simplifies smart contract deployment. Users input Solidity code into the Chat GPT interface, select an EVM-compatible blockchain, and the tool handles the rest. It's a user-friendly, interactive asset for blockchain development.
 
