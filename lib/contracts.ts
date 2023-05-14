@@ -108,7 +108,7 @@ export const deployContract = async (
   }
   console.log(`Signer for chain ${chainData.name} OK`);
 
-  const estimatedGas = BigNumber.from("7000000");
+  const estimatedGas = 7000000;
   // Gas estimation TODO: dynamic gasLimit estimation
 
   const gasFeeData = await provider.getFeeData();
@@ -122,16 +122,16 @@ export const deployContract = async (
     const gasOptions: any = {
       gasLimit: estimatedGas,
     };
+    if (Number(maxFeePerGas) > 0) {
+      gasOptions["maxFeePerGas"] = maxFeePerGas;
+    }
+    if (Number(maxPriorityFeePerGas) > 0) {
+      gasOptions["maxPriorityFeePerGas"] = maxPriorityFeePerGas;
+    }
     if (!EIP1559) {
       gasOptions["gasPrice"] = gasPrice;
-    } else {
-      if (Number(maxFeePerGas) > 0) {
-        gasOptions["maxFeePerGas"] = maxFeePerGas;
-      }
-      if (Number(maxPriorityFeePerGas) > 0) {
-        gasOptions["maxPriorityFeePerGas"] = maxPriorityFeePerGas;
-      }
     }
+
     return gasOptions;
   }
 
@@ -146,28 +146,14 @@ export const deployContract = async (
   const factory = await new ethers.ContractFactory(abi, bytecode, signer);
   console.log(`Contract factory for chain ${chainData.name} OK`);
 
-  const contractDeployment = await factory.getDeployTransaction(gasOptions);
-  console.log(`Contract deployment gas estimation for chain ${chainData.name} OK`);
-  const deploymentResponse = await signer.sendTransaction({
-    ...contractDeployment,
-    ...gasOptions,
-  });
-  console.log("Deployment transaction sent. Waiting for confirmation...");
+  const contractDeployment = await factory.deploy(gasOptions);
+  console.log("Contract deployment OK");
+  const deployTx = await contractDeployment.deploymentTransaction();
+  console.log("DeployTx hash: ", deployTx?.hash);
+  const deployedReceipt = await deployTx?.wait();
 
-  // Wait for the contract deployment transaction to be mined
-  console.log("Deployment in progress...");
-  const receipt = await deploymentResponse.wait();
-  if (receipt.status !== 1) {
-    const error = new Error("Contract deployment failed");
-    console.log(error);
-  }
-  const contractAddress = receipt.contractAddress;
-
+  const contractAddress = deployedReceipt?.contractAddress;
   console.log(`Contract deployment for chain ${chainData.name} OK`);
-  if (!contractAddress) {
-    const error = new Error("Contract deployment failed");
-    console.log(error);
-  }
   createContract({ name, address: contractAddress, chain, sourceCode });
 
   const explorerUrl = `${chainData?.explorers?.[0].url}/address/${contractAddress}`;
