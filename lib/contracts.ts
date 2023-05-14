@@ -1,8 +1,9 @@
 const solc = require("solc");
 import { findBestMatch } from "string-similarity";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import chains from "@/lib/chains.json";
 import { ChainData, Contract, DeployResults } from "@/lib/types";
+import { formatUnits } from "ethers/lib/utils";
 
 type ContractsType = Contract[];
 
@@ -29,18 +30,23 @@ export const deployContract = async (
   sourceCode: string
 ): Promise<DeployResults> => {
   // get the chain object from the chains.json file. Direct match || partial match
-  const chainData = <ChainData>(chains.find(
-    (item) => item.name.toLowerCase() === chain.toLowerCase()
-  ) ||
-    findBestMatch(
-      chain.toLowerCase(),
-      chains.map((item) => item.name.toLowerCase())
-    ).bestMatch.target);
+  const findAttempt = chains.find((item) => item.name.toLowerCase() === chain.toLowerCase());
+  const chainData: ChainData = findAttempt?.chainId
+    ? findAttempt
+    : (chains.find((chainItem) => {
+        const formattedChain = chainItem.name.toLowerCase().replace(/[-_]/g, "");
+        const formattedInput = chain.toLowerCase().replace(/[-_]/g, "");
+        return (
+          findBestMatch(
+            formattedInput,
+            chains.map((item) => item?.name?.toLowerCase().replace(/[-_]/g, ""))
+          ).bestMatch.target === formattedChain
+        );
+      }) as ChainData);
 
-  if (!chainData) {
+  if (!chainData?.chainId) {
     const error = new Error(`Chain ${chain} not found`);
     console.log(error);
-    throw error;
   }
 
   const fileName = (name ? name.replace(/[^a-z0-9]/gi, "_").toLowerCase() : "contract") + ".sol";
@@ -70,7 +76,6 @@ export const deployContract = async (
     if (errors.length > 0) {
       const error = new Error(errors[0].formattedMessage);
       console.log(error);
-      throw error;
     }
   }
   const contract = output.contracts[fileName];
@@ -79,22 +84,20 @@ export const deployContract = async (
   const contractName = Object.keys(contract)[0];
   const abi = contract[contractName].abi;
   const bytecode = contract[contractName].evm.bytecode.object;
-  console.log("Compilation OK");
 
   // Prepare network, signer, and contract instance
-  const rpcUrl: string = chainData.rpc[0].replace(
+  const rpcUrl: string = chainData?.rpc?.[0]?.replace(
     "${INFURA_API_KEY}",
     process.env.INFURA_API_KEY || ""
   );
 
   const provider =
     rpcUrl && chainData.chainId
-      ? new ethers.JsonRpcProvider(chainData.rpc[0], chainData.chainId)
+      ? new ethers.providers.JsonRpcProvider(chainData.rpc[0], chainData.chainId)
       : ethers.getDefaultProvider(chainData.chainId);
   if (!(await provider.getNetwork())?.chainId) {
     const error = new Error(`Provider for chain ${chainData.name} not available`);
     console.log(error);
-    throw error;
   }
   console.log(`Provider for chain ${chainData.name} OK`);
 
@@ -102,36 +105,69 @@ export const deployContract = async (
   if (!(await signer.getAddress())) {
     const error = new Error(`Signer for chain ${chainData.name} not available`);
     console.log(error);
-    throw error;
   }
   console.log(`Signer for chain ${chainData.name} OK`);
 
-  const ContractFactory = new ethers.ContractFactory(abi, bytecode, signer);
-
+  const estimatedGas = 1000000n;
   // Gas estimation TODO: dynamic gasLimit estimation
-  // const EIP1559 = chainData.features?.find((item) => item.name === "EIP1559") ? true : false;
-  // const gasFeeData = await provider.getFeeData();
-  // const gasOptions = EIP1559
-  //   ? {
-  //       maxFeePerGas: gasFeeData.maxFeePerGas,
-  //       maxPriorityFeePerGas: gasFeeData.maxPriorityFeePerGas,
-  //     }
-  //   : { gasPrice: gasFeeData.gasPrice };
 
-  const estimatedGas = 7000000n;
+  const gasFeeData = await provider.getFeeData();
+  const EIP1559 =
+    !gasFeeData?.maxFeePerGas?._hex || gasFeeData?.maxFeePerGas?._hex === "0x0" ? false : true;
+  const gasPrice = gasFeeData?.gasPrice;
+  const maxFeePerGas = gasFeeData?.maxFeePerGas;
+  const maxPriorityFeePerGas = gasFeeData?.maxPriorityFeePerGas;
+
+  function buildGasOptions() {
+    const gasOptions: any = {
+      gasLimit: estimatedGas,
+    };
+    if (!EIP1559) {
+      gasOptions["gasPrice"] = gasPrice;
+    } else {
+      if (Number(maxFeePerGas) > 0) {
+        gasOptions["maxFeePerGas"] = maxFeePerGas;
+      }
+      if (Number(maxPriorityFeePerGas) > 0) {
+        gasOptions["maxPriorityFeePerGas"] = maxPriorityFeePerGas;
+      }
+    }
+    return gasOptions;
+  }
 
   // Deploy the contract
-  const contractDeployment = await ContractFactory.deploy({
-    gasLimit: estimatedGas,
-    //gasOptions,
+  const gasOptions = await buildGasOptions();
+  console.log({
+    chain,
+    maxFeePerGas,
+    EIP1559,
+    gasOptions,
   });
-  const deployTx = await contractDeployment.deploymentTransaction();
-  const { contractAddress } = (await deployTx?.wait()) || {};
+  const factory = await new ethers.ContractFactory(abi, bytecode, signer);
+  console.log(`Contract factory for chain ${chainData.name} OK`);
 
+  const contractDeployment = await factory.getDeployTransaction(gasOptions);
+  const totalGas = provider.estimateGas(contractDeployment);
+  console.log(`Contract deployment gas estimation for chain ${chainData.name} OK`);
+  const deploymentResponse = await signer.sendTransaction({
+    ...contractDeployment,
+    ...gasOptions,
+  });
+  console.log("Deployment transaction sent. Waiting for confirmation...");
+
+  // Wait for the contract deployment transaction to be mined
+  console.log("Deployment in progress...");
+  const receipt = await deploymentResponse.wait();
+  if (receipt.status !== 1) {
+    const error = new Error("Contract deployment failed");
+    console.log(error);
+  }
+  const contractAddress = receipt.contractAddress;
+
+  console.log(`Contract deployment for chain ${chainData.name} OK`);
   if (!contractAddress) {
     const error = new Error("Contract deployment failed");
     console.log(error);
-    throw error;
   }
   createContract({ name, address: contractAddress, chain, sourceCode });
 
