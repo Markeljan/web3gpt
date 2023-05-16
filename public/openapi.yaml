@@ -46,7 +46,7 @@ paths:
   /api/deploy-contract:
     post:
       operationId: deployContract
-      summary: deploy a contract, currently cannot be made with constructor args or imports. Solidity version 0.8.7 or higher is required.
+      summary: deploy a contract, currently cannot be made with constructor args or imports. Solidity version 0.8.7 or higher is required. You are sending this in an api call's body so submit the sourcecode accordingly in the correct format.
       requestBody:
         required: true
         content:
@@ -77,7 +77,7 @@ components:
           description: The blockchain network name of the contract.
         sourceCode:
           type: string
-          description: The source code of the contract. Contracts currently cannot be made with constructor args or imports. Solidity version 0.8.7 or higher is required.
+          description: The source code of the contract. Contracts currently cannot be made with constructor args or imports. Solidity version 0.8.7 or higher is required.  You are sending this in an api call's body so submit the sourcecode accordingly in the correct format.
     deleteContractRequest:
       type: object
       required:
