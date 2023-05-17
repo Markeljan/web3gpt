@@ -1,9 +1,9 @@
 {
   "schema_version": "v1",
-  "name_for_human": "CONTRACT Plugin (no auth)",
-  "name_for_model": "contract",
-  "description_for_human": "Plugin for managing a CONTRACT list, you can add, remove and view your CONTRACTs.",
-  "description_for_model": "Plugin for managing a CONTRACT list. Users can add, remove, and list contracts.  Contracts currently cannot be made with constructor args or imports. Solidity version 0.8. or higher is required.",
+  "name_for_human": "Smart Contract Deployer Plugin (no auth)",
+  "name_for_model": "Smart Contract Deployer Plugin",
+  "description_for_human": "Plugin for deploying smart contracts to any EVM compatible blockchain.",
+  "description_for_model": "Plugin for deploying smart contracts to any EVM compatible blockchain.",
   "auth": {
     "type": "none"
   },

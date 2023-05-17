@@ -107,7 +107,7 @@ async function fetchImport(importPath: string, sources: { [x: string]: { content
       language: "Solidity",
       sources,
       settings: {
-        evmVersion: "london",
+        evmVersion: "shanghai",
         outputSelection: {
           "*": {
             "*": ["*"],
@@ -147,66 +147,20 @@ async function fetchImport(importPath: string, sources: { [x: string]: { content
       const error = new Error(`Provider for chain ${chainData.name} not available`);
       console.log(error);
     }
-    console.log(`Provider for chain ${chainData.name} OK`);
 
     const signer = new ethers.Wallet("0x" + process.env.PRIVATE_KEY, provider);
     if (!(await signer.getAddress())) {
       const error = new Error(`Signer for chain ${chainData.name} not available`);
       console.log(error);
     }
-    console.log(`Signer for chain ${chainData.name} OK`);
-
-    const estimatedGas = 7000000;
-    // Gas estimation TODO: dynamic gasLimit estimation
-
-    const gasFeeData = await provider.getFeeData();
-    const EIP1559 =
-      !gasFeeData?.maxFeePerGas?._hex || gasFeeData?.maxFeePerGas?._hex === "0x0" ? false : true;
-    const gasPrice = gasFeeData?.gasPrice;
-    const maxFeePerGas = gasFeeData?.maxFeePerGas;
-    const maxPriorityFeePerGas = gasFeeData?.maxPriorityFeePerGas;
-
-    function buildGasOptions() {
-      const gasOptions: any = {
-        gasLimit: estimatedGas,
-      };
-      if (maxFeePerGas) {
-        gasOptions["maxFeePerGas"] = maxFeePerGas;
-      }
-      if (maxPriorityFeePerGas) {
-        gasOptions["maxPriorityFeePerGas"] = maxPriorityFeePerGas;
-      }
-      if (!EIP1559) {
-        gasOptions["gasPrice"] = gasPrice;
-      }
-
-      return gasOptions;
-    }
-
-    // Deploy the contract
-    const gasOptions = await buildGasOptions();
-    console.log({
-      chain,
-      maxFeePerGas,
-      maxPriorityFeePerGas,
-      EIP1559,
-      gasOptions,
-    });
     const factory = await new ethers.ContractFactory(abi, bytecode, signer);
-    console.log(`Contract factory for chain ${chainData.name} OK`);
-
-    console.log("Deployment in progress...");
     const contractDeployment = await factory.deploy();
     const contractAddress = contractDeployment.address;
-
-    console.log("Deployment transaction sent. Waiting for confirmation...");
-
-    console.log(`Contract deployment for chain ${chainData.name} OK`);
-    createContract({ name, address: contractAddress, chain, sourceCode });
-
     const explorerUrl = `${chainData?.explorers?.[0].url}/address/${contractAddress}`;
 
+    createContract({ name, address: contractAddress, chain, sourceCode });
     const deploymentData = { name, chain: chainData?.name, contractAddress, explorerUrl };
     console.log(`Deployment data: `, deploymentData);
+
     return deploymentData;
   };
