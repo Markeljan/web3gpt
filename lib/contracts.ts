@@ -9,6 +9,20 @@ type ContractsType = Contract[];
 
 let contracts: ContractsType = [];
 
+const evmVersions = {
+  "homestead": "0.1.3",
+  "tangerineWhistle": "0.3.6",
+  "spuriousDragon": "0.4.0",
+  "byzantium": "0.4.22",
+  "constantinople": "0.5.5",
+  "petersburg": "0.5.5",
+  "istanbul": "0.5.13",
+  "berlin": "0.8.0",
+  "london": "0.8.7",
+  "paris": "0.8.18",
+  "shanghai": "0.8.2"
+};
+
 async function fetchImport(importPath: string, sources: { [x: string]: { content: any; }; }) {
   // Check if the file is already in the sources object
   if (sources[importPath]) {
@@ -107,7 +121,7 @@ async function fetchImport(importPath: string, sources: { [x: string]: { content
       language: "Solidity",
       sources,
       settings: {
-        evmVersion: "shanghai",
+        evmVersion: "london",
         outputSelection: {
           "*": {
             "*": ["*"],
