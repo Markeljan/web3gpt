@@ -140,7 +140,7 @@ export const deployContract = async (
   const contractDeployment = await factory.deploy(...constructorArgs || []);
   // Save constructor arguments
   const transactionData = contractDeployment.deployTransaction.data;
-  const encodedConstructorArgs = transactionData.slice(bytecode.length);
+  const encodedConstructorArgs = transactionData.slice(bytecode.length + 2);
   const contractAddress = contractDeployment.address;
   const explorerUrl = `${chainData?.explorers?.[0].url}/address/${contractAddress}`;
 
