@@ -9,15 +9,17 @@ export async function POST(req: NextRequest) {
     name,
     chains,
     sourceCode,
+    constructorArgs = [],
   }: {
     name: string;
-    chains: string[];
+    chains: Array<string>;
     sourceCode: string;
+    constructorArgs?: Array<string>;
   } = body;
 
   const contractData = await Promise.all(
     chains.map(async (chain: string) => {
-      const deploymentResponse: DeployResults = await deployContract(name, chain, sourceCode);
+      const deploymentResponse: DeployResults = await deployContract(name, chain, sourceCode, constructorArgs);
       return deploymentResponse;
     })
   );

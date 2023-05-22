@@ -22,6 +22,7 @@
     "eslint-config-next": "13.4.2",
     "ethers": "5.7.2",
     "next": "13.4.2",
+    "nft.storage": "^7.0.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "solc": "^0.8.20",

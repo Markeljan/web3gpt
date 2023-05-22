@@ -46,7 +46,7 @@ paths:
   /api/deploy-contract:
     post:
       operationId: deployContract
-      summary: deploy a contract, you are sending this in an api call's body so submit the sourcecode accordingly in the correct format.
+      summary: deploy a contract.  Must be Solidity version 0.8.20 or greater.  Must be single line string with no newline characters
       requestBody:
         required: true
         content:
@@ -77,7 +77,12 @@ components:
           description: The blockchain network name of the contract.
         sourceCode:
           type: string
-          description: The source code of the contract. You are sending this in an api call's body so submit the sourcecode accordingly in the correct format.
+          description: The source code of the contract. Must be Solidity version 0.8.20 or greater.  Must be single line string with no newline characters
+        constructorArgs:
+          type: array
+          items:
+            type: string
+          description: The arguments for the contract's constructor. Can be of any type.
     deleteContractRequest:
       type: object
       required:
@@ -117,4 +122,9 @@ components:
           description: The blockchain networks to deploy the contract to.  No special characters.
         sourceCode:
           type: string
-          description: The source code of the contract.
+          description: The source code of the contract. Must be Solidity version 0.8.20 or greater.
+        constructorArgs:
+          type: array
+          items:
+            type: string
+          description: The arguments for the contract's constructor. Can be of any type. This field is optional.
