@@ -146,9 +146,6 @@ export const deployContract = async (
   const explorerUrl = `${chainData?.explorers?.[0].url}/address/${contractAddress}`;
   console.log("Contract deployment OK");
 
-  const deploymentData = { name, chain: chainData?.name, contractAddress, explorerUrl };
-  console.log(`Deployment data: `, deploymentData);
-
   //upload contract data to an ipfs directory
   const uploadResult: UploadResult = await uploadToIpfs(sources, abi, bytecode);
   if (!uploadResult.cid) {
@@ -157,8 +154,6 @@ export const deployContract = async (
   }
 
   const ipfsUrl = `https://nftstorage.link/ipfs/${uploadResult.cid}`;
-
-  console.log(`IPFS URL: ${ipfsUrl}`);
 
   const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
 
@@ -187,10 +182,13 @@ export const deployContract = async (
 
 
   const transactionHash = await contractDeployment.deployTransaction.wait(3);
-  if (transactionHash.status === 1 && chain === 'sepolia') {
+  if (transactionHash.status === 1 && chainData?.name === 'Sepolia') {
     verifyContract(contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs);
   }
   createContract({ name, address: contractAddress, chain, sourceCode });
+
+  const deploymentData = { name, chain: chainData?.name, contractAddress, explorerUrl, ipfsUrl };
+  console.log(`Deployment data: `, deploymentData);
 
   return deploymentData;
 };

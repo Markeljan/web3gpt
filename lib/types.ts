@@ -10,6 +10,7 @@ export interface DeployResults {
   chain: string;
   contractAddress: string;
   explorerUrl?: string;
+  ipfsUrl?: string;
 }
 
 export type ChainData = {
