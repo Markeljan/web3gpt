@@ -7,21 +7,21 @@ export interface UploadResult {
   cid: string | null;
   error: Error | null;
 }
-const uploadToIpfs = async ( sources: { [fileName: string]: { content: any; }; }, abi: any, bytecode: string): Promise<UploadResult> => {
-
-  //for each file in the sources object, create a file object
-  const contracts = Object.keys(sources).map((key) => {
+const uploadToIpfs = async (sources: { [fileName: string]: { content: any; }; }, abi: any, bytecode: string): Promise<UploadResult> => {
+  
+  const files = [];
+  
+  for (const key in sources) {
     const contractCode = new File([sources[key].content], `${key}`, { type: 'text/x-solidity' });
-    return contractCode;
-  });
-  const abiFile = new File([JSON.stringify(abi)], `abi.json`, { type: 'application/json' });
+    files.push(contractCode);
+  }
+  
+  const abiFile = new File([abi], `abi.json`, { type: 'application/json' });
   const bytecodeFile = new File([bytecode], `bytecode.txt`, { type: 'text/plain' });
 
-  const cid = await client.storeDirectory([
-    ...contracts,
-    abiFile,
-    bytecodeFile,
-  ]);
+  files.push(abiFile, bytecodeFile);
+
+  const cid = await client.storeDirectory(files);
 
   return { cid, error: null };
 };

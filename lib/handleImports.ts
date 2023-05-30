@@ -40,6 +40,10 @@ async function fetchImport(importPath: string, sourcePath?: string) {
         // Otherwise, convert the import path to an unpkg URL
         urlToFetch = `https://unpkg.com/${importPath}`;
     }
+    // Convert GitHub URLs to raw content URLs
+    if (urlToFetch.includes('github.com')) {
+        urlToFetch = urlToFetch.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+    }
 
 
     // Fetch the imported file

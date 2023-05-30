@@ -132,6 +132,7 @@ export const deployContract = async (
     const error = new Error(`Signer for chain ${chainData.name} not available`);
     console.log(error);
   }
+  console.log("Provider and signer OK");
 
   // Create the contract factory
   const factory = await new ethers.ContractFactory(abi, bytecode, signer);
@@ -143,6 +144,10 @@ export const deployContract = async (
   const encodedConstructorArgs = transactionData.slice(bytecode.length + 2);
   const contractAddress = contractDeployment.address;
   const explorerUrl = `${chainData?.explorers?.[0].url}/address/${contractAddress}`;
+  console.log("Contract deployment OK");
+
+  const deploymentData = { name, chain: chainData?.name, contractAddress, explorerUrl };
+  console.log(`Deployment data: `, deploymentData);
 
   //upload contract data to an ipfs directory
   const uploadResult: UploadResult = await uploadToIpfs(sources, abi, bytecode);
@@ -153,10 +158,7 @@ export const deployContract = async (
 
   const ipfsUrl = `https://nftstorage.link/ipfs/${uploadResult.cid}`;
 
-  //add the ipfs hash to the contract object
-  const contractData = { name, chain, address: contractAddress, explorerUrl, ipfsUrl };
-
-  console.log(`Contract data: `, contractData);
+  console.log(`IPFS URL: ${ipfsUrl}`);
 
   const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
 
@@ -184,14 +186,10 @@ export const deployContract = async (
   }
 
 
-  const deploymentData = { name, chain: chainData?.name, contractAddress, explorerUrl };
-  console.log(`Deployment data: `, deploymentData);
-
-
   const transactionHash = await contractDeployment.deployTransaction.wait(3);
-  transactionHash.status === 1 &&
+  if (transactionHash.status === 1 && chain === 'sepolia') {
     verifyContract(contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs);
-
+  }
   createContract({ name, address: contractAddress, chain, sourceCode });
 
   return deploymentData;
