@@ -1,9 +1,13 @@
 # WEB3GPT
- <iframe width="560" height="315" src="https://www.youtube.com/embed/mMOZx3DpmNg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+https://www.youtube.com/embed/mMOZx3DpmNg
+
+![image](https://github.com/Markeljan/web3-gpt4/assets/12901349/d320991c-a0aa-4175-9a7b-c929eff6dc07)
+
+Deploy to XDC Apothem Network + Secured by CIVIC Pass.
+
+Submitted for Web3Athon 2023.
 
 WEB3GPT simplifies smart contract deployment. Users input Solidity code into the Chat GPT interface, select an EVM-compatible blockchain, and the tool handles the rest. It's a user-friendly, interactive asset for blockchain development.
-
-[ETHGlobal Lisbon Showcase](https://ethglobal.com/showcase/web3-gpt4-jkaja)
 
 ## Project Description
 
