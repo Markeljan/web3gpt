@@ -15,7 +15,10 @@ const App = () => {
                 mt: { xs: 4, sm: 8}
             }}
         >
+            <Box textAlign='center'>
             <Typography variant="h2">Web3GPT</Typography>
+            <Typography>Metamask or XDC Pay connected to XDC Apothem Network required.</Typography>
+            </Box>
 
             <IdentityButton mode={ButtonMode.LIGHT} />
 
