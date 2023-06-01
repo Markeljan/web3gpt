@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Web3-GPT4 Contract Deployer
+  title: WEB3GPT Contract Deployer
   description: A plugin to deploy Solidity smart contracts to any EVM chain.
   version: "v1"
 servers:

@@ -12,9 +12,7 @@ export default function Home() {
         alignItems: "center",
       }}
     >
-      <Typography variant="h1">Web3 GPT4</Typography>
-
-      <Typography variant="body1">Built during ETHGlobal Lisbon 2023 Hackathon</Typography>
+      <Typography variant="h1">WEB3GPT</Typography>
     </Box>
   );
 }

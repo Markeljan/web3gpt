@@ -4,8 +4,8 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 export const metadata = {
-  title: "Web3-GPT4",
-  description: "Chat GPT-4 Web3 Plugin",
+  title: "WEB3GPT",
+  description: "ChatGPT meets WEB3.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
