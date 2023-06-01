@@ -1,11 +1,11 @@
 # WEB3GPT
+
+Web3athon 2023 Demo:
 https://www.youtube.com/embed/mMOZx3DpmNg
 
 ![image](https://github.com/Markeljan/web3-gpt4/assets/12901349/d320991c-a0aa-4175-9a7b-c929eff6dc07)
 
 Deploy to XDC Apothem Network + Secured by CIVIC Pass.
-
-Submitted for Web3Athon 2023.
 
 WEB3GPT simplifies smart contract deployment. Users input Solidity code into the Chat GPT interface and the tool handles the rest. It's a user-friendly, interactive asset for XDC Solidity development.
 
