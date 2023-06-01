@@ -1,5 +1,5 @@
 # WEB3GPT
-![image](https://github.com/Markeljan/web3-gpt4/assets/12901349/7c29ec0a-aa06-40ba-a073-d13e8e0c860d)
+ <iframe width="560" height="315" src="https://www.youtube.com/embed/mMOZx3DpmNg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 WEB3GPT simplifies smart contract deployment. Users input Solidity code into the Chat GPT interface, select an EVM-compatible blockchain, and the tool handles the rest. It's a user-friendly, interactive asset for blockchain development.
 
