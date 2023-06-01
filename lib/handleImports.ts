@@ -12,12 +12,6 @@ export default async function handleImports(sourceCode: string, sourcePath?: str
         Object.assign(sources, importedSources);
 
         let sourceFileName = importPath.split("/").pop() || importPath;
-        // If a file with the same name already exists in the sources object, append a unique identifier
-        let uniqueIdentifier = 0;
-        while (sources[sourceFileName]) {
-            sourceFileName = `${sourceFileName}_${uniqueIdentifier}`;
-            uniqueIdentifier++;
-        }
         sources[sourceFileName] = {
             content: mainSourceCode,
         };

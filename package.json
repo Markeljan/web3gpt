@@ -26,6 +26,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "solc": "^0.8.20",
+    "solidity-parser-diligence": "^0.4.18",
     "string-similarity": "^4.0.4",
     "typescript": "5.0.4"
   }

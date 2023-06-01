@@ -6,6 +6,7 @@ import { ChainData, Contract, DeployResults } from "@/lib/types";
 import uploadToIpfs, { UploadResult } from '@/lib/uploadToIpfs';
 import handleImports from "@/lib/handleImports";
 import axios from "axios";
+import { flattenSolidity } from "./flattener";
 
 type ContractsType = Contract[];
 
@@ -67,15 +68,16 @@ export const deployContract = async (
     console.log(error);
   }
 
-  const fileName = (name ? name.replace(/[^a-z0-9]/gi, "_").toLowerCase() : "contract") + ".sol";
+  const fileName = (name ? name.replace(/[\/\\:*?"<>|.\s]+$/g, "_") : "contract") + ".sol";
+
 
   // Prepare the sources object for the Solidity compiler
   const handleImportsResult = await handleImports(sourceCode);
   const sources = {
     [fileName]: {
-      content: handleImportsResult.sourceCode,
+      content: handleImportsResult?.sourceCode,
     },
-    ...handleImportsResult.sources,
+    ...handleImportsResult?.sources,
   };
 
   // Compile the contract
@@ -138,22 +140,27 @@ export const deployContract = async (
   const factory = await new ethers.ContractFactory(abi, bytecode, signer);
 
   // Deploy the contract
-  const contractDeployment = await factory.deploy(...constructorArgs || []);
-  // Save constructor arguments
-  const transactionData = contractDeployment.deployTransaction.data;
-  const encodedConstructorArgs = transactionData.slice(bytecode.length + 2);
+  const contractDeployment = await factory.deploy(...(constructorArgs ?? []));
+  // Retrieve encoded constructor arguments
+  const transactionData = contractDeployment.deployTransaction?.data;
+  const encodedConstructorArgs = transactionData.slice(bytecode?.length + 2);
   const contractAddress = contractDeployment.address;
   const explorerUrl = `${chainData?.explorers?.[0].url}/address/${contractAddress}`;
   console.log("Contract deployment OK");
 
+  // // Add the flattened source code to the sources object
+  // const flattenedCode = flattenSolidity(sources);
+  // const flattenedFileName = fileName.split(".")[0] + "_flattened.sol";
+  // sources[flattenedFileName] = { content: flattenedCode };
+
   //upload contract data to an ipfs directory
-  const uploadResult: UploadResult = await uploadToIpfs(sources, abi, bytecode);
+  const uploadResult: UploadResult = await uploadToIpfs(sources, JSON.stringify(abi), bytecode);
   if (!uploadResult.cid) {
     const error = uploadResult.error;
     console.log(error);
   }
 
-  const ipfsUrl = `https://nftstorage.link/ipfs/${uploadResult.cid}`;
+  const ipfsUrl = `https://nftstorage.link/ipfs/${uploadResult?.cid}`;
 
   const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
 
@@ -185,9 +192,9 @@ export const deployContract = async (
   if (transactionHash.status === 1 && chainData?.name === 'Sepolia') {
     verifyContract(contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs);
   }
-  createContract({ name, address: contractAddress, chain, sourceCode });
+  createContract({ name: fileName, address: contractAddress, chain, sourceCode });
 
-  const deploymentData = { name, chain: chainData?.name, contractAddress, explorerUrl, ipfsUrl };
+  const deploymentData = { name: fileName, chain: chainData?.name, contractAddress, explorerUrl, ipfsUrl };
   console.log(`Deployment data: `, deploymentData);
 
   return deploymentData;
