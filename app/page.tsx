@@ -13,11 +13,17 @@ declare global {
 
 const Home = () => {
   const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner | null>(null);
+  const [account, setAccount] = useState<string | null>(null);
 
   const openWallet = useCallback(async () => {
     if (window?.ethereum) {
       try {
         await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        setSigner(signer);
+        const address = await signer.getAddress();
+        setAccount(address);
       } catch (err) {
         console.error('Failed to request accounts:', err);
       }
@@ -27,20 +33,13 @@ const Home = () => {
   useEffect(() => {
     if (typeof window?.ethereum !== "undefined") {
       openWallet();
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      try {
-        const signer = provider.getSigner();
-        setSigner(signer);
-      } catch (err) {
-        console.error('Failed to get signer:', err);
-      }
     } else {
       console.log('Please install MetaMask or XDC Pay and switch to the XDC Apothem Network.');
     }
   }, [openWallet]);
 
   return (
-    signer ? (
+    account ? (
       <GatewayProvider
         wallet={signer as any}
         gatekeeperNetwork="ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6">
@@ -53,3 +52,4 @@ const Home = () => {
 }
 
 export default Home;
+
