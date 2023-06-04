@@ -149,9 +149,9 @@ export const deployContract = async (
   console.log("Contract deployment OK");
 
   // Add the flattened source code to the sources object
-  const flattenedCode = flattenSolidity(sources);
-  const flattenedFileName = fileName.split(".")[0] + "_flattened.sol";
-  sources[flattenedFileName] = { content: flattenedCode };
+  // const flattenedCode = flattenSolidity(sources);
+  // const flattenedFileName = fileName.split(".")[0] + "_flattened.sol";
+  // sources[flattenedFileName] = { content: flattenedCode };
 
   //upload contract data to an ipfs directory
   const uploadResult: UploadResult = await uploadToIpfs(sources, JSON.stringify(abi), bytecode);

@@ -2,6 +2,17 @@ import { useState, useEffect, useRef } from 'react';
 import { Box, TextField, Button, List, ListItem, Typography } from "@mui/material";
 import axios from 'axios';
 
+//VICUNA CONFIG
+// const response = await axios.post(
+//     "https://shale.live/v1/chat/completions",
+//     {
+//         model: "vicuna-13b-v1.1",
+//         messages: [...conversation, { role: "user", content: input }],
+//         max_tokens: 1048, 
+//     },
+//     { headers: { 'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SHALE_API_KEY}` } }
+// );
+
 interface Message {
     role: "user" | "assistant";
     content: string;
