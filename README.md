@@ -23,3 +23,4 @@ In essence, WEB3GPT is an invaluable asset for anyone in the XDC sphere, streaml
 
 WEB3GPT is a unique project that leverages ChatGPT Plugins, NextJS, Ethers.js, and solc.js to create a conversational interface for managing XDC contracts. The GPT-4 model, powered by OpenAI, provides an interactive user experience, while NextJS ensures an efficient and scalable frontend. Ethers.js handles XDC interactions, and solc.js compiles Solidity code within the application. The integration of these technologies allows users to manage contracts through natural language conversations, making the process more accessible and user-friendly. The innovative use of GPT-4 Plugins to manage XDC contracts is a notable feature of this project.
 
+
