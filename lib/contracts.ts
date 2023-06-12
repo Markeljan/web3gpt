@@ -122,7 +122,7 @@ export const deployContract = async (
   //Prepare provider and signer
   const provider =
     rpcUrl && chainData.chainId
-      ? new ethers.providers.JsonRpcProvider(chainData.rpc[0], chainData.chainId)
+      ? new ethers.providers.JsonRpcProvider(rpcUrl, chainData.chainId)
       : ethers.getDefaultProvider(chainData.chainId);
   if (!(await provider.getNetwork())?.chainId) {
     const error = new Error(`Provider for chain ${chainData.name} not available`);
@@ -162,9 +162,10 @@ export const deployContract = async (
 
   const ipfsUrl = `https://nftstorage.link/ipfs/${uploadResult?.cid}`;
 
-  const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
+
 
   async function verifyContract(address: string, standardJsonInput: string, compilerVersion: string, constructorArguments: string) {
+    const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
     try {
       const params = new URLSearchParams();
       params.append('apikey', ETHERSCAN_API_KEY);
