@@ -61,6 +61,7 @@ const ChatBox: React.FC = () => {
                 <TextField
                     variant="outlined"
                     value={input}
+                    placeholder='Ask gpt anything'
                     onChange={e => setInput(e.target.value)}
                     fullWidth
                 />

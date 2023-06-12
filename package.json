@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@civic/ethereum-gateway-react": "^0.10.3",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^4.5.8",
