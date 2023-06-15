@@ -154,15 +154,13 @@ export const deployContract = async (
   // sources[flattenedFileName] = { content: flattenedCode };
 
   //upload contract data to an ipfs directory
-  const uploadResult: UploadResult = await uploadToIpfs(sources, JSON.stringify(abi), bytecode);
+  const uploadResult: UploadResult = await uploadToIpfs(sources, JSON.stringify(abi), bytecode, JSON.stringify(StandardJsonInput));
   if (!uploadResult.cid) {
     const error = uploadResult.error;
     console.log(error);
   }
 
   const ipfsUrl = `https://nftstorage.link/ipfs/${uploadResult?.cid}`;
-
-
 
   async function verifyContract(address: string, standardJsonInput: string, compilerVersion: string, constructorArguments: string) {
     const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';

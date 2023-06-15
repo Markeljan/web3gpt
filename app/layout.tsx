@@ -12,6 +12,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
 
+      <head>
+        <link
+          rel="icon"
+          href="/logo.png"
+        />
+      </head>
+      
       <body style={{
         backgroundColor: "#F5F7F9",
       }}>{children}</body>
