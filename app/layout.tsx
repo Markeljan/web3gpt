@@ -7,7 +7,7 @@ const roboto = Roboto({
 })
 
 export const metadata = {
-  title: "WEB3GPT",
+  title: "W3GPT",
   description: "Web3 enabled AI.",
 };
 
