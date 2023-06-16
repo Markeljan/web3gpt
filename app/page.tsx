@@ -119,7 +119,7 @@ export default function Home() {
           >
             <Box sx={{ flex: 1 }} />
             <Typography variant="subtitle2" color="#C5C5D2" sx={{ flex: 1, textAlign: 'center', fontWeight: '300' }}>
-              Model: GPT-3.5-turbo
+              Model: GPT-3.5
             </Typography>
             <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', pr: 10 }}>
               <IconButton aria-label="Twitter" component="a" target='_blank' href="https://twitter.com/0xmarkeljan">
@@ -132,7 +132,7 @@ export default function Home() {
           </Box>
         </Box>
         <Box sx={{
-          display: conversation.length ? 'none' : 'flex', justifyContent: 'center', alignItems: 'center', width: '555px', height: '120px', backgroundColor: "#fff",
+          display: {xs: 'none', md: conversation.length ? 'none' : 'flex'}, justifyContent: 'center', alignItems: 'center', width: '555px', height: '120px', backgroundColor: "#fff",
           position: "absolute", top: "40%", left: "50%", transform: "translate(-50%, -50%)", opacity: 0.25, userSelect: 'none', pointerEvents: 'none'
         }}>
           <Image src="/w3gpt_med.svg" alt="W3GPT Logo" width={800} height={800} />
