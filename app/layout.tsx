@@ -1,16 +1,19 @@
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
+import { Roboto } from 'next/font/google'
+ 
+const roboto = Roboto({
+  weight: ['100', '300', '400', '500', '700', '900'],
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 export const metadata = {
   title: "WEB3GPT",
-  description: "ChatGPT meets WEB3.",
+  description: "Web3 enabled AI.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={roboto.className}>
 
       <head>
         <link
@@ -20,7 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       
       <body style={{
-        backgroundColor: "#F5F7F9",
+        backgroundColor: "#343541",
+        margin: 0,
+        padding: 0,
       }}>{children}</body>
 
     </html>
