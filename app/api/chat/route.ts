@@ -1,10 +1,9 @@
-import { Message } from "@/app/page";
-
+import { Message } from "@/types/types";
 
 export async function POST(req: Request): Promise<Response> {
     const conversation: Message[] = (await req.json()) as Message[];
 
-
+    // SHALE API for opensource models
     // const response = await fetch(
     //     "https://shale.live/v1/chat/completions",
     //     {

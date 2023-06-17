@@ -1,4 +1,3 @@
-// app/api/delete-contract/route.ts
 import { deleteContract } from "@/lib/contracts";
 import createResponse from "@/app/utils/createResponse";
 import { NextRequest } from "next/server";

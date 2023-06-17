@@ -2,7 +2,7 @@ const solc = require("solc");
 import { findBestMatch } from "string-similarity";
 import { ethers } from "ethers";
 import chains from "@/lib/chains.json";
-import { ChainData, Contract, DeployResults } from "@/lib/types";
+import { ChainData, Contract, DeployResults } from "@/types/backend";
 import uploadToIpfs, { UploadResult } from '@/lib/uploadToIpfs';
 import handleImports from "@/lib/handleImports";
 import axios from "axios";

@@ -1,6 +1,6 @@
 import createResponse from "@/app/utils/createResponse";
 import { deployContract } from "@/lib/contracts";
-import { DeployResults } from "@/lib/types";
+import { DeployResults } from "@/types/backend";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {

@@ -16,7 +16,12 @@
     "incremental": true,
     "paths": {
       "@/*": ["./*"],
-      "@/utils/*": ["./app/utils/*"]
+      "@/api/*": ["./app/api/*"],
+      "@/components/*": ["./app/components/*"],
+      "@/hooks/*": ["./app/hooks/*"],
+      "@/utils/*": ["./app/utils/*"],
+      "@/lib/*": ["./app/lib/*"],
+      "@/types/*": ["./app/types/*"],
     },
     "plugins": [
       {

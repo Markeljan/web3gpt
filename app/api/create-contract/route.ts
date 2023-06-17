@@ -1,4 +1,3 @@
-// app/api/create-contract/route.ts
 import { createContract } from "@/lib/contracts";
 import createResponse from "@/app/utils/createResponse";
 import { NextRequest } from "next/server";

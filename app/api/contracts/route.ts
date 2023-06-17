@@ -1,6 +1,5 @@
-// app/api/contracts/route.ts
 import { getContracts } from "@/lib/contracts";
-import createResponse from "@/app/utils/createResponse";
+import createResponse from "@/utils/createResponse";
 
 export async function GET() {
   return createResponse(200, {
