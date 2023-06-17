@@ -25,7 +25,7 @@ export function useChat() {
 
     setLoading(true);
     setConversation(newConversation);
-
+    setUserInput("");
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
@@ -38,8 +38,6 @@ export function useChat() {
       console.error("Something went wrong with the request");
       return;
     }
-
-    setUserInput("");
 
     // Get a reader from the response stream
     const reader = response?.body?.getReader();
