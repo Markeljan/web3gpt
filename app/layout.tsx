@@ -16,12 +16,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={roboto.className}>
 
       <head>
-        <link
-          rel="icon"
-          href="/logo.png"
-        />
       </head>
-      
+
       <body style={{
         backgroundColor: "#343541",
         margin: 0,

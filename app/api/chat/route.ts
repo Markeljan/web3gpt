@@ -10,7 +10,7 @@ export async function POST(req: Request): Promise<Response> {
     //         method: "POST",
     //         headers: {
     //             "Content-Type": "application/json",
-    //             'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SHALE_API_KEY}`
+    //             'Authorization': `Bearer ${process.env.SHALE_API_KEY}`
     //         },
     //         body: JSON.stringify({
     //         model: "vicuna-13b-v1.1",
@@ -24,7 +24,7 @@ export async function POST(req: Request): Promise<Response> {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_OPEN_AI_API_KEY}`
+            'Authorization': `Bearer ${process.env.OPEN_AI_API_KEY}`
         },
         body: JSON.stringify({
             model: "gpt-3.5-turbo-0613",

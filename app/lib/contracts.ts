@@ -129,7 +129,7 @@ export const deployContract = async (
     console.log(error);
   }
 
-  const signer = new ethers.Wallet("0x" + process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+  const signer = new ethers.Wallet("0x" + process.env.PRIVATE_KEY, provider);
   if (!(await signer.getAddress())) {
     const error = new Error(`Signer for chain ${chainData.name} not available`);
     console.log(error);
