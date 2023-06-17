@@ -16,6 +16,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={roboto.className}>
 
       <head>
+        <link
+          rel="apple-touch-icon"
+          href="/apple-icon.png"
+        />
+        
       </head>
 
       <body style={{
