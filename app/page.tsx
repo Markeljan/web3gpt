@@ -1,7 +1,7 @@
 "use client"
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
-import { Box, Typography, CircularProgress, IconButton, InputAdornment, FilledInput } from '@mui/material';
+import { Box, Typography, CircularProgress, IconButton, InputAdornment, FilledInput, Grid } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import ReactMarkdown from 'react-markdown'
 import { AccountCircle, SmartToy, YouTube, Twitter } from '@mui/icons-material';
@@ -107,29 +107,22 @@ export default function Home() {
     <>
       <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', pb: 20, color: '#ECECF1', width: '100%', maxWidth: 'none' }}>
         <Box sx={{ backgroundColor: "#444754" }}>
-          <Box
-            sx={{
-              py: 3,
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}
-          >
-            <Box sx={{ flex: 1 }} />
+         
+            
+            <Grid container sx={{ display:'flex', justifyContent:'center', alignItems:'center', p:1 }}>
             <Typography variant="subtitle2" color="#C5C5D2" sx={{ flex: 1, textAlign: 'center', fontWeight: '300' }}>
               Model: GPT-3.5
             </Typography>
-            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', pr: 10 }}>
+           
               <IconButton aria-label="Twitter" component="a" target='_blank' href="https://twitter.com/0xmarkeljan">
                 <Twitter sx={{color: '#C5C5D2'}}/>
               </IconButton>
+
               <IconButton aria-label="YouTube" component="a" target='_blank' href='https://www.youtube.com/live/E2Ynuq7Eorc?feature=share&t=2776'>
                 <YouTube sx={{color: '#C5C5D2'}}/>
               </IconButton>
-            </Box>
-          </Box>
+            </Grid>
+         
         </Box>
         <Box sx={{
           display: {xs: 'none', md: conversation.length ? 'none' : 'flex'}, justifyContent: 'center', alignItems: 'center', width: '555px', height: '120px', backgroundColor: "#fff",
@@ -209,6 +202,7 @@ export default function Home() {
                   {loading ? <CircularProgress size={24} /> : <SendIcon sx={{ fill: userInput.trim() ? '#FFFFFF' : '#6E6E7E' }} />}
                 </IconButton>
               </InputAdornment>
+              
             )}
           />
         </form>
