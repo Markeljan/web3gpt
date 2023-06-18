@@ -1,4 +1,5 @@
 import { Roboto } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/react'
 
 const roboto = Roboto({
   weight: ['100', '300', '400', '500', '700', '900'],
@@ -24,14 +25,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="icon"
           href="/robot.png"
         />
-        
+
       </head>
 
       <body style={{
         backgroundColor: "#343541",
         margin: 0,
         padding: 0,
-      }}>{children}</body>
+      }}>
+        {children}
+        <Analytics />
+      </body>
 
     </html>
   );
