@@ -4,7 +4,7 @@ info:
   description: A plugin to deploy Solidity smart contracts to any EVM chain.
   version: "v1"
 servers:
-  - url: http://localhost:3000
+  - url: https://w3gpt.ai
 paths:
   /api/deploy-contract:
     post:

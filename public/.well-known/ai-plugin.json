@@ -1,18 +1,18 @@
 {
   "schema_version": "v1",
-  "name_for_human": "Smart Contract Deployer",
-  "name_for_model": "Smart_Contract_Deployer",
-  "description_for_human": "Deploy smart contracts to any EVM chain.",
-  "description_for_model": "Deploy smart contracts to any EVM chain.",
+  "name_for_human": "W3GPT",
+  "name_for_model": "W3GPT, Web3GPT",
+  "description_for_human": "Deploy smart contracts to any EVM chain, read and interact with blockchain data.",
+  "description_for_model": "Deploy smart contracts to any EVM chain, read and interact with blockchain data.",
   "auth": {
     "type": "none"
   },
   "api": {
     "type": "openapi",
-    "url": "http://localhost:3000/openapi.yaml",
+    "url": "https://w3gpt.ai/openapi.yaml",
     "is_user_authenticated": false
   },
-  "logo_url": "http://localhost:3000/logo.png",
+  "logo_url": "https://www.w3gpt.ai/robot.png",
   "contact_email": "mark@w3gpt.ai",
-  "legal_info_url": "https://example.com/legal"
+  "legal_info_url": "https://github.com/markeljan"
 }

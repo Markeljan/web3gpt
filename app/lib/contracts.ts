@@ -9,10 +9,6 @@ import { flattenSolidity } from "./flattener";
 import { Chain, EncodeDeployDataParameters, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
 import { privateKeyToAccount } from 'viem/accounts'
 
-type ContractsType = Contract[];
-
-let contracts: ContractsType = [];
-
 const evmVersions = {
   "homestead": "0.1.3",
   "tangerineWhistle": "0.3.6",
@@ -26,22 +22,6 @@ const evmVersions = {
   "paris": "0.8.18",
   "shanghai": "0.8.2"
 };
-
-export const getContracts = (): ContractsType => {
-  return contracts;
-};
-
-export const createContract = (contract: Contract) => {
-  contracts = [...contracts, contract];
-};
-
-export const deleteContract = (contract: Contract): void => {
-  const index = contracts.findIndex((item) => item.address === contract.address);
-  if (index !== -1) {
-    contracts.splice(index, 1);
-  }
-};
-
 
 export const deployContract = async (
   name: string,
@@ -242,8 +222,6 @@ export const deployContract = async (
     deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 1 })
   }
   const contractAddress = deployReceipt?.contractAddress || '0x';
-
-  createContract({ name: fileName, address: contractAddress, chain, sourceCode });
 
   const deploymentData = { name: fileName, chain: chainData?.name, contractAddress, explorerUrl, ipfsUrl };
 

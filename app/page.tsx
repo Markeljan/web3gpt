@@ -9,7 +9,7 @@ import { useChat } from '@/hooks/useChat';
 
 export default function Home() {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
-  const { userInput, setUserInput, loading, messages, handleSubmit } = useChat();
+  const { messages, userInput, setUserInput, handleSubmit, loading } = useChat();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
