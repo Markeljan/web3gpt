@@ -13,10 +13,10 @@ function formatResponseForHTML(responseJson: any): string {
     htmlString += 'Here are the details of the deployed contract:<br/><br/>';
     htmlString += `<ul>\n`;
     htmlString += `<li>Contract Address: <strong>${contract.contractAddress}</strong></li><br/>`;
-    htmlString += `<li>Transaction on Etherscan: <a href="${contract.explorerUrl}" target="_blank">View Transaction</a></li><br/>`;
+    htmlString += `<li>Transaction on Explorer: <a href="${contract.explorerUrl}" target="_blank">View Transaction</a></li><br/>`;
     htmlString += `<li>IPFS Link: <a href="${contract.ipfsUrl}" target="_blank">View on IPFS</a></li><br/>`;
-    htmlString += `</ul><br/><br/>`;
-    htmlString += 'If you need further assistance or have any questions on how to interact with the contract, please let me know.<br/><br/>';
+    htmlString += `</ul><br/>`;
+    htmlString += 'If you need further assistance or have any questions on how to interact with the contract, please let me know.';
   });
 
   return htmlString;
@@ -174,7 +174,7 @@ export function useChat() {
                   // Append function response to messages
                   setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: content }]);
                 } else {
-                  console.error('Failed to deploy contract');
+                  console.error('Failed to deploy contract: ', response.status, response.statusText);
                 }
               }
             }
