@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     name: string;
     chains: Array<string>;
     sourceCode: string;
-    constructorArgs?: Array<string>;
+    constructorArgs: Array<string>;
   } = body;
 
   const contractData = await Promise.all(

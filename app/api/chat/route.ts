@@ -31,7 +31,7 @@ export async function POST(req: Request): Promise<NextResponse> {
                         "items": {
                             "type": "string"
                         },
-                        "description": "The arguments for the contract's constructor. Can be of any type. This field is optional."
+                        "description": "The arguments for the contract's constructor. Can be of any type. Empty [] if no arguments are required."
                     }
                 },
                 "required": ["name", "chains", "sourceCode"]

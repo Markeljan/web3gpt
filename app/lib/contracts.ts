@@ -8,7 +8,6 @@ import axios from "axios";
 import { flattenSolidity } from "./flattener";
 import { Chain, EncodeDeployDataParameters, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
 import { privateKeyToAccount } from 'viem/accounts'
-import { createPrivateKey } from "crypto";
 
 type ContractsType = Contract[];
 
@@ -48,7 +47,7 @@ export const deployContract = async (
   name: string,
   chain: string,
   sourceCode: string,
-  constructorArgs?: Array<string>
+  constructorArgs: Array<string>
 ): Promise<DeployResults> => {
   // get the chain object from the chains.json file. Direct match || partial match
   const findAttempt = chains.find((item) => item.name.toLowerCase() === chain.toLowerCase());
@@ -183,12 +182,12 @@ export const deployContract = async (
   });
 
   const encodedConstructorArgs = deployData.slice(bytecode?.length);
-  console.log("encodedConstructorArgs: ", encodedConstructorArgs);
+
   const deployHash = await walletClient.deployContract({
     abi: abi,
     bytecode: bytecode,
     account: account,
-    args: constructorArgs || [],
+    args: constructorArgs,
   });
   
   console.log("Contract deployment OK");
@@ -209,7 +208,7 @@ export const deployContract = async (
 
   const ipfsUrl = `https://nftstorage.link/ipfs/${uploadResult?.cid}`;
 
-  async function verifyContract(address: `0x${string}`, standardJsonInput: string, compilerVersion: string, constructorArguments: string) {
+  async function verifyContract(address: `0x${string}`, standardJsonInput: string, compilerVersion: string, encodedConstructorArgs: string) {
     const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
     try {
       const params = new URLSearchParams();
@@ -223,7 +222,7 @@ export const deployContract = async (
       params.append('compilerversion', compilerVersion);
       params.append('optimizationused', '0');
       constructorArgs?.length && (
-        params.append('constructorArguements', constructorArguments))
+        params.append('constructorArguements', encodedConstructorArgs))
       params.append('evmversion', 'london'); // leave blank for compiler default
       const response = await axios.post('https://api-sepolia.etherscan.io/api', params);
       console.log("Verification Response: ", response.data);

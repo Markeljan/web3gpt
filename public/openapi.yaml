@@ -111,6 +111,7 @@ components:
         - name
         - chains
         - sourceCode
+        - constructorArgs
       properties:
         name:
           type: string
@@ -127,4 +128,4 @@ components:
           type: array
           items:
             type: string
-          description: The arguments for the contract's constructor. Can be of any type. This field is optional.
+          description: The arguments for the contract's constructor. Can be of any type.
