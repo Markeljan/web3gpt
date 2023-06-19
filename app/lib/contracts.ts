@@ -47,7 +47,7 @@ export const deployContract = async (
   name: string,
   chain: string,
   sourceCode: string,
-  constructorArgs: Array<string>
+  constructorArgs: Array<string | string[]>
 ): Promise<DeployResults> => {
   // get the chain object from the chains.json file. Direct match || partial match
   const findAttempt = chains.find((item) => item.name.toLowerCase() === chain.toLowerCase());
@@ -180,16 +180,15 @@ export const deployContract = async (
     bytecode: bytecode,
     args: constructorArgs || [],
   });
-
-  const encodedConstructorArgs = deployData.slice(bytecode?.length);
+  console.log("Building deployData OK.")
 
   const deployHash = await walletClient.deployContract({
     abi: abi,
     bytecode: bytecode,
     account: account,
-    args: constructorArgs,
+    args: constructorArgs || [],
   });
-  
+
   console.log("Contract deployment OK");
 
   const explorerUrl = `${viemChain?.blockExplorers?.default.url}/tx/${deployHash}`;
@@ -231,15 +230,23 @@ export const deployContract = async (
     }
   }
   console.log("Waiting for deployment transaction confirmations...")
-  const deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
+
+  let deployReceipt;
+  if (chainData?.name === 'Sepolia') {
+    const encodedConstructorArgs = deployData.slice(bytecode?.length);
+    deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
+    if (deployReceipt.status === "success" && deployReceipt.contractAddress) {
+      verifyContract(deployReceipt.contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs);
+    }
+  } else {
+    deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 1 })
+  }
   const contractAddress = deployReceipt?.contractAddress || '0x';
 
-  if (deployReceipt.status === "success" && chainData?.name === 'Sepolia') {
-    verifyContract(contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs);
-  }
   createContract({ name: fileName, address: contractAddress, chain, sourceCode });
 
   const deploymentData = { name: fileName, chain: chainData?.name, contractAddress, explorerUrl, ipfsUrl };
+
   console.log(`Deployment data: `, deploymentData);
 
   return deploymentData;

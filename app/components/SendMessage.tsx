@@ -15,6 +15,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ loading, userInput, handleSub
                 fullWidth
                 multiline
                 disableUnderline
+                disabled={loading}
                 maxRows={8}
                 type="text"
                 placeholder="Send a message"

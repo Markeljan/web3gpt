@@ -1,5 +1,5 @@
+import { useState, useEffect, useRef, use } from 'react';
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
-import { useState, useEffect, useRef } from 'react';
 
 export function createNewMessage(role: ChatCompletionRequestMessageRoleEnum, content: string = ""): ChatCompletionRequestMessage {
   return { role, content };
@@ -26,54 +26,87 @@ const SYSTEM_MESSAGE: ChatCompletionRequestMessage = createNewMessage(
   "You are a chat bot responsible for writing and deploying smart contracts on EVM compatible chains. Your main function is 'deployContract', which enables the deployment of Solidity smart contracts (version 0.8.20 or greater) onto specified blockchain networks. The function requires 'name', 'chains', and 'sourceCode', and 'constructorArgs' parameters to be formatted as per the defined structure. Remember, your primary task is to aid in the development and deployment of smart contracts.  After you deploy a contract, you should provide the user with the contract address, transaction hash, and IPFS link."
 );
 
+
+const functions = [
+  {
+    "name": "deployContract",
+    "description": "Deploy a smart contract. Must be Solidity version 0.8.20 or greater. Must be a single-line string with no newline characters.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the contract. Only letters, no spaces or special characters."
+        },
+        "chains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The blockchain networks to deploy the contract to. No special characters."
+        },
+        "sourceCode": {
+          "type": "string",
+          "description": "The source code of the contract. Must be Solidity version 0.8.20 or greater. Must be a single-line string with no newline characters."
+        },
+        "constructorArgs": {
+          "type": "array",
+          "items": {
+              "oneOf": [
+                  {
+                      "type": "string",
+                      "description": "A single argument for the contract's constructor."
+                  },
+                  {
+                      "type": "array",
+                      "items": {
+                          "type": "string"
+                      },
+                      "description": "An array of arguments for the contract's constructor."
+                  }
+              ]
+          },
+          "description": "The arguments for the contract's constructor. Can be of any type represented as a string. Empty [] if no arguments are required."
+      }
+      },
+      "required": ["name", "chains", "sourceCode", "constructorArgs"]
+    }
+  }
+];
+
 export function useChat() {
   const [userInput, setUserInput] = useState<string>("");
+  const [streamingChat, setStreamingChat] = useState<boolean>(false);
+  const [processingFunctionCall, setProcessingFunctionCall] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([SYSTEM_MESSAGE]);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
-  const functions = [
-    {
-      "name": "deployContract",
-      "description": "Deploy a smart contract. Must be Solidity version 0.8.20 or greater. Must be a single-line string with no newline characters.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "The name of the contract. Only letters, no spaces or special characters."
-          },
-          "chains": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "The blockchain networks to deploy the contract to. No special characters."
-          },
-          "sourceCode": {
-            "type": "string",
-            "description": "The source code of the contract. Must be Solidity version 0.8.20 or greater. Must be a single-line string with no newline characters."
-          },
-          "constructorArgs": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "The arguments for the contract's constructor. Can be of any type. use [] if no arguments are required."
-          }
-        },
-        "required": ["name", "chains", "sourceCode", "constructorArgs"]
-      }
-    }
-  ]
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(scrollToBottom, [messages]);
+  console.log("streamingChat", streamingChat);
+  console.log("processingFunctionCall", processingFunctionCall);
+  console.log("loading", loading);
 
   useEffect(() => {
-    if (loading) {
+    if (streamingChat || processingFunctionCall) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [streamingChat, processingFunctionCall]);
+
+  useEffect(() => {
+    if (streamingChat) {
+      let reducedMessages = [...messages]; // clone the messages array
+      let tokensEstimate = reducedMessages.length * 4 + 100;
+      
+      while(tokensEstimate > 120) {
+        reducedMessages = reducedMessages.slice(Math.floor(reducedMessages.length / 2));
+        tokensEstimate = reducedMessages.length * 4 + 100;
+      }
       const getChatResponse = async () => {
         const response = await fetch("/api/chat", {
           method: "POST",
@@ -81,15 +114,11 @@ export function useChat() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            messages: messages,
+            messages: reducedMessages,
+            functions: functions,
           }),
         });
-
-        if (!response.ok) {
-          console.error("Something went wrong with the request");
-          return;
-        }
-
+        
         // Start the messages with an empty assistant message
         const assistantMessage = createNewMessage("assistant");
         setMessages(prevMessages => [...prevMessages, assistantMessage]);
@@ -98,6 +127,7 @@ export function useChat() {
         let buffer = '';
         reader?.read().then(async function processChunk({ done, value }: ReadableStreamReadResult<Uint8Array>): Promise<any> {
           if (done) {
+            setStreamingChat(false);
             return;
           }
           // Convert chunk from Uint8Array to string
@@ -159,33 +189,47 @@ export function useChat() {
               // If a function call was detected, execute it
               if (functionCallDetected && assistantMessage.function_call) {
                 const { name, arguments: function_args } = assistantMessage.function_call;
-                // Parse the arguments to an object
-                const parsedArgs = JSON.parse(function_args || '{}');
+                if(!function_args || !name) {
+                  console.error("Function call detected, but function name or arguments were not found");
+                  setStreamingChat(false);
+                  return;
+                }
+                setProcessingFunctionCall(true);
+                
+                const parsedArgs = JSON.parse(function_args);
 
                 const response = await fetch('/api/deploy-contract', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ ...parsedArgs })
+                  body: JSON.stringify({
+                    name: parsedArgs.name,
+                    chains: parsedArgs.chains,
+                    sourceCode: parsedArgs.sourceCode,
+                    constructorArgs: parsedArgs.constructorArgs || [],
+                  }),
                 });
                 if (response.ok) {
                   const result = await response.json();
                   const content = formatResponseForHTML(result)
-
                   // Append function response to messages
                   setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: content }]);
                 } else {
                   console.error('Failed to deploy contract: ', response);
+                  setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to deploy contract" }]);
                 }
+                
+                setProcessingFunctionCall(false);
               }
             }
           }
           return reader.read().then(processChunk); // Read next chunk
         });
       };
-
-      getChatResponse().finally(() => setLoading(false));
+      if(!loading) {
+        getChatResponse();
+      }
     }
-  }, [loading, messages]);
+  }, [streamingChat, processingFunctionCall]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -196,7 +240,7 @@ export function useChat() {
     const userMessage = createNewMessage("user", userInput);
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setUserInput("");
-    setLoading(true);
+    setStreamingChat(true);
 
   };
 

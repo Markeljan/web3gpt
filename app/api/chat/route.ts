@@ -1,43 +1,8 @@
 import { NextResponse } from "next/server";
-import { ChatCompletionRequestMessage } from "openai";
+import { ChatCompletionRequestMessage, ChatCompletionRequestMessageFunctionCall } from "openai";
 
 export async function POST(req: Request): Promise<NextResponse> {
-    const { baseURL, model, messages }: {baseURL: string, model: string, messages: ChatCompletionRequestMessage[]} = await req.json();
-
-    const functions = [
-        {
-            "name": "deployContract",
-            "description": "Deploy a smart contract. Must be Solidity version 0.8.20 or greater. Must be a single-line string with no newline characters.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "The name of the contract. Only letters, no spaces or special characters."
-                    },
-                    "chains": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "The blockchain networks to deploy the contract to. No special characters."
-                    },
-                    "sourceCode": {
-                        "type": "string",
-                        "description": "The source code of the contract. Must be Solidity version 0.8.20 or greater. Must be a single-line string with no newline characters."
-                    },
-                    "constructorArgs": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "The arguments for the contract's constructor. Can be of any type. Empty [] if no arguments are required."
-                    }
-                },
-                "required": ["name", "chains", "sourceCode"]
-            }
-        }
-    ]
+    const { baseURL, model, messages, functions }: {baseURL: string, model: string, messages: ChatCompletionRequestMessage[], functions: ChatCompletionRequestMessageFunctionCall} = await req.json();
 
     // SHALE API for opensource models
     // const response = await fetch(
@@ -67,15 +32,10 @@ export async function POST(req: Request): Promise<NextResponse> {
             messages: messages,
             functions: functions,
             function_call: "auto",
-            max_tokens: 524,
+            max_tokens: 1024,
             stream: true
         }),
     });
-
-    if (!response.ok || !response.body) {
-        console.error("Something went wrong with the request");
-        return new NextResponse(null, { status: 500 });
-    }
 
     return new NextResponse(response.body);
 }

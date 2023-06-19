@@ -78,11 +78,15 @@ components:
         sourceCode:
           type: string
           description: The source code of the contract. Must be Solidity version 0.8.20 or greater.  Must be single line string with no newline characters
-        constructorArgs:
+       constructorArgs:
           type: array
           items:
-            type: string
-          description: The arguments for the contract's constructor. Can be of any type.
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+          description: The arguments for the contract's constructor. Can be of any type expressed as a string.
     deleteContractRequest:
       type: object
       required:
@@ -124,8 +128,12 @@ components:
         sourceCode:
           type: string
           description: The source code of the contract. Must be Solidity version 0.8.20 or greater.
-        constructorArgs:
+         constructorArgs:
           type: array
           items:
-            type: string
-          description: The arguments for the contract's constructor. Can be of any type.
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+          description: The arguments for the contract's constructor. Can be of any type expressed as a string.
