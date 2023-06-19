@@ -231,8 +231,8 @@ export const deployContract = async (
       console.error(error);
     }
   }
-  console.log("Waiting for 4+ deployment transaction confirmations...")
-  const deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 1 })
+  console.log("Waiting for deployment transaction confirmations...")
+  const deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
   const contractAddress = deployReceipt?.contractAddress || '0x';
 
   if (deployReceipt.status === "success" && chainData?.name === 'Sepolia') {

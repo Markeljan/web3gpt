@@ -1,34 +1,35 @@
-import { ChatCompletionRequestMessage } from 'openai';
+import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { useState, useEffect, useRef } from 'react';
 
-
-export function createNewMessage(role: ChatCompletionRequestMessage["role"], content = ""): ChatCompletionRequestMessage {
+export function createNewMessage(role: ChatCompletionRequestMessageRoleEnum, content: string = ""): ChatCompletionRequestMessage {
   return { role, content };
 }
 
 function formatResponseForHTML(responseJson: any): string {
   let htmlString = '';
-  
+
   responseJson.data.contracts.forEach((contract: any, index: number) => {
-    htmlString += `The <strong>${contract.name}</strong> has been successfully deployed to the ${contract.chain} with a constructor argument. You can interact with this contract to set and get the name through its functions.<br/><br/>`;
+    htmlString += `The <strong>${contract.name}</strong> has been successfully deployed to <strong>${contract.chain}</strong>.<br/><br/>`;
     htmlString += 'Here are the details of the deployed contract:<br/><br/>';
     htmlString += `<ul>\n`;
-    htmlString += `<li>Contract Address: <a href="${contract.explorerUrl}" target="_blank">${contract.contractAddress}</a></li><br/>`;
+    htmlString += `<li>Contract Address: <strong>${contract.contractAddress}</strong></li><br/>`;
     htmlString += `<li>Transaction on Etherscan: <a href="${contract.explorerUrl}" target="_blank">View Transaction</a></li><br/>`;
     htmlString += `<li>IPFS Link: <a href="${contract.ipfsUrl}" target="_blank">View on IPFS</a></li><br/>`;
     htmlString += `</ul><br/><br/>`;
     htmlString += 'If you need further assistance or have any questions on how to interact with the contract, please let me know.<br/><br/>';
   });
-  
+
   return htmlString;
 }
-
-
+const SYSTEM_MESSAGE: ChatCompletionRequestMessage = createNewMessage(
+  "system",
+  "You are a chat bot responsible for writing and deploying smart contracts on EVM compatible chains. Your main function is 'deployContract', which enables the deployment of Solidity smart contracts (version 0.8.20 or greater) onto specified blockchain networks. The function requires 'name', 'chains', and 'sourceCode', and optionally 'constructorArgs' parameters to be formatted as per the defined structure. Remember, your primary task is to aid in the development and deployment of smart contracts.  After you deploy a contract, you should provide the user with the contract address, transaction hash, and IPFS link."
+);
 
 export function useChat() {
   const [userInput, setUserInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
+  const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([SYSTEM_MESSAGE]);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const functions = [
     {
@@ -120,35 +121,10 @@ export function useChat() {
                 }
                 continue; // skip to the next line
               }
+              // If the assistant's response contains "finish_reason": "function_call", set a flag
+              let functionCallDetected = obj.choices[0].finish_reason === 'function_call';
 
-              // If the assistant's response contains "finish_reason": "function_call", call the deployContract route
-              if (obj.choices[0].finish_reason === 'function_call') {
-                console.log('Calling deployContract route because of finish_reason: ', obj.choices[0].finish_reason)
-                console.log(assistantMessage.function_call)
-                const { name, arguments: function_args } = assistantMessage.function_call as { name: string, arguments: string };
-                // Parse the arguments to an object
-                const parsedArgs = JSON.parse(function_args);
-
-                // name, chain, sourceCode, constructorArgs
-
-                const response = await fetch('/api/deploy-contract', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ ...parsedArgs })
-                });
-                if (response.ok) {
-                  const result = await response.json();
-
-                  const constent = formatResponseForHTML(result)
-
-                  // Append function response to messages
-                  setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: constent }]);
-                } else {
-                  console.error('Failed to deploy contract');
-                }
-              }
-
-              // Update chatResponse fields if they are present in new chunk
+              // Update assistant message normally (including function_call properties if they exist)
               if (obj.choices[0].delta.role !== undefined) {
                 assistantMessage.role = obj.choices[0].delta.role;
               }
@@ -158,46 +134,51 @@ export function useChat() {
               if (obj.choices[0].delta.name !== undefined) {
                 assistantMessage.name = obj.choices[0].delta.name;
               }
-              // When processing chunks, update function_call properties if they are present
+
               if (obj.choices[0].delta.function_call !== undefined) {
-                //if the assistant message does not have a function_call property, create one
-                if (!assistantMessage.function_call) {
-                  assistantMessage.function_call = {
-                    name: '',
-                    arguments: '',
-                  }
-                }
-
-                if (obj.choices[0].delta.function_call.name) {
-                  assistantMessage.function_call = {
-                    ...assistantMessage.function_call,
-                    name: assistantMessage.function_call.name + obj.choices[0].delta.function_call.name,
-                  }
-                }
-                if (obj.choices[0].delta.function_call.arguments) {
-                  assistantMessage.function_call = {
-                    ...assistantMessage.function_call,
-                    arguments: assistantMessage.function_call.arguments + obj.choices[0].delta.function_call.arguments,
-                  }
-                }
-
-
+                // The function_call property exists, so update it in assistantMessage
+                assistantMessage.function_call = {
+                  name: obj.choices[0].delta.function_call.name || assistantMessage.function_call?.name,
+                  arguments: (assistantMessage.function_call?.arguments || "") + (obj.choices[0].delta.function_call.arguments || ""),
+                };
+                
                 // set the content of the message to the function_call name
                 assistantMessage.content = `Calling function: ${assistantMessage.function_call.name} With arguments: ${assistantMessage.function_call.arguments}`
-
               }
 
               setMessages(prevMessages => {
                 let lastMessage = prevMessages[prevMessages.length - 1];
+
                 if (assistantMessage.role === lastMessage.role) {
                   return [...prevMessages.slice(0, -1), assistantMessage];
                 } else {
                   return [...prevMessages, assistantMessage];
                 }
               });
+
+              // If a function call was detected, execute it
+              if (functionCallDetected && assistantMessage.function_call) {
+                const { name, arguments: function_args } = assistantMessage.function_call;
+                // Parse the arguments to an object
+                const parsedArgs = JSON.parse(function_args || '{}');
+
+                const response = await fetch('/api/deploy-contract', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ ...parsedArgs })
+                });
+                if (response.ok) {
+                  const result = await response.json();
+                  const content = formatResponseForHTML(result)
+
+                  // Append function response to messages
+                  setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: content }]);
+                } else {
+                  console.error('Failed to deploy contract');
+                }
+              }
             }
           }
-
           return reader.read().then(processChunk); // Read next chunk
         });
       };

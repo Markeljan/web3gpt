@@ -26,6 +26,8 @@ const ChatMessage: React.FC<ChatCompletionResponseMessage> = ( message ) => {
     if (!message) return null;
     const { role, content, function_call } = message;
 
+    if (role === "system") return null;
+
     return (
         <Box px={2} sx={{ backgroundColor: role === "assistant" ? "#444754" : "#343541" }}>
             <Box sx={{ width: '100%', maxWidth: '48rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', mx: 'auto', my: 2 }}>
