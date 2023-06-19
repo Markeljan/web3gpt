@@ -9,13 +9,13 @@ import { useChat } from '@/hooks/useChat';
 
 export default function Home() {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
-  const { userInput, setUserInput, loading, conversation, handleSubmit } = useChat();
+  const { userInput, setUserInput, loading, messages, handleSubmit } = useChat();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(scrollToBottom, [conversation]);
+  useEffect(scrollToBottom, [messages]);
 
   return (
     <>
@@ -37,13 +37,13 @@ export default function Home() {
 
         </Box>
         <Box sx={{
-          display: { xs: 'none', md: conversation.length ? 'none' : 'flex' }, justifyContent: 'center', alignItems: 'center', width: '555px', height: '120px', backgroundColor: "#fff",
+          display: { xs: 'none', md: messages.length ? 'none' : 'flex' }, justifyContent: 'center', alignItems: 'center', width: '555px', height: '120px', backgroundColor: "#fff",
           position: "absolute", top: "40%", left: "50%", transform: "translate(-50%, -50%)", opacity: 0.25, userSelect: 'none', pointerEvents: 'none'
         }}>
           <Image src="/w3gpt_med.svg" alt="W3GPT Logo" width={800} height={800} />
         </Box>
-        {conversation.map((conversation, index) => (
-          <Message key={index} role={conversation.role} content={conversation.content} />
+        {messages.map((message, index) => (
+          <Message key={index} role={message.role} content={message.content} />
         ))}
         <div ref={messagesEndRef} />
       </Box>

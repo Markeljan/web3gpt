@@ -1,7 +1,9 @@
-import { Message } from "@/types/types";
+import { NextResponse } from "next/server";
+import { ChatCompletionRequestMessage } from "openai";
 
-export async function POST(req: Request): Promise<Response> {
-    const conversation: Message[] = (await req.json()) as Message[];
+export async function POST(req: Request): Promise<NextResponse> {
+    const { baseURL, model, messages }: {baseURL: string, model: string, messages: ChatCompletionRequestMessage[]} = await req.json();
+
     const functions = [
         {
             "name": "deployContract",
@@ -53,16 +55,16 @@ export async function POST(req: Request): Promise<Response> {
     //         stream:true
     //     }),
     // });    
-    
+
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            'Authorization': `Bearer ${process.env.OPEN_AI_API_KEY}`
+            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
         },
         body: JSON.stringify({
-            model: "gpt-3.5-turbo-0613",
-            messages: conversation,
+            model: model || "gpt-3.5-turbo-0613",
+            messages: messages,
             functions: functions,
             function_call: "auto",
             max_tokens: 524,
@@ -70,8 +72,10 @@ export async function POST(req: Request): Promise<Response> {
         }),
     });
 
-    const { body } = response;
+    if (!response.ok || !response.body) {
+        console.error("Something went wrong with the request");
+        return new NextResponse(null, { status: 500 });
+    }
 
-    return new Response(body);
-    
+    return new NextResponse(response.body);
 }

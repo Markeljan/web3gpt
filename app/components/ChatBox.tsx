@@ -1,24 +1,21 @@
 import { useEffect, useRef } from "react";
-import { Message } from "@/types/types";
+import { ChatCompletionResponseMessage } from "openai";
 import ChatMessage from "@/components/ChatMessage";
 
-interface ChatBoxProps {
-    conversation: Message[];
-}
 
-const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
+const ChatBox: React.FC<ChatCompletionResponseMessage[]> = ( messages ) => {
     const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    useEffect(scrollToBottom, [conversation]);
+    useEffect(scrollToBottom, [messages]);
 
     return (
         <>
-            {conversation.map((conversation, index) => (
-                <ChatMessage key={index} role={conversation.role} content={conversation.content} />
+            {messages.map((message: ChatCompletionResponseMessage, index) => (
+                <ChatMessage key={index} {...message} />
             ))}
             <div ref={messagesEndRef} />
         </>

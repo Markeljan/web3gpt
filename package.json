@@ -20,17 +20,19 @@
     "@types/string-similarity": "^4.0.0",
     "@vercel/analytics": "^1.0.1",
     "axios": "^1.4.0",
+    "bufferutil": "^4.0.7",
     "eslint": "8.40.0",
     "eslint-config-next": "13.4.2",
     "next": "13.4.2",
     "nft.storage": "^7.0.3",
+    "openai": "^3.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-markdown": "^8.0.7",
     "solc": "^0.8.20",
     "solidity-parser-diligence": "^0.4.18",
     "string-similarity": "^4.0.4",
     "typescript": "5.0.4",
+    "utf-8-validate": "^6.0.3",
     "viem": "^1.0.7"
   }
 }

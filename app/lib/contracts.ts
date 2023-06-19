@@ -6,7 +6,7 @@ import uploadToIpfs, { UploadResult } from '@/lib/uploadToIpfs';
 import handleImports from "@/lib/handleImports";
 import axios from "axios";
 import { flattenSolidity } from "./flattener";
-import { Chain, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
+import { Chain, EncodeDeployDataParameters, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
 import { privateKeyToAccount } from 'viem/accounts'
 import { createPrivateKey } from "crypto";
 
@@ -111,7 +111,10 @@ export const deployContract = async (
   // Get the contract ABI and bytecode
   const contractName = Object.keys(contract)[0];
   const abi = contract[contractName].abi;
-  const bytecode = contract[contractName].evm.bytecode.object;
+  let bytecode = contract[contractName].evm.bytecode.object;
+  if (!bytecode.startsWith('0x')) {
+    bytecode = '0x' + bytecode;
+  }
 
 
 
@@ -140,7 +143,7 @@ export const deployContract = async (
       },
     },
   } as const satisfies Chain;
-  
+
 
   const rpcUrl: string = chainData?.rpc?.[0]?.replace(
     "${INFURA_API_KEY}",
@@ -174,22 +177,23 @@ export const deployContract = async (
   console.log("Wallet OK");
 
   const deployData = encodeDeployData({
-    abi,
-    bytecode,
-    args: constructorArgs ?? []
-  })
+    abi: abi,
+    bytecode: bytecode,
+    args: constructorArgs || [],
+  });
 
+  const encodedConstructorArgs = deployData.slice(bytecode?.length);
+  console.log("encodedConstructorArgs: ", encodedConstructorArgs);
   const deployHash = await walletClient.deployContract({
-    abi,
-    bytecode,
-    account,
-    args: constructorArgs ?? []
-  })
-
-  const encodedConstructorArgs = deployData.slice(bytecode?.length + 2);
+    abi: abi,
+    bytecode: bytecode,
+    account: account,
+    args: constructorArgs || [],
+  });
+  
+  console.log("Contract deployment OK");
 
   const explorerUrl = `${viemChain?.blockExplorers?.default.url}/tx/${deployHash}`;
-  console.log("Contract deployment OK");
 
   // Add the flattened source code to the sources object
   // const flattenedCode = flattenSolidity(sources);
@@ -228,12 +232,11 @@ export const deployContract = async (
     }
   }
   console.log("Waiting for 4+ deployment transaction confirmations...")
-  const deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
-  console.log("Deployment transaction confirmed");
+  const deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 1 })
   const contractAddress = deployReceipt?.contractAddress || '0x';
 
   if (deployReceipt.status === "success" && chainData?.name === 'Sepolia') {
-    await verifyContract(contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs);
+    verifyContract(contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs);
   }
   createContract({ name: fileName, address: contractAddress, chain, sourceCode });
 

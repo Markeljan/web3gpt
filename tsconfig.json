@@ -22,6 +22,7 @@
       "@/utils/*": ["./app/utils/*"],
       "@/lib/*": ["./app/lib/*"],
       "@/types/*": ["./app/types/*"],
+      "@/styles/*": ["./app/styles/*"],
     },
     "plugins": [
       {
