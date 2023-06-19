@@ -13,6 +13,6 @@
     "is_user_authenticated": false
   },
   "logo_url": "http://localhost:3000/logo.png",
-  "contact_email": "support@example.com",
+  "contact_email": "mark@w3gpt.ai",
   "legal_info_url": "https://example.com/legal"
 }

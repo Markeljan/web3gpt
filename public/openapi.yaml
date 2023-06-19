@@ -6,47 +6,10 @@ info:
 servers:
   - url: http://localhost:3000
 paths:
-  /api/contracts:
-    get:
-      operationId: getContracts
-      summary: Get the list of contracts
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/getContractsResponse"
-  /api/create-contract:
-    post:
-      operationId: addContract
-      summary: add a new contract
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/addContractRequest"
-      responses:
-        "200":
-          description: OK
-  /api/delete-contract:
-    post:
-      operationId: deleteContract
-      summary: delete a contract
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/deleteContractRequest"
-      responses:
-        "200":
-          description: OK
   /api/deploy-contract:
     post:
       operationId: deployContract
-      summary: deploy a contract.  Must be Solidity version 0.8.20 or greater.  Must be single line string with no newline characters
+      summary: deploy a contract.  Must be Solidity version 0.8.20 or greater.
       requestBody:
         required: true
         content:
@@ -77,7 +40,7 @@ components:
           description: The blockchain network name of the contract.
         sourceCode:
           type: string
-          description: The source code of the contract. Must be Solidity version 0.8.20 or greater.  Must be single line string with no newline characters
+          description: The source code of the contract. Must be Solidity version 0.8.20 or greater.
        constructorArgs:
           type: array
           items:
@@ -87,28 +50,6 @@ components:
                 items:
                   type: string
           description: The arguments for the contract's constructor. Can be of any type expressed as a string.
-    deleteContractRequest:
-      type: object
-      required:
-        - contract
-      properties:
-        contract:
-          $ref: "#/components/schemas/Contract"
-    addContractRequest:
-      type: object
-      required:
-        - contract
-      properties:
-        contract:
-          $ref: "#/components/schemas/Contract"
-    getContractsResponse:
-      type: object
-      properties:
-        contracts:
-          type: array
-          items:
-            $ref: "#/components/schemas/Contract"
-          description: The list of contracts.
     deployContractRequest:
       type: object
       required:

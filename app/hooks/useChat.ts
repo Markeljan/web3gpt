@@ -30,7 +30,7 @@ const SYSTEM_MESSAGE: ChatCompletionRequestMessage = createNewMessage(
 const functions = [
   {
     "name": "deployContract",
-    "description": "Deploy a smart contract. Must be Solidity version 0.8.20 or greater. Must be a single-line string with no newline characters.",
+    "description": "Deploy a smart contract. Must be Solidity version 0.8.20 or greater.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -47,7 +47,7 @@ const functions = [
         },
         "sourceCode": {
           "type": "string",
-          "description": "The source code of the contract. Must be Solidity version 0.8.20 or greater. Must be a single-line string with no newline characters."
+          "description": "The source code of the contract. Must be Solidity version 0.8.20 or greater."
         },
         "constructorArgs": {
           "type": "array",
@@ -86,9 +86,6 @@ export function useChat() {
   };
 
   useEffect(scrollToBottom, [messages]);
-  console.log("streamingChat", streamingChat);
-  console.log("processingFunctionCall", processingFunctionCall);
-  console.log("loading", loading);
 
   useEffect(() => {
     if (streamingChat || processingFunctionCall) {
