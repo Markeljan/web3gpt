@@ -11,7 +11,7 @@ const nextConfig = {
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "https://chat.openai.com https://we3gpt.ai",
+            value: `https://chat.openai.com ${process.env.DOMAIN}`,
           },
         ],
       },
