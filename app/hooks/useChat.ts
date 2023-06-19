@@ -174,7 +174,7 @@ export function useChat() {
         getChatResponse();
       }
     }
-  }, [streamingChat, processingFunctionCall]);
+  }, [streamingChat, processingFunctionCall, loading, messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

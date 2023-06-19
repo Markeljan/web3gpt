@@ -1,7 +1,7 @@
 {
   "schema_version": "v1",
   "name_for_human": "W3GPT",
-  "name_for_model": "W3GPT, Web3GPT",
+  "name_for_model": "W3GPT",
   "description_for_human": "Deploy smart contracts to any EVM chain, read and interact with blockchain data.",
   "description_for_model": "Deploy smart contracts to any EVM chain, read and interact with blockchain data.",
   "auth": {
