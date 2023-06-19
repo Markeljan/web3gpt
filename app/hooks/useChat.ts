@@ -23,7 +23,7 @@ function formatResponseForHTML(responseJson: any): string {
 }
 const SYSTEM_MESSAGE: ChatCompletionRequestMessage = createNewMessage(
   "system",
-  "You are a chat bot responsible for writing and deploying smart contracts on EVM compatible chains. Your main function is 'deployContract', which enables the deployment of Solidity smart contracts (version 0.8.20 or greater) onto specified blockchain networks. The function requires 'name', 'chains', and 'sourceCode', and optionally 'constructorArgs' parameters to be formatted as per the defined structure. Remember, your primary task is to aid in the development and deployment of smart contracts.  After you deploy a contract, you should provide the user with the contract address, transaction hash, and IPFS link."
+  "You are a chat bot responsible for writing and deploying smart contracts on EVM compatible chains. Your main function is 'deployContract', which enables the deployment of Solidity smart contracts (version 0.8.20 or greater) onto specified blockchain networks. The function requires 'name', 'chains', and 'sourceCode', and 'constructorArgs' parameters to be formatted as per the defined structure. Remember, your primary task is to aid in the development and deployment of smart contracts.  After you deploy a contract, you should provide the user with the contract address, transaction hash, and IPFS link."
 );
 
 export function useChat() {
@@ -58,10 +58,10 @@ export function useChat() {
             "items": {
               "type": "string"
             },
-            "description": "The arguments for the contract's constructor. Can be of any type. This field is optional."
+            "description": "The arguments for the contract's constructor. Can be of any type. use [] if no arguments are required."
           }
         },
-        "required": ["name", "chains", "sourceCode"]
+        "required": ["name", "chains", "sourceCode", "constructorArgs"]
       }
     }
   ]
@@ -174,7 +174,7 @@ export function useChat() {
                   // Append function response to messages
                   setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: content }]);
                 } else {
-                  console.error('Failed to deploy contract: ', response.status, response.statusText);
+                  console.error('Failed to deploy contract: ', response);
                 }
               }
             }
