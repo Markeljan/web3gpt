@@ -1,24 +1,29 @@
 openapi: 3.0.1
 info:
-  title: WEB3GPT Contract Deployer
-  description: A plugin to deploy Solidity smart contracts to any EVM chain.
-  version: "v1"
+  title: WEB3GPT Contract Deployer API
+  description: This API allows users to deploy Solidity smart contracts to Ethereum Virtual Machine (EVM) compatible blockchains.
+  version: "1.0.0"
 servers:
   - url: https://w3gpt.ai
 paths:
   /api/deploy-contract:
     post:
-      operationId: deployContract
-      summary: deploy a contract.  Must be Solidity version 0.8.20 or greater.
+      operationId: deploySmartContract
+      summary: Deploy a Solidity smart contract to specified EVM-compatible blockchains.
+      description: This endpoint deploys a Solidity smart contract (version 0.8.20 or greater) to one or more EVM-compatible blockchains. It requires the contract's name, source code, target blockchains, and constructor arguments (if any).
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/deployContractRequest"
+              $ref: "#/components/schemas/DeployContractRequest"
       responses:
         "200":
-          description: OK
+          description: The contract was successfully deployed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contract"
 components:
   schemas:
     Contract:
@@ -31,17 +36,17 @@ components:
       properties:
         name:
           type: string
-          description: The name of the contract.
+          description: The name of the smart contract. This should only contain letters and should not have spaces or special characters.
         address:
           type: string
-          description: The address of the contract.
+          description: The blockchain address where the smart contract is deployed.
         chain:
           type: string
-          description: The blockchain network name of the contract.
+          description: The name of the blockchain network where the smart contract is deployed.
         sourceCode:
           type: string
-          description: The source code of the contract. Must be Solidity version 0.8.20 or greater.
-       constructorArgs:
+          description: The Solidity source code of the smart contract. The Solidity version must be 0.8.20 or greater.
+        constructorArgs:
           type: array
           items:
             oneOf:
@@ -49,8 +54,9 @@ components:
               - type: array
                 items:
                   type: string
-          description: The arguments for the contract's constructor. Can be of any type expressed as a string.
-    deployContractRequest:
+          description: An array of arguments that were passed to the smart contract's constructor during deployment. Each argument can be a string or an array of strings.
+
+    DeployContractRequest:
       type: object
       required:
         - name
@@ -60,16 +66,16 @@ components:
       properties:
         name:
           type: string
-          description: The name of the contract.  Only letters no spaces or special characters.
+          description: The name of the smart contract to be deployed. This should only contain letters and should not have spaces or special characters.
         chains:
           type: array
           items:
             type: string
-          description: The blockchain networks to deploy the contract to.  No special characters.
+          description: An array of blockchain network names to which the smart contract will be deployed. These names should not contain special characters.
         sourceCode:
           type: string
-          description: The source code of the contract. Must be Solidity version 0.8.20 or greater.
-         constructorArgs:
+          description: The Solidity source code of the smart contract to be deployed. The Solidity version must be 0.8.20 or greater.
+        constructorArgs:
           type: array
           items:
             oneOf:
@@ -77,4 +83,4 @@ components:
               - type: array
                 items:
                   type: string
-          description: The arguments for the contract's constructor. Can be of any type expressed as a string.
+          description: An array of arguments to be passed to the smart contract's constructor during deployment. Each argument can be a string or an array of strings. If there are no constructor arguments, an empty array [] must be provided.
