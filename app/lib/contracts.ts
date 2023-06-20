@@ -33,7 +33,7 @@ export const deployContract = async (
   if (!viemChain) {
     throw new Error("Chain not found");
   }
-  
+
   const fileName = (name ? name.replace(/[\/\\:*?"<>|.\s]+$/g, "_") : "contract") + ".sol";
 
 
@@ -123,7 +123,7 @@ export const deployContract = async (
   });
 
   console.log("Contract deployment OK");
-  const explorerUrl =`${getExplorerUrl(viemChain)}/tx/${deployHash}`;
+  const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`;
 
   // Add the flattened source code to the sources object
   // const flattenedCode = flattenSolidity(sources);
@@ -158,10 +158,10 @@ export const deployContract = async (
       const response = await fetch('https://api-sepolia.etherscan.io/api', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
         },
         body: new URLSearchParams(params).toString()
-    });
+      });
       const result = await response.json();
       console.log("Verification Response: ", result);
     } catch (error) {
@@ -176,8 +176,7 @@ export const deployContract = async (
     const encodedConstructorArgs = deployData.slice(bytecode?.length);
     deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
     if (deployReceipt.status === "success" && deployReceipt.contractAddress) {
-      verifyContract(deployReceipt.contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs);
-      console
+      await verifyContract(deployReceipt.contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs);
     }
   } else {
     deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 1 })
