@@ -4,27 +4,27 @@ import { findBestMatch } from "string-similarity";
 import { Chain } from "viem";
 
 export const API_URLS: Record<Chain["network"], string> = {
-  'homestead': 'https://api.etherscan.io',
-  'goerli': 'https://api-goerli.etherscan.io',
-  'sepolia': 'https://api-sepolia.etherscan.io',
-  'arbitrum': 'https://api.arbiscan.io',
-  'arbitrum-goerli': 'https://api-goerli.arbiscan.io',
+  'eth': 'https://api.etherscan.io',
+  'gor': 'https://api-goerli.etherscan.io',
+  'sep': 'https://api-sepolia.etherscan.io',
+  'arbi': 'https://api.arbiscan.io',
+  'arbi-gor': 'https://api-goerli.arbiscan.io',
   'matic': 'https://api.polygonscan.com',
   'maticmum': 'https://api-testnet.polygonscan.com',
-  'optimism': 'https://api-optimistic.etherscan.io',
-  'optimism-goerli': 'https://api-goerli.optimistic.etherscan.io',
+  'opt': 'https://api-optimistic.etherscan.io',
+  'opt-gor': 'https://api-goerli.optimistic.etherscan.io',
 }
 
 export const API_KEYS: Record<Chain["network"], string | undefined> = {
-  'homestead': process.env.ETHERSCAN_API_KEY,
-  'goerli': process.env.ETHERSCAN_API_KEY,
-  'sepolia': process.env.ETHERSCAN_API_KEY,
-  'arbitrum': process.env.ARBISCAN_API_KEY,
-  'arbitrum-goerli': process.env.ARBISCAN_API_KEY,
+  'eth': process.env.ETHERSCAN_API_KEY,
+  'gor': process.env.ETHERSCAN_API_KEY,
+  'sep': process.env.ETHERSCAN_API_KEY,
+  'arbi': process.env.ARBISCAN_API_KEY,
+  'arbi-gor': process.env.ARBISCAN_API_KEY,
   'matic': process.env.POLYGONSCAN_API_KEY,
   'maticmum': process.env.POLYGONSCAN_API_KEY,
-  'optimism': process.env.OPTIMISM_API_KEY,
-  'optimism-goerli': process.env.OPTIMISM_API_KEY,
+  'opt': process.env.OPTIMISM_API_KEY,
+  'opt-gor': process.env.OPTIMISM_API_KEY,
 }
 
 
