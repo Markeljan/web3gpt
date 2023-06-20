@@ -171,7 +171,7 @@ export const deployContract = async (
   console.log("Waiting for deployment transaction confirmations...")
 
   let deployReceipt;
-  if (viemChain?.name === 'Sepolia') {
+  if (viemChain?.id === 11155111) {
     const encodedConstructorArgs = deployData.slice(bytecode?.length);
     deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
     if (deployReceipt.status === "success" && deployReceipt.contractAddress) {

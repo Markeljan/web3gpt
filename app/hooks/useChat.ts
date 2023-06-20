@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, use } from 'react';
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { SYSTEM_MESSAGE, deployContractFunction, readContractFunction } from '@/components/chatData';
+import { ReadContractRequest } from '../types/types';
 
 export function createNewMessage(role: ChatCompletionRequestMessageRoleEnum, content: string = ""): ChatCompletionRequestMessage {
   return { role, content };
@@ -162,15 +163,20 @@ export function useChat() {
                     console.error('Failed to deploy contract: ', response);
                     setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to deploy contract" }]);
                   }
-                } else if (name === 'readWeb3') {
+                } else if (name === 'readContract') {
+                  console.log("parsedArgs", parsedArgs)
                   const response = await fetch('/api/read-contract', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                       chain: parsedArgs.chain,
-                      address: parsedArgs.address,
-                      functionName: parsedArgs.functionName,
-                      functionArgs: parsedArgs.functionArgs || [],
+                      requests: parsedArgs.requests.map((request: any) => {
+                        return {
+                          contract: request.contract,
+                          method: request.method,
+                          arguments: request.arguments || [],
+                        };
+                      }),
                     }),
                   });
                   if (response.ok) {
