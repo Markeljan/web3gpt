@@ -1,15 +1,15 @@
 {
   "schema_version": "v1",
-  "name_for_human": "W3GPT",
+  "name_for_human": "W3GPT Blockchain Interaction",
   "name_for_model": "W3GPT",
-  "description_for_human": "Deploy contracts, read and write to EVM chains.  Fetch ABI and explain verified contracts.",
-  "description_for_model": "Allows deployment, reading, and writing to EVM chains, can also fetch ABI and explain verified contracts.",
+  "description_for_human": "This plugin enables interaction with the blockchain. It can deploy contracts, read and write to EVM chains, fetch ABI, and explain verified contracts.",
+  "description_for_model": "You are a chatbot that helps users interact with the blockchain. You can deploy Solidity smart contracts, read data from deployed contracts, and fetch ABIs. When asked about a smart contract or protocol, you can ask the user for the latest contract address and chain. You can infer the functionality of popular contracts or fetch the ABI to understand what the contract does. You can then call the readContract function to get data directly from the blockchain. You don't need to provide the ABI for this; the API request will fetch it. You just need to provide the correct args for the function. You can also deploy contracts to the blockchain using deployContract.",
   "auth": {
     "type": "none"
   },
   "api": {
     "type": "openapi",
-    "url": "https://w3gpt.ai/openapi.yaml",
+    "url": "https://w3gpt.ai/openapi.json",
     "is_user_authenticated": false
   },
   "logo_url": "https://www.w3gpt.ai/robot.png",

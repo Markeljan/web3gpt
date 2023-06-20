@@ -1,0 +1,282 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "W3GPT",
+      "description": "Interact with deployed Solidity smart contracts on EVM-compatible blockchains or deploy new ones.",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "https://w3gpt.ai"
+      }
+    ],
+    "paths": {
+      "/api/deploy-contract": {
+        "post": {
+          "operationId": "deploySmartContract",
+          "summary": "Deploy Solidity smart contract",
+          "description": "Deploy a Solidity smart contract (v0.8.20+) to EVM-compatible blockchains. Provide contract name, source code, target blockchains, and constructor arguments.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeployContractRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Contract deployed successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Contract"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/read-contract": {
+        "post": {
+          "operationId": "readFromContract",
+          "summary": "Read from deployed smart contract",
+          "description": "Perform read operations on a deployed Solidity smart contract. Provide chain name, contract address, function name, and function arguments.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadContractRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Operation performed successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ReadContractResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/fetch-abi": {
+        "post": {
+          "operationId": "fetchAbi",
+          "summary": "Fetch ABI of deployed smart contract",
+          "description": "Fetch the ABI of a deployed Solidity smart contract. Provide chain name and contract address.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FetchAbiRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "ABI fetched successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/FetchAbiResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid request, e.g., missing required parameters."
+            },
+            "404": {
+              "description": "Specified chain or contract not found."
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "Contract": {
+          "type": "object",
+          "required": ["name", "address", "chain", "sourceCode"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the smart contract. Letters only, no spaces or special characters."
+            },
+            "address": {
+              "type": "string",
+              "description": "Blockchain address of the deployed smart contract."
+            },
+            "chain": {
+              "type": "string",
+              "description": "Blockchain network name where the smart contract is deployed."
+            },
+            "sourceCode": {
+              "type": "string",
+              "description": "Solidity source code of the smart contract (v0.8.20+)."
+            },
+            "constructorArgs": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "description": "Arguments passed to the contract's constructor during deployment. Each argument can be a string or an array of strings."
+            }
+          }
+        },
+        "DeployContractRequest": {
+          "type": "object",
+          "required": ["name", "chains", "sourceCode", "constructorArgs"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the smart contract to deploy. Letters only, no spaces or special characters."
+            },
+            "chains": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Blockchain network names for deployment."
+            },
+            "sourceCode": {
+              "type": "string",
+              "description": "Solidity source code of the smart contract (v0.8.20+)."
+            },
+            "constructorArgs": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "description": "Arguments for the contract's constructor. Each argument can be a string or an array of strings."
+            }
+          }
+        },
+        "ReadContractRequest": {
+          "type": "object",
+          "required": ["chain", "requests"],
+          "properties": {
+            "chain": {
+              "type": "string",
+              "description": "Blockchain network name for the operation."
+            },
+            "requests": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["address", "functionName", "functionArgs"],
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "description": "Blockchain address of the deployed smart contract."
+                  },
+                  "functionName": {
+                    "type": "string",
+                    "description": "Name of the contract function to call."
+                  },
+                  "functionArgs": {
+                    "type": "array",
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "Arguments for the contract's function. Each argument can be a string or an array of strings."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ReadContractResponse": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": ["success", "error"],
+                "description": "Operation status. 'success' if successful, 'error' if there was an error."
+              },
+              "data": {
+                "type": "object",
+                "description": "Result of the operation if successful."
+              },
+              "message": {
+                "type": "string",
+                "description": "Error message if the operation was not successful."
+              }
+            }
+          }
+        },
+        "FetchAbiRequest": {
+          "type": "object",
+          "required": ["chain", "address"],
+          "properties": {
+            "chain": {
+              "type": "string",
+              "description": "Blockchain network name where the contract is deployed."
+            },
+            "address": {
+              "type": "string",
+              "description": "Blockchain address of the deployed smart contract."
+            }
+          }
+        },
+        "FetchAbiResponse": {
+          "type": "object",
+          "properties": {
+            "abi": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              },
+              "description": "Application Binary Interface (ABI) of the smart contract."
+            }
+          }
+        }
+      }
+    }
+  }
+  

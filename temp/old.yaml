@@ -1,5 +1,3 @@
-openapi: 3.0.1
-info:
   title: W3GPT
   description: This API allows users to interact (read) with deployed Solidity smart contracts on Ethereum Virtual Machine (EVM) compatible blockchains as well as deploy Solidity smart contracts to EVM-compatible blockchains.
   version: "1.0.0"
