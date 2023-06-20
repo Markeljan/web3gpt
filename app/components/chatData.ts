@@ -35,18 +35,18 @@ export const readContractFunction: ChatCompletionFunctions = {
                   "oneOf": [
                     {
                       "type": "string",
-                      "description": "A single argument for the contract's function."
+                      "description": "A single parameter value can be a string, number, or boolean address, etc."
                     },
                     {
                       "type": "array",
                       "items": {
                         "type": "string"
                       },
-                      "description": "An array of arguments for the contract's function."
+                      "description": "A single parameter that has multiple values like multiple addresses for a multisig."
                     }
                   ]
                 },
-                "description": "The arguments for the contract function. Can be of any type represented as a string. Empty [] if no arguments are required."
+                "description": "The arguments for the contract function. Use an array of strings for multiple arguments. Empty [] if no arguments are required.  Only use a nested array if the argument type is an array."
               }
             },
             "required": ["address", "functionName", "functionArgs"]

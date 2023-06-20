@@ -165,27 +165,34 @@ export function useChat() {
                   }
                 } else if (name === 'readContract') {
                   console.log("parsedArgs", parsedArgs)
+                  console.log("parsed aarg requests spread", ...parsedArgs.requests)
+                  
                   const response = await fetch('/api/read-contract', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                       chain: parsedArgs.chain,
-                      requests: parsedArgs.requests.map((request: any) => {
-                        return {
-                          contract: request.contract,
-                          method: request.method,
-                          arguments: request.arguments || [],
-                        };
-                      }),
+                      requests: parsedArgs.requests
                     }),
                   });
                   if (response.ok) {
                     const result = await response.json();
-                    setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: JSON.stringify(result) }]);
+                    result.forEach((res: any) => {
+                      if(res.status === 'success'){
+                        if(res.data.status === 'fulfilled') {
+                          setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: JSON.stringify(res.data.value) }]);
+                        } else if(res.data.status === 'rejected') {
+                          console.error('Function failed: ', res.data.reason);
+                        }
+                      } else {
+                        console.error('Request failed: ', res);
+                      }
+                    });
                   } else {
                     console.error('Failed to read contract: ', response);
                     setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to read contract" }]);
                   }
+
                 }
 
 

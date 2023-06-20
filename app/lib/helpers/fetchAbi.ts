@@ -19,3 +19,5 @@ const fetchAbi = async (contractAddress: `0x${string}`): Promise<any> => {
         throw error;
     }
 };
+
+export default fetchAbi;
