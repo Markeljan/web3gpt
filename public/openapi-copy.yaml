@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: WEB3GPT Contract Deployer and Interactor API
-  description: This API allows users to deploy Solidity smart contracts to Ethereum Virtual Machine (EVM) compatible blockchains and interact (read/write) with the deployed contracts.
+  description: This API allows users to deploy Solidity smart contracts to Ethereum Virtual Machine (EVM) compatible blockchains and interact (read/write) with EVM smart contracts.
   version: "1.0.0"
 servers:
   - url: https://w3gpt.ai
@@ -24,24 +24,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Contract"
-  /api/read-write-contract:
-    post:
-      operationId: interactWithContract
-      summary: Read from or write to a deployed smart contract on specified EVM-compatible blockchains.
-      description: This endpoint performs read or write operations on a deployed Solidity smart contract on one or more EVM-compatible blockchains. It requires the chain name, an array of requests each consisting of the operation type (read or write), contract's address, function name, and function arguments (if any).
+  /api/web3:
+    get:
+      operationId: readFromContract
+      summary: Read from a deployed smart contract on specified EVM-compatible blockchains.
+      description: This endpoint performs read operations on a deployed Solidity smart contract on one or more EVM-compatible blockchains. It requires the chain name, an array of requests each consisting of the contract's address, function name, and function arguments (if any).
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ReadWriteContractRequest"
+              $ref: "#/components/schemas/ReadWeb3Request"
       responses:
         "200":
-          description: The operation(s) were performed successfully.
+          description: The read operation(s) were performed successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReadWriteContractResponse"
+                $ref: "#/components/schemas/Web3Response"
+    post:
+      operationId: writeToContract
+      summary: Write to a deployed smart contract on specified EVM-compatible blockchains.
+      description: This endpoint performs write operations on a deployed Solidity smart contract on one or more EVM-compatible blockchains. It requires the chain name, an array of requests each consisting of the contract's address, function name, and function arguments (if any).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WriteWeb3Request"
+      responses:
+        "200":
+          description: The write operation(s) were performed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Web3Response"
 components:
   schemas:
     Contract:
@@ -101,7 +118,7 @@ components:
                 items:
                   type: string
           description: An array of arguments to be passed to the smart contract's constructor during deployment. Each argument can be a string or an array of strings. If there are no constructor arguments, an empty array [] must be provided.
-    ReadWriteContractRequest:
+    ReadWeb3Request:
       type: object
       required:
         - chain
@@ -115,15 +132,10 @@ components:
           items:
             type: object
             required:
-              - type
               - address
               - functionName
               - functionArgs
             properties:
-              type:
-                type: string
-                enum: ["read", "write"]
-                description: The operation type. "read" to read data from the contract, "write" to write data to the contract.
               address:
                 type: string
                 description: The blockchain address where the smart contract is deployed.
@@ -139,7 +151,40 @@ components:
                       items:
                         type: string
                 description: An array of arguments to be passed to the contract's function. Each argument can be a string or an array of strings. If there are no function arguments, an empty array [] must be provided.
-    ReadWriteContractResponse:
+    WriteWeb3Request:
+      type: object
+      required:
+        - chain
+        - requests
+      properties:
+        chain:
+          type: string
+          description: The name of the blockchain network where the contract operations will be performed.
+        requests:
+          type: array
+          items:
+            type: object
+            required:
+              - address
+              - functionName
+              - functionArgs
+            properties:
+              address:
+                type: string
+                description: The blockchain address where the smart contract is deployed.
+              functionName:
+                type: string
+                description: The name of the contract function to be called.
+              functionArgs:
+                type: array
+                items:
+                  oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                description: An array of arguments to be passed to the contract's function. Each argument can be a string or an array of strings. If there are no function arguments, an empty array [] must be provided.
+    Web3Response:
       type: array
       items:
         type: object
@@ -148,11 +193,10 @@ components:
         properties:
           status:
             type: string
-            enum: ["success", "error"]
-            description: The status of the operation. "success" if the operation was successful, "error" if there was an error.
-          data:
+            description: Status of the operation ('fulfilled' for success, 'rejected' for failure)
+          value:
             type: object
-            description: The result of the operation if it was successful.
-          message:
+            description: The returned data from the operation. Null in case of failure.
+          reason:
             type: string
-            description: The error message if the operation was not successful.
+            description: The error message in case the operation was rejected.
