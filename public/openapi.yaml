@@ -193,4 +193,4 @@ components:
           type: array
           items:
             type: object
-          description: The Application Binary Interface (ABI) of the smart contract.
+            description: The Application Binary Interface (ABI) of the smart contract.
