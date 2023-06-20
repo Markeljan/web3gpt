@@ -3,8 +3,8 @@ import { API_KEYS, API_URLS } from "@/app/lib/helpers/useChains";
 
  const verifyContract = async (address: `0x${string}`, standardJsonInput: string, compilerVersion: string, encodedConstructorArgs: string, fileName: string, contractName: string, viemChain: Chain,constructorArgs?: Array<string | string[]>
  ) => {
-    const apiUrl = API_URLS[viemChain['network']];
-    const apiKey = API_KEYS[viemChain['network']];
+    const apiUrl = API_URLS[viemChain['name']];
+    const apiKey = API_KEYS[viemChain['name']];
     if (!apiKey) {
         throw new Error(`Unsupported chain or API_KEY.  Network: ${viemChain["network"]}`);
     }

@@ -3,28 +3,28 @@ import { ChainData } from "@/app/types/types";
 import { findBestMatch } from "string-similarity";
 import { Chain } from "viem";
 
-export const API_URLS: Record<Chain["network"], string> = {
-  'eth': 'https://api.etherscan.io',
-  'gor': 'https://api-goerli.etherscan.io',
-  'sep': 'https://api-sepolia.etherscan.io',
-  'arbi': 'https://api.arbiscan.io',
-  'arbi-gor': 'https://api-goerli.arbiscan.io',
-  'matic': 'https://api.polygonscan.com',
-  'maticmum': 'https://api-testnet.polygonscan.com',
-  'opt': 'https://api-optimistic.etherscan.io',
-  'opt-gor': 'https://api-goerli.optimistic.etherscan.io',
+export const API_URLS: Record<Chain["name"], string> = {
+  'Ethereum Mainnet': 'https://api.etherscan.io',
+  'Goerli': 'https://api-goerli.etherscan.io',
+  'Sepolia': 'https://api-sepolia.etherscan.io',
+  'Arbitrum One': 'https://api.arbiscan.io',
+  'Arbitrum Goerli': 'https://api-goerli.arbiscan.io',
+  'Polygon Mainnet': 'https://api.polygonscan.com',
+  'Mumbai': 'https://api-testnet.polygonscan.com',
+  'Optimism': 'https://api-optimistic.etherscan.io',
+  'Optimism Goerli Testnet': 'https://api-goerli.optimistic.etherscan.io',
 }
 
-export const API_KEYS: Record<Chain["network"], string | undefined> = {
-  'eth': process.env.ETHERSCAN_API_KEY,
-  'gor': process.env.ETHERSCAN_API_KEY,
-  'sep': process.env.ETHERSCAN_API_KEY,
-  'arbi': process.env.ARBISCAN_API_KEY,
-  'arbi-gor': process.env.ARBISCAN_API_KEY,
-  'matic': process.env.POLYGONSCAN_API_KEY,
-  'maticmum': process.env.POLYGONSCAN_API_KEY,
-  'opt': process.env.OPTIMISM_API_KEY,
-  'opt-gor': process.env.OPTIMISM_API_KEY,
+export const API_KEYS: Record<Chain["name"], string | undefined> = {
+  'Ethereum Mainnet': process.env.ETHERSCAN_API_KEY,
+  'Goerli': process.env.ETHERSCAN_API_KEY,
+  'Sepolia': process.env.ETHERSCAN_API_KEY,
+  'Arbitrum One': process.env.ARBISCAN_API_KEY,
+  'Arbitrum Goerli': process.env.ARBISCAN_API_KEY,
+  'Polygon Mainnet': process.env.POLYGONSCAN_API_KEY,
+  'Mumbai': process.env.POLYGONSCAN_API_KEY,
+  'Optimism': process.env.OPTIMISM_API_KEY,
+  'Optimism Goerli Testnet': process.env.OPTIMISM_API_KEY,
 }
 
 

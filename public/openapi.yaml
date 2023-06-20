@@ -42,6 +42,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReadContractResponse"
+  /api/fetch-abi:
+    post:
+      operationId: fetchAbi
+      summary: Fetch the ABI of a deployed smart contract on a specified EVM-compatible blockchain.
+      description: This endpoint fetches the Application Binary Interface (ABI) of a deployed Solidity smart contract on an EVM-compatible blockchain. It requires the chain name and the contract's address.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FetchAbiRequest"
+      responses:
+        "200":
+          description: The operation was performed successfully, and the ABI was fetched.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FetchAbiResponse"
+        "400":
+          description: The request was invalid, e.g., missing required parameters.
+        "404":
+          description: The specified chain or contract was not found.
+
 components:
   schemas:
     Contract:
@@ -151,3 +174,23 @@ components:
           message:
             type: string
             description: The error message if the operation was not successful.
+    FetchAbiRequest:
+      type: object
+      required:
+        - chain
+        - address
+      properties:
+        chain:
+          type: string
+          description: The name of the blockchain network where the contract is deployed.
+        address:
+          type: string
+          description: The blockchain address where the smart contract is deployed.
+    FetchAbiResponse:
+      type: object
+       properties:
+        abi:
+          type: array
+          items:
+            type: object
+          description: The Application Binary Interface (ABI) of the smart contract.

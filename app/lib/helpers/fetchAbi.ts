@@ -2,8 +2,8 @@ import { Chain } from "viem";
 import { API_KEYS, API_URLS } from "@/app/lib/helpers/useChains";
 
 const fetchAbi = async (chain: Chain, contractAddress: `0x${string}`): Promise<any> => {
-    const apiUrl = API_URLS[chain['network']];
-    const apiKey = API_KEYS[chain['network']];
+    const apiUrl = API_URLS[chain['name']];
+    const apiKey = API_KEYS[chain['name']];
     if (!apiUrl || !apiKey) {
         throw new Error(`Unsupported chain: ${chain}`);
     }

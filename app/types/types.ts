@@ -59,3 +59,8 @@ export type ReadContractResponseItem = {
 }
 
 export type ReadContractResponse = ReadContractResponseItem[];
+
+export interface FetchAbiRequest {
+  chain: string;
+  address: string;
+}
