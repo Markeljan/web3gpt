@@ -1,6 +1,6 @@
 [
   {
-    "name": "Ethereum Mainnet",
+    "name": "Ethereum",
     "chain": "ETH",
     "icon": "ethereum",
     "rpc": [
@@ -13223,20 +13223,6 @@
         "standard": "none"
       }
     ]
-  },
-  {
-    "name": "ethereum Fair",
-    "chainId": 513100,
-    "networkId": 513100,
-    "shortName": "ethf",
-    "chain": "ETHF",
-    "nativeCurrency": { "name": "EthereumFair", "symbol": "ETHF", "decimals": 18 },
-    "rpc": ["https://rpc.etherfair.org"],
-    "faucets": [],
-    "explorers": [
-      { "name": "etherfair", "url": "https://www.oklink.com/ethf", "standard": "EIP3091" }
-    ],
-    "infoURL": "https://etherfair.org"
   },
   {
     "name": "Scroll",

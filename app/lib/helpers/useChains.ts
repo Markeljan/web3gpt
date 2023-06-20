@@ -4,7 +4,7 @@ import { findBestMatch } from "string-similarity";
 import { Chain } from "viem";
 
 export const API_URLS: Record<Chain["name"], string> = {
-  'Ethereum Mainnet': 'https://api.etherscan.io',
+  'Ethereum': 'https://api.etherscan.io',
   'Goerli': 'https://api-goerli.etherscan.io',
   'Sepolia': 'https://api-sepolia.etherscan.io',
   'Arbitrum One': 'https://api.arbiscan.io',
@@ -16,7 +16,7 @@ export const API_URLS: Record<Chain["name"], string> = {
 }
 
 export const API_KEYS: Record<Chain["name"], string | undefined> = {
-  'Ethereum Mainnet': process.env.ETHERSCAN_API_KEY,
+  'Ethereum': process.env.ETHERSCAN_API_KEY,
   'Goerli': process.env.ETHERSCAN_API_KEY,
   'Sepolia': process.env.ETHERSCAN_API_KEY,
   'Arbitrum One': process.env.ARBISCAN_API_KEY,
