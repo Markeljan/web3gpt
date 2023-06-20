@@ -1,5 +1,3 @@
-import axios from "axios";
-
 export default async function handleImports(sourceCode: string, sourcePath?: string) {
     const sources: { [fileName: string]: { content: any; }; } = {};
     const importRegex = /import\s+["']([^"']+)["'];/g;
@@ -41,8 +39,13 @@ async function fetchImport(importPath: string, sourcePath?: string) {
 
 
     // Fetch the imported file
-    const response = await axios.get(urlToFetch);
-    let importedSource = response.data;
+    const response = await fetch(urlToFetch);
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    let importedSource = await response.text();
 
     // Handle any imports within the fetched source code
     const { sources, sourceCode } = await handleImports(importedSource, urlToFetch);

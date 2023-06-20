@@ -19,10 +19,10 @@
       "@/api/*": ["./app/api/*"],
       "@/components/*": ["./app/components/*"],
       "@/hooks/*": ["./app/hooks/*"],
-      "@/utils/*": ["./app/utils/*"],
       "@/lib/*": ["./app/lib/*"],
       "@/types/*": ["./app/types/*"],
       "@/styles/*": ["./app/styles/*"],
+      "@/helpers/*": ["./app/lib/helpers/*"],
     },
     "plugins": [
       {

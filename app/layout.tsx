@@ -20,6 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
       <head>
         <link
+          rel="favicon"
+          href="/favicon.ico"
+        />
+        <link
           rel="apple-touch-icon"
           href="/robot.png"
         />

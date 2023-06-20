@@ -1,13 +1,13 @@
 const solc = require("solc");
 import { findBestMatch } from "string-similarity";
 import chains from "@/lib/chains.json";
-import { ChainData, Contract, DeployResults } from "@/types/backend";
+import { ChainData, Contract, DeployResults } from "@/app/types/types";
 import uploadToIpfs, { UploadResult } from '@/lib/uploadToIpfs';
 import handleImports from "@/lib/handleImports";
-import axios from "axios";
 import { flattenSolidity } from "./flattener";
 import { Chain, EncodeDeployDataParameters, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
 import { privateKeyToAccount } from 'viem/accounts'
+import { getChainMatch, getExplorerUrl, getRpcUrl } from "@/app/lib/helpers/useChains";
 
 const evmVersions = {
   "homestead": "0.1.3",
@@ -29,26 +29,11 @@ export const deployContract = async (
   sourceCode: string,
   constructorArgs: Array<string | string[]>
 ): Promise<DeployResults> => {
-  // get the chain object from the chains.json file. Direct match || partial match
-  const findAttempt = chains.find((item) => item.name.toLowerCase() === chain.toLowerCase());
-  const chainData: ChainData = findAttempt?.chainId
-    ? findAttempt
-    : (chains.find((chainItem) => {
-      const formattedChain = chainItem.name.toLowerCase().replace(/[-_]/g, "");
-      const formattedInput = chain.toLowerCase().replace(/[-_]/g, "");
-      return (
-        findBestMatch(
-          formattedInput,
-          chains.map((item) => item?.name?.toLowerCase().replace(/[-_]/g, ""))
-        ).bestMatch.target === formattedChain
-      );
-    }) as ChainData);
-
-  if (!chainData?.chainId) {
-    const error = new Error(`Chain ${chain} not found`);
-    console.log(error);
+  const viemChain: Chain | undefined = getChainMatch(chain);
+  if (!viemChain) {
+    throw new Error("Chain not found");
   }
-
+  
   const fileName = (name ? name.replace(/[\/\\:*?"<>|.\s]+$/g, "_") : "contract") + ".sol";
 
 
@@ -95,39 +80,7 @@ export const deployContract = async (
     bytecode = '0x' + bytecode;
   }
 
-
-
-  // Prepare network, signer, and contract instance inject INFURA_API_KEY if needed
-  const viemChain = {
-    id: chainData.chainId,
-    name: chainData.nativeCurrency.name,
-    network: chainData.shortName.toLowerCase(),
-    nativeCurrency: {
-      name: chainData.nativeCurrency.name,
-      symbol: chainData.nativeCurrency.symbol,
-      decimals: chainData.nativeCurrency.decimals,
-    },
-    rpcUrls: {
-      public: { http: chainData.rpc },
-      default: { http: chainData.rpc },
-    },
-    blockExplorers: chainData.explorers && {
-      etherscan: {
-        name: chainData.explorers[0].name,
-        url: chainData.explorers[0].url,
-      },
-      default: {
-        name: chainData.explorers[0].name,
-        url: chainData.explorers[0].url,
-      },
-    },
-  } as const satisfies Chain;
-
-
-  const rpcUrl: string = chainData?.rpc?.[0]?.replace(
-    "${INFURA_API_KEY}",
-    process.env.INFURA_API_KEY || ""
-  );
+  const rpcUrl = getRpcUrl(viemChain);
 
   //Prepare provider and signer
   const publicClient = createPublicClient({
@@ -136,7 +89,7 @@ export const deployContract = async (
   })
 
   if (!(await publicClient.getChainId())) {
-    const error = new Error(`Provider for chain ${chainData.name} not available`);
+    const error = new Error(`Provider for chain ${viemChain.name} not available`);
     console.log(error);
   }
   console.log("Provider OK");
@@ -150,7 +103,7 @@ export const deployContract = async (
   })
 
   if (!(await walletClient.getAddresses())) {
-    const error = new Error(`Wallet for chain ${chainData.name} not available`);
+    const error = new Error(`Wallet for chain ${viemChain.name} not available`);
     console.log(error);
   }
   console.log("Wallet OK");
@@ -170,8 +123,7 @@ export const deployContract = async (
   });
 
   console.log("Contract deployment OK");
-
-  const explorerUrl = `${viemChain?.blockExplorers?.default.url}/tx/${deployHash}`;
+  const explorerUrl =`${getExplorerUrl(viemChain)}/tx/${deployHash}`;
 
   // Add the flattened source code to the sources object
   // const flattenedCode = flattenSolidity(sources);
@@ -203,8 +155,15 @@ export const deployContract = async (
       constructorArgs?.length && (
         params.append('constructorArguements', encodedConstructorArgs))
       params.append('evmversion', 'london'); // leave blank for compiler default
-      const response = await axios.post('https://api-sepolia.etherscan.io/api', params);
-      console.log("Verification Response: ", response.data);
+      const response = await fetch('https://api-sepolia.etherscan.io/api', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: new URLSearchParams(params).toString()
+    });
+      const result = await response.json();
+      console.log("Verification Response: ", result);
     } catch (error) {
       console.error(error);
     }
@@ -212,18 +171,19 @@ export const deployContract = async (
   console.log("Waiting for deployment transaction confirmations...")
 
   let deployReceipt;
-  if (chainData?.name === 'Sepolia') {
+  if (viemChain?.name === 'Sepolia') {
     const encodedConstructorArgs = deployData.slice(bytecode?.length);
     deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
     if (deployReceipt.status === "success" && deployReceipt.contractAddress) {
       verifyContract(deployReceipt.contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs);
+      console
     }
   } else {
     deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 1 })
   }
   const contractAddress = deployReceipt?.contractAddress || '0x';
 
-  const deploymentData = { name: fileName, chain: chainData?.name, contractAddress, explorerUrl, ipfsUrl };
+  const deploymentData = { name: fileName, chain: viemChain?.name, contractAddress, explorerUrl, ipfsUrl };
 
   console.log(`Deployment data: `, deploymentData);
 
