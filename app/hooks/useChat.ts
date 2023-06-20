@@ -37,15 +37,6 @@ export function useChat() {
   useEffect(scrollToBottom, [messages]);
 
   useEffect(() => {
-    //if last message is a system message and loading is false then it is the assistants turn to respond
-    if (messages.length > 1 && messages[messages.length - 1].role === "system" && !loading) {
-      setStreamingChat(true);
-    }
-  }, [messages, loading]);
-  
-      
-
-  useEffect(() => {
     if (streamingChat || processingFunctionCall) {
       setLoading(true);
     } else {
@@ -220,12 +211,10 @@ export function useChat() {
                     setMessages(prevMessages => [...prevMessages, { role: "system", name: name, content: "Explain this smart contract to the user.  If they asked to audit it give them audit informtion otherwise talk about the general callable funcitons and their params. Fetched ABI: " + JSON.stringify(result.abi) }]);
                     // Check if the assistant is not currently processing a function call
                     console.log("processingFunctionCall", processingFunctionCall)
-                    console.log("streamingChat", streamingChat)
                     if (!processingFunctionCall) {
                       // Trigger the assistant
                       setStreamingChat(true);
                     }
-                    console.log("streamingChat", streamingChat)
                   } else {
                     console.error('Failed to fetch ABI: ', response);
                     setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to fetch ABI" }]);
