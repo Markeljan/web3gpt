@@ -1,5 +1,14 @@
-const fetchAbi = async (contractAddress: `0x${string}`): Promise<any> => {
-    const url = `https://api-sepolia.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=${process.env.ETHERSCAN_API_KEY}`;
+import { Chain } from "viem";
+import { API_KEYS, API_URLS } from "@/app/lib/helpers/useChains";
+
+const fetchAbi = async (chain: Chain, contractAddress: `0x${string}`): Promise<any> => {
+    const apiUrl = API_URLS[chain['network']];
+    const apiKey = API_KEYS[chain['network']];
+    if (!apiUrl || !apiKey) {
+        throw new Error(`Unsupported chain: ${chain}`);
+    }
+
+    const url = `${apiUrl}/api?module=contract&action=getabi&address=${contractAddress}&apikey=${apiKey}`;
 
     try {
         const response = await fetch(url);

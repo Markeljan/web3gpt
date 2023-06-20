@@ -8,6 +8,7 @@ import { flattenSolidity } from "./flattener";
 import { Chain, EncodeDeployDataParameters, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
 import { privateKeyToAccount } from 'viem/accounts'
 import { getChainMatch, getExplorerUrl, getRpcUrl } from "@/app/lib/helpers/useChains";
+import verifyContract from "./helpers/verifyContract";
 
 const evmVersions = {
   "homestead": "0.1.3",
@@ -139,47 +140,16 @@ export const deployContract = async (
 
   const ipfsUrl = `https://nftstorage.link/ipfs/${uploadResult?.cid}`;
 
-  async function verifyContract(address: `0x${string}`, standardJsonInput: string, compilerVersion: string, encodedConstructorArgs: string) {
-    const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
+  const encodedConstructorArgs = deployData.slice(bytecode?.length);
+  const deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
+  if (deployReceipt.status === "success" && deployReceipt.contractAddress) {
     try {
-      const params = new URLSearchParams();
-      params.append('apikey', ETHERSCAN_API_KEY);
-      params.append('module', 'contract');
-      params.append('action', 'verifysourcecode');
-      params.append('contractaddress', address);
-      params.append('sourceCode', standardJsonInput);
-      params.append('codeformat', 'solidity-standard-json-input');
-      params.append('contractname', fileName + ':' + contractName);
-      params.append('compilerversion', compilerVersion);
-      params.append('optimizationused', '0');
-      constructorArgs?.length && (
-        params.append('constructorArguements', encodedConstructorArgs))
-      params.append('evmversion', 'london'); // leave blank for compiler default
-      const response = await fetch('https://api-sepolia.etherscan.io/api', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-        },
-        body: new URLSearchParams(params).toString()
-      });
-      const result = await response.json();
-      console.log("Verification Response: ", result);
+      const verifyResponse = await verifyContract(deployReceipt.contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs, fileName, contractName, viemChain, constructorArgs,
+      );
+      console.log(verifyResponse);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
-  }
-  console.log("Waiting for deployment transaction confirmations...")
-
-  let deployReceipt;
-  console.log("Chain ID: ", viemChain?.id)
-  if (viemChain?.id === 11155111) {
-    const encodedConstructorArgs = deployData.slice(bytecode?.length);
-    deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
-    if (deployReceipt.status === "success" && deployReceipt.contractAddress) {
-      await verifyContract(deployReceipt.contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs);
-    }
-  } else {
-    deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 1 })
   }
   const contractAddress = deployReceipt?.contractAddress || '0x';
 

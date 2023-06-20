@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
 
     // Assume that all requests are for the same contract and fetch ABI once
-    const ABI = await fetchAbi(requests[0].address);
+    const ABI = await fetchAbi(viemChain, requests[0].address);
 
     const responses = await Promise.allSettled(
         requests.map(async (request) => {
