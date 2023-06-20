@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, use } from 'react';
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
-import { SYSTEM_MESSAGE, deployContractFunction, readWeb3Function } from '@/components/chatData';
+import { SYSTEM_MESSAGE, deployContractFunction, readContractFunction } from '@/components/chatData';
 
 export function createNewMessage(role: ChatCompletionRequestMessageRoleEnum, content: string = ""): ChatCompletionRequestMessage {
   return { role, content };
@@ -47,8 +47,8 @@ export function useChat() {
     if (streamingChat) {
       let reducedMessages = [...messages]; // clone the messages array
       let tokensEstimate = reducedMessages.length * 4 + 100;
-      
-      while(tokensEstimate > 120) {
+
+      while (tokensEstimate > 120) {
         reducedMessages = reducedMessages.slice(Math.floor(reducedMessages.length / 2));
         tokensEstimate = reducedMessages.length * 4 + 100;
       }
@@ -60,10 +60,10 @@ export function useChat() {
           },
           body: JSON.stringify({
             messages: reducedMessages,
-            functions: [deployContractFunction, readWeb3Function],
+            functions: [deployContractFunction, readContractFunction],
           }),
         });
-        
+
         // Start the messages with an empty assistant message
         const assistantMessage = createNewMessage("assistant");
         setMessages(prevMessages => [...prevMessages, assistantMessage]);
@@ -116,7 +116,7 @@ export function useChat() {
                   name: obj.choices[0].delta.function_call.name || assistantMessage.function_call?.name,
                   arguments: (assistantMessage.function_call?.arguments || "") + (obj.choices[0].delta.function_call.arguments || ""),
                 };
-                
+
                 // set the content of the message to the function_call name
                 assistantMessage.content = `Calling function: ${assistantMessage.function_call.name} With arguments: ${assistantMessage.function_call.arguments}`
               }
@@ -134,35 +134,55 @@ export function useChat() {
               // If a function call was detected, execute it
               if (functionCallDetected && assistantMessage.function_call) {
                 const { name, arguments: function_args } = assistantMessage.function_call;
-                if(!function_args || !name) {
+                if (!function_args || !name) {
                   console.error("Function call detected, but function name or arguments were not found");
                   setStreamingChat(false);
                   return;
                 }
                 setProcessingFunctionCall(true);
-                
                 const parsedArgs = JSON.parse(function_args);
 
-                const response = await fetch('/api/deploy-contract', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    name: parsedArgs.name,
-                    chains: parsedArgs.chains,
-                    sourceCode: parsedArgs.sourceCode,
-                    constructorArgs: parsedArgs.constructorArgs || [],
-                  }),
-                });
-                if (response.ok) {
-                  const result = await response.json();
-                  const content = formatResponseForHTML(result)
-                  // Append function response to messages
-                  setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: content }]);
-                } else {
-                  console.error('Failed to deploy contract: ', response);
-                  setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to deploy contract" }]);
+                if (name === 'deployContract') {
+                  const response = await fetch('/api/deploy-contract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      name: parsedArgs.name,
+                      chains: parsedArgs.chains,
+                      sourceCode: parsedArgs.sourceCode,
+                      constructorArgs: parsedArgs.constructorArgs || [],
+                    }),
+                  });
+                  if (response.ok) {
+                    const result = await response.json();
+                    const content = formatResponseForHTML(result)
+                    // Append function response to messages
+                    setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: content }]);
+                  } else {
+                    console.error('Failed to deploy contract: ', response);
+                    setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to deploy contract" }]);
+                  }
+                } else if (name === 'readWeb3') {
+                  const response = await fetch('/api/read-contract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      chain: parsedArgs.chain,
+                      address: parsedArgs.address,
+                      functionName: parsedArgs.functionName,
+                      functionArgs: parsedArgs.functionArgs || [],
+                    }),
+                  });
+                  if (response.ok) {
+                    const result = await response.json();
+                    setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: JSON.stringify(result) }]);
+                  } else {
+                    console.error('Failed to read contract: ', response);
+                    setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to read contract" }]);
+                  }
                 }
-                
+
+
                 setProcessingFunctionCall(false);
               }
             }
@@ -170,7 +190,7 @@ export function useChat() {
           return reader.read().then(processChunk); // Read next chunk
         });
       };
-      if(!loading) {
+      if (!loading) {
         getChatResponse();
       }
     }

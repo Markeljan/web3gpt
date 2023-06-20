@@ -1,69 +1,63 @@
 import { ChatCompletionFunctions, ChatCompletionRequestMessage } from "openai";
 
 export const SYSTEM_MESSAGE: ChatCompletionRequestMessage = { 
-  role: "system", 
-  content: "You are a chat bot responsible for writing and deploying smart contracts on EVM compatible chains, as well as reading from and writing to these chains. Your main functions are 'deployContract', 'readWeb3', and 'writeWeb3'. 'deployContract' deploys Solidity smart contracts (version 0.8.20 or greater) onto specified blockchain networks, while 'readWeb3' and 'writeWeb3' interact with blockchain data. All functions require parameters to be formatted as per the defined structure. Remember, your primary task is to aid in the development, deployment, and interaction with smart contracts.  After you deploy a contract, you should provide the user with the contract address, transaction hash, and IPFS link." 
-};
+    role: "system", 
+    content: "You are a chat bot responsible for writing and deploying smart contracts on EVM compatible chains, as well as reading from these chains. Your main functions are 'deployContract' and 'readContract'. 'deployContract' deploys Solidity smart contracts (version 0.8.20 or greater) onto specified blockchain networks, while 'readContract' interacts with blockchain data. Both functions require parameters to be formatted as per the defined structure. Remember, your primary task is to aid in the development, deployment, and interaction with smart contracts. After you deploy a contract, you should provide the user with the contract address, transaction hash, and IPFS link." 
+  };
+  
 
-export const readWeb3Function: ChatCompletionFunctions = {
-  "name": "readWeb3",
-  "description": "Read data from a contract on EVM compatible chains.",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "chain": {
-        "type": "string",
-        "description": "The name of the chain to read data from."
-      },
-      "address": {
-        "type": "string",
-        "description": "The address of the contract to read data from."
-      },
-      "functionName": {
-        "type": "string",
-        "description": "The name of the function in the contract to call."
-      },
-      "functionArgs": {
-        "type": "array",
-        "items": {
-          "type": "string"
+export const readContractFunction: ChatCompletionFunctions = {
+    "name": "readContract",
+    "description": "Read data from a contract on EVM compatible chains.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "chain": {
+          "type": "string",
+          "description": "The name of the chain to read data from."
         },
-        "description": "The arguments for the contract function."
-      }
-    },
-    "required": ["chain", "address", "functionName", "functionArgs"]
-  }
-};
-
-export const writeWeb3Function: ChatCompletionFunctions = {
-  "name": "writeWeb3",
-  "description": "Write data to a contract on EVM compatible chains.",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "chain": {
-        "type": "string",
-        "description": "The name of the chain to write data to."
+        "requests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "The address of the contract to read data from."
+              },
+              "functionName": {
+                "type": "string",
+                "description": "The name of the function in the contract to call."
+              },
+              "functionArgs": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "description": "A single argument for the contract's function."
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "An array of arguments for the contract's function."
+                    }
+                  ]
+                },
+                "description": "The arguments for the contract function. Can be of any type represented as a string. Empty [] if no arguments are required."
+              }
+            },
+            "required": ["address", "functionName", "functionArgs"]
+          },
+          "description": "The list of requests for reading data from contracts."
+        }
       },
-      "address": {
-        "type": "string",
-        "description": "The address of the contract to write data to."
-      },
-      "functionName": {
-        "type": "string",
-        "description": "The name of the function in the contract to call."
-      },
-      "functionArgs": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "description": "The arguments for the contract function."
-      }
-    },
-    "required": ["chain", "address", "functionName", "functionArgs"]
-  }
-};
+      "required": ["chain", "requests"]
+    }
+  };
+  
 
 export const deployContractFunction: ChatCompletionFunctions = {
     "name": "deployContract",
