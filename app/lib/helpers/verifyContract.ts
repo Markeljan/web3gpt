@@ -22,7 +22,7 @@ import { API_KEYS, API_URLS } from "@/app/lib/helpers/useChains";
       constructorArgs?.length && (
         params.append('constructorArguements', encodedConstructorArgs))
       params.append('evmversion', 'london'); // leave blank for compiler default
-      const response = await fetch(apiUrl, {
+      const response = await fetch(apiUrl + '/api', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
