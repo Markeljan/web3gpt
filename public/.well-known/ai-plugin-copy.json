@@ -1,18 +1,18 @@
 {
-    "schema_version": "v1",
-    "name_for_human": "W3GPT",
-    "name_for_model": "W3GPT",
-    "description_for_human": "Deploy contracts, read and write to EVM chains.",
-    "description_for_model": "Allows deployment of smart contracts, reading, and writing to any EVM blockchain.",
-    "auth": {
-      "type": "none"
-    },
-    "api": {
-      "type": "openapi",
-      "url": "http://localhost:3000/openapi.yaml",
-      "is_user_authenticated": false
-    },
-    "logo_url": "http://localhost:3000/robot.png",
-    "contact_email": "mark@w3gpt.ai",
-    "legal_info_url": "https://github.com/markeljan"
-  }
+  "schema_version": "v1",
+  "name_for_human": "W3GPT",
+  "name_for_model": "W3GPT",
+  "description_for_human": "Deploy contracts, read and write to EVM chains.",
+  "description_for_model": "Allows deployment of smart contracts to EVM compatible blockchains, as well as reading from smart contracts (calling functions).",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://w3gpt.ai/openapi.yaml",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://www.w3gpt.ai/robot.png",
+  "contact_email": "mark@w3gpt.ai",
+  "legal_info_url": "https://github.com/markeljan"
+}

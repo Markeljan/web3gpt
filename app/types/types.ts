@@ -41,22 +41,21 @@ export type ChainData = {
   }[];
 };
 
-export type ContractRequest = {
-  type: "read" | "write";
+export type ReadContractRequestItem = {
   address: `0x${string}`;
   functionName: string;
   functionArgs: Array<string | string[]>;
 }
 
-export type PostRequestBody = {
+export type ReadContractRequest = {
   chain: string;
-  requests: ContractRequest[];
+  requests: ReadContractRequestItem[];
 }
 
-export type ContractResponse = {
+export type ReadContractResponseItem = {
   status: 'success' | 'error';
   data?: any;  // Replace with the actual type of the data if known
   message?: string;
 }
 
-export type PostResponseData = ContractResponse[];
+export type ReadContractResponse = ReadContractResponseItem[];

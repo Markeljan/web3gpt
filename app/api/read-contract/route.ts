@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Chain, createPublicClient, http } from 'viem';
 import { getChainMatch, getRpcUrl } from "@/app/lib/helpers/useChains";
-import { PostResponseData, PostRequestBody, ContractRequest } from "@/app/types/types";
+import { ReadContractRequest, ReadContractResponse } from "@/app/types/types";
 
 export async function POST(req: NextRequest) {
-    const body: PostRequestBody = await req.json();
+    const body: ReadContractRequest = await req.json();
     const {
         chain,
         requests,
@@ -29,24 +29,15 @@ export async function POST(req: NextRequest) {
     });
 
     const responses = await Promise.allSettled(
-        requests.map(async (request: ContractRequest) => {
+        requests.map(async (request) => {
             try {
                 const ABI = await fetchAbi(request.address);
-                let data;
-                if (request.type === "read") {
-                    data = await publicClient.readContract({
-                        address: request.address,
-                        abi: ABI,
-                        functionName: request.functionName,
-                        args: request.functionArgs
-                    });
-                } else if (request.type === "write") {
-                    // Placeholder for the write operation.
-                    // data = await publicClient.writeContract({...});
-                    throw new Error("Write operation not implemented yet.");
-                } else {
-                    throw new Error(`Invalid operation type: ${request.type}`);
-                }
+                const data = await publicClient.readContract({
+                    address: request.address,
+                    abi: ABI,
+                    functionName: request.functionName,
+                    args: request.functionArgs
+                });
                 return { status: 'fulfilled', value: data };
             } catch (error) {
                 return { status: 'rejected', reason: error };
@@ -54,13 +45,13 @@ export async function POST(req: NextRequest) {
         })
     );
 
-    const responseData: PostResponseData = responses.map((response, index) => {
+    const responseData: ReadContractResponse = responses.map((response, index) => {
         if (response.status === 'rejected') {
             return { status: 'error', message: `Request ${index + 1} failed with error: ${response.reason}` };
         }
         return { status: 'success', data: response.value };
     });
-
+    
     return new NextResponse(JSON.stringify(responseData), {
         headers: {
             "content-type": "application/json",
