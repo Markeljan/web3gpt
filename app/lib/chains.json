@@ -2698,17 +2698,6 @@
     "networkId": 256
   },
   {
-    "name": "Setheum",
-    "chain": "Setheum",
-    "rpc": [],
-    "faucets": [],
-    "nativeCurrency": { "name": "Setheum", "symbol": "SETM", "decimals": 18 },
-    "infoURL": "https://setheum.xyz",
-    "shortName": "setm",
-    "chainId": 258,
-    "networkId": 258
-  },
-  {
     "name": "Neonlink Mainnet",
     "chain": "Neonlink",
     "rpc": ["https://mainnet.neonlink.io"],
@@ -3321,20 +3310,6 @@
         "url": "https://goerli-optimistic.etherscan.io",
         "standard": "EIP3091"
       }
-    ]
-  },
-  {
-    "name": "Zeeth Chain",
-    "chain": "ZeethChain",
-    "rpc": ["https://rpc.zeeth.io"],
-    "faucets": [],
-    "nativeCurrency": { "name": "Zeeth Token", "symbol": "ZTH", "decimals": 18 },
-    "infoURL": "",
-    "shortName": "zeeth",
-    "chainId": 427,
-    "networkId": 427,
-    "explorers": [
-      { "name": "Zeeth Explorer", "url": "https://explorer.zeeth.io", "standard": "none" }
     ]
   },
   {
@@ -4062,20 +4037,6 @@
     "networkId": 842,
     "explorers": [
       { "name": "Taraxa Explorer", "url": "https://explorer.testnet.taraxa.io", "standard": "none" }
-    ]
-  },
-  {
-    "name": "Zeeth Chain Dev",
-    "chain": "ZeethChainDev",
-    "rpc": ["https://rpc.dev.zeeth.io"],
-    "faucets": [],
-    "nativeCurrency": { "name": "Zeeth Token", "symbol": "ZTH", "decimals": 18 },
-    "infoURL": "",
-    "shortName": "zeethdev",
-    "chainId": 859,
-    "networkId": 859,
-    "explorers": [
-      { "name": "Zeeth Explorer Dev", "url": "https://explorer.dev.zeeth.io", "standard": "none" }
     ]
   },
   {

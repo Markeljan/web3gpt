@@ -37,6 +37,15 @@ export function useChat() {
   useEffect(scrollToBottom, [messages]);
 
   useEffect(() => {
+    //if last message is a system message and loading is false then it is the assistants turn to respond
+    if (messages.length > 1 && messages[messages.length - 1].role === "system" && !loading) {
+      setStreamingChat(true);
+    }
+  }, [messages, loading]);
+  
+      
+
+  useEffect(() => {
     if (streamingChat || processingFunctionCall) {
       setLoading(true);
     } else {
@@ -177,10 +186,14 @@ export function useChat() {
                   });
                   if (response.ok) {
                     const result = await response.json();
-                    result.forEach((res: any) => {
+                    result.forEach((res: any, index: number) => {
                       if (res.status === 'success') {
                         if (res.data.status === 'fulfilled') {
-                          setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: JSON.stringify(res.data.value) }]);
+                          const request = parsedArgs.requests[index];
+                          const content = `Function: ${request.functionName}\n` +
+                            `Arguments: ${JSON.stringify(request.functionArgs)}\n` +
+                            `Result: ${JSON.stringify(res.data.value)}`;
+                          setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: content }]);
                         } else if (res.data.status === 'rejected') {
                           console.error('Function failed: ', res.data.reason);
                         }
@@ -204,7 +217,15 @@ export function useChat() {
                   if (response.ok) {
                     const result = await response.json();
                     // Append function response to messages
-                    setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: JSON.stringify(result.abi) }]);
+                    setMessages(prevMessages => [...prevMessages, { role: "system", name: name, content: "Explain this smart contract to the user.  If they asked to audit it give them audit informtion otherwise talk about the general callable funcitons and their params. Fetched ABI: " + JSON.stringify(result.abi) }]);
+                    // Check if the assistant is not currently processing a function call
+                    console.log("processingFunctionCall", processingFunctionCall)
+                    console.log("streamingChat", streamingChat)
+                    if (!processingFunctionCall) {
+                      // Trigger the assistant
+                      setStreamingChat(true);
+                    }
+                    console.log("streamingChat", streamingChat)
                   } else {
                     console.error('Failed to fetch ABI: ', response);
                     setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to fetch ABI" }]);

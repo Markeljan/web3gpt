@@ -47,8 +47,8 @@ export const getChainMatch = (chain: string): Chain | undefined => {
 
   const viemChain: Chain | undefined = {
     id: matchedChain.chainId,
-    name: matchedChain.nativeCurrency.name,
-    network: matchedChain.shortName.toLowerCase(),
+    name: matchedChain.name,
+    network: matchedChain.name.toLowerCase(),
     nativeCurrency: {
       name: matchedChain.nativeCurrency.name,
       symbol: matchedChain.nativeCurrency.symbol,

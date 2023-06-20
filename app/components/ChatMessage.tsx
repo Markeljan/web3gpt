@@ -33,10 +33,11 @@ const ChatMessage: React.FC<ChatCompletionResponseMessage> = ( message ) => {
             <Box sx={{ width: '100%', maxWidth: '48rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', mx: 'auto', my: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'top', width: '100%', p: 1, color: "#ECECF1", my: 0.5, position: 'relative' }}>
                     <Box sx={{ width: '3.75rem' }}>
-                        {role === "assistant" ? (
-                            <SmartToy sx={{ color: '#ECECF1', fontSize: '2rem' }} />
-                        ) : (
+                        {role === "user" ? (
                             <AccountCircle sx={{ color: '#ECECF1', fontSize: '2rem' }} />
+                           
+                        ) : (
+                            <SmartToy sx={{ color: '#ECECF1', fontSize: '2rem' }} />
                         )}
                     </Box>
                     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', wordWrap: 'break-word', fontSize: '1rem', lineHeight: '1.5rem', fontWeight: '300' }}>

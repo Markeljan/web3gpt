@@ -14,7 +14,7 @@ export const readContractFunction: ChatCompletionFunctions = {
     "properties": {
       "chain": {
         "type": "string",
-        "description": "The name of the chain to read data from."
+        "description": "The name of the chain to read data from.  Use the full name like Ethereum or Binance Smart Chain."
       },
       "requests": {
         "type": "array",

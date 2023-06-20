@@ -142,15 +142,16 @@ export const deployContract = async (
 
   const encodedConstructorArgs = deployData.slice(bytecode?.length);
   const deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
-  if (deployReceipt.status === "success" && deployReceipt.contractAddress) {
-    try {
-      const verifyResponse = await verifyContract(deployReceipt.contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs, fileName, contractName, viemChain, constructorArgs,
-      );
-      console.log(verifyResponse);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+
+  // if (deployReceipt.status === "success" && deployReceipt.contractAddress) {
+  //   try {
+  //     const verifyResponse = await verifyContract(deployReceipt.contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs, fileName, contractName, viemChain, constructorArgs,
+  //     );
+  //     console.log(verifyResponse);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
   const contractAddress = deployReceipt?.contractAddress || '0x';
 
   const deploymentData = { name: fileName, chain: viemChain?.name, contractAddress, explorerUrl, ipfsUrl };

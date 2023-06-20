@@ -27,6 +27,8 @@ export async function POST(req: NextRequest) {
     const rpcUrl: string | undefined = getRpcUrl(viemChain)
     console.log("rpcUrl:", rpcUrl)
 
+    console.log("Using viemChain:", viemChain.name)
+
     const publicClient = createPublicClient({
         chain: viemChain,
         transport: rpcUrl ? http(rpcUrl) : http()

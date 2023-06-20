@@ -5,7 +5,7 @@ const fetchAbi = async (chain: Chain, contractAddress: `0x${string}`): Promise<a
     const apiUrl = API_URLS[chain['name']];
     const apiKey = API_KEYS[chain['name']];
     if (!apiUrl || !apiKey) {
-        throw new Error(`Unsupported chain: ${chain}`);
+        throw new Error(`Unsupported chain: ${chain['name']}`);
     }
 
     const url = `${apiUrl}/api?module=contract&action=getabi&address=${contractAddress}&apikey=${apiKey}`;
@@ -21,7 +21,7 @@ const fetchAbi = async (chain: Chain, contractAddress: `0x${string}`): Promise<a
         if (data.status === '1') {
             return JSON.parse(data.result);
         } else {
-            throw new Error(`Error fetching ABI: ${data.result}`);
+            throw new Error(`Error fetching ABI: ${data.result} here`);
         }
     } catch (error) {
         console.error(error);
