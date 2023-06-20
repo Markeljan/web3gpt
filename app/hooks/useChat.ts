@@ -166,7 +166,7 @@ export function useChat() {
                 } else if (name === 'readContract') {
                   console.log("parsedArgs", parsedArgs)
                   console.log("parsed aarg requests spread", ...parsedArgs.requests)
-                  
+
                   const response = await fetch('/api/read-contract', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -178,10 +178,10 @@ export function useChat() {
                   if (response.ok) {
                     const result = await response.json();
                     result.forEach((res: any) => {
-                      if(res.status === 'success'){
-                        if(res.data.status === 'fulfilled') {
+                      if (res.status === 'success') {
+                        if (res.data.status === 'fulfilled') {
                           setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: JSON.stringify(res.data.value) }]);
-                        } else if(res.data.status === 'rejected') {
+                        } else if (res.data.status === 'rejected') {
                           console.error('Function failed: ', res.data.reason);
                         }
                       } else {
@@ -192,7 +192,23 @@ export function useChat() {
                     console.error('Failed to read contract: ', response);
                     setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to read contract" }]);
                   }
-
+                } else if (name === 'fetchAbi') {
+                  const response = await fetch('/api/fetch-abi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      chain: parsedArgs.chain,
+                      address: parsedArgs.address,
+                    }),
+                  });
+                  if (response.ok) {
+                    const result = await response.json();
+                    // Append function response to messages
+                    setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: JSON.stringify(result.abi) }]);
+                  } else {
+                    console.error('Failed to fetch ABI: ', response);
+                    setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to fetch ABI" }]);
+                  }
                 }
 
 

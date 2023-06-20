@@ -17,6 +17,9 @@ export async function POST(req: NextRequest) {
     if (!chain || !address) {
         return new NextResponse(`Invalid request body. Missing one or more of required properties: chain, address.`, { status: 400 });
     }
+    if (!address.startsWith('0x')) {
+        return new NextResponse(`Invalid address. It should start with '0x'.`, { status: 400 });
+    }
 
     // Find the chain object from the chains.json file. Direct match || partial match
     const viemChain: Chain | undefined = getChainMatch(chain);
@@ -26,6 +29,7 @@ export async function POST(req: NextRequest) {
 
     const rpcUrl: string | undefined = getRpcUrl(viemChain)
     console.log("rpcUrl:", rpcUrl)
+
 
     // Fetch ABI
     const ABI = await fetchAbi(viemChain, address as `0x${string}`);
