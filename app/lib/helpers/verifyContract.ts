@@ -6,7 +6,7 @@ import { API_KEYS, API_URLS } from "@/app/lib/helpers/useChains";
     const apiUrl = API_URLS[viemChain['network']];
     const apiKey = API_KEYS[viemChain['network']];
     if (!apiKey) {
-        throw new Error(`Unsupported chain or API_KEY: ${viemChain}`);
+        throw new Error(`Unsupported chain or API_KEY.  Network: ${viemChain["network"]}`);
     }
     try {
       const params = new URLSearchParams();
