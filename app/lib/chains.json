@@ -11680,9 +11680,8 @@
     "chain": "Polygon",
     "icon": "polygon",
     "rpc": [
-      "https://matic-mumbai.chainstacklabs.com",
       "https://rpc-mumbai.maticvigil.com",
-      "https://matic-testnet-archive-rpc.bwarelabs.com"
+      "https://rpc-mainnet.matic.quiknode.pro"
     ],
     "faucets": ["https://faucet.polygon.technology/"],
     "nativeCurrency": { "name": "MATIC", "symbol": "MATIC", "decimals": 18 },

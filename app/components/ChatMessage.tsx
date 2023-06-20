@@ -36,9 +36,9 @@ const ChatMessage: React.FC<ChatCompletionResponseMessage> = ( message ) => {
                         {role === "user" ? (
                             <AccountCircle sx={{ color: '#ECECF1', fontSize: '2rem' }} />
                            
-                        ) : (
+                        ) : role === "assistant" ?  (
                             <SmartToy sx={{ color: '#ECECF1', fontSize: '2rem' }} />
-                        )}
+                        ) : null}
                     </Box>
                     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', wordWrap: 'break-word', fontSize: '1rem', lineHeight: '1.5rem', fontWeight: '300' }}>
                         {renderHTMLContent(content || "")}

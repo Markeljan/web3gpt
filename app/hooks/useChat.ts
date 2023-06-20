@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, use } from 'react';
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { SYSTEM_MESSAGE, deployContractFunction, fetchAbiFunction, readContractFunction } from '@/components/chatData';
-import { ReadContractRequest } from '../types/types';
 
 export function createNewMessage(role: ChatCompletionRequestMessageRoleEnum, content: string = ""): ChatCompletionRequestMessage {
   return { role, content };
@@ -35,6 +34,13 @@ export function useChat() {
   };
 
   useEffect(scrollToBottom, [messages]);
+
+  useEffect(() => {
+    if (messages.length > 1 && messages[messages.length - 1].role === "system") {
+      setStreamingChat(true);
+    }
+  }, [messages]);
+
 
   useEffect(() => {
     if (streamingChat || processingFunctionCall) {
@@ -160,13 +166,9 @@ export function useChat() {
                     // Append function response to messages
                     setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: content }]);
                   } else {
-                    console.error('Failed to deploy contract: ', response);
-                    setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to deploy contract" }]);
+                    setMessages(prevMessages => [...prevMessages, { role: "system", name: name, content: `ERROR: Failed to deploy contract: ${response.statusText} Let the user know the deployment failed. Propose a solution if you can.` }]);
                   }
                 } else if (name === 'readContract') {
-                  console.log("parsedArgs", parsedArgs)
-                  console.log("parsed aarg requests spread", ...parsedArgs.requests)
-
                   const response = await fetch('/api/read-contract', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -186,15 +188,23 @@ export function useChat() {
                             `Result: ${JSON.stringify(res.data.value)}`;
                           setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: content }]);
                         } else if (res.data.status === 'rejected') {
-                          console.error('Function failed: ', res.data.reason);
+                          setMessages(prevMessages => [...prevMessages, { role: "system", name: name, content: `ERROR: function call rejected: ${res.data.reason} Tell the user it erored and propose a solution if you know one then ask them if you should try again.` }]);
                         }
                       } else {
                         console.error('Request failed: ', res);
                       }
                     });
                   } else {
-                    console.error('Failed to read contract: ', response);
-                    setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to read contract" }]);
+                    try {
+                      alert("hi")
+                      const result = await response.json();
+                      console.error('Failed to read contract: ', result);
+                      setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: `Failed to read contract: ${result}` }]);
+                    } catch (e) {
+                      alert("yo")
+                      console.error('Failed to read contract: ', response.statusText);
+                      setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: `Failed to read contract: ${response.status} ${response.statusText}` }]);
+                    }
                   }
                 } else if (name === 'fetchAbi') {
                   const response = await fetch('/api/fetch-abi', {
@@ -208,13 +218,7 @@ export function useChat() {
                   if (response.ok) {
                     const result = await response.json();
                     // Append function response to messages
-                    setMessages(prevMessages => [...prevMessages, { role: "system", name: name, content: "Explain this smart contract to the user.  If they asked to audit it give them audit informtion otherwise talk about the general callable funcitons and their params. Fetched ABI: " + JSON.stringify(result.abi) }]);
-                    // Check if the assistant is not currently processing a function call
-                    console.log("processingFunctionCall", processingFunctionCall)
-                    if (!processingFunctionCall) {
-                      // Trigger the assistant
-                      setStreamingChat(true);
-                    }
+                    setMessages(prevMessages => [...prevMessages, { role: "system", name: name, content: JSON.stringify(result.abi) + "\n" + " This message is hidden formt he user.  Only read them the ABI if they specifically asked for it." }]);
                   } else {
                     console.error('Failed to fetch ABI: ', response);
                     setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: "Failed to fetch ABI" }]);
