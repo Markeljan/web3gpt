@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, use } from 'react';
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
-import { SYSTEM_MESSAGE, deployContractFunction } from '../components/chatData';
+import { SYSTEM_MESSAGE, deployContractFunction, readWeb3Function } from '@/components/chatData';
 
 export function createNewMessage(role: ChatCompletionRequestMessageRoleEnum, content: string = ""): ChatCompletionRequestMessage {
   return { role, content };
@@ -60,7 +60,7 @@ export function useChat() {
           },
           body: JSON.stringify({
             messages: reducedMessages,
-            functions: [deployContractFunction],
+            functions: [deployContractFunction, readWeb3Function],
           }),
         });
         
