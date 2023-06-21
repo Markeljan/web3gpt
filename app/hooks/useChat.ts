@@ -196,12 +196,10 @@ export function useChat() {
                     });
                   } else {
                     try {
-                      alert("hi")
                       const result = await response.json();
                       console.error('Failed to read contract: ', result);
                       setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: `Failed to read contract: ${result}` }]);
                     } catch (e) {
-                      alert("yo")
                       console.error('Failed to read contract: ', response.statusText);
                       setMessages(prevMessages => [...prevMessages, { role: "function", name: name, content: `Failed to read contract: ${response.status} ${response.statusText}` }]);
                     }
