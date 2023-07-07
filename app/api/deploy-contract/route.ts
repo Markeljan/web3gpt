@@ -1,34 +1,24 @@
-import createResponse from "@/app/lib/helpers/createResponse";
-import { deployContract } from "@/lib/contracts";
-import { DeployResults } from "@/app/types/types";
-import { NextRequest } from "next/server";
+import { auth } from '@/auth'
+import deployContract from '@/lib/functions/deploy-contract';
 
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const {
-    name,
-    chains,
-    sourceCode,
-    constructorArgs = [],
-  }: {
-    name: string;
-    chains: Array<string>;
-    sourceCode: string;
-    constructorArgs: Array<string | string[]>;
-  } = body;
+const runtime = 'edge'
 
-  const contractData = await Promise.all(
-    chains.map(async (chain: string) => {
-      const deploymentResponse: DeployResults = await deployContract(name, chain, sourceCode, constructorArgs);
-      return deploymentResponse;
-    })
-  );
+export async function POST(req: Request) {
+    const json = await req.json()
+    const { chainName, contractName, sourceCode, constructorArgs } = json
+    console.log("request recieved:", json)
+    const session = await auth()
 
-  return createResponse(200, {
-    contracts: contractData,
-  });
-}
+    if (session == null) {
+        return new Response('Unauthorized', { status: 401 })
+    }
 
-export async function OPTIONS() {
-  return createResponse(200);
+    const deployResult = await deployContract({
+        chainName,
+        contractName,
+        sourceCode,
+        constructorArgs,
+    });
+
+    return new Response(JSON.stringify(deployResult));
 }
