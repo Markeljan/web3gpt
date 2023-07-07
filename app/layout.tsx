@@ -12,8 +12,8 @@ import { Header } from '@/components/header'
 export const metadata: Metadata = {
   metadataBase: new URL('https://w3gpt.ai'),
   title: {
-    default: 'WEB3 GPT',
-    template: `WEB3 GPT`
+    default: 'Web3 GPT',
+    template: `Web3 GPT`
   },
   description: 'Deploy your smart contracts with ease using AI.',
   themeColor: [
@@ -22,8 +22,6 @@ export const metadata: Metadata = {
   ],
   icons: {
     icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png'
   }
 }
 
