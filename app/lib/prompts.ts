@@ -27,7 +27,12 @@ DeFi Contract Prompt
 What is the purpose of your DeFi contract? (Lending, Yield Farming, DEX, etc.)
 What are the rules for interacting with your contract? (Collateral requirements, interest rates, etc.)
 How will the funds in the contract be managed?
-On which blockchain network would you like to deploy your DeFi contract?`;
+On which blockchain network would you like to deploy your DeFi contract?
+
+deploy an erc20 token called PSCxDD to sepolia send 50% of the supply to 0x68E08371d1D0311b7c81961c431D71F71a94dd1a and allow the rest to be minted by anyone sending 10% of the remaining supply on each mint.
+
+
+`;
 
 const demo = `
 Deploy a smart contract that allows me to hold a trusted list of addresses for verifiable 
@@ -41,3 +46,4 @@ linea testnet, scroll alpha testnet, sepolia, hyperspace testnet,
 optimism, optimism goerli testnet, polygon zkEVM, polygon zkEVM testnet, chiado testnet
 
 `;
+

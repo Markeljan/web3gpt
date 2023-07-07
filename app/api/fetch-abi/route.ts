@@ -27,10 +27,6 @@ export async function POST(req: NextRequest) {
         return new NextResponse(`Chain ${chain} not found`, { status: 404 });
     }
 
-    const rpcUrl: string | undefined = getRpcUrl(viemChain)
-    console.log("rpcUrl:", rpcUrl)
-
-
     // Fetch ABI
     const ABI = await fetchAbi(viemChain, address as `0x${string}`);
 

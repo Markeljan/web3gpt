@@ -32,6 +32,6 @@
     "string-similarity": "^4.0.4",
     "typescript": "5.0.4",
     "utf-8-validate": "^6.0.3",
-    "viem": "^1.0.7"
+    "viem": "^1.1.6"
   }
 }

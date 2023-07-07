@@ -35,15 +35,15 @@ export const getChainMatch = (chain: string): Chain | undefined => {
   const matchedChain: ChainData = findAttempt?.chainId
     ? findAttempt
     : (chains.find((chainItem) => {
-        const formattedChain = chainItem.name.toLowerCase().replace(/[-_]/g, "");
-        const formattedInput = chain.toLowerCase().replace(/[-_]/g, "");
-        return (
-          findBestMatch(
-            formattedInput,
-            chains.map((item) => item?.name?.toLowerCase().replace(/[-_]/g, ""))
-          ).bestMatch.target === formattedChain
-        );
-      }) as ChainData);
+      const formattedChain = chainItem.name.toLowerCase().replace(/[-_]/g, "");
+      const formattedInput = chain.toLowerCase().replace(/[-_]/g, "");
+      return (
+        findBestMatch(
+          formattedInput,
+          chains.map((item) => item?.name?.toLowerCase().replace(/[-_]/g, ""))
+        ).bestMatch.target === formattedChain
+      );
+    }) as ChainData);
 
   const viemChain: Chain | undefined = {
     id: matchedChain.chainId,
@@ -74,13 +74,13 @@ export const getChainMatch = (chain: string): Chain | undefined => {
 };
 
 export const getRpcUrl = (viemChain: Chain): string | undefined => {
-    const rpcUrl: string = viemChain?.rpcUrls.default.http[0]?.replace(
-        "${INFURA_API_KEY}",
-        process.env.INFURA_API_KEY || ""
-      );
-        return rpcUrl;
+  const rpcUrl: string = viemChain?.rpcUrls.default.http[0]?.replace(
+    "${INFURA_API_KEY}",
+    process.env.INFURA_API_KEY || ""
+  );
+  return rpcUrl;
 }
 
 export const getExplorerUrl = (viemChain: Chain): string | undefined => {
-    return viemChain?.blockExplorers?.default.url;
+  return viemChain?.blockExplorers?.default.url;
 }

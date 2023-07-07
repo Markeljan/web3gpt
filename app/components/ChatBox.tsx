@@ -3,7 +3,7 @@ import { ChatCompletionResponseMessage } from "openai";
 import ChatMessage from "@/components/ChatMessage";
 
 
-const ChatBox: React.FC<ChatCompletionResponseMessage[]> = ( messages ) => {
+const ChatBox: React.FC<ChatCompletionResponseMessage[]> = (messages) => {
     const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
     const scrollToBottom = () => {
