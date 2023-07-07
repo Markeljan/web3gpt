@@ -1,41 +1,64 @@
-import { NextResponse } from "next/server";
-import { ChatCompletionRequestMessage, ChatCompletionRequestMessageFunctionCall } from "openai";
+import { kv } from '@vercel/kv'
+import { Configuration, OpenAIApi } from 'openai-edge'
+import { Message, OpenAIStream, StreamingTextResponse } from "ai";
 
-export async function POST(req: Request): Promise<NextResponse> {
-    const { baseURL, model, messages, functions }: {baseURL: string, model: string, messages: ChatCompletionRequestMessage[], functions: ChatCompletionRequestMessageFunctionCall} = await req.json();
+import { auth } from '@/auth'
+import { nanoid } from '@/lib/utils'
 
-    // SHALE API for opensource models
-    // const response = await fetch(
-    //     "https://shale.live/v1/chat/completions",
-    //     {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             'Authorization': `Bearer ${process.env.SHALE_API_KEY}`
-    //         },
-    //         body: JSON.stringify({
-    //         model: "vicuna-13b-v1.1",
-    //         messages: conversation,
-    //         max_tokens: 524, 
-    //         stream:true
-    //     }),
-    // });    
+export const runtime = 'edge'
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-            model: model || "gpt-3.5-turbo-0613",
-            messages: messages,
-            functions: functions,
-            function_call: "auto",
-            max_tokens: 1024,
-            stream: true
-        }),
-    });
+export async function POST(req: Request) {
+  const json = await req.json()
+  const { messages, functions, function_call } = json
+  const userId = (await auth())?.user.id
 
-    return new NextResponse(response.body);
+  if (!userId) {
+    return new Response('Unauthorized', { status: 401 })
+  }
+
+  const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY
+  })
+
+  const openai = new OpenAIApi(configuration)
+
+  // Ask OpenAI for a streaming chat completion given the prompt
+  const res = await openai.createChatCompletion({
+    //model: 'gpt-3.5-turbo',
+    model: 'gpt-4',
+    stream: true,
+    messages,
+    functions,
+    function_call
+  });
+
+  const stream = OpenAIStream(res, {
+    async onCompletion(completion) {
+      const title = messages.find((m: Message) => m.role !== 'system')?.content.substring(0, 100)
+      const id = json.id ?? nanoid()
+      const createdAt = Date.now()
+      const path = `/chat/${id}`
+      const payload = {
+        id,
+        title,
+        userId,
+        createdAt,
+        path,
+        messages: [
+          ...messages,
+          {
+            content: completion,
+            role: 'assistant'
+          }
+        ]
+      }
+      await kv.hmset(`chat:${id}`, payload)
+      await kv.zadd(`user:chat:${userId}`, {
+        score: createdAt,
+        member: `chat:${id}`
+      })
+    }
+  })
+
+  return new StreamingTextResponse(stream)
 }

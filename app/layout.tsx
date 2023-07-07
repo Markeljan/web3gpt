@@ -1,48 +1,56 @@
-import { Roboto } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/react'
-import '@/styles/styles.css'
+import { Metadata } from 'next'
 
+import { Toaster } from 'react-hot-toast'
 
-const roboto = Roboto({
-  weight: ['100', '300', '400', '500', '700', '900'],
-  subsets: ['latin'],
-  display: 'swap',
-})
+import '@/app/globals.css'
+import { fontMono, fontSans } from '@/lib/fonts'
+import { cn } from '@/lib/utils'
+import { TailwindIndicator } from '@/components/tailwind-indicator'
+import { Providers } from '@/components/providers'
+import { Header } from '@/components/header'
 
-export const metadata = {
-  title: "W3GPT",
-  description: "Web3 enabled AI.",
-};
+export const metadata: Metadata = {
+  metadataBase: new URL('https://w3gpt.ai'),
+  title: {
+    default: 'WEB3 GPT',
+    template: `WEB3 GPT`
+  },
+  description: 'Deploy your smart contracts with ease using AI.',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' }
+  ],
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png'
+  }
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+interface RootLayoutProps {
+  children: React.ReactNode
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={roboto.className}>
-
-      <head>
-        <link
-          rel="favicon"
-          href="/favicon.ico"
-        />
-        <link
-          rel="apple-touch-icon"
-          href="/robot.png"
-        />
-        <link
-          rel="icon"
-          href="/robot.png"
-        />
-
-      </head>
-
-      <body style={{
-        backgroundColor: "#343541",
-        margin: 0,
-        padding: 0,
-      }}>
-        {children}
-        <Analytics />
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body
+        className={cn(
+          'font-sans antialiased',
+          fontSans.variable,
+          fontMono.variable
+        )}
+      >
+        <Toaster />
+        <Providers attribute="class" defaultTheme="system" enableSystem>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex flex-col flex-1 bg-muted/50">{children}</main>
+          </div>
+          <TailwindIndicator />
+        </Providers>
       </body>
-
     </html>
-  );
+  )
 }
