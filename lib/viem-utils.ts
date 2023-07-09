@@ -2,6 +2,7 @@ import chains from "@/lib/chains.json";
 import { ChainData } from "@/lib/types";
 import { Chain } from "viem";
 import { distance } from "fastest-levenshtein";
+import { sepolia } from "viem/chains";
 
 export const API_URLS: Record<Chain["name"], string> = {
     'Ethereum': 'https://api.etherscan.io',
@@ -27,9 +28,11 @@ export const API_KEYS: Record<Chain["name"], string | undefined> = {
     'Optimism Goerli Testnet': process.env.OPTIMISM_EXPLORER_API_KEY,
 }
 
-
 export const createViemChain = (chain: string): Chain | undefined => {
     // get the chain object from the chains.json file. Direct match || partial match
+    if (!chain) {
+        return sepolia;
+    }
     let chainMatch = chains.find((item: ChainData) => item.name.toLowerCase() === chain.toLowerCase());
 
     if (!chainMatch) {

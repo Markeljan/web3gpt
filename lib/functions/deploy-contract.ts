@@ -3,7 +3,7 @@ import { DeployContractConfig, DeployContractResponse } from "@/lib/functions/ty
 import handleImports from "@/lib/deploy-contract/handle-imports";
 import { getRpcUrl, createViemChain, getExplorerUrl } from "@/lib/viem-utils";
 import ipfsUpload from "@/lib/deploy-contract/ipfs-upload";
-import verifyContract from "@/lib/deploy-contract/verify-contract";
+import verifyContract from "@/lib/functions/verify-contract";
 import { Hex, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
 import { sepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
@@ -59,7 +59,7 @@ export default async function deployContract({
     }
 
     // Compile the contract
-    const StandardJsonInput = {
+    const standardJsonInput = JSON.stringify({
         language: "Solidity",
         sources,
         settings: {
@@ -70,9 +70,9 @@ export default async function deployContract({
                 },
             },
         },
-    };
+    });
 
-    const output = JSON.parse(solc.compile(JSON.stringify(StandardJsonInput)));
+    const output = JSON.parse(solc.compile(standardJsonInput));
     if (output.errors) {
         // Filter out warnings
         const errors = output.errors.filter(
@@ -134,38 +134,32 @@ export default async function deployContract({
         args: constructorArgs || [],
     });
 
-    console.log("Contract deployment OK");
+    const deployTxUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`;
+    console.log("Deploy URL: ", deployTxUrl);
 
     // Add the flattened source code to the sources object
     // const flattenedCode = flattenSolidity(sources);
     // const flattenedFileName = fileName.split(".")[0] + "_flattened.sol";
     // sources[flattenedFileName] = { content: flattenedCode };
 
-    //upload contract data to an ipfs directory
-    const ipfsCid = await ipfsUpload(sources, JSON.stringify(abi), bytecode, JSON.stringify(StandardJsonInput));
-    
+    const ipfsCid = await ipfsUpload(sources, JSON.stringify(abi), bytecode, standardJsonInput);
+
     const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`;
     console.log(`IPFS URL: ${ipfsUrl}`)
 
     const encodedConstructorArgs = deployData.slice(bytecode?.length);
-    
-    const deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
 
-    if (deployReceipt.status === "success" && deployReceipt.contractAddress) {
-        try {
-            const verifyResponse = await verifyContract(deployReceipt.contractAddress, JSON.stringify(StandardJsonInput), "v0.8.20+commit.a1b79de6", encodedConstructorArgs, fileName, contractName, viemChain, constructorArgs,
-            );
-            console.log(verifyResponse);
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    const contractAddress = deployReceipt?.contractAddress || '0x'
+    // Trigger the verification process withouth waiting for it to complete
+    verifyContract({
+        deployHash,
+        standardJsonInput: standardJsonInput,
+        encodedConstructorArgs,
+        fileName,
+        contractName,
+        viemChain,
+    }).catch(error => console.error(`Error in triggering contract verification: ${error}`));
 
-    const explorerUrl = `${getExplorerUrl(viemChain)}/address/${contractAddress}`;
-
-    const deploymentData = { name: fileName, chain: viemChain?.name, contractAddress, explorerUrl, ipfsUrl };
-
+    const deploymentData = { explorerUrl: deployTxUrl, ipfsUrl };
     console.log(`Deployment data: `, deploymentData);
 
     return deploymentData;
