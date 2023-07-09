@@ -6,15 +6,15 @@ import { IconArrowRight } from '@/components/ui/icons'
 const exampleMessages = [
   {
     heading: 'ERC20 Wizard',
-    message: `Help me write and deploy an ERC20 token smart contract.`
+    message: `Help me write an ERC20 token smart contract.`
   },
   {
     heading: 'ERC721 Wizard',
-    message: 'Help me write and deploy an ERC721 NFT smart contract.'
+    message: 'Help me write an ERC721 NFT smart contract.'
   },
   {
     heading: 'Multisig Wizard',
-    message: `Help me write and deploy a multisig wallet.`
+    message: `Help me write a multisig wallet.`
   }
 ]
 

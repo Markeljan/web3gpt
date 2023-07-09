@@ -3,7 +3,7 @@ import { DeployContractConfig, DeployContractResponse } from "@/lib/functions/ty
 import handleImports from "@/lib/deploy-contract/handle-imports";
 import { getRpcUrl, createViemChain, getExplorerUrl } from "@/lib/viem-utils";
 import ipfsUpload from "@/lib/deploy-contract/ipfs-upload";
-import verifyContract from "@/lib/functions/verify-contract";
+import verifyContract from "@/lib/deploy-contract/verify-contract";
 import { Hex, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
 import { sepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
@@ -80,7 +80,7 @@ export default async function deployContract({
         );
         if (errors.length > 0) {
             const error = new Error(errors[0].formattedMessage);
-            console.log(error);
+            throw error;
         }
     }
     const contract = output.contracts[fileName];
@@ -157,7 +157,10 @@ export default async function deployContract({
         fileName,
         contractName,
         viemChain,
-    }).catch(error => console.error(`Error in triggering contract verification: ${error}`));
+    }).catch(error => {
+        throw new Error(`Provider for chain ${viemChain.name} not available`);
+    });
+
 
     const deploymentData = { explorerUrl: deployTxUrl, ipfsUrl };
     console.log(`Deployment data: `, deploymentData);
