@@ -1,4 +1,4 @@
-import { createPublicClient, http } from "viem";
+import { Hex, createPublicClient, http } from "viem";
 import { API_KEYS, API_URLS, getRpcUrl } from "@/lib/viem-utils";
 import { VerifyContractParams, VerifyContractRequestParams } from "@/lib/functions/types";
 
@@ -16,14 +16,17 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
         throw new Error(`Provider for chain ${viemChain.name} not available`);
     }
 
-    const deployReceipt = await publicClient.waitForTransactionReceipt({ hash: deployHash, confirmations: 4 })
+    const txConfirmations = await publicClient.getTransactionConfirmations({ hash: deployHash })
         .catch(error => {
             throw new Error(`Error waiting for transaction receipt: ${error.message}`);
         });
 
-    if (deployReceipt.status === "success" && deployReceipt.contractAddress) {
+    if (txConfirmations >= 4) {
+        const deployReceipt = await publicClient.getTransactionReceipt({ hash: deployHash }).catch(error => {
+            throw new Error(`Error getting transaction receipt: ${error.message}`);
+        });
         const verificationOK = await verifyContractRequest({
-            address: deployReceipt.contractAddress,
+            address: deployReceipt.contractAddress as Hex,
             standardJsonInput,
             compilerVersion: "v0.8.20+commit.a1b79de6", //TODO: make this dynamic
             encodedConstructorArgs,
@@ -45,6 +48,8 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
 const verifyContractRequest = async ({ address, standardJsonInput, compilerVersion, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractRequestParams) => {
     const apiUrl = API_URLS[viemChain['name']];
     const apiKey = API_KEYS[viemChain['name']];
+    console.log("apiurl", apiUrl)
+    console.log("apikay", apiKey)
     if (!apiKey) {
         throw new Error(`Unsupported chain or explorer API_KEY.  Network: ${viemChain["network"]}`);
     }

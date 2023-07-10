@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     stream: true,
     messages,
     functions,
-    function_call
+    function_call 
   });
 
   const stream = OpenAIStream(res, {

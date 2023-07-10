@@ -150,19 +150,16 @@ export default async function deployContract({
     const encodedConstructorArgs = deployData.slice(bytecode?.length);
 
     // Trigger the verification process withouth waiting for it to complete
-    verifyContract({
+    const verificationParams = {
         deployHash,
         standardJsonInput: standardJsonInput,
         encodedConstructorArgs,
         fileName,
         contractName,
         viemChain,
-    }).catch(error => {
-        throw new Error(`Provider for chain ${viemChain.name} not available`);
-    });
+    }
 
-
-    const deploymentData = { explorerUrl: deployTxUrl, ipfsUrl };
+    const deploymentData = { explorerUrl: deployTxUrl, ipfsUrl, verificationParams };
     console.log(`Deployment data: `, deploymentData);
 
     return deploymentData;

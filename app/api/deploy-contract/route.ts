@@ -12,13 +12,17 @@ export async function POST(req: Request) {
     if (session == null) {
         return new Response('Unauthorized', { status: 401 })
     }
-
-    const deployResult = await deployContract({
-        chainName,
-        contractName,
-        sourceCode,
-        constructorArgs,
-    });
-
-    return new Response(JSON.stringify(deployResult));
+    try {
+        const deployResult = await deployContract({
+            chainName,
+            contractName,
+            sourceCode,
+            constructorArgs,
+        });
+        return new Response(JSON.stringify(deployResult));
+    } catch (error) {
+        const err = error as Error
+        console.error(`Error in deployContract: ${err.message}`);
+        return new Response(JSON.stringify({ error: `Error in deployContract: ${err.message}` }), { status: 500 });
+    }
 }

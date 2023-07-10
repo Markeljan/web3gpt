@@ -10,6 +10,8 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { nanoid } from '@/lib/utils'
+import { functionSchemas } from "@/lib/functions/schemas";
+import { useEffect, useState } from "react";
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -18,6 +20,39 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
+  const [verificationParams, setVerificationParams] = useState(null)
+  const [polling, setPolling] = useState(false)
+
+  useEffect(() => {
+    const verifyFunction = async (verificationParams: any) => {
+      try {
+        const verifyResponse = await fetch(
+          '/api/verify-contract',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(verificationParams)
+          })
+        if (verifyResponse.ok) {
+          setPolling(false)
+        }
+      } catch (e) {
+        console.log('Verification failed, may more confirmations.', e)
+      }
+    }
+
+    if (polling && verificationParams) {
+      const interval = setInterval(() => {
+        verifyFunction(verificationParams)
+      }, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [polling, verificationParams])
+
+
+
   const functionCallHandler: FunctionCallHandler = async (
     chatMessages,
     functionCall
@@ -44,7 +79,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       // You now have access to the parsed arguments here (assuming the JSON was valid)
       // If JSON is invalid, return an appropriate message to the model so that it may retry?
 
-      const { contractAddress, explorerUrl, ipfsUrl } = await fetch(
+      const response = await fetch(
         '/api/deploy-contract',
         {
           method: 'POST',
@@ -52,18 +87,35 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
             'Content-Type': 'application/json'
           },
           body: functionCall.arguments
-        }
-      ).then(res => res.json())
+        })
+
+      let content: string;
+      let role: 'system' | 'function';
+
+      if (response.ok) {
+        const { explorerUrl, ipfsUrl, verificationParams } = await response.json()
+        setVerificationParams(verificationParams)
+        setPolling(true)
+        content = JSON.stringify({ explorerUrl, ipfsUrl })
+        role = 'function'
+
+      } else {
+        const { error } = await response.json()
+        content = JSON.stringify({ error }) + '\n\n' + 'Deploy again fixing the error.'
+        role = 'system' //'system'
+      }
+
       const functionResponse: ChatRequest = {
         messages: [
           ...chatMessages,
           {
             id: nanoid(),
             name: 'deploy_contract',
-            role: 'function' as const,
-            content: JSON.stringify({ contractAddress, explorerUrl, ipfsUrl })
+            role: role,
+            content: content,
           }
-        ]
+        ],
+        functions: functionSchemas
       }
 
       return functionResponse

@@ -22,7 +22,7 @@ export type VerifyContractParams = {
 }
 
 export type VerifyContractRequestParams = {
-    address: string,
+    address: Hex,
     standardJsonInput: string,
     compilerVersion: string,
     encodedConstructorArgs: string,
