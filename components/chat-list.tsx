@@ -8,6 +8,8 @@ export interface ChatList {
 }
 
 export function ChatList({ messages }: ChatList) {
+  // Remove system messages and funciton returns from the list
+  messages = messages.filter((message) => message.role !== 'system' && message.role !== 'function')
   if (!messages.length) {
     return null
   }
