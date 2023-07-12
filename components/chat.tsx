@@ -65,7 +65,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           {
             id: nanoid(),
             name: 'get_current_time',
-            role: 'function' as const,
+            role: 'function',
             content: JSON.stringify({ time })
           }
         ]
