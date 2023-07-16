@@ -6,6 +6,7 @@ import { VerifyContractParams, VerifyContractRequestParams } from "@/lib/functio
 const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractParams) => {
     const rpcUrl = getRpcUrl(viemChain);
 
+
     //Prepare provider
     const publicClient = createPublicClient({
         chain: viemChain,
@@ -25,6 +26,7 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
         const deployReceipt = await publicClient.getTransactionReceipt({ hash: deployHash }).catch(error => {
             throw new Error(`Error getting transaction receipt: ${error.message}`);
         });
+
         const verificationOK = await verifyContractRequest({
             address: deployReceipt.contractAddress as Hex,
             standardJsonInput,
@@ -34,10 +36,10 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
             contractName,
             viemChain
         });
+        
         if (verificationOK) {
             return deployReceipt.contractAddress;
         } else {
-
             throw new Error("Contract verification failed");
         }
     } else {
@@ -48,15 +50,13 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
 const verifyContractRequest = async ({ address, standardJsonInput, compilerVersion, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractRequestParams) => {
     const apiUrl = API_URLS[viemChain['name']];
     const apiKey = API_KEYS[viemChain['name']];
-    console.log("apiurl", apiUrl)
-    console.log("apikay", apiKey)
-    if (!apiKey) {
+    if (!apiKey && viemChain.name !== "Mantle Testnet") {
         throw new Error(`Unsupported chain or explorer API_KEY.  Network: ${viemChain["network"]}`);
     }
 
     try {
         const params = new URLSearchParams();
-        params.append('apikey', apiKey);
+        apiKey && params.append('apikey', apiKey);
         params.append('module', 'contract');
         params.append('action', 'verifysourcecode');
         params.append('contractaddress', address);
@@ -69,7 +69,7 @@ const verifyContractRequest = async ({ address, standardJsonInput, compilerVersi
             params.append('constructorArguements', encodedConstructorArgs);
         }
         params.append('evmversion', 'london'); // leave blank for compiler default
-        const response = await fetch(apiUrl + '/api', {
+        const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'

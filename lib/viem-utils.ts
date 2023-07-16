@@ -2,21 +2,22 @@ import chains from "@/lib/chains.json";
 import { ChainData } from "@/lib/types";
 import { Chain } from "viem";
 import { distance } from "fastest-levenshtein";
-import { sepolia } from "viem/chains";
 
 export const API_URLS: Record<Chain["name"], string> = {
-    'Ethereum': 'https://api.etherscan.io',
-    'Goerli': 'https://api-goerli.etherscan.io',
-    'Sepolia': 'https://api-sepolia.etherscan.io',
-    'Arbitrum One': 'https://api.arbiscan.io',
-    'Arbitrum Goerli': 'https://api-goerli.arbiscan.io',
-    'Polygon Mainnet': 'https://api.polygonscan.com',
-    'Mumbai': 'https://api-testnet.polygonscan.com',
-    'Optimism': 'https://api-optimistic.etherscan.io',
-    'Optimism Goerli Testnet': 'https://api-goerli.optimistic.etherscan.io',
+    'Mantle Testnet': 'https://explorer.testnet.mantle.xyz/api',
+    'Ethereum': 'https://api.etherscan.io/api',
+    'Goerli': 'https://api-goerli.etherscan.io/api',
+    'Sepolia': 'https://api-sepolia.etherscan.io/api',
+    'Arbitrum One': 'https://api.arbiscan.io/api',
+    'Arbitrum Goerli': 'https://api-goerli.arbiscan.io/api',
+    'Polygon Mainnet': 'https://api.polygonscan.com/api',
+    'Mumbai': 'https://api-testnet.polygonscan.com/api',
+    'Optimism': 'https://api-optimistic.etherscan.io/api',
+    'Optimism Goerli Testnet': 'https://api-goerli.optimistic.etherscan.io/api',
 }
 
 export const API_KEYS: Record<Chain["name"], string | undefined> = {
+    'Mantle Testnet': '',
     'Ethereum': process.env.ETHEREUM_EXPLORER_API_KEY,
     'Goerli': process.env.ETHEREUM_EXPLORER_API_KEY,
     'Sepolia': process.env.ETHEREUM_EXPLORER_API_KEY,
@@ -28,12 +29,12 @@ export const API_KEYS: Record<Chain["name"], string | undefined> = {
     'Optimism Goerli Testnet': process.env.OPTIMISM_EXPLORER_API_KEY,
 }
 
-export const createViemChain = (chain: string): Chain | undefined => {
+export const createViemChain = (chain: string): Chain => {
     // get the chain object from the chains.json file. Direct match || partial match
     if (!chain) {
-        return sepolia;
+        chain = 'Mantle Testnet';
     }
-    let chainMatch = chains.find((item: ChainData) => item.name.toLowerCase() === chain.toLowerCase());
+    let chainMatch = chains.find((item: ChainData) => item.name.toLowerCase() === chain.toLowerCase())
 
     if (!chainMatch) {
         let minDistance = Infinity;
@@ -50,11 +51,7 @@ export const createViemChain = (chain: string): Chain | undefined => {
             }
         });
 
-        chainMatch = bestMatch;
-    }
-
-    if (!chainMatch) {
-        return undefined;
+        chainMatch = bestMatch || chains.find((item: ChainData) => item.name === 'Mantle Testnet')! // fallback to Mantle Testnet
     }
 
     const viemChain: Chain | undefined = {
