@@ -1,1 +1,1 @@
-{"image":"mcr.microsoft.com/devcontainers/javascript-node","build":{},"forwardPorts": [3000]}
+{"image":"mcr.microsoft.com/devcontainers/javascript-node:18","build":{},"forwardPorts": [3000], "postStartCommand": "pnpm i"}
