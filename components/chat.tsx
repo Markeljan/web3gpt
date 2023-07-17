@@ -20,37 +20,36 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
-  const [verificationParams, setVerificationParams] = useState(null)
-  const [polling, setPolling] = useState(false)
+  // const [verificationParams, setVerificationParams] = useState(null)
+  // const [polling, setPolling] = useState(false)
 
-  useEffect(() => {
-    const verifyFunction = async (verificationParams: any) => {
-      try {
-        const verifyResponse = await fetch(
-          '/api/verify-contract',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(verificationParams)
-          })
-        if (verifyResponse.ok) {
-          setPolling(false)
-        }
-      } catch (e) {
-        console.log('Verification failed, may more confirmations.', e)
+  const retryBackendVerifyUntilSuccess = async (verificationParams: any, countdown = 20) => {
+    try {
+      const verifyResponse = await fetch(
+        '/api/verify-contract',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(verificationParams)
+        });
+      const json = (await verifyResponse.text()) as unknown as (string | null);
+      console.log('verifyResponse:', {status: verifyResponse.status, statusText: verifyResponse.statusText, json: json, ok: verifyResponse.ok});
+      // if (verifyResponse.ok) {
+        // console.log('verification succeeded!');
+      if (json != null) {
+        console.log('verification succeeded! contract address:', json);
+      } else if (countdown == 0) {
+        console.log('done retries for verifying');
+      } else {
+        console.log('trying again in 10 seconds');
+        setTimeout(() => retryBackendVerifyUntilSuccess(verificationParams, countdown - 1), 10000);
       }
+    } catch (e) {
+      console.log('Verification failed, may more confirmations.', e, (e as Error).stack);
     }
-
-    if (polling && verificationParams) {
-      const interval = setInterval(() => {
-        verifyFunction(verificationParams)
-      }, 10000)
-      return () => clearInterval(interval)
-    }
-  }, [polling, verificationParams])
-
+  }
 
 
   const functionCallHandler: FunctionCallHandler = async (
@@ -87,20 +86,24 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
             'Content-Type': 'application/json'
           },
           body: functionCall.arguments
-        })
+        });
 
       let content: string;
       let role: 'system' | 'function';
 
+      const json = await response.json();
+      console.log('response status:', response.status);
+      console.log('deploy contract response json:', json);
+
       if (response.ok) {
-        const { explorerUrl, ipfsUrl, verificationParams } = await response.json()
-        setVerificationParams(verificationParams)
-        setPolling(true)
+        const { explorerUrl, ipfsUrl, verificationParams } = json;
+        retryBackendVerifyUntilSuccess(verificationParams);
         content = JSON.stringify({ explorerUrl, ipfsUrl })
+        console.log('passing content to gpt:', content);
         role = 'function'
 
       } else {
-        const { error } = await response.json()
+        const { error } = json
         content = JSON.stringify({ error }) + '\n\n' + 'Deploy again fixing the error.'
         role = 'system' //'system'
       }

@@ -22,7 +22,7 @@ export async function POST(req: Request) {
         return new Response(JSON.stringify(deployResult));
     } catch (error) {
         const err = error as Error
-        console.error(`Error in deployContract: ${err.message}`);
+        console.error(`Error in deployContract: ${err.message}\nStacktrace: ${err.stack}`);
         return new Response(JSON.stringify({ error: `Error in deployContract: ${err.message}` }), { status: 500 });
     }
 }

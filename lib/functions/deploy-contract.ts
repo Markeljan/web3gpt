@@ -144,6 +144,8 @@ export default async function deployContract({
     // const flattenedFileName = fileName.split(".")[0] + "_flattened.sol";
     // sources[flattenedFileName] = { content: flattenedCode };
 
+    console.log('calling ipfsUpload');
+
     const ipfsCid = await ipfsUpload(sources, JSON.stringify(abi), bytecode, standardJsonInput);
 
     const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`;
