@@ -17,11 +17,15 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
         throw new Error(`Provider for chain ${viemChain.name} not available`);
     }
 
+    while (await publicClient.getTransactionConfirmations({ hash: deployHash }) < 5) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
     const deployReceipt = await publicClient.getTransactionReceipt({ hash: deployHash }).catch(error => {
         throw new Error(`Error getting transaction receipt: ${error.message}`);
     });
 
-    const verificationOK = await verifyContractRequest({
+    const verificationResult = await verifyContractRequest({
         address: deployReceipt.contractAddress as Hex,
         standardJsonInput,
         compilerVersion: "v0.8.20+commit.a1b79de6", //TODO: make this dynamic
@@ -31,9 +35,11 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
         viemChain
     });
 
-    if (verificationOK) {
+    if (verificationResult === "success") {
         console.log('verification success');
         return deployReceipt.contractAddress;
+    } else if (verificationResult === "already_verified") {
+        return "already_verified";
     } else {
         console.log('verification failure');
         return null;
@@ -41,7 +47,7 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
 
 }
 
-const verifyContractRequest = async ({ address, standardJsonInput, compilerVersion, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractRequestParams) => {
+const verifyContractRequest = async ({ address, standardJsonInput, compilerVersion, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractRequestParams): Promise<"success" | "already_verified" | "failed"> => {
     const apiUrl = API_URLS[viemChain['name']];
     const apiKey = API_KEYS[viemChain['name']];
     if (!apiKey && viemChain.name !== "Mantle Testnet") {
@@ -74,7 +80,13 @@ const verifyContractRequest = async ({ address, standardJsonInput, compilerVersi
         console.log('verification api response status: ', response.status);
         console.log('verification api response json: ', json);
         console.log('verification api response ok: ', response.ok);
-        return json.message == 'OK';
+        if (json.message == 'OK') {
+            return "success";
+        } else if (json.message == 'Smart-contract already verified.') {
+            return "already_verified";
+        } else {
+            return "failed";
+        }
     } catch (error) {
         console.log('verification api error: ', error);
         console.log('verification api error stack: ', (error as Error).stack);

@@ -23,33 +23,30 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   // const [verificationParams, setVerificationParams] = useState(null)
   // const [polling, setPolling] = useState(false)
 
-  async function retryBackendVerifyUntilSuccess(verificationParams: any, countdown = 20): Promise<string | null> {
-    try {
-      const verifyResponse = await fetch(
-        '/api/verify-contract',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(verificationParams)
-        });
-      const json = (await verifyResponse.text()) as unknown as (string | null);
-      console.log('verifyResponse:', {status: verifyResponse.status, statusText: verifyResponse.statusText, json: json, ok: verifyResponse.ok});
-      if (json != null) {
-        console.log('verification succeeded! contract address:', json);
-        return json;
-      } else if (countdown == 0) {
-        console.log('gave up trying to verify contract after retries');
-        return null;
-      } else {
-        console.log('trying again in 10 seconds');
-        await new Promise(r => setTimeout(r, 10000));
-        return await retryBackendVerifyUntilSuccess(verificationParams, countdown - 1);
-      }
-    } catch (e) {
-      console.log('Verification failed, may more confirmations.', e, (e as Error).stack);
+  async function retryBackendVerifyUntilSuccess(verificationParams: any, countdown = 30, potentialAddress?: string): Promise<string | null> {
+    const verifyResponse = await fetch(
+      '/api/verify-contract',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(verificationParams)
+      });
+    const json = (await verifyResponse.json()) as unknown as (string | null);
+    console.log('verifyResponse:', {status: verifyResponse.status, statusText: verifyResponse.statusText, json: json, ok: verifyResponse.ok});
+    if (json == "already_verified") {
+      return potentialAddress ?? null;
+    } else if (json != null) {
+      console.log('verification succeeded step 1! contract address:', json);
+      return await retryBackendVerifyUntilSuccess(verificationParams, countdown - 1, json);
+    } else if (countdown == 0) {
+      console.log('gave up trying to verify contract after retries');
       return null;
+    } else {
+      console.log('trying again in 10 seconds');
+      await new Promise(r => setTimeout(r, 6000));
+      return await retryBackendVerifyUntilSuccess(verificationParams, countdown - 1, potentialAddress);
     }
   }
 
