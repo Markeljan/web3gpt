@@ -12,7 +12,7 @@ export const functionSchemas: ChatCompletionFunctions[] = [
     },
     {
         name: 'deploy_contract',
-        description: 'Deploy a smart contract',
+        description: 'Deploy a smart contract and tries to verify the code on the block explorer.',
         parameters: {
             type: 'object',
             description: 'The parameters the functions accepts, described as a JSON Schema object. See the guide for examples, and the JSON Schema reference for documentation about the format.',
@@ -50,4 +50,4 @@ export const functionSchemas: ChatCompletionFunctions[] = [
             required: ['contractName', 'chainName', 'sourceCode', 'constructorArgs']
         }
     },
-]   
+]

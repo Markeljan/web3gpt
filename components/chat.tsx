@@ -23,7 +23,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   // const [verificationParams, setVerificationParams] = useState(null)
   // const [polling, setPolling] = useState(false)
 
-  const retryBackendVerifyUntilSuccess = async (verificationParams: any, countdown = 20) => {
+  async function retryBackendVerifyUntilSuccess(verificationParams: any, countdown = 20): Promise<string | null> {
     try {
       const verifyResponse = await fetch(
         '/api/verify-contract',
@@ -36,18 +36,20 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         });
       const json = (await verifyResponse.text()) as unknown as (string | null);
       console.log('verifyResponse:', {status: verifyResponse.status, statusText: verifyResponse.statusText, json: json, ok: verifyResponse.ok});
-      // if (verifyResponse.ok) {
-        // console.log('verification succeeded!');
       if (json != null) {
         console.log('verification succeeded! contract address:', json);
+        return json;
       } else if (countdown == 0) {
-        console.log('done retries for verifying');
+        console.log('gave up trying to verify contract after retries');
+        return null;
       } else {
         console.log('trying again in 10 seconds');
-        setTimeout(() => retryBackendVerifyUntilSuccess(verificationParams, countdown - 1), 10000);
+        await new Promise(r => setTimeout(r, 10000));
+        return await retryBackendVerifyUntilSuccess(verificationParams, countdown - 1);
       }
     } catch (e) {
       console.log('Verification failed, may more confirmations.', e, (e as Error).stack);
+      return null;
     }
   }
 
@@ -97,8 +99,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
       if (response.ok) {
         const { explorerUrl, ipfsUrl, verificationParams } = json;
-        retryBackendVerifyUntilSuccess(verificationParams);
-        content = JSON.stringify({ explorerUrl, ipfsUrl })
+        const verifiedContractAddress = await retryBackendVerifyUntilSuccess(verificationParams);
+        content = JSON.stringify({ explorerUrl, ipfsUrl, verifiedContractAddress, verifiedSmartContractUrl: verifiedContractAddress && ('https://explorer.testnet.mantle.xyz/address/' + verifiedContractAddress), contractVerificationResult: verifiedContractAddress != null ? 'success' : 'failure' })
         console.log('passing content to gpt:', content);
         role = 'function'
 
