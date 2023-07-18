@@ -115,6 +115,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         role = 'function'
 
       } else {
+        setOverlay("Deployment error, trying again...");
+        console.log(json);
         const { error } = json
         content = JSON.stringify({ error }) + '\n\n' + 'Deploy again fixing the error.'
         role = 'system' //'system'
