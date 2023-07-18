@@ -64,6 +64,8 @@ contract Consumer {
 
 For Mantle Testnet, the aggregator address is "0xf78249b2D762C86C9699ff9BA74C5dbf9b4c168a" and the non-US person category address is "0x0cE1f283ca59C4F7fE7581DDb94e08eBff17869E".
 
+For Mantle Mainnet, the aggregator address is "0x6Fb99ceEe3e3148e25d9150750F5f17277415aE3" and the non-US person category address is "0x1401F26774E27E711d4819c46b1bBed00A6f6Bbc".
+
 "SourceId.BAB" is the source ID for BAB token, and "SourceId.REALT" is the source ID for the token representing holding REALT KYC.
 `;
 
