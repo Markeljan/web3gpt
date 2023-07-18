@@ -20,8 +20,15 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
-  // const [verificationParams, setVerificationParams] = useState(null)
-  // const [polling, setPolling] = useState(false)
+  const [overlayText, setOverlayText] = useState("");
+
+  function clearOverlay() {
+    setOverlay("");
+  }
+
+  function setOverlay(text: string) {
+    setOverlayText(text.trim());
+  }
 
   async function retryBackendVerifyUntilSuccess(verificationParams: any, countdown = 30, potentialAddress?: string): Promise<string | null> {
     const verifyResponse = await fetch(
@@ -77,6 +84,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       // You now have access to the parsed arguments here (assuming the JSON was valid)
       // If JSON is invalid, return an appropriate message to the model so that it may retry?
 
+      setOverlay("Deploying contract...");
+
       const response = await fetch(
         '/api/deploy-contract',
         {
@@ -87,6 +96,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           body: functionCall.arguments
         });
 
+      setOverlay("Deployment complete!");
+
       let content: string;
       let role: 'system' | 'function';
 
@@ -96,7 +107,9 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
       if (response.ok) {
         const { explorerUrl, ipfsUrl, verificationParams } = json;
+        setOverlay("Deployment complete!\n\nVerifying contract...");
         const verifiedContractAddress = await retryBackendVerifyUntilSuccess(verificationParams);
+        clearOverlay();
         content = JSON.stringify({ explorerUrl, ipfsUrl, verifiedContractAddress, verifiedSmartContractUrl: verifiedContractAddress && ('https://explorer.testnet.mantle.xyz/address/' + verifiedContractAddress), contractVerificationResult: verifiedContractAddress != null ? 'success' : 'failure' })
         console.log('passing content to gpt:', content);
         role = 'function'
@@ -161,6 +174,22 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         input={input}
         setInput={setInput}
       />
+
+      {/* {overlayText && (
+        <div className="overlay">
+          <div className="overlay-content">
+            <code className="mt-5">{overlayText}</code>
+          </div>
+        </div>
+      )} */}
+
+      {overlayText && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="p-8 bg-white rounded shadow-lg">
+            <pre>{overlayText}</pre>
+          </div>
+        </div>
+      )}
     </>
   )
 }
