@@ -67,6 +67,39 @@ For Mantle Testnet, the aggregator address is "0xf78249b2D762C86C9699ff9BA74C5db
 For Mantle Mainnet, the aggregator address is "0x6Fb99ceEe3e3148e25d9150750F5f17277415aE3" and the non-US person category address is "0x1401F26774E27E711d4819c46b1bBed00A6f6Bbc".
 
 "SourceId.BAB" is the source ID for BAB token, and "SourceId.REALT" is the source ID for the token representing holding REALT KYC.
+
+API3 dAPIs provide smart contracts with access to continuously updated feeds of market data. Once a dAPI has been imported a smart contract can access a range of data feed services through the API3 Market. To access dAPI data, import the IProxy interface and call the read() function.
+
+Here's an example of pulling API3 dAPI data:
+
+\`\`\`
+pragma solidity 0.8.17;
+
+interface IProxy {
+    function read() external view returns (int224 value, uint32 timestamp);
+
+    function api3ServerV1() external view returns (address);
+}
+
+contract DataFeedReaderExample {
+    ...
+
+    function readDataFeed()
+        external
+        view
+        returns (int224 value, uint256 timestamp)
+    {
+        // proxyAddress is the address of the proxy contract for
+        // the dAPI you want to read.
+        // Head over to https://market.api3.org to get the proxy
+        // address for the dAPI you want.
+        (value, timestamp) = IProxy(proxyAddress).read();
+    }
+}
+\`\`\`
+
+API3 proxy addresses for Mantle Testnet:
+- AAPL/USD price (price of Apple stock in USD): "0x6847E20f8ee8BC62976A12DfC50692effa116334"
 `;
 
 
