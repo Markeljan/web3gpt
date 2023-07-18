@@ -32,6 +32,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
   // countdown = 10 with ~3sec for each retry = maximum 30 seconds waiting time before timing out and returning to the user
   async function retryBackendVerifyUntilSuccess(verificationParams: any, countdown = 10, potentialAddress?: string): Promise<string | null> {
+    console.log("trying verification with countdown:", countdown);
     const verifyResponse = await fetch(
       '/api/verify-contract',
       {
@@ -43,15 +44,16 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       });
     const json = (await verifyResponse.json()) as unknown as (string | null);
     console.log('verifyResponse:', {status: verifyResponse.status, statusText: verifyResponse.statusText, json: json, ok: verifyResponse.ok});
-    if (json == "already_verified") {
-      return potentialAddress ?? null;
-    } else if (json != null) {
-      console.log('verification succeeded step 1! contract address:', json);
-      await new Promise(r => setTimeout(r, 2500));
-      return await retryBackendVerifyUntilSuccess(verificationParams, countdown - 1, json);
-    } else if (countdown == 0) {
+    if (countdown == 0) {
       console.log('gave up trying to verify contract after retries');
       return potentialAddress ?? null;
+    } else if (json == "already_verified") {
+      console.log("got already_verified, verification was successful!");
+      return potentialAddress ?? null;
+    } else if (json != null) {
+      console.log('success response from verification, waiting for already_verified');
+      await new Promise(r => setTimeout(r, 2500));
+      return await retryBackendVerifyUntilSuccess(verificationParams, countdown - 1, json);
     } else {
       console.log('trying again in 10 seconds');
       await new Promise(r => setTimeout(r, 5000));
@@ -189,7 +191,11 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
       {overlayText && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="p-8 bg-white rounded shadow-lg">
+          <div className="p-8 bg-white rounded shadow-lg flex items-center">
+            <div className="animate-spin mr-4">
+              {/* Replace the below div with your preferred spinner*/}
+              <div className="border-t-4 border-gray-600 rounded-full h-6 w-6"></div>
+            </div>
             <pre>{overlayText}</pre>
           </div>
         </div>
