@@ -24,14 +24,21 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
   function clearOverlay() {
     setOverlay("");
+    clearContractText();
   }
 
   function setOverlay(text: string) {
     setOverlayText(text.trim());
   }
 
+  const [contractText, setContractText] = useState("");
+
+  function clearContractText() {
+    setContractText("");
+  }
+
   // countdown = 10 with ~3sec for each retry = maximum 30 seconds waiting time before timing out and returning to the user
-  async function retryBackendVerifyUntilSuccess(verificationParams: any, countdown = 10, potentialAddress?: string): Promise<string | null> {
+  async function retryBackendVerifyUntilSuccess(verificationParams: any, countdown = 5, potentialAddress?: string): Promise<string | null> {
     console.log("trying verification with countdown:", countdown);
     const verifyResponse = await fetch(
       '/api/verify-contract',
@@ -66,6 +73,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     chatMessages,
     functionCall
   ) => {
+    console.log("functionCallHandler called with functionCall:", functionCall);
     if (functionCall.name === 'get_current_time') {
       const time = new Date().toLocaleTimeString()
       const functionResponse: ChatRequest = {
@@ -88,7 +96,16 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       // You now have access to the parsed arguments here (assuming the JSON was valid)
       // If JSON is invalid, return an appropriate message to the model so that it may retry?
 
-      setOverlay("Deploying contract...");
+      try {
+        if (functionCall.arguments != null) {
+          const contractCode = JSON.parse(functionCall.arguments).sourceCode;
+
+          console.log("Deploying smart contract -- code:", contractCode);
+
+          setOverlay("Deploying contract...");
+          contractCode && setContractText(contractCode);
+        }
+      } catch (e) {console.log("failed to show contract code in overlay");}
 
       const response = await fetch(
         '/api/deploy-contract',
@@ -111,7 +128,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
       if (response.ok) {
         const { explorerUrl, ipfsUrl, verificationParams } = json;
-        setOverlay("Deployment complete!\n\nVerifying contract...");
+        setOverlay("Deployment complete! Verifying contract...");
         const verifiedContractAddress = await retryBackendVerifyUntilSuccess(verificationParams);
         clearOverlay();
         content = JSON.stringify({ explorerUrl, ipfsUrl, verifiedContractAddress, verifiedSmartContractUrl: verifiedContractAddress && ('https://explorer.testnet.mantle.xyz/address/' + verifiedContractAddress), contractVerificationResult: verifiedContractAddress != null ? 'success' : 'failure' })
@@ -119,7 +136,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         role = 'function'
 
       } else {
-        setOverlay("Deployment error, trying again...");
+        clearOverlay();
         console.log(json);
         const { error } = json
         content = JSON.stringify({ error }) + '\n\n' + 'Deploy again fixing the error.'
@@ -191,12 +208,16 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
       {overlayText && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="p-8 bg-white rounded shadow-lg flex items-center">
-            <div className="animate-spin mr-4">
-              {/* Replace the below div with your preferred spinner*/}
-              <div className="border-t-4 border-gray-600 rounded-full h-6 w-6"></div>
+          <div className="p-8 bg-white rounded shadow-lg flex flex-col items-center">
+            <div className="flex items-center mb-4">
+              <div className="animate-spin mr-4">
+                <div className="border-t-4 border-gray-600 rounded-full h-6 w-6"></div>
+              </div>
+              <div className="font-bold text-lg text-gray-600">{overlayText}</div>
             </div>
-            <pre>{overlayText}</pre>
+            {contractText && (
+              <pre className="p-4 bg-black text-green-400 rounded max-w-[800px] max-h-[400px] overflow-auto">{contractText}</pre>
+            )}
           </div>
         </div>
       )}
