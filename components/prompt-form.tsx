@@ -17,13 +17,15 @@ export interface PromptProps
   extends Pick<UseChatHelpers, 'input' | 'setInput'> {
   onSubmit: (value: string) => void
   isLoading: boolean
+  disabled?: boolean
 }
 
 export function PromptForm({
   onSubmit,
   input,
   setInput,
-  isLoading
+  isLoading,
+  disabled = false
 }: PromptProps) {
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
@@ -69,17 +71,20 @@ export function PromptForm({
           rows={1}
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder="Send a message."
+          placeholder={disabled ? "Pass Antibot liveliness with ZkMe to send a message." : "Send a message."}
           spellCheck={false}
-          className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
+          className={`min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm ${disabled ? 'placeholder-red' : ''}`}
+          style={{ lineHeight: '1.5rem' }}
+          disabled={disabled}
         />
+
         <div className="absolute right-0 top-4 sm:right-4">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 type="submit"
                 size="icon"
-                disabled={isLoading || input === ''}
+                disabled={isLoading || input === '' || disabled}
               >
                 <IconArrowElbow />
                 <span className="sr-only">Send message</span>

@@ -14,12 +14,12 @@ import { functionSchemas } from "@/lib/functions/schemas";
 import { useEffect, useState } from "react";
 
 export interface ChatProps extends React.ComponentProps<'div'> {
-  initialMessages?: Message[]
-  id?: string
+  initialMessages?: Message[];
+  id?: string;
+  session?: string;
 }
 
-
-export function Chat({ id, initialMessages, className }: ChatProps) {
+export function Chat({ id, initialMessages, className, session }: ChatProps) {
   const [overlayText, setOverlayText] = useState("");
 
   function clearOverlay() {
@@ -180,7 +180,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length > 1 ? (
           <>
-            <ChatList messages={messages} />
+            <ChatList messages={messages} session={session}/>
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : (

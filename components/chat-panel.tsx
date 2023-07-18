@@ -4,6 +4,7 @@ import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { UseChatHelpers } from "ai/react/dist";
 import { functionSchemas } from '@/lib/functions/schemas'
+import { useLocalStorage } from '@/lib/hooks/use-local-storage'; // assuming the hook is in this file
 
 export interface ChatPanelProps
   extends Pick<
@@ -29,6 +30,8 @@ export function ChatPanel({
   setInput,
   messages
 }: ChatPanelProps) {
+  const [isZkMeVerified] = useLocalStorage('isZkMeVerified', false);
+
   return (
     <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50%">
       <ButtonScrollToBottom />
@@ -49,6 +52,7 @@ export function ChatPanel({
                 variant="outline"
                 onClick={() => reload()}
                 className="bg-background"
+                disabled={!isZkMeVerified}
               >
                 <IconRefresh className="mr-2" />
                 Regenerate response
@@ -69,6 +73,7 @@ export function ChatPanel({
             input={input}
             setInput={setInput}
             isLoading={isLoading}
+            disabled={!isZkMeVerified}
           />
         </div>
       </div>

@@ -1,6 +1,5 @@
 "use client"
 
-
 import React, { useState } from "react";
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
@@ -14,10 +13,11 @@ import { Message } from "ai";
 import { Button } from "./ui/button";
 
 export interface ChatMessageProps {
-  message: Message
+  message: Message;
+  session: any;
 }
 
-export function ChatMessage({ message, ...props }: ChatMessageProps) {
+export function ChatMessage({ message, session, ...props }: ChatMessageProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const onExpandClick = () => setIsExpanded(!isExpanded);
@@ -56,7 +56,12 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
             : 'bg-primary text-primary-foreground'
         )}
       >
-        {message.role === 'user' ? <IconUser /> : message.function_call ? <IconF /> : <IconOpenAI />}
+        {message.role === 'user' && session?.user?.image ?
+          <img
+            src={session.user.image}
+            className={cn('h-7 w-7 rounded')}
+            alt="User's profile picture"
+          /> :message.role === 'user' ? <IconUser/> : message.function_call ? <IconF /> : <IconOpenAI />}
       </div>
       <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
         <MemoizedReactMarkdown

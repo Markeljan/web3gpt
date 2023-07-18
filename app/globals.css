@@ -77,3 +77,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .placeholder-red::placeholder {
+    @apply text-red-700 opacity-75;
+  }
+}
