@@ -30,7 +30,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     setOverlayText(text.trim());
   }
 
-  async function retryBackendVerifyUntilSuccess(verificationParams: any, countdown = 30, potentialAddress?: string): Promise<string | null> {
+  // countdown = 10 with ~3sec for each retry = maximum 30 seconds waiting time before timing out and returning to the user
+  async function retryBackendVerifyUntilSuccess(verificationParams: any, countdown = 10, potentialAddress?: string): Promise<string | null> {
     const verifyResponse = await fetch(
       '/api/verify-contract',
       {
@@ -46,13 +47,14 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       return potentialAddress ?? null;
     } else if (json != null) {
       console.log('verification succeeded step 1! contract address:', json);
+      await new Promise(r => setTimeout(r, 2500));
       return await retryBackendVerifyUntilSuccess(verificationParams, countdown - 1, json);
     } else if (countdown == 0) {
       console.log('gave up trying to verify contract after retries');
-      return null;
+      return potentialAddress ?? null;
     } else {
       console.log('trying again in 10 seconds');
-      await new Promise(r => setTimeout(r, 6000));
+      await new Promise(r => setTimeout(r, 5000));
       return await retryBackendVerifyUntilSuccess(verificationParams, countdown - 1, potentialAddress);
     }
   }
