@@ -11,12 +11,13 @@ import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { nanoid } from '@/lib/utils'
 import { functionSchemas } from "@/lib/functions/schemas";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Session } from "next-auth";
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[];
   id?: string;
-  session?: string;
+  session?: Session;
 }
 
 export function Chat({ id, initialMessages, className, session }: ChatProps) {

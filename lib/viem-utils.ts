@@ -34,7 +34,7 @@ export const createViemChain = (chain: string): Chain => {
     if (!chain) {
         chain = 'Mantle Testnet';
     }
-    let chainMatch = chains.find((item: ChainData) => item.name.toLowerCase() === chain.toLowerCase())
+    let chainMatch = chains.find((item) => item.name.toLowerCase() === chain.toLowerCase())
 
     if (!chainMatch) {
         let minDistance = Infinity;
@@ -51,7 +51,7 @@ export const createViemChain = (chain: string): Chain => {
             }
         });
 
-        chainMatch = bestMatch || chains.find((item: ChainData) => item.name === 'Mantle Testnet')! // fallback to Mantle Testnet
+        chainMatch = bestMatch || chains.find((item) => item.name === 'Mantle Testnet')! // fallback to Mantle Testnet
     }
 
     const viemChain: Chain | undefined = {
