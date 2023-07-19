@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from 'next/image'
-import { Antibot } from "zkme-antibot-component"
+// import { Antibot } from "zkme-antibot-component"
 import { Button } from "./ui/button";
 import { useLocalStorage } from '@/lib/hooks/use-local-storage';
 import { IconCheck } from "./ui/icons";
@@ -29,7 +29,7 @@ const ZkMeLoginButton = (): JSX.Element => {
                 <Image src="/zkme-dark.svg" alt="zkMe Antibot" width={80} height={50} />
                 {isZkMeVerified && <IconCheck className='text-teal-900 w-5 h-5' />}
             </Button>
-            <Antibot isOpen={isProofOfFaceOpen} verifySuccess={verifySuccessCallback} />
+            {/* <Antibot isOpen={isProofOfFaceOpen} verifySuccess={verifySuccessCallback} /> */}
         </>
     )
 }
