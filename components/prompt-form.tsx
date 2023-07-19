@@ -10,7 +10,7 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
-import { IconArrowElbow, IconPlus } from '@/components/ui/icons'
+import { IconArrowElbow, IconPlus, IconStop } from '@/components/ui/icons'
 import { UseChatHelpers } from 'ai/react'
 
 export interface PromptProps
@@ -73,7 +73,7 @@ export function PromptForm({
           onChange={e => setInput(e.target.value)}
           placeholder={disabled ? "Pass Antibot liveliness with ZkMe to send a message." : "Send a message."}
           spellCheck={false}
-          className={`min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm ${disabled ? 'placeholder-red' : ''}`}
+          className={`min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm ${disabled ? 'placeholder-destructive' : ''}`}
           style={{ lineHeight: '1.5rem' }}
           disabled={disabled}
         />
@@ -82,8 +82,10 @@ export function PromptForm({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                className='text-black'
                 type="submit"
                 size="icon"
+                variant={disabled ? 'destructive' : 'default'}
                 disabled={isLoading || input === '' || disabled}
               >
                 <IconArrowElbow />

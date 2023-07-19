@@ -2,9 +2,9 @@ import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
-import { UseChatHelpers } from "ai/react/dist";
+import { UseChatHelpers } from "ai/react/dist"
 import { functionSchemas } from '@/lib/functions/schemas'
-import { useLocalStorage } from '@/lib/hooks/use-local-storage'; // assuming the hook is in this file
+import { useLocalStorage } from '@/lib/hooks/use-local-storage' // assuming the hook is in this file
 
 export interface ChatPanelProps
   extends Pick<
@@ -36,7 +36,7 @@ export function ChatPanel({
     <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50%">
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
-        <div className="flex h-10 items-center justify-center">
+      <div className="flex h-10 items-center justify-center pb-5">
           {isLoading ? (
             <Button
               variant="outline"
