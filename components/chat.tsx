@@ -208,7 +208,7 @@ export function Chat({ id, initialMessages, className, session }: ChatProps) {
       )} */}
 
       {overlayText && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="p-8 bg-white rounded shadow-lg flex flex-col items-center">
             <div className="flex items-center mb-4">
               <div className="animate-spin mr-4">

@@ -14,7 +14,9 @@ const ZkMeLoginButton = (): JSX.Element => {
 
     const verifySuccessCallback = () => {
         setIsZkMeVerified(true)
-        window.location.reload()
+        if (typeof window !== 'undefined') {
+            window.location.reload()
+        }
     }
 
     return (
@@ -24,7 +26,7 @@ const ZkMeLoginButton = (): JSX.Element => {
                 className={cn(buttonVariants({ variant: 'outline' }))}
                 onClick={() => setIsProofOfFaceOpen(!isProofOfFaceOpen)}
             >
-                <Image src="/zkme-dark.svg" alt="zkMe antibot" width={90} height={60} />
+                <Image src="/zkme-dark.svg" alt="zkMe antibot" width={80} height={50} />
             </Button>
             <Antibot isOpen={isProofOfFaceOpen} verifySuccess={verifySuccessCallback} />
         </>

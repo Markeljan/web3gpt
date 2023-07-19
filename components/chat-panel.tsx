@@ -47,7 +47,7 @@ export function ChatPanel({
               Stop generating
             </Button>
           ) : (
-            messages?.length > 0 && (
+            messages?.length > 1 && (
               <Button
                 variant="outline"
                 onClick={() => reload()}

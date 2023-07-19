@@ -73,7 +73,7 @@ export function PromptForm({
           onChange={e => setInput(e.target.value)}
           placeholder={disabled ? "Pass Antibot liveliness with ZkMe to send a message." : "Send a message."}
           spellCheck={false}
-          className={`min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm ${disabled ? 'placeholder-destructive' : ''}`}
+          className={`min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm ${disabled ? 'placeholder:text-destructive' : ''}`}
           style={{ lineHeight: '1.5rem' }}
           disabled={disabled}
         />

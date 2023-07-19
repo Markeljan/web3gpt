@@ -1,5 +1,6 @@
 "use client"
 
+import Image from 'next/image'
 import React, { useState } from "react";
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
@@ -57,7 +58,7 @@ export function ChatMessage({ message, session, ...props }: ChatMessageProps) {
         )}
       >
         {message.role === 'user' && session?.user?.image ?
-          <img
+          <Image
             src={session.user.image}
             className={cn('h-7 w-7 rounded')}
             alt="User's profile picture"

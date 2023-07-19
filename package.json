@@ -27,6 +27,7 @@
     "@vercel/kv": "^0.2.2",
     "@vercel/og": "^0.5.8",
     "ai": "^2.1.17",
+    "bufferutil": "^4.0.7",
     "class-variance-authority": "^0.4.0",
     "clsx": "^1.2.1",
     "fastest-levenshtein": "^1.0.16",
@@ -47,6 +48,7 @@
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
     "solc": "^0.8.20",
+    "utf-8-validate": "^6.0.3",
     "viem": "^1.2.12",
     "zkme-antibot-component": "^1.0.5"
   },
