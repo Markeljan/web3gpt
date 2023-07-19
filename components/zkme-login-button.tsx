@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Image from 'next/image'
 import { Antibot } from "zkme-antibot-component"
-import { Button, buttonVariants } from "./ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
 import { useLocalStorage } from '@/lib/hooks/use-local-storage';
+import { IconCheck } from "./ui/icons";
 
 
 const ZkMeLoginButton = (): JSX.Element => {
@@ -22,11 +22,12 @@ const ZkMeLoginButton = (): JSX.Element => {
     return (
         <>
             <Button
-                style={{ display: !isZkMeVerified ? 'flex' : 'none' }}
-                className={cn(buttonVariants({ variant: 'outline' }))}
+                className={'bg-white'}
+                disabled={isZkMeVerified ? true : false}
                 onClick={() => setIsProofOfFaceOpen(!isProofOfFaceOpen)}
             >
-                <Image src="/zkme-dark.svg" alt="zkMe antibot" width={80} height={50} />
+                <Image src="/zkme-dark.svg" alt="zkMe Antibot" width={80} height={50} />
+                {isZkMeVerified && <IconCheck className='text-teal-900 w-5 h-5' />}
             </Button>
             <Antibot isOpen={isProofOfFaceOpen} verifySuccess={verifySuccessCallback} />
         </>
