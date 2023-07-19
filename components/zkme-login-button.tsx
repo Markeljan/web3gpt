@@ -2,10 +2,15 @@
 
 import { useState } from "react";
 import Image from 'next/image'
-// import { Antibot } from "zkme-antibot-component"
+import dynamic from 'next/dynamic';
 import { Button } from "./ui/button";
 import { useLocalStorage } from '@/lib/hooks/use-local-storage';
 import { IconCheck } from "./ui/icons";
+
+// Dynamically import the Antibot component
+const Antibot = dynamic(() => import('zkme-antibot-component').then(mod => mod.Antibot), {
+    ssr: false
+});
 
 
 const ZkMeLoginButton = (): JSX.Element => {
@@ -27,9 +32,9 @@ const ZkMeLoginButton = (): JSX.Element => {
                 onClick={() => setIsProofOfFaceOpen(!isProofOfFaceOpen)}
             >
                 <Image src="/zkme-dark.svg" alt="zkMe Antibot" width={80} height={50} />
-                {isZkMeVerified && <IconCheck className='text-teal-900 w-5 h-5' />}
+                {isZkMeVerified && <IconCheck className='w-5 h-5 text-teal-900' />}
             </Button>
-            {/* <Antibot isOpen={isProofOfFaceOpen} verifySuccess={verifySuccessCallback} /> */}
+            <Antibot isOpen={isProofOfFaceOpen} verifySuccess={verifySuccessCallback} />
         </>
     )
 }
