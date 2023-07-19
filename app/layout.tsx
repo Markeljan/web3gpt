@@ -10,10 +10,10 @@ import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://w3gpt.ai'),
+  metadataBase: new URL('https://contractsmith.ai'),
   title: {
-    default: 'Web3 GPT',
-    template: `Web3 GPT`
+    default: 'Contractsmith',
+    template: `Contractsmith`
   },
   description: 'Deploy your smart contracts with ease using AI.',
   themeColor: [
