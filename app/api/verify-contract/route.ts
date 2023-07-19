@@ -28,6 +28,7 @@ export async function POST(req: Request) {
             contractName,
             viemChain,
         });
+        console.log("verifyResponse:", verifyResponse);
         return new Response(JSON.stringify(verifyResponse));
     } catch (error) {
         const err = error as Error

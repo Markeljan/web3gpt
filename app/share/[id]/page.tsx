@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation'
 import { formatDate } from '@/lib/utils'
 import { getSharedChat } from '@/app/actions'
 import { ChatList } from '@/components/chat-list'
-import { auth } from '@/auth'
 export const runtime = 'edge'
 export const preferredRegion = 'home'
 
@@ -26,7 +25,6 @@ export async function generateMetadata({
 
 export default async function SharePage({ params }: SharePageProps) {
   const chat = await getSharedChat(params.id)
-  const session = await auth()
 
   if (!chat || !chat?.sharePath) {
     notFound()
@@ -40,12 +38,12 @@ export default async function SharePage({ params }: SharePageProps) {
             <div className="space-y-1 md:-mx-8">
               <h1 className="text-2xl font-bold">{chat.title}</h1>
               <div className="text-sm text-muted-foreground">
-                {formatDate(chat.createdAt)} · {chat.messages.length - 1} messages
+                {formatDate(chat.createdAt)} · {chat.messages.length} messages
               </div>
             </div>
           </div>
         </div>
-        <ChatList messages={chat.messages} session={session} />
+        <ChatList messages={chat.messages} />
       </div>
     </>
   )
