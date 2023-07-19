@@ -50,7 +50,8 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
 const verifyContractRequest = async ({ address, standardJsonInput, compilerVersion, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractRequestParams): Promise<"success" | "already_verified" | "failed"> => {
     const apiUrl = API_URLS[viemChain['name']];
     const apiKey = API_KEYS[viemChain['name']];
-    if (!apiKey && viemChain.name !== "Mantle Testnet") {
+    // mantle does not require an API_KEY
+    if (!apiKey && (viemChain.name !== "Mantle Testnet" && viemChain.name !== "Mantle Mainnet")) {
         throw new Error(`Unsupported chain or explorer API_KEY.  Network: ${viemChain["network"]}`);
     }
 

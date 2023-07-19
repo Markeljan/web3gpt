@@ -27,7 +27,7 @@ const ZkMeLoginButton = (): JSX.Element => {
     return (
         <>
             <Button
-                className={'bg-white'}
+                className='bg-white'
                 disabled={isZkMeVerified ? true : false}
                 onClick={() => setIsProofOfFaceOpen(!isProofOfFaceOpen)}
             >

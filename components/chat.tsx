@@ -140,7 +140,7 @@ export function Chat({ id, initialMessages, className, session }: ChatProps) {
         clearOverlay();
         console.log(json);
         const { error } = json
-        content = JSON.stringify({ error }) + '\n\n' + 'Deploy again fixing the error.'
+        content = JSON.stringify({ error }) + '\n\n' + 'Fix the error and show the user the new code.'
         role = 'system' //'system'
       }
 
