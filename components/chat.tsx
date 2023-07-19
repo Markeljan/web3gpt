@@ -39,7 +39,7 @@ export function Chat({ id, initialMessages, className, session }: ChatProps) {
   }
 
   // countdown = 10 with ~3sec for each retry = maximum 30 seconds waiting time before timing out and returning to the user
-  async function retryBackendVerifyUntilSuccess(verificationParams: any, countdown = 5, potentialAddress?: string): Promise<string | null> {
+  async function retryBackendVerifyUntilSuccess(verificationParams: any, countdown = 1, potentialAddress?: string): Promise<string | null> {
     console.log("trying verification with countdown:", countdown);
     const verifyResponse = await fetch(
       '/api/verify-contract',
