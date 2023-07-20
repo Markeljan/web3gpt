@@ -1,3 +1,3 @@
-# Contractsmith
+# Web3 GPT
 ## Write and Deploy smart contracts in minutes
-Deploy smart contracts with natural language.
+AI Smart Contract Assistant. Write and deploy smart contracts in minutes.

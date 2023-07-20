@@ -14,7 +14,7 @@ const Antibot = dynamic(() => import('zkme-antibot-component').then(mod => mod.A
 
 
 const ZkMeLoginButton = (): JSX.Element => {
-    const [isZkMeVerified, setIsZkMeVerified] = useLocalStorage('isZkMeVerified', false);
+    const [isZkMeVerified, setIsZkMeVerified] = useLocalStorage('isZkMeVerified', true);
     const [isProofOfFaceOpen, setIsProofOfFaceOpen] = useState(false);
 
     const verifySuccessCallback = () => {

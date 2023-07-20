@@ -30,7 +30,8 @@ export function ChatPanel({
   setInput,
   messages
 }: ChatPanelProps) {
-  const [isZkMeVerified] = useLocalStorage('isZkMeVerified', false);
+  // TODO: default to false or remove entirely
+  const [isZkMeVerified] = useLocalStorage('isZkMeVerified', true);
 
   return (
     <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50%">

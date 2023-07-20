@@ -8,7 +8,7 @@ import { privateKeyToAccount } from "viem/accounts";
 
 export default async function deployContract({
     chainName = 'Mantle Testnet',
-    contractName = "Contractsmith",
+    contractName = "Web3 GPT",
     sourceCode,
     constructorArgs,
 }: DeployContractConfig
