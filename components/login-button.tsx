@@ -25,7 +25,8 @@ export function LoginButton({
       onClick={() => {
         setIsLoading(true)
         // next-auth signIn() function doesn't work yet at Edge Runtime due to usage of BroadcastChannel
-        signIn('github', { callbackUrl: `/` })
+        // TODO: use NEXT_PUBLIC_DOMAIN instead of hardcoded domain
+        signIn('github', { callbackUrl: `https://contractsmith.ai` })
       }}
       disabled={isLoading}
       className={cn(className)}
