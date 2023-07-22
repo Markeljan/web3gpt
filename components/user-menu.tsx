@@ -9,10 +9,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { IconExternalLink } from '@/components/ui/icons'
 
 export interface UserMenuProps {
   user: Session['user']

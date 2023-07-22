@@ -1,5 +1,5 @@
 const solc = require("solc");
-import { DeployContractConfig, DeployContractResponse } from "@/lib/functions/types";
+import { DeployContractConfig, DeployContractResponse, VerifyContractParams } from "@/lib/functions/types";
 import handleImports from "@/lib/deploy-contract/handle-imports";
 import { getRpcUrl, createViemChain, getExplorerUrl } from "@/lib/viem-utils";
 import ipfsUpload from "@/lib/deploy-contract/ipfs-upload";
@@ -149,7 +149,7 @@ export default async function deployContract({
     const encodedConstructorArgs = deployData.slice(bytecode?.length);
 
     // Trigger the verification process withouth waiting for it to complete
-    const verificationParams = {
+    const verificationParams: VerifyContractParams = {
         deployHash,
         standardJsonInput: standardJsonInput,
         encodedConstructorArgs,

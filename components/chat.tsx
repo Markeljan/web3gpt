@@ -12,6 +12,8 @@ import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { nanoid } from '@/lib/utils'
 import { functionSchemas } from "@/lib/functions/schemas";
 import { useEffect, useState } from "react";
+import { createPublicClient, http } from "viem";
+import { VerifyContractParams } from "@/lib/functions/types";
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -20,26 +22,39 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
-  const [verificationParams, setVerificationParams] = useState(null)
+  const [verificationParams, setVerificationParams] = useState<VerifyContractParams>()
   const [polling, setPolling] = useState(false)
 
   useEffect(() => {
-    const verifyFunction = async (verificationParams: any) => {
-      try {
-        const verifyResponse = await fetch(
-          '/api/verify-contract',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(verificationParams)
-          })
-        if (verifyResponse.ok) {
-          setPolling(false)
+    const verifyFunction = async (verificationParams: VerifyContractParams) => {
+      if (verificationParams) {
+        const publicClient = createPublicClient({
+          chain: verificationParams?.viemChain,
+          transport: http(verificationParams?.viemChain?.rpcUrls?.default?.http[0])
+        })
+        try {
+          console.log("waiting for 4 confirmations")
+          const transactionReceipt = await publicClient.waitForTransactionReceipt(
+            { hash: verificationParams?.deployHash, confirmations: 4 }
+          )
+          console.log("got 4 confirmations, verifying contract")
+          if (transactionReceipt) {
+            const verifyResponse = await fetch(
+              '/api/verify-contract',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(verificationParams)
+              })
+            if (verifyResponse.ok) {
+              setPolling(false)
+            }
+          }
+        } catch (e) {
+          console.log('Verification failed, may need more confirmations.', e)
         }
-      } catch (e) {
-        console.log('Verification failed, may more confirmations.', e)
       }
     }
 
@@ -96,7 +111,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         const { explorerUrl, ipfsUrl, verificationParams } = await response.json()
         setVerificationParams(verificationParams)
         setPolling(true)
-        content = JSON.stringify({ explorerUrl, ipfsUrl })
+        content = JSON.stringify({ explorerUrl, ipfsUrl }) + '\n\n' + 'Your contract will be automativally verified after 4 block confirmations. Keep this tab open.'
         role = 'function'
 
       } else {
