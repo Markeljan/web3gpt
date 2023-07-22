@@ -44,6 +44,9 @@ dependencies:
   ai:
     specifier: ^2.1.17
     version: 2.1.17(react@18.2.0)(svelte@4.0.5)(vue@3.3.4)
+  bufferutil:
+    specifier: ^4.0.7
+    version: 4.0.7
   class-variance-authority:
     specifier: ^0.4.0
     version: 0.4.0(typescript@5.1.6)
@@ -109,7 +112,7 @@ dependencies:
     version: 6.0.3
   viem:
     specifier: ^1.2.12
-    version: 1.2.12(typescript@5.1.6)(utf-8-validate@6.0.3)
+    version: 1.2.12(bufferutil@4.0.7)(typescript@5.1.6)(utf-8-validate@6.0.3)
 
 devDependencies:
   '@tailwindcss/typography':
@@ -1979,6 +1982,14 @@ packages:
       ieee754: 1.2.1
     dev: false
 
+  /bufferutil@4.0.7:
+    resolution: {integrity: sha512-kukuqc39WOHtdxtw4UScxF/WVnMFVSQVKhtx3AjZJzhd0RGZZldcrfSEbVsWWe6KNH253574cq5F+wpv0G9pJw==}
+    engines: {node: '>=6.14.2'}
+    requiresBuild: true
+    dependencies:
+      node-gyp-build: 4.6.0
+    dev: false
+
   /bundle-name@3.0.0:
     resolution: {integrity: sha512-PKA4BeSvBpQKQ8iPOGCSiell+N8P+Tf1DlwqmYhpe2gAhKPHn8EYOxVT+ShuGmhg8lN8XiSlS80yiExKXrURlw==}
     engines: {node: '>=12'}
@@ -3762,7 +3773,7 @@ packages:
     peerDependencies:
       ws: '*'
     dependencies:
-      ws: 8.12.0(utf-8-validate@6.0.3)
+      ws: 8.12.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
     dev: false
 
   /it-all@1.0.6:
@@ -6329,7 +6340,7 @@ packages:
       vfile-message: 3.1.4
     dev: false
 
-  /viem@1.2.12(typescript@5.1.6)(utf-8-validate@6.0.3):
+  /viem@1.2.12(bufferutil@4.0.7)(typescript@5.1.6)(utf-8-validate@6.0.3):
     resolution: {integrity: sha512-TMhvqT2VaCaJyBfuNDyL1h8xPFyPDHeX6Qab66TjWscnNcTwkW0gojO4Uh+A4RuPzFxIlWSW+b5SjS8SJHlHpg==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -6346,7 +6357,7 @@ packages:
       abitype: 0.8.11(typescript@5.1.6)
       isomorphic-ws: 5.0.0(ws@8.12.0)
       typescript: 5.1.6
-      ws: 8.12.0(utf-8-validate@6.0.3)
+      ws: 8.12.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -6432,7 +6443,7 @@ packages:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
     dev: true
 
-  /ws@8.12.0(utf-8-validate@6.0.3):
+  /ws@8.12.0(bufferutil@4.0.7)(utf-8-validate@6.0.3):
     resolution: {integrity: sha512-kU62emKIdKVeEIOIKVegvqpXMSTAMLJozpHZaJNDYqBjzlSYXQGviYwN1osDLJ9av68qHd4a2oSjd7yD4pacig==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
@@ -6444,6 +6455,7 @@ packages:
       utf-8-validate:
         optional: true
     dependencies:
+      bufferutil: 4.0.7
       utf-8-validate: 6.0.3
     dev: false
 
