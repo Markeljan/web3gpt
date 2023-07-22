@@ -22,7 +22,7 @@ export const functionSchemas: ChatCompletionFunctions[] = [
                 },
                 chainName: {
                     type: 'string',
-                    description: 'Name of the EVM compatible chain we are deploying to.  Default to Sepolia if not specified.'
+                    description: 'Name of the EVM compatible chain we are deploying to.  Default to Mumbai if not specified.'
                 },
                 sourceCode: {
                     "type": "string",
