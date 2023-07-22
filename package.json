@@ -47,6 +47,7 @@
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
     "solc": "^0.8.20",
+    "utf-8-validate": "^6.0.3",
     "viem": "^1.2.12"
   },
   "devDependencies": {

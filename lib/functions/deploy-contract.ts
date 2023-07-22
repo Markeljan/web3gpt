@@ -3,19 +3,18 @@ import { DeployContractConfig, DeployContractResponse } from "@/lib/functions/ty
 import handleImports from "@/lib/deploy-contract/handle-imports";
 import { getRpcUrl, createViemChain, getExplorerUrl } from "@/lib/viem-utils";
 import ipfsUpload from "@/lib/deploy-contract/ipfs-upload";
-import verifyContract from "@/lib/deploy-contract/verify-contract";
 import { Hex, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
-import { sepolia } from "viem/chains";
+import { polygonMumbai } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 
 export default async function deployContract({
-    chainName = 'sepolia',
+    chainName = 'Mumbai',
     contractName = "W3GPTContract",
     sourceCode,
     constructorArgs,
 }: DeployContractConfig
 ): Promise<DeployContractResponse> {
-    const viemChain = createViemChain(chainName) || sepolia;
+    const viemChain = createViemChain(chainName) || polygonMumbai;
     const fileName = (contractName.replace(/[\/\\:*?"<>|.\s]+$/g, "_")) + ".sol";
 
     // Prepare the sources object for the Solidity compiler
