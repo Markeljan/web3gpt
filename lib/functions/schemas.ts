@@ -2,15 +2,6 @@ import { ChatCompletionFunctions } from "openai-edge";
 
 export const functionSchemas: ChatCompletionFunctions[] = [
     {
-        name: 'get_current_time',
-        description: 'Get the current time',
-        parameters: {
-            type: 'object',
-            properties: {},
-            required: []
-        }
-    },
-    {
         name: 'deploy_contract',
         description: 'Deploy a smart contract',
         parameters: {

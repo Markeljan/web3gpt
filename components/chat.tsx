@@ -72,25 +72,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     chatMessages,
     functionCall
   ) => {
-    if (functionCall.name === 'get_current_time') {
-      const time = new Date().toLocaleTimeString()
-      const functionResponse: ChatRequest = {
-        messages: [
-          ...chatMessages,
-          {
-            id: nanoid(),
-            name: 'get_current_time',
-            role: 'function',
-            content: JSON.stringify({ time })
-          }
-        ]
-        // You can also (optionally) return a list of functions here that the model can call next
-        // functions
-      }
-
-      return functionResponse
-
-    } else if (functionCall.name === 'deploy_contract') {
+    if (functionCall.name === 'deploy_contract') {
       // You now have access to the parsed arguments here (assuming the JSON was valid)
       // If JSON is invalid, return an appropriate message to the model so that it may retry?
 
