@@ -115,9 +115,9 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         role = 'function'
 
       } else {
-        const { error } = await response.json()
-        content = JSON.stringify({ error }) + '\n\n' + 'Deploy again fixing the error.'
-        role = 'system' //'system'
+        const { error } = await response?.json() ?? {}
+        content = JSON.stringify({ error }) + '\n\n' + 'Try to fix the error and show the user the updated code.'
+        role = 'system'
       }
 
       const functionResponse: ChatRequest = {
