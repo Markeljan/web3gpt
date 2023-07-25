@@ -7,6 +7,18 @@ import { kv } from '@vercel/kv'
 import { auth } from '@/auth'
 import { type Chat } from '@/lib/types'
 
+// Store a new user's details
+export async function storeUser(user: { id: string } & Record<string, any>) {
+  // Assuming user has an 'id' field
+  const userKey = `user:details:${user.id}`;
+
+  // Save user details
+  await kv.hmset(userKey, user);
+
+  // Add user's ID to the list of all users
+  await kv.sadd('users:list', user.id);
+}
+
 export async function getChats(userId?: string | null) {
   if (!userId) {
     return []
@@ -75,7 +87,7 @@ export async function clearChats() {
 
   const chats: string[] = await kv.zrange(`user:chat:${session.user.id}`, 0, -1)
   if (!chats.length) {
-  return redirect('/')
+    return redirect('/')
   }
   const pipeline = kv.pipeline()
 
