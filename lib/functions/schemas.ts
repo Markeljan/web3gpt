@@ -15,7 +15,7 @@ export const functionSchemas: ChatCompletionFunctions[] = [
         description: 'Deploy a smart contract',
         parameters: {
             type: 'object',
-            description: `This function deploys a smart contract to an EVM compatible chain.  It returns the tx hash of the deployment and an IPFS url to a directory of files used for the contract. Don't EVER try to deploy a contract in the same message as the source code.  Deploy it in a separate message after writing the contract and showing the user.  Make sure to include constructor arguments if the contract requires them.`,
+            description: `This function deploys a smart contract to an EVM compatible chain.  It returns the tx hash of the deployment and an IPFS url to a directory of files used for the contract.  Only call this function in a separate chat message do not call it from a message with other text.`,
             properties: {
                 contractName: {
                     type: 'string',
