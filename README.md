@@ -36,7 +36,7 @@ Want to contribute to Web3-GPT? We'd love to have you onboard!
 While there are emerging projects like Alchemy AI in the ecosystem, Web3-GPT aims to stand out by rapidly iterating and incorporating the latest AI and blockchain advancements.
 
 ## License 📜
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+This project is licensed under the Apache License - see the LICENSE.md file for details.
 
 ## Connect 🌍
 🐦 [Twitter](https://x.com/0xmarkeljan)
