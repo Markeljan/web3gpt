@@ -7,9 +7,10 @@ Web3-GPT is a chat tool that combines the power of Large Language Models (LLMs) 
 
 ## Features 🌟
 - **Deploy Smart Contracts:** Seamlessly deploy contracts on any EVM-compatible blockchain directly from a chat interface.
-- **Automated Testing:** Generate tests for your contracts and ensure their integrity post-deployment.
 - **Wallet-less Interaction:** Enable Web2/3 users to interact with blockchains without a dedicated web3 wallet using account abstraction and a gas master account.
 - **Chat Integration:** Leverage Chat-GPT to interact with and control Web3-GPT functionalities.
+### WIP:
+- **Automated Testing:** Generate tests for your contracts and ensure their integrity post-deployment.
 - **Plug-in Ready:** Compatible with Chat GPT-4 plugin.
 
 ## Getting Started 🚀
