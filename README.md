@@ -1,10 +1,48 @@
-# CONTRACTSMITH
-Write and deploy smart contracts to Mantle using natural language prompts. Integrate with other Mantle ecosystem Dapps easier than ever before.  Built for SOZU Haus Paris Hackathon 2023!
+# Web3-GPT 🚀
 
-## The problem CONTRACTSMITH solves
-Integrating with existing Dapps when writing a smart contract can be challenging and tedious. CONTRACTSMITH addresses this by automating the entire process from inception to deployment. Our chat assistant is well-versed in existing Dapps on Mantle, including KYCat and API3. CONTRACTSMITH knows how to seamlessly integrate with each Dapp, leveraging established solutions and documentation. This leads to enhanced collaboration between contracts and Dapps. This also opens the door to new, never thought of solutions that require custom contract deployents at a user level. Another problem we are solving with out solution is Sibel Attacks (especially when onboarding or offering a free service to new users). Using zKMe's Antibot Liveliness tool we are able to add a layer of protection against abusive actors. This is crucuial for our use case because of the high costs of GPT-4 API calls + the need to let users test our app for free.
+Web3-GPT is a chat tool that combines the power of Large Language Models (LLMs) and AI Agents to revolutionize the smart contract development process. Whether you're a seasoned blockchain developer or just stepping into the world of Web3, Web3-GPT is designed to streamline your development and deployment processes.
 
-### Challenges we ran into
-Time crunch! Integrating new concepts / solutions in a short period of time (CONTRACTSMITH helps to solve this!!)
+![Web3 GPT](https://github.com/Markeljan/Web3GPT/assets/12901349/c2c638eb-10fc-4b78-a048-c6c610b7e610)
 
-[Devfolio](https://devfolio.co/projects/contractsmith-ff64)
+
+## Features 🌟
+- **Deploy Smart Contracts:** Seamlessly deploy contracts on any EVM-compatible blockchain directly from a chat interface.
+- **Automated Testing:** Generate tests for your contracts and ensure their integrity post-deployment.
+- **Wallet-less Interaction:** Enable Web2/3 users to interact with blockchains without a dedicated web3 wallet using account abstraction and a gas master account.
+- **Chat Integration:** Leverage Chat-GPT to interact with and control Web3-GPT functionalities.
+- **Plug-in Ready:** Compatible with Chat GPT-4 plugin.
+
+## Getting Started 🚀
+- fill in ENV variables,
+- install pnpm
+- run pnpm install
+- run pnpm dev
+
+LIVE DEMO:
+Visit [https://w3gpt.ai](https://w3gpt.ai)
+
+## Usage:
+
+Access the chat interface, and start deploying and testing your smart contracts!
+
+Why Web3-GPT? 🤔
+Web3-GPT is born out of the passion for combining the capabilities of AI with the limitless potential of blockchain technology. As the barriers to smart contract development are high, this tool aims to democratize access, ensuring a safer and more efficient Web3 development experience for all.
+
+## Roadmap 🗺️
+Integration with Metamask and other auth providers.
+Enhancement of the account abstraction feature.
+Expansion of testing capabilities, including white-hat penetration tests.
+Business development: Pitch deck, funding, and more.
+Contributing 🤝
+Want to contribute to Web3-GPT? We'd love to have you onboard!
+
+## Similar Projects 🕵️
+While there are emerging projects like Alchemy AI in the ecosystem, Web3-GPT aims to stand out by rapidly iterating and incorporating the latest AI and blockchain advancements.
+
+## License 📜
+This project is licensed under the MIT License - see the LICENSE.md file for details.
+
+## Connect 🌍
+🐦 [Twitter](https://x.com/0xmarkeljan)
+📘 [LinkedIn](https://linkedin.com/in/markeljan)
+Spread the word, star our repo, and contribute to the next wave of Web3 innovation!
