@@ -26,15 +26,10 @@ Visit [https://w3gpt.ai](https://w3gpt.ai)
 
 Access the chat interface, and start deploying and testing your smart contracts!
 
-Why Web3-GPT? 🤔
+## Why Web3-GPT? 🤔
 Web3-GPT is born out of the passion for combining the capabilities of AI with the limitless potential of blockchain technology. As the barriers to smart contract development are high, this tool aims to democratize access, ensuring a safer and more efficient Web3 development experience for all.
 
-## Roadmap 🗺️
-Integration with Metamask and other auth providers.
-Enhancement of the account abstraction feature.
-Expansion of testing capabilities, including white-hat penetration tests.
-Business development: Pitch deck, funding, and more.
-Contributing 🤝
+## Contributing 🤝
 Want to contribute to Web3-GPT? We'd love to have you onboard!
 
 ## Similar Projects 🕵️
