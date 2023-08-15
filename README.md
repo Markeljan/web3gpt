@@ -32,12 +32,6 @@ Web3-GPT is born out of the passion for combining the capabilities of AI with th
 ## Contributing 🤝
 Want to contribute to Web3-GPT? We'd love to have you onboard!
 
-## Similar Projects 🕵️
-While there are emerging projects like Alchemy AI in the ecosystem, Web3-GPT aims to stand out by rapidly iterating and incorporating the latest AI and blockchain advancements.
-
-## License 📜
-This project is licensed under the Apache License - see the LICENSE.md file for details.
-
 ## Connect 🌍
 🐦 [Twitter](https://x.com/0xmarkeljan)
 📘 [LinkedIn](https://linkedin.com/in/markeljan)
