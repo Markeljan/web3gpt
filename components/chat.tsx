@@ -1,7 +1,7 @@
 'use client'
 
-import { ChatRequest, FunctionCallHandler } from "ai";
-import { useChat, type Message } from "ai/react";
+import { ChatRequest, FunctionCallHandler } from 'ai'
+import { useChat, type Message } from 'ai/react'
 import toast from 'react-hot-toast'
 
 import { cn } from '@/lib/utils'
@@ -10,19 +10,20 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { nanoid } from '@/lib/utils'
-import { functionSchemas } from "@/lib/functions/schemas";
-import { useEffect, useState } from "react";
-import { createPublicClient, http } from "viem";
-import { VerifyContractParams } from "@/lib/functions/types";
+import { functionSchemas } from '@/lib/functions/schemas'
+import { useEffect, useState } from 'react'
+import { createPublicClient, http } from 'viem'
+import { VerifyContractParams } from '@/lib/functions/types'
+import { Landing } from './landing'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
 }
 
-
 export function Chat({ id, initialMessages, className }: ChatProps) {
-  const [verificationParams, setVerificationParams] = useState<VerifyContractParams>()
+  const [verificationParams, setVerificationParams] =
+    useState<VerifyContractParams>()
   const [polling, setPolling] = useState(false)
 
   useEffect(() => {
@@ -30,24 +31,26 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       if (verificationParams) {
         const publicClient = createPublicClient({
           chain: verificationParams?.viemChain,
-          transport: http(verificationParams?.viemChain?.rpcUrls?.default?.http[0])
+          transport: http(
+            verificationParams?.viemChain?.rpcUrls?.default?.http[0]
+          )
         })
         try {
-          console.log("waiting for 4 confirmations")
-          const transactionReceipt = await publicClient.waitForTransactionReceipt(
-            { hash: verificationParams?.deployHash, confirmations: 4 }
-          )
-          console.log("got 4 confirmations, verifying contract")
+          console.log('waiting for 4 confirmations')
+          const transactionReceipt =
+            await publicClient.waitForTransactionReceipt({
+              hash: verificationParams?.deployHash,
+              confirmations: 4
+            })
+          console.log('got 4 confirmations, verifying contract')
           if (transactionReceipt) {
-            const verifyResponse = await fetch(
-              '/api/verify-contract',
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(verificationParams)
-              })
+            const verifyResponse = await fetch('/api/verify-contract', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(verificationParams)
+            })
             if (verifyResponse.ok) {
               setPolling(false)
             }
@@ -66,8 +69,6 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     }
   }, [polling, verificationParams])
 
-
-
   const functionCallHandler: FunctionCallHandler = async (
     chatMessages,
     functionCall
@@ -76,29 +77,33 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       // You now have access to the parsed arguments here (assuming the JSON was valid)
       // If JSON is invalid, return an appropriate message to the model so that it may retry?
 
-      const response = await fetch(
-        '/api/deploy-contract',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: functionCall.arguments
-        })
+      const response = await fetch('/api/deploy-contract', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: functionCall.arguments
+      })
 
-      let content: string;
-      let role: 'system' | 'function';
+      let content: string
+      let role: 'system' | 'function'
 
       if (response.ok) {
-        const { explorerUrl, ipfsUrl, verificationParams } = await response.json()
+        const { explorerUrl, ipfsUrl, verificationParams } =
+          await response.json()
         setVerificationParams(verificationParams)
         setPolling(true)
-        content = JSON.stringify({ explorerUrl, ipfsUrl }) + '\n\n' + 'Your contract will be automativally verified after 4 block confirmations. Keep this tab open.'
+        content =
+          JSON.stringify({ explorerUrl, ipfsUrl }) +
+          '\n\n' +
+          'Your contract will be automativally verified after 4 block confirmations. Keep this tab open.'
         role = 'function'
-
       } else {
-        const { error } = await response?.json() ?? {}
-        content = JSON.stringify({ error }) + '\n\n' + 'Try to fix the error and show the user the updated code.'
+        const { error } = (await response?.json()) ?? {}
+        content =
+          JSON.stringify({ error }) +
+          '\n\n' +
+          'Try to fix the error and show the user the updated code.'
         role = 'system'
       }
 
@@ -109,14 +114,13 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
             id: nanoid(),
             name: 'deploy_contract',
             role: role,
-            content: content,
+            content: content
           }
         ],
         functions: functionSchemas
       }
 
       return functionResponse
-
     }
   }
 
@@ -143,7 +147,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : (
-          <EmptyScreen setInput={setInput} />
+          <Landing />
         )}
       </div>
       <ChatPanel
