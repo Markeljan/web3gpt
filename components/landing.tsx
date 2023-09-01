@@ -7,6 +7,7 @@ import { nanoid } from '@/lib/utils'
 import { functionSchemas } from '@/lib/functions/schemas'
 import { PromptForm } from './prompt-form'
 import { initialMessages } from '@/app/chat/page'
+import { PreviewPromptForm } from './preview-prompt-form'
 
 export function Landing({}) {
   const id = nanoid()
@@ -38,7 +39,7 @@ export function Landing({}) {
         Deploy smart contracts with AI
       </p>
       <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
-        <PromptForm
+        <PreviewPromptForm
           onSubmit={async value => {
             await append(
               {
