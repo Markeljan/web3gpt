@@ -1,14 +1,6 @@
 'use client'
 
 import Image from 'next/image'
-import { useChat } from 'ai/react'
-import toast from 'react-hot-toast'
-import { nanoid } from '@/lib/utils'
-import { functionSchemas } from '@/lib/functions/schemas'
-import { initialMessages } from '@/app/page'
-import { PreviewPromptForm } from './preview-prompt-form'
-import { ChatList } from './chat-list'
-import { ChatScrollAnchor } from './chat-scroll-anchor'
 
 export function Landing({}) {
   return (
