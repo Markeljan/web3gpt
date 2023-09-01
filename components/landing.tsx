@@ -52,7 +52,6 @@ export function Landing({}) {
           input={input}
           setInput={setInput}
           isLoading={isLoading}
-          showNewChatButton={false}
         />
       </div>
     </div>
