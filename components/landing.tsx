@@ -7,7 +7,7 @@ export function Landing({}) {
     <div className="mx-auto max-w-2xl px-4 text-center">
       <div className="relative mb-16 mt-24 flex h-8 w-full">
         <Image
-          src="/w3gpt_new.svg"
+          src="/w3gpt-logo.svg"
           alt="web3 gpt logo"
           fill
           sizes="(max-width: 318px) 100vw, 318px"
