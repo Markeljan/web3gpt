@@ -1,19 +1,20 @@
 const solc = require("solc");
-import { DeployContractConfig, DeployContractResponse } from "@/lib/functions/types";
+import { DeployContractConfig, DeployContractResponse, VerifyContractParams } from "@/lib/functions/types";
 import handleImports from "@/lib/deploy-contract/handle-imports";
 import { getRpcUrl, createViemChain, getExplorerUrl } from "@/lib/viem-utils";
 import ipfsUpload from "@/lib/deploy-contract/ipfs-upload";
 import { Hex, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
+import { polygonMumbai } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 
 export default async function deployContract({
-    chainName = 'Mantle Testnet',
-    contractName = "Web3 GPT",
+    chainName = 'Mumbai',
+    contractName = "W3GPTContract",
     sourceCode,
     constructorArgs,
 }: DeployContractConfig
 ): Promise<DeployContractResponse> {
-    const viemChain = createViemChain(chainName);
+    const viemChain = createViemChain(chainName) || polygonMumbai;
     const fileName = (contractName.replace(/[\/\\:*?"<>|.\s]+$/g, "_")) + ".sol";
 
     // Prepare the sources object for the Solidity compiler
@@ -61,10 +62,6 @@ export default async function deployContract({
         language: "Solidity",
         sources,
         settings: {
-            optimizer: {
-                enabled: true,
-                runs: 200,
-            },
             evmVersion: "london",
             outputSelection: {
                 "*": {
@@ -144,8 +141,6 @@ export default async function deployContract({
     // const flattenedFileName = fileName.split(".")[0] + "_flattened.sol";
     // sources[flattenedFileName] = { content: flattenedCode };
 
-    console.log('calling ipfsUpload');
-
     const ipfsCid = await ipfsUpload(sources, JSON.stringify(abi), bytecode, standardJsonInput);
 
     const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`;
@@ -154,7 +149,7 @@ export default async function deployContract({
     const encodedConstructorArgs = deployData.slice(bytecode?.length);
 
     // Trigger the verification process withouth waiting for it to complete
-    const verificationParams = {
+    const verificationParams: VerifyContractParams = {
         deployHash,
         standardJsonInput: standardJsonInput,
         encodedConstructorArgs,

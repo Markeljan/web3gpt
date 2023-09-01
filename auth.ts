@@ -1,5 +1,6 @@
 import NextAuth, { type DefaultSession } from 'next-auth'
 import GitHub from 'next-auth/providers/github'
+import { storeUser } from '@/app/actions'
 
 declare module 'next-auth' {
   interface Session {
@@ -15,19 +16,19 @@ export const {
   auth,
   CSRF_experimental
 } = NextAuth({
-  providers: [GitHub(
-    {// If using localhost comment this out
-      clientId: process.env.CONTRACTSMITH_CLIENT_ID,
-      clientSecret: process.env.CONTRACTSMITH_CLIENT_SECRET
-    }
-  )],
+  providers: [GitHub],
   callbacks: {
-    jwt({ token, profile }) {
+    async jwt({ token, profile }) {
       if (profile) {
         token.id = profile.id
         token.image = profile.picture
+        const user = {
+          ...profile, // First spread the rest of the profile properties
+          id: String(profile.id),  // Convert to string
+        };
+        await storeUser(user);
       }
-      return token
+      return token;
     },
     authorized({ auth }) {
       return !!auth?.user

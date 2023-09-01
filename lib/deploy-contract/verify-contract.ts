@@ -6,7 +6,6 @@ import { VerifyContractParams, VerifyContractRequestParams } from "@/lib/functio
 const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractParams) => {
     const rpcUrl = getRpcUrl(viemChain);
 
-
     //Prepare provider
     const publicClient = createPublicClient({
         chain: viemChain,
@@ -17,47 +16,47 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
         throw new Error(`Provider for chain ${viemChain.name} not available`);
     }
 
-    while (await publicClient.getTransactionConfirmations({ hash: deployHash }) < 5) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-    }
+    const txConfirmations = await publicClient.getTransactionConfirmations({ hash: deployHash })
+        .catch(error => {
+            throw new Error(`Error waiting for transaction receipt: ${error.message}`);
+        });
 
-    const deployReceipt = await publicClient.getTransactionReceipt({ hash: deployHash }).catch(error => {
-        throw new Error(`Error getting transaction receipt: ${error.message}`);
-    });
+    if (txConfirmations >= 4) {
+        const deployReceipt = await publicClient.getTransactionReceipt({ hash: deployHash }).catch(error => {
+            throw new Error(`Error getting transaction receipt: ${error.message}`);
+        });
+        const verificationOK = await verifyContractRequest({
+            address: deployReceipt.contractAddress as Hex,
+            standardJsonInput,
+            compilerVersion: "v0.8.20+commit.a1b79de6", //TODO: make this dynamic
+            encodedConstructorArgs,
+            fileName,
+            contractName,
+            viemChain
+        });
+        if (verificationOK) {
+            return deployReceipt.contractAddress;
+        } else {
 
-    const verificationResult = await verifyContractRequest({
-        address: deployReceipt.contractAddress as Hex,
-        standardJsonInput,
-        compilerVersion: "v0.8.20+commit.a1b79de6", //TODO: make this dynamic
-        encodedConstructorArgs,
-        fileName,
-        contractName,
-        viemChain
-    });
-
-    if (verificationResult === "success") {
-        console.log('verification success');
-        return deployReceipt.contractAddress;
-    } else if (verificationResult === "already_verified") {
-        return "already_verified";
+            throw new Error("Contract verification failed");
+        }
     } else {
-        console.log('verification failure');
-        return null;
+        throw new Error("Contract deployment failed");
     }
-
 }
 
-const verifyContractRequest = async ({ address, standardJsonInput, compilerVersion, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractRequestParams): Promise<"success" | "already_verified" | "failed"> => {
+const verifyContractRequest = async ({ address, standardJsonInput, compilerVersion, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractRequestParams) => {
     const apiUrl = API_URLS[viemChain['name']];
     const apiKey = API_KEYS[viemChain['name']];
-    // mantle does not require an API_KEY
-    if (!apiKey && (viemChain.name !== "Mantle Testnet" && viemChain.name !== "Mantle Mainnet")) {
+    console.log("apiurl", apiUrl)
+    console.log("apikay", apiKey)
+    if (!apiKey) {
         throw new Error(`Unsupported chain or explorer API_KEY.  Network: ${viemChain["network"]}`);
     }
 
     try {
         const params = new URLSearchParams();
-        apiKey && params.append('apikey', apiKey);
+        params.append('apikey', apiKey);
         params.append('module', 'contract');
         params.append('action', 'verifysourcecode');
         params.append('contractaddress', address);
@@ -70,27 +69,18 @@ const verifyContractRequest = async ({ address, standardJsonInput, compilerVersi
             params.append('constructorArguements', encodedConstructorArgs);
         }
         params.append('evmversion', 'london'); // leave blank for compiler default
-        const response = await fetch(apiUrl, {
+        const response = await fetch(apiUrl + '/api', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
             },
             body: new URLSearchParams(params).toString()
         });
-        const json = await response.json();
-        console.log('verification api response status: ', response.status);
-        console.log('verification api response json: ', json);
-        console.log('verification api response ok: ', response.ok);
-        if (json.message == 'OK') {
-            return "success";
-        } else if (json.message == 'Smart-contract already verified.') {
-            return "already_verified";
-        } else {
-            return "failed";
+        if (!response.ok) {
+            throw new Error(`Explorer API request failed with status ${response.status}`);
         }
+        return response.ok;
     } catch (error) {
-        console.log('verification api error: ', error);
-        console.log('verification api error stack: ', (error as Error).stack);
         throw new Error(`Error verifying contract: ${(error as Error).message}`);
     }
 }

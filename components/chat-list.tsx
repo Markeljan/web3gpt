@@ -4,11 +4,10 @@ import { Separator } from '@/components/ui/separator'
 import { ChatMessage } from '@/components/chat-message'
 
 export interface ChatList {
-  messages: Message[];
-  session: any; // TODO: type
+  messages: Message[]
 }
 
-export function ChatList({ messages, session }: ChatList) {
+export function ChatList({ messages }: ChatList) {
   // Remove system messages and funciton returns from the list
   messages = messages.filter((message) => message.role !== 'system' && message.role !== 'function')
   if (!messages.length) {
@@ -19,7 +18,7 @@ export function ChatList({ messages, session }: ChatList) {
     <div className="relative mx-auto max-w-2xl px-4">
       {messages.map((message, index) => (
         <div key={index}>
-          <ChatMessage message={message} session={session}/>
+          <ChatMessage message={message} />
           {index < messages.length - 1 && (
             <Separator className="my-4 md:my-8" />
           )}

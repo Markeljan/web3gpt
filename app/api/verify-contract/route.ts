@@ -5,7 +5,6 @@ const runtime = 'edge'
 
 export async function POST(req: Request) {
     const json = await req.json()
-    console.log('verify-contract json:', json);
     const {
         deployHash,
         standardJsonInput,
@@ -28,10 +27,11 @@ export async function POST(req: Request) {
             contractName,
             viemChain,
         });
+        console.log("verifyResponse:", verifyResponse)
         return new Response(JSON.stringify(verifyResponse));
     } catch (error) {
         const err = error as Error
-        console.error(`Error in verifyContract: ${err.message}\nStacktrace: ${err.stack}`);
+        console.error(`Error in deployContract: ${err.message}`);
         return new Response(JSON.stringify({ error: `Error in verifyContract: ${err.message}` }), { status: 500 });
     }
 }

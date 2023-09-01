@@ -11917,31 +11917,8 @@
     ]
   },
   {
-    "name": "Mantle Mainnet",
-    "chain": "MNT",
-    "rpc": [
-      "https://rpc.mantle.xyz"
-    ],
-    "nativeCurrency": {
-      "name": "Mantle",
-      "symbol": "MNT",
-      "decimals": 18
-    },
-    "infoURL": "https://mantle.xyz",
-    "shortName": "mantle",
-    "chainId": 5000,
-    "networkId": 5000,
-    "explorers": [
-      {
-        "name": "Mantle Explorer",
-        "url": "https://explorer.mantle.xyz",
-        "standard": "EIP3091"
-      }
-    ]
-  },
-  {
     "name": "Mantle Testnet",
-    "chain": "MNT",
+    "chain": "ETH",
     "rpc": [
       "https://rpc.testnet.mantle.xyz"
     ],
