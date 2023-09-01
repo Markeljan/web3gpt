@@ -37,7 +37,7 @@
     "next-auth": "0.0.0-manual.83c4ebd1",
     "next-themes": "^0.2.1",
     "nft.storage": "^7.1.0",
-    "openai-edge": "^1.2.0",
+    "openai-edge": "^1.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",

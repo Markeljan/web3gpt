@@ -5,7 +5,7 @@ import { nanoid } from '@/lib/utils'
 
 export const runtime = 'edge'
 
-export const initialMessages: Message[] = [
+const initialMessages: Message[] = [
   {
     id: nanoid(),
     role: 'system',
@@ -33,7 +33,6 @@ contract GPTToken is ERC721, Ownable {
         _safeMint(to, tokenId);
     }
 }
-
 `
   }
 ]
