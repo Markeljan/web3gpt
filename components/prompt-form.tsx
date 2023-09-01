@@ -38,7 +38,7 @@ export function PromptForm({
     <form
       onSubmit={async e => {
         e.preventDefault()
-        if (input === '' || isLoading) {
+        if (input === '') {
           return
         }
         setInput('')

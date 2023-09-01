@@ -21,14 +21,14 @@ export const {
     async jwt({ token, profile }) {
       if (profile) {
         token.id = profile.id
-        token.image = profile.picture
+        token.image = profile.avatar_url || profile.picture
         const user = {
-          ...profile, // First spread the rest of the profile properties
-          id: String(profile.id),  // Convert to string
-        };
-        await storeUser(user);
+          ...profile,
+          id: String(profile.id)
+        }
+        await storeUser(user)
       }
-      return token;
+      return token
     },
     authorized({ auth }) {
       return !!auth?.user
