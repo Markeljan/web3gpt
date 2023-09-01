@@ -19,7 +19,7 @@ export interface PromptProps
   isLoading: boolean
 }
 
-export function PromptForm({
+export function PreviewPromptForm({
   onSubmit,
   input,
   setInput,
