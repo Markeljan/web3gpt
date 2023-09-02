@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { Player } from '@lottiefiles/react-lottie-player';
 
 export function Landing({}) {
   return (
@@ -19,21 +20,73 @@ export function Landing({}) {
         Deploy smart contracts with AI
       </p>
 
-      <div className="flex flex-row">
-        <div className="basis-1/3">
-          <img src="logo.png" alt="logo" />
-          <h3 className="">Write Smart Contracts</h3>
-          <p className="">Generate custom smart contracts using a prompt.</p>
+      <div className="grid grid-row-3 gap-4 grid-flow-col my-5">
+
+        <div className="grid grid-cols-1 gap-4 content-center mx-3">
+          {/* <Image
+            src="/logo.png"
+            width={100}
+            height={100}
+            alt="logo"
+            style={{margin: '0 auto'}}
+          /> */}
+
+          <Player
+            autoplay
+            loop={false}
+            speed={.5}
+            direction={-1}
+            keepLastFrame={true}
+            src="lotties/puzzle.json"
+            style={{ height: '100px', width: '100px' }}
+          />
+
+
+          <h3 className="font-bold">Generate</h3>
+          <p className="text-sm text-gray-400">Generate custom smart contracts using a prompt.</p>
         </div>
-        <div className="basis-1/3">
-          <img src="logo.png" alt="logo" />
-          <h3 className="">Deploy to Blockchains</h3>
-          <p className="">Generate custom smart contracts using a prompt.</p>
+
+        <div className="grid grid-cols-1 gap-4 content-center mx-3">
+          {/* <Image
+            src="/logo.png"
+            width={100}
+            height={100}
+            alt="logo"
+            style={{margin: '0 auto'}}
+          /> */}
+
+          <Player
+            autoplay
+            loop={false}
+            speed={1}
+            direction={1}
+            keepLastFrame={true}
+            src="lotties/globe.json"
+            style={{ height: '100px', width: '100px' }}
+          />
+          <h3 className="font-bold">Deploy</h3>
+          <p className="text-sm text-gray-400">Deploy your smart contracts from the chat.</p>
         </div>
-        <div className="basis-1/3">
-          <img src="logo.png" alt="logo" />
-          <h3 className="">Faster Development</h3>
-          <p className="">Speed up development and skip the long and complex setups.</p>
+        <div className="grid grid-cols-1 gap-4 content-center mx-3">
+          {/* <Image
+            src="/logo.png"
+            width={100}
+            height={100}
+            alt="logo"
+            style={{margin: '0 auto'}}
+          /> */}
+
+          <Player
+            autoplay
+            loop={false}
+            speed={1}
+            keepLastFrame={true}
+            src="lotties/clock.json"
+            style={{ height: '100px', width: '100px' }}
+          />
+
+          <h3 className="font-bold">Speed Up</h3>
+          <p className="text-sm text-gray-400">Code faster by skipping long and complex setups.</p>
         </div>
       </div>
 

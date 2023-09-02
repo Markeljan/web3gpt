@@ -81,7 +81,7 @@ export function PromptForm({
                 size="icon"
                 disabled={isLoading || input === ''}
               >
-                <IconArrowElbow />
+                <IconArrowElbow className="fill-white"/>
                 <span className="sr-only">Send message</span>
               </Button>
             </TooltipTrigger>
