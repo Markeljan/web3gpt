@@ -73,7 +73,7 @@ export function Landing({}) {
               className='h-24 w-24 md:h-32 md:w-full'
             />
             <div className='text-left md:text-center col-span-2 md:col-span-1 mt-4 md:mt-0'>
-              <h3 className="font-bold">Generate</h3>
+              <h3 className="font-bold md:mb-2">Generate</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Generate custom smart contracts using a prompt.
               </p>
@@ -90,7 +90,7 @@ export function Landing({}) {
               className='h-24 w-24 md:h-32 md:w-full'
             />
             <div className='text-left md:text-center col-span-2 md:col-span-1 mt-4 md:mt-0'>
-              <h3 className="font-bold">Deploy</h3>
+              <h3 className="font-bold md:mb-2">Deploy</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Deploy your smart contracts from the chat.
               </p>
@@ -106,7 +106,7 @@ export function Landing({}) {
             />
 
             <div className='text-left md:text-center col-span-2 md:col-span-1 mt-4 md:mt-0'>
-              <h3 className="font-bold">Speed Up</h3>
+              <h3 className="font-bold md:mb-2">Speed Up</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Code faster by skipping long and complex setups.
               </p>
