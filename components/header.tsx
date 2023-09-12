@@ -52,7 +52,7 @@ export async function Header() {
         <Tooltip>
           <TooltipTrigger asChild>
             <Badge
-              className={`text-xs ${
+              className={`text-xs text-slate-800 ${
                 session ? 'bg-yellow-300' : 'bg-stone-300'
               }`}
             >

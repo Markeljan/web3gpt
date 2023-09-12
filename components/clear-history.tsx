@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
-import { IconSpinner } from '@/components/ui/icons'
+import { IconSpinner, IconClear } from '@/components/ui/icons'
 
 interface ClearHistoryProps {
   clearChats: () => ServerActionResult<void>
@@ -33,7 +33,7 @@ export function ClearHistory({ clearChats }: ClearHistoryProps) {
       <AlertDialogTrigger asChild>
         <Button variant="ghost" disabled={isPending}>
           {isPending && <IconSpinner className="mr-2" />}
-          Clear history
+          <IconClear/>&nbsp;Clear History
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

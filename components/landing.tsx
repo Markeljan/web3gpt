@@ -49,8 +49,8 @@ export function Landing({}) {
 
   return (
     <>
-      <div className="mx-auto mb-16 max-w-2xl rounded-2xl border-gray-600 px-4 text-center md:border">
-        <div className="relative my-12 flex h-8 w-full">
+      <div className="mx-auto mb-8 md:mb-12 max-w-2xl rounded-2xl border-gray-600/25 dark:border-gray-600/50 px-4 text-center md:border">
+        <div className="relative my-8 md:my-12 flex h-8 w-full">
           <Image
             src="/w3gpt-logo-beta.svg"
             alt="web3 gpt logo"
@@ -58,66 +58,73 @@ export function Landing({}) {
             sizes="(max-width: 318px) 100vw, 318px"
           />
         </div>
-        <p className="text-2xl tracking-tight">
+        <p className="text-lg font-bold lg:font-normal lg:text-2xl tracking-tight">
           Deploy smart contracts with AI
         </p>
 
-        <div className="grid-row-3 my-5 mb-8 grid grid-flow-col gap-4">
-          <div className="mx-3 grid grid-cols-1 content-center gap-4">
+        <div className="grid-row-3 my-5 mb-8 grid grid-flow-row md:grid-flow-col gap-1 md:gap-4">
+          <div className="mx-3 grid grid-cols-3 md:grid-cols-1 content-center gap-1 md:gap-4">
             <Player
               play
               loop={false}
               speed={0.5}
               direction={-1}
               path="/lotties/puzzle.json"
-              style={{ height: '100px', width: '100%' }}
+              className='h-24 w-24 md:h-32 md:w-full'
             />
-
-            <h3 className="font-bold">Generate</h3>
-            <p className="text-sm text-gray-400">
-              Generate custom smart contracts using a prompt.
-            </p>
+            <div className='text-left md:text-center col-span-2 md:col-span-1 mt-4 md:mt-0'>
+              <h3 className="font-bold">Generate</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Generate custom smart contracts using a prompt.
+              </p>
+            </div>
           </div>
 
-          <div className="mx-3 grid grid-cols-1 content-center gap-4">
+          <div className="mx-3 grid grid-cols-3 md:grid-cols-1 content-center gap-1 md:gap-4">
             <Player
               play
               loop={false}
               speed={0.5}
               direction={1}
               path="/lotties/globe.json"
-              style={{ height: '100px', width: '100%' }}
+              className='h-24 w-24 md:h-32 md:w-full'
             />
-            <h3 className="font-bold">Deploy</h3>
-            <p className="text-sm text-gray-400">
-              Deploy your smart contracts from the chat.
-            </p>
+            <div className='text-left md:text-center col-span-2 md:col-span-1 mt-4 md:mt-0'>
+              <h3 className="font-bold">Deploy</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Deploy your smart contracts from the chat.
+              </p>
+            </div>
           </div>
-          <div className="mx-3 grid grid-cols-1 content-center gap-4">
+          <div className="mx-3 grid grid-cols-3 md:grid-cols-1 content-center gap-1 md:gap-4">
             <Player
               play
               loop={false}
               speed={0.5}
               path="/lotties/clock.json"
-              style={{ height: '100px', width: '100%' }}
+              className='h-24 w-24 md:h-32 md:w-full'
             />
 
-            <h3 className="font-bold">Speed Up</h3>
-            <p className="text-sm text-gray-400">
-              Code faster by skipping long and complex setups.
-            </p>
+            <div className='text-left md:text-center col-span-2 md:col-span-1 mt-4 md:mt-0'>
+              <h3 className="font-bold">Speed Up</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Code faster by skipping long and complex setups.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
+      <hr className="md:hidden"/>
+
       {localIsSubscribed === false && (
-        <div className="mx-auto mb-16 max-w-2xl rounded-2xl border-gray-600 px-4 text-center md:border">
+        <div className="mx-auto mb-16 max-w-2xl rounded-2xl border-gray-600/25 dark:border-gray-600/50 px-4 text-center md:border">
           <div className="my-5 flex flex-col gap-4">
             <p className="mt-8 scroll-m-20 text-2xl tracking-tight">
               Weekly Updates
             </p>
 
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-gray-400 px-4">
               Sign up for development updates and early access to latest
               features
             </p>
