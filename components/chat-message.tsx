@@ -9,7 +9,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { CodeBlock } from '@/components/ui/codeblock'
 import { MemoizedReactMarkdown } from '@/components/markdown'
-import { IconF, IconOpenAI, IconUser } from '@/components/ui/icons'
+import { IconF, IconUser } from '@/components/ui/icons'
 import { ChatMessageActions } from '@/components/chat-message-actions'
 import { Button } from '@/components/ui/button'
 
@@ -18,7 +18,11 @@ export interface ChatMessageProps {
   avatarUrl?: string
 }
 
-export function ChatMessage({ message, avatarUrl, ...props }: ChatMessageProps) {
+export function ChatMessage({
+  message,
+  avatarUrl,
+  ...props
+}: ChatMessageProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const onExpandClick = () => setIsExpanded(!isExpanded)
@@ -32,10 +36,7 @@ export function ChatMessage({ message, avatarUrl, ...props }: ChatMessageProps) 
           <IconF />
         </div>
         <div className="ml-4 flex-1 space-y-2 px-1">
-          <Button
-            onClick={onExpandClick}
-            variant="default"
-          >
+          <Button onClick={onExpandClick} variant="default">
             Function Call
           </Button>
           <ChatMessageActions message={message} onExpandClick={onExpandClick} />
@@ -54,14 +55,16 @@ export function ChatMessage({ message, avatarUrl, ...props }: ChatMessageProps) 
         )}
       >
         {message.role === 'user' ? (
-
-          avatarUrl ?
+          avatarUrl ? (
             <Image
               className="rounded-md"
               src={avatarUrl}
               alt={'user avatar'}
-              fill={true} /> :
+              fill={true}
+            />
+          ) : (
             <IconUser />
+          )
         ) : message.function_call ? (
           <IconF />
         ) : (
@@ -69,10 +72,11 @@ export function ChatMessage({ message, avatarUrl, ...props }: ChatMessageProps) 
             className="rounded-md"
             src={'/favicon.png'}
             alt={'web3 gpt logo'}
-            fill={true} />
+            fill={true}
+          />
         )}
       </div>
-      <div className="ml-4 flex-1 overflow-x-auto space-y-2">
+      <div className="ml-4 flex-1 space-y-2 overflow-x-auto">
         <MemoizedReactMarkdown
           className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
           remarkPlugins={[remarkGfm, remarkMath]}
@@ -118,7 +122,7 @@ export function ChatMessage({ message, avatarUrl, ...props }: ChatMessageProps) 
               : JSON.stringify(message.function_call)
             : message.content ?? ''}
         </MemoizedReactMarkdown>
-        <div className='flex flex-col justify-end'>
+        <div className="flex flex-col justify-end">
           <ChatMessageActions message={message} onExpandClick={onExpandClick} />
         </div>
       </div>

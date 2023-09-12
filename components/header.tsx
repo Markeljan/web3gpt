@@ -7,17 +7,17 @@ import { clearChats } from '@/app/actions'
 import { buttonVariants } from '@/components/ui/button'
 import { Sidebar } from '@/components/sidebar'
 import { SidebarList } from '@/components/sidebar-list'
-import {
-  IconGitHub,
-  IconSeparator,
-  IconTwitter
-} from '@/components/ui/icons'
+import { IconGitHub, IconSeparator, IconTwitter } from '@/components/ui/icons'
 import { SidebarFooter } from '@/components/sidebar-footer'
 import { ClearHistory } from '@/components/clear-history'
 import { UserMenu } from '@/components/user-menu'
 import { LoginButton } from '@/components/login-button'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 import { Badge } from '@/components/ui/badge'
 
 export async function Header() {
@@ -30,7 +30,7 @@ export async function Header() {
             {/* @ts-ignore */}
             <SidebarList userId={session?.user?.id} />
           </React.Suspense>
-          <SidebarFooter className='justify-end'>
+          <SidebarFooter className="justify-end">
             {session && <ClearHistory clearChats={clearChats} />}
           </SidebarFooter>
         </Sidebar>
@@ -48,13 +48,21 @@ export async function Header() {
           )}
         </div>
       </div>
-      <div className="invisible md:visible absolute inset-0 flex items-center justify-center -z-10">
-            <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge className={`text-xs ${session ? 'bg-yellow-300' : 'bg-stone-300'}`}>{session ? "gpt-4" : "gpt-3.5-turbo"}</Badge>
-        </TooltipTrigger>
-        <TooltipContent>{session ? "Model" : "Login to enable gpt-4"}</TooltipContent>
-      </Tooltip>
+      <div className="invisible absolute inset-0 -z-10 flex items-center justify-center md:visible">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge
+              className={`text-xs ${
+                session ? 'bg-yellow-300' : 'bg-stone-300'
+              }`}
+            >
+              {session ? 'gpt-4' : 'gpt-3.5-turbo'}
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            {session ? 'Model' : 'Login to enable gpt-4'}
+          </TooltipContent>
+        </Tooltip>
       </div>
       <div className="flex items-center justify-end space-x-2">
         <Tooltip>
@@ -86,8 +94,6 @@ export async function Header() {
           <TooltipContent>Github</TooltipContent>
         </Tooltip>
         <ThemeToggle />
-
-
       </div>
     </header>
   )
