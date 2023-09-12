@@ -31,12 +31,16 @@ export function LoginButton({
       className={cn(className)}
       {...props}
     >
-      {isLoading ? (
-        <IconSpinner className="mr-2 animate-spin" />
-      ) : showGithubIcon ? (
-        <IconGitHub className="mr-2" />
-      ) : null}
-      {text}
+      {showGithubIcon &&
+        (isLoading ? (
+          <IconSpinner className="mr-2 animate-spin" />
+        ) : (
+          <IconGitHub className="mr-2" />
+        ))}
+      {!showGithubIcon && isLoading ? (
+        <IconSpinner className="mr-1 animate-spin" />
+      ) :
+        text}
     </Button>
   )
 }

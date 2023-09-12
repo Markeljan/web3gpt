@@ -1,3 +1,4 @@
+import { Message } from 'ai'
 import { clsx, type ClassValue } from 'clsx'
 import { customAlphabet } from 'nanoid'
 import { twMerge } from 'tailwind-merge'
@@ -40,4 +41,15 @@ export function formatDate(input: string | number | Date): string {
     day: 'numeric',
     year: 'numeric'
   })
+}
+
+export function isValidEmail(email: string): boolean {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+}
+
+export function filterMessages(messages: Message[]): Message[] {
+  return messages.filter(
+    message => message.role !== 'system' && message.role !== 'function'
+  )
 }

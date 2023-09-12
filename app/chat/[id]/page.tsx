@@ -31,6 +31,7 @@ export async function generateMetadata({
 
 export default async function ChatPage({ params }: ChatPageProps) {
   const session = await auth()
+  const avatarUrl = session?.user?.picture
 
   if (!session?.user) {
     redirect(`/sign-in?next=/chat/${params.id}`)
@@ -46,5 +47,5 @@ export default async function ChatPage({ params }: ChatPageProps) {
     notFound()
   }
 
-  return <Chat id={chat.id} initialMessages={chat.messages} />
+  return <Chat id={chat.id} initialMessages={chat.messages} avatarUrl={avatarUrl}/>
 }

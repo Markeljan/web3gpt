@@ -7,7 +7,6 @@ import toast from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
-import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { nanoid } from '@/lib/utils'
 import { functionSchemas } from '@/lib/functions/schemas'
@@ -19,13 +18,14 @@ import { Landing } from './landing'
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
+  showLanding?: boolean
+  avatarUrl?: string
 }
 
-export function Chat({ id, initialMessages, className }: ChatProps) {
+export function Chat({ id, initialMessages, className, showLanding = false, avatarUrl }: ChatProps) {
   const [verificationParams, setVerificationParams] =
     useState<VerifyContractParams>()
   const [polling, setPolling] = useState(false)
-
   useEffect(() => {
     const verifyFunction = async (verificationParams: VerifyContractParams) => {
       if (verificationParams) {
@@ -114,7 +114,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
             id: nanoid(),
             name: 'deploy_contract',
             role: role,
-            content: content
+            content: content,
           }
         ],
         functions: functionSchemas
@@ -138,17 +138,13 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         }
       }
     })
+
   return (
     <>
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
-        {messages.length > 1 ? (
-          <>
-            <ChatList messages={messages} />
+            {showLanding && <Landing />}
+            <ChatList messages={messages} avatarUrl={avatarUrl}/>
             <ChatScrollAnchor trackVisibility={isLoading} />
-          </>
-        ) : (
-          <Landing />
-        )}
       </div>
       <ChatPanel
         id={id}

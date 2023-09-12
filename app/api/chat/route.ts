@@ -12,9 +12,10 @@ export async function POST(req: Request) {
   const { messages, functions, function_call } = json
   const userId = (await auth())?.user.id
 
-  if (!userId) {
-    return new Response('Unauthorized', { status: 401 })
-  }
+  // Uncomment to require authentication
+  // if (!userId) {
+  //   return new Response('Unauthorized', { status: 401 })
+  // }
 
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY
@@ -24,12 +25,11 @@ export async function POST(req: Request) {
 
   // Ask OpenAI for a streaming chat completion given the prompt
   const res = await openai.createChatCompletion({
-    //model: 'gpt-3.5-turbo',
-    model: 'gpt-4',
+    model: userId ? 'gpt-4' : 'gpt-3.5-turbo',
     stream: true,
     messages,
     functions,
-    function_call 
+    function_call
   });
 
   const stream = OpenAIStream(res, {

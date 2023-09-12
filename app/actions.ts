@@ -19,6 +19,19 @@ export async function storeUser(user: { id: string } & Record<string, any>) {
   await kv.sadd('users:list', user.id);
 }
 
+export async function storeEmail(email: string) {
+  // Add email to the list of all emails
+  await kv.sadd('emails:list', email)
+  // if user is logged in, set email_subscribed to true
+  const session = await auth()
+  if (session?.user?.id) {
+    await kv.hmset(`user:details:${session.user.id}`, {
+      email_subscribed: true
+    })
+  }
+
+}
+
 export async function getChats(userId?: string | null) {
   if (!userId) {
     return []
@@ -121,12 +134,40 @@ export async function shareChat(chat: Chat) {
     }
   }
 
+  const avatarUrl = session.user.picture
+
   const payload = {
     ...chat,
-    sharePath: `/share/${chat.id}`
+    sharePath: `/share/${chat.id}`,
+    ...(avatarUrl &&
+      { avatarUrl: avatarUrl }
+    )
+
   }
 
   await kv.hmset(`chat:${chat.id}`, payload)
 
   return payload
+}
+
+
+export async function getUserField(fieldName: string): Promise<any> {
+  try {
+    // Fetch the user's session
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      throw new Error("User not logged in");
+    }
+
+    // Fetch the user's details from KV using their ID
+    const userKey = `user:details:${session.user.id}`;
+    const userDetails = await kv.hgetall(userKey);
+
+    // Return the value of the specified field name
+    return userDetails?.[fieldName];
+  } catch (error: any) {
+    console.error(error.message);
+    return null;  // or throw error or return undefined, based on your preference
+  }
 }

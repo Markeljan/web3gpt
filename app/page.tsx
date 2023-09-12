@@ -2,6 +2,7 @@ import { Message } from 'ai'
 
 import { Chat } from '@/components/chat'
 import { nanoid } from '@/lib/utils'
+import { auth } from '@/auth'
 
 export const runtime = 'edge'
 
@@ -37,7 +38,9 @@ contract GPTToken is ERC721, Ownable {
   }
 ]
 
-export default function ChatIndexPage() {
+export default async function ChatIndexPage() {
+  const session = await auth()
+  const avatarUrl = session?.user?.picture
   const id = nanoid()
-  return <Chat initialMessages={initialMessages} id={id} />
+  return <Chat initialMessages={initialMessages} id={id} showLanding avatarUrl={avatarUrl}  />
 }

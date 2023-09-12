@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
 import { type Chat, ServerActionResult } from '@/lib/types'
-import { cn, formatDate } from '@/lib/utils'
+import { cn, filterMessages, formatDate } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,6 +55,7 @@ export function SidebarActions({
   const [isRemovePending, startRemoveTransition] = React.useTransition()
   const [isSharePending, startShareTransition] = React.useTransition()
   const router = useRouter()
+  const filteredMessages = filterMessages(chat?.messages ?? [])
 
   const copyShareLink = React.useCallback(async (chat: Chat) => {
     if (!chat.sharePath) {
@@ -121,7 +122,7 @@ export function SidebarActions({
           <div className="space-y-1 rounded-md border p-4 text-sm">
             <div className="font-medium">{chat.title}</div>
             <div className="text-muted-foreground">
-              {formatDate(chat.createdAt)} · {chat.messages.length} messages
+              {formatDate(chat.createdAt)} · {filteredMessages.length} messages
             </div>
           </div>
           <DialogFooter className="items-center">

@@ -9,37 +9,31 @@ import { Sidebar } from '@/components/sidebar'
 import { SidebarList } from '@/components/sidebar-list'
 import {
   IconGitHub,
-  IconNextChat,
-  IconSeparator
+  IconSeparator,
+  IconTwitter
 } from '@/components/ui/icons'
 import { SidebarFooter } from '@/components/sidebar-footer'
-import { ThemeToggle } from '@/components/theme-toggle'
 import { ClearHistory } from '@/components/clear-history'
 import { UserMenu } from '@/components/user-menu'
 import { LoginButton } from '@/components/login-button'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { Badge } from '@/components/ui/badge'
 
 export async function Header() {
   const session = await auth()
   return (
-    <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-background px-4">
       <div className="flex items-center">
-        {session?.user ? (
-          <Sidebar>
-            <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
-              {/* @ts-ignore */}
-              <SidebarList userId={session?.user?.id} />
-            </React.Suspense>
-            <SidebarFooter>
-              <ThemeToggle />
-              <ClearHistory clearChats={clearChats} />
-            </SidebarFooter>
-          </Sidebar>
-        ) : (
-          <Link href="/" target="_blank" rel="nofollow">
-            <IconNextChat className="mr-2 h-6 w-6 dark:hidden" inverted />
-            <IconNextChat className="mr-2 hidden h-6 w-6 dark:block" />
-          </Link>
-        )}
+        <Sidebar>
+          <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
+            {/* @ts-ignore */}
+            <SidebarList userId={session?.user?.id} />
+          </React.Suspense>
+          <SidebarFooter className='justify-end'>
+            {session && <ClearHistory clearChats={clearChats} />}
+          </SidebarFooter>
+        </Sidebar>
         <div className="flex items-center">
           <IconSeparator className="h-6 w-6 text-muted-foreground/50" />
           {session?.user ? (
@@ -47,23 +41,53 @@ export async function Header() {
           ) : (
             <LoginButton
               variant="link"
-              showGithubIcon={false}
+              showGithubIcon={true}
               text="Login"
               className="-ml-2"
             />
           )}
         </div>
       </div>
+      <div className="invisible md:visible absolute inset-0 flex items-center justify-center -z-10">
+            <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge className={`text-xs ${session ? 'bg-yellow-300' : 'bg-stone-300'}`}>{session ? "gpt-4" : "gpt-3.5-turbo"}</Badge>
+        </TooltipTrigger>
+        <TooltipContent>{session ? "Model" : "Login to enable gpt-4"}</TooltipContent>
+      </Tooltip>
+      </div>
       <div className="flex items-center justify-end space-x-2">
-        <a
-          target="_blank"
-          href="https://github.com/markeljan/"
-          rel="noopener noreferrer"
-          className={cn(buttonVariants({ variant: 'outline' }))}
-        >
-          <IconGitHub />
-          <span className="ml-2 hidden md:flex">GitHub</span>
-        </a>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}
+              href="https://x.com/w3gpt_ai"
+              target="_blank"
+              rel="nofollow"
+            >
+              <IconTwitter />
+              <span className="sr-only">Twitter</span>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent>Twitter</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}
+              href="https://github.com/markeljan/web3gpt"
+              target="_blank"
+              rel="nofollow"
+            >
+              <IconGitHub />
+              <span className="sr-only">Github</span>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent>Github</TooltipContent>
+        </Tooltip>
+        <ThemeToggle />
+
+
       </div>
     </header>
   )

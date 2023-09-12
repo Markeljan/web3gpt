@@ -33,12 +33,12 @@ export function PromptForm({
       inputRef.current.focus()
     }
   }, [])
-
+  
   return (
     <form
       onSubmit={async e => {
         e.preventDefault()
-        if (input === '') {
+        if (!input?.trim()) {
           return
         }
         setInput('')
@@ -79,9 +79,9 @@ export function PromptForm({
               <Button
                 type="submit"
                 size="icon"
-                disabled={isLoading || input === ''}
+                disabled={isLoading || !input?.trim()}
               >
-                <IconArrowElbow className="fill-white"/>
+                <IconArrowElbow className="fill-white" />
                 <span className="sr-only">Send message</span>
               </Button>
             </TooltipTrigger>

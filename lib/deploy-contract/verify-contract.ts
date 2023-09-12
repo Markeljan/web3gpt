@@ -48,8 +48,6 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
 const verifyContractRequest = async ({ address, standardJsonInput, compilerVersion, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractRequestParams) => {
     const apiUrl = API_URLS[viemChain['name']];
     const apiKey = API_KEYS[viemChain['name']];
-    console.log("apiurl", apiUrl)
-    console.log("apikay", apiKey)
     if (!apiKey) {
         throw new Error(`Unsupported chain or explorer API_KEY.  Network: ${viemChain["network"]}`);
     }

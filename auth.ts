@@ -31,9 +31,10 @@ export const {
       }
       return token
     },
-    authorized({ auth }) {
-      return !!auth?.user
-    }
+    // uncomment to require authentication
+    // authorized({ auth }) {
+    //   return !!auth?.user
+    // }
   },
   pages: {
     signIn: '/sign-in'

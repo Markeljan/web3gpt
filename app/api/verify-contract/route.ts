@@ -1,4 +1,4 @@
-import { auth } from '@/auth'
+// import { auth } from '@/auth'
 import verifyContract from '@/lib/deploy-contract/verify-contract';
 
 const runtime = 'edge'
@@ -13,11 +13,13 @@ export async function POST(req: Request) {
         contractName,
         viemChain,
     } = json
-    const session = await auth()
 
-    if (session == null) {
-        return new Response('Unauthorized', { status: 401 })
-    }
+    // Uncomment to require authentication
+    //const session = await auth()
+    // if (session == null) {
+    //     return new Response('Unauthorized', { status: 401 })
+    // }
+
     try {
         const verifyResponse = await verifyContract({
             deployHash,
