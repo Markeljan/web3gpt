@@ -1,12 +1,16 @@
 'use client'
 
-import { FC, memo } from 'react'
+import { FC, memo, useEffect, useMemo, useState } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { coldarkDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
+import {
+  coldarkCold,
+  coldarkDark
+} from 'react-syntax-highlighter/dist/cjs/styles/prism'
 
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
 import { IconCheck, IconCopy, IconDownload } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
+import { useTheme } from 'next-themes'
 
 interface Props {
   language: string
@@ -54,7 +58,13 @@ export const generateRandomString = (length: number, lowercase = false) => {
 }
 
 const CodeBlock: FC<Props> = memo(({ language, value }) => {
+  const { resolvedTheme } = useTheme()
+  const [isDark, setIsDark] = useState(resolvedTheme === 'dark')
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
+
+  useEffect(() => {
+    setIsDark(resolvedTheme === 'dark')
+  }, [resolvedTheme])
 
   const downloadAsFile = () => {
     if (typeof window === 'undefined') {
@@ -90,13 +100,21 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
   }
 
   return (
-    <div className="codeblock relative w-full bg-zinc-950 font-sans">
-      <div className="flex w-full items-center justify-between bg-zinc-800 px-6 py-2 pr-4 text-zinc-100">
+    <div
+      className={`codeblock relative w-full ${
+        isDark ? 'bg-zinc-950' : 'bg-gray-50'
+      } font-sans`}
+    >
+      <div
+        className={`flex w-full items-center justify-between ${
+          isDark ? 'bg-zinc-800 text-zinc-100' : 'bg-gray-300 text-gray-950'
+        } px-6 py-2 pr-4`}
+      >
         <span className="text-xs lowercase">{language}</span>
         <div className="flex items-center space-x-1">
           <Button
             variant="ghost"
-            className="hover:bg-zinc-800 focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
+            className="focus-visible:ring-1 focus-visible:ring-gray-700 focus-visible:ring-offset-0"
             onClick={downloadAsFile}
             size="icon"
           >
@@ -106,7 +124,7 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
           <Button
             variant="ghost"
             size="icon"
-            className="text-xs hover:bg-zinc-800 focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
+            className="text-xs focus-visible:ring-1 focus-visible:ring-gray-700 focus-visible:ring-offset-0"
             onClick={onCopy}
           >
             {isCopied ? <IconCheck /> : <IconCopy />}
@@ -116,7 +134,7 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
       </div>
       <SyntaxHighlighter
         language={language}
-        style={coldarkDark}
+        style={isDark ? coldarkDark : coldarkCold}
         PreTag="div"
         showLineNumbers
         customStyle={{
