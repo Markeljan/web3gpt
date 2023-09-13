@@ -23,9 +23,10 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 }
 
 export function Chat({ id, initialMessages, className, showLanding = false, avatarUrl }: ChatProps) {
-  const [verificationParams, setVerificationParams] =
-    useState<VerifyContractParams>()
-  const [polling, setPolling] = useState(false)
+  const [verificationParams, setVerificationParams] = useState<VerifyContractParams>();
+  const [polling, setPolling] = useState(false);
+  const [isDeploying, setIsDeploying] = useState(false);
+
   useEffect(() => {
     const verifyFunction = async (verificationParams: VerifyContractParams) => {
       if (verificationParams) {
@@ -74,6 +75,8 @@ export function Chat({ id, initialMessages, className, showLanding = false, avat
     functionCall
   ) => {
     if (functionCall.name === 'deploy_contract') {
+      setIsDeploying(true)
+
       // You now have access to the parsed arguments here (assuming the JSON was valid)
       // If JSON is invalid, return an appropriate message to the model so that it may retry?
 
@@ -84,6 +87,8 @@ export function Chat({ id, initialMessages, className, showLanding = false, avat
         },
         body: functionCall.arguments
       })
+
+      setIsDeploying(false)
 
       let content: string
       let role: 'system' | 'function'
@@ -142,13 +147,13 @@ export function Chat({ id, initialMessages, className, showLanding = false, avat
   return (
     <>
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
-            {showLanding && <Landing />}
-            <ChatList messages={messages} avatarUrl={avatarUrl}/>
-            <ChatScrollAnchor trackVisibility={isLoading} />
+        {showLanding && <Landing />}
+        <ChatList messages={messages} avatarUrl={avatarUrl} />
+        <ChatScrollAnchor trackVisibility={isLoading} />
       </div>
       <ChatPanel
         id={id}
-        isLoading={isLoading}
+        isLoading={isLoading || isDeploying}
         stop={stop}
         append={append}
         reload={reload}
