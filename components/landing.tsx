@@ -115,7 +115,7 @@ export function Landing({}) {
         </div>
       </div>
 
-      <hr className="md:hidden"/>
+      <hr className="md:hidden mb-4"/>
 
       {localIsSubscribed === false && (
         <div className="mx-auto mb-16 max-w-2xl rounded-2xl border-gray-600/25 dark:border-gray-600/50 px-4 text-center md:border">
