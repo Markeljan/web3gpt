@@ -14,7 +14,7 @@ export function ChatList({ messages, avatarUrl }: ChatList) {
   const filteredMessages = filterMessages(messages)
 
   return (
-    <div className="relative mx-auto max-w-2xl px-4">
+    <div className="relative mx-auto max-w-2xl px-2">
       {filteredMessages.map((message, index) => (
         <div key={index}>
           <ChatMessage message={message} avatarUrl={avatarUrl} />
