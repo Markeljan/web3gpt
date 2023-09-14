@@ -10,7 +10,7 @@ export const runtime = 'edge'
 export async function POST(req: Request) {
   const json = await req.json()
   const { messages, functions, function_call } = json
-  const userId = (await auth())?.user.id
+  const userId = (await auth())?.user?.id
 
   // Uncomment to require authentication
   // if (!userId) {
@@ -52,11 +52,13 @@ export async function POST(req: Request) {
           }
         ]
       }
-      await kv.hmset(`chat:${id}`, payload)
-      await kv.zadd(`user:chat:${userId}`, {
-        score: createdAt,
-        member: `chat:${id}`
-      })
+      if (userId) {
+        await kv.hmset(`chat:${id}`, payload)
+        await kv.zadd(`user:chat:${userId}`, {
+          score: createdAt,
+          member: `chat:${id}`
+        })
+      }
     }
   })
 

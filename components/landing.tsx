@@ -10,12 +10,10 @@ import { getUserField, storeEmail } from '@/app/actions'
 import { isValidEmail } from '@/lib/utils'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 
-export function Landing({}) {
+export function Landing({ }) {
   const [validationError, setValidationError] = useState<string | null>(null)
   const [email, setEmail] = useState<string>('')
-  const [localIsSubscribed, setLocalIsSubscribed] = useLocalStorage<
-    boolean | null
-  >('email_subscribed', null)
+  const [localIsSubscribed, setLocalIsSubscribed] = useLocalStorage('email_subscribed', false)
 
   useEffect(() => {
     async function fetchUserSubscribed() {
@@ -54,6 +52,7 @@ export function Landing({}) {
           <Image
             src="/w3gpt-logo-beta.svg"
             alt="web3 gpt logo"
+            priority={true}
             fill
             sizes="(max-width: 318px) 100vw, 318px"
           />
@@ -115,7 +114,7 @@ export function Landing({}) {
         </div>
       </div>
 
-      <hr className="md:hidden mb-4"/>
+      <hr className="md:hidden mb-4" />
 
       {localIsSubscribed === false && (
         <div className="mx-auto mb-16 max-w-2xl rounded-2xl border-gray-600/25 dark:border-gray-600/50 px-4 text-center md:border">
