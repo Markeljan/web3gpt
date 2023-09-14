@@ -69,7 +69,7 @@ export async function Header() {
           <TooltipTrigger asChild>
             <Link
               className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}
-              href="https://x.com/w3gpt_ai"
+              href="https://x.com/w3_gpt"
               target="_blank"
               rel="nofollow"
             >
