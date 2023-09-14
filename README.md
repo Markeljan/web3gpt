@@ -4,7 +4,8 @@ You can test this app live at [https://w3gpt.ai](https://w3gpt.ai) and let us kn
 
 Web3-GPT is a chat tool that combines the power of Large Language Models (LLMs) and AI Agents to revolutionize the smart contract development process. Whether you're a seasoned blockchain developer or just stepping into the world of Web3, Web3-GPT is designed to streamline your development and deployment processes.
 
-![Web3 GPT](https://github.com/Markeljan/Web3GPT/assets/12901349/c2c638eb-10fc-4b78-a048-c6c610b7e610)
+![image](https://github.com/Markeljan/Web3GPT/assets/12901349/c84ec7ed-3657-4d19-a739-2285e25c29a1)
+
 
 ## Features 🌟
 
