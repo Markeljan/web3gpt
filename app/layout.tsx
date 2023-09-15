@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
+import { IsClientContextProvider } from '@/lib/is-client-context'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://w3gpt.ai'),
@@ -41,15 +42,17 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontMono.variable
         )}
       >
-        <Toaster />
-        <Providers attribute="class" defaultTheme="system" enableSystem>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex flex-1 flex-col bg-muted/50">{children}</main>
-          </div>
-          <Analytics />
-          <TailwindIndicator />
-        </Providers>
+        <IsClientContextProvider>
+          <Toaster />
+          <Providers attribute="class" defaultTheme="system" enableSystem>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex flex-1 flex-col bg-muted/50">{children}</main>
+            </div>
+            <Analytics />
+            <TailwindIndicator />
+          </Providers>
+        </IsClientContextProvider>
       </body>
     </html>
   )

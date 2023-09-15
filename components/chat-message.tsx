@@ -61,6 +61,7 @@ export function ChatMessage({
               src={avatarUrl}
               alt={'user avatar'}
               fill={true}
+              sizes='30px'
             />
           ) : (
             <IconUser />
@@ -73,6 +74,7 @@ export function ChatMessage({
             src={'/favicon.png'}
             alt={'web3 gpt logo'}
             fill={true}
+            sizes='30px'
           />
         )}
       </div>
