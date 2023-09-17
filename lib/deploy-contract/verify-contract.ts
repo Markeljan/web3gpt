@@ -21,6 +21,7 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
             throw new Error(`Error waiting for transaction receipt: ${error.message}`);
         });
 
+    console.log('txConfirmations', txConfirmations)
     if (txConfirmations >= 4) {
         const deployReceipt = await publicClient.getTransactionReceipt({ hash: deployHash }).catch(error => {
             throw new Error(`Error getting transaction receipt: ${error.message}`);
@@ -67,7 +68,7 @@ const verifyContractRequest = async ({ address, standardJsonInput, compilerVersi
             params.append('constructorArguements', encodedConstructorArgs);
         }
         params.append('evmversion', 'london'); // leave blank for compiler default
-        const response = await fetch(apiUrl + '/api', {
+        const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'

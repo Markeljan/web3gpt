@@ -5,15 +5,16 @@ import { distance } from "fastest-levenshtein";
 import { polygonMumbai } from "viem/chains";
 
 export const API_URLS: Record<Chain["name"], string> = {
-    'Ethereum': 'https://api.etherscan.io',
-    'Goerli': 'https://api-goerli.etherscan.io',
-    'Sepolia': 'https://api-sepolia.etherscan.io',
-    'Arbitrum One': 'https://api.arbiscan.io',
-    'Arbitrum Goerli': 'https://api-goerli.arbiscan.io',
-    'Polygon Mainnet': 'https://api.polygonscan.com',
-    'Mumbai': 'https://api-testnet.polygonscan.com',
-    'Optimism': 'https://api-optimistic.etherscan.io',
-    'Optimism Goerli Testnet': 'https://api-goerli.optimistic.etherscan.io',
+    'Ethereum': 'https://api.etherscan.io/api',
+    'Goerli': 'https://api-goerli.etherscan.io/api',
+    'Sepolia': 'https://api-sepolia.etherscan.io/api',
+    'Arbitrum One': 'https://api.arbiscan.io/api',
+    'Arbitrum Goerli': 'https://api-goerli.arbiscan.io/api',
+    'Polygon Mainnet': 'https://api.polygonscan.com/api',
+    'Mumbai': 'https://api-testnet.polygonscan.com/api',
+    'Optimism': 'https://api-optimistic.etherscan.io/api',
+    'Optimism Goerli Testnet': 'https://api-goerli.optimistic.etherscan.io/api',
+    'Base': 'https://api.basescan.org/api',
 }
 
 export const API_KEYS: Record<Chain["name"], string | undefined> = {
@@ -26,6 +27,7 @@ export const API_KEYS: Record<Chain["name"], string | undefined> = {
     'Mumbai': process.env.POLYGON_EXPLORER_API_KEY,
     'Optimism': process.env.OPTIMISM_EXPLORER_API_KEY,
     'Optimism Goerli Testnet': process.env.OPTIMISM_EXPLORER_API_KEY,
+    'Base': process.env.BASE_EXPLORER_API_KEY,
 }
 
 export const createViemChain = (chain: string): Chain | undefined => {
