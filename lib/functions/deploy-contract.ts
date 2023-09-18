@@ -8,7 +8,7 @@ import { polygonMumbai } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 
 export default async function deployContract({
-    chainName = 'Mumbai',
+    chainName = 'Base Goerli Testnet',
     contractName = "W3GPTContract",
     sourceCode,
     constructorArgs,

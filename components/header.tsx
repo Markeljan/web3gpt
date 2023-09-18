@@ -19,6 +19,7 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip'
 import { Badge } from '@/components/ui/badge'
+import Image from 'next/image'
 
 export async function Header() {
   const session = await auth()
@@ -48,7 +49,7 @@ export async function Header() {
           )}
         </div>
       </div>
-      <div className="invisible absolute inset-0 -z-10 flex items-center justify-center md:visible">
+      <div className="invisible absolute inset-0 -z-10 flex items-center justify-center md:visible gap-4">
         <Tooltip>
           <TooltipTrigger asChild>
             <Badge
@@ -56,13 +57,14 @@ export async function Header() {
                 session ? 'bg-yellow-300' : 'bg-stone-300'
               }`}
             >
-              {session ? 'gpt-4' : 'gpt-3.5-turbo'}
+              {session ? 'gpt-4' : 'gpt-3.5-turbo'} 
             </Badge>
           </TooltipTrigger>
           <TooltipContent>
             {session ? 'Model' : 'Login to enable gpt-4'}
           </TooltipContent>
         </Tooltip>
+        <Image src="/base.webp" alt="web3 gpt logo" width={24} height={24} />
       </div>
       <div className="flex items-center justify-end space-x-2">
         <Tooltip>

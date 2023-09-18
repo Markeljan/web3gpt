@@ -14,7 +14,9 @@ export const API_URLS: Record<Chain["name"], string> = {
     'Mumbai': 'https://api-testnet.polygonscan.com/api',
     'Optimism': 'https://api-optimistic.etherscan.io/api',
     'Optimism Goerli Testnet': 'https://api-goerli.optimistic.etherscan.io/api',
-    'Base': 'https://api.basescan.org/api',
+    //TODO: enable mainnet base explorer
+    'Base': 'https://api-goerli.basescan.org/api',
+    'Base Goerli Testnet': 'https://api-goerli.basescan.org/api',
 }
 
 export const API_KEYS: Record<Chain["name"], string | undefined> = {
@@ -28,6 +30,7 @@ export const API_KEYS: Record<Chain["name"], string | undefined> = {
     'Optimism': process.env.OPTIMISM_EXPLORER_API_KEY,
     'Optimism Goerli Testnet': process.env.OPTIMISM_EXPLORER_API_KEY,
     'Base': process.env.BASE_EXPLORER_API_KEY,
+    'Base Goerli Testnet': process.env.BASE_EXPLORER_API_KEY,
 }
 
 export const createViemChain = (chain: string): Chain | undefined => {
