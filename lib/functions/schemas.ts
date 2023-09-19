@@ -42,5 +42,19 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
       },
       required: ['contractName', 'chainName', 'sourceCode', 'constructorArgs']
     }
+  },
+  {
+    name: 'text_to_image',
+    description: `This function generates an image from text.  It returns an IPFS url to the generated image and metadata.  Give both links back to the user.  Only call this function in a separate chat message do not call it from a message with other text.  Share the ipfs url with the user and make the link open in new tab.`,
+    parameters: {
+      type: 'object',
+      properties: {
+        text: {
+          type: 'string',
+          description: 'Text to generate an image from.'
+        }
+      },
+      required: ['text']
+    }
   }
 ]

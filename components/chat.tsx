@@ -126,6 +126,32 @@ export function Chat({ id, initialMessages, className, showLanding = false, avat
       }
 
       return functionResponse
+    } else if (functionCall.name === 'text_to_image') {
+      const response = await fetch('/api/text-to-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: functionCall.arguments })
+      })
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      }
+      const { imageUrl, metadataUrl } = await response.json()
+
+      const functionResponse: ChatRequest = {
+        messages: [
+          ...chatMessages,
+          {
+            id: nanoid(),
+            name: 'text-to-image',
+            role: 'function',
+            content: JSON.stringify({ imageUrl, metadataUrl })
+          }
+        ],
+        functions: functionSchemas
+      }
+      return functionResponse
     }
   }
 
@@ -143,6 +169,8 @@ export function Chat({ id, initialMessages, className, showLanding = false, avat
         }
       }
     })
+
+
 
   return (
     <>

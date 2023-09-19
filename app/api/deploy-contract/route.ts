@@ -1,5 +1,5 @@
 // import { auth } from '@/auth'
-import deployContract from '@/lib/functions/deploy-contract';
+import deployContract from '@/lib/functions/deploy-contract/deploy-contract';
 
 const runtime = 'edge'
 

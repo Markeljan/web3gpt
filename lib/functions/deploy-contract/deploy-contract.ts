@@ -1,8 +1,8 @@
 const solc = require("solc");
 import { DeployContractConfig, DeployContractResponse, VerifyContractParams } from "@/lib/functions/types";
-import handleImports from "@/lib/deploy-contract/handle-imports";
+import handleImports from "@/lib/functions/deploy-contract/handle-imports";
 import { getRpcUrl, createViemChain, getExplorerUrl } from "@/lib/viem-utils";
-import ipfsUpload from "@/lib/deploy-contract/ipfs-upload";
+import ipfsUpload from "@/lib/functions/deploy-contract/ipfs-upload";
 import { Hex, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
 import { polygonMumbai } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
