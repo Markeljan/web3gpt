@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     // Upload the image to NFTStorage
     const imageCid = await client.storeBlob(imageFile);
     // Construct the IPFS URL for the image
-    const imageUrl = `https://ipfs.io/ipfs/${imageCid}`;
+    const imageUrl = `ipfs://${imageCid}`;
 
     // Create a JSON object with the constructed URL
     const metadata = {
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
 
     // Upload the metadata to NFTStorage
     const metadataCid = await client.storeBlob(metadataFile);
-    const metadataUrl = `https://ipfs.io/ipfs/${metadataCid}`;
+    const metadataUrl = `ipfs://${metadataCid}`;
 
     // Return the CID (IPFS address) of the uploaded metadata
     return new Response(JSON.stringify({ metadataUrl: metadataUrl, imageUrl: imageUrl }));

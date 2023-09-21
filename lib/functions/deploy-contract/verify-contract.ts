@@ -22,27 +22,22 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
         });
 
     console.log('txConfirmations', txConfirmations)
-    if (txConfirmations >= 4) {
-        const deployReceipt = await publicClient.getTransactionReceipt({ hash: deployHash }).catch(error => {
-            throw new Error(`Error getting transaction receipt: ${error.message}`);
-        });
-        const verificationOK = await verifyContractRequest({
-            address: deployReceipt.contractAddress as Hex,
-            standardJsonInput,
-            compilerVersion: "v0.8.20+commit.a1b79de6", //TODO: make this dynamic
-            encodedConstructorArgs,
-            fileName,
-            contractName,
-            viemChain
-        });
-        if (verificationOK) {
-            return deployReceipt.contractAddress;
-        } else {
-
-            throw new Error("Contract verification failed");
-        }
+    const deployReceipt = await publicClient.getTransactionReceipt({ hash: deployHash }).catch(error => {
+        throw new Error(`Error getting transaction receipt: ${error.message}`);
+    });
+    const verificationOK = await verifyContractRequest({
+        address: deployReceipt.contractAddress as Hex,
+        standardJsonInput,
+        compilerVersion: "v0.8.20+commit.a1b79de6", //TODO: make this dynamic
+        encodedConstructorArgs,
+        fileName,
+        contractName,
+        viemChain
+    });
+    if (verificationOK) {
+        return deployReceipt.contractAddress;
     } else {
-        throw new Error("Contract deployment failed");
+        throw new Error("Contract verification failed");
     }
 }
 
