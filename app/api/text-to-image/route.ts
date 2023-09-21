@@ -1,11 +1,5 @@
 import { NFTStorage, File } from 'nft.storage';
 
-// Assuming you've already imported NFTStorage and File as shown in your ipfsUpload function
-const NFT_STORAGE_TOKEN = process.env.NFT_STORAGE_API_KEY || '';
-const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
-
-export const runtime = 'edge';
-
 interface GenerationResponse {
     artifacts: Array<{
         base64: string;
@@ -14,9 +8,12 @@ interface GenerationResponse {
     }>
 }
 
+const client = new NFTStorage({ token: process.env.NFT_STORAGE_API_KEY as string });
+
 export async function POST(req: Request) {
     const { text } = await req.json();
     const engine_id = 'stable-diffusion-xl-1024-v1-0';
+    console.log('text recieved:', text)
 
     const stabilityResponse = await fetch(`https://api.stability.ai/v1/generation/${engine_id}/text-to-image`, {
         method: 'POST',
@@ -40,6 +37,7 @@ export async function POST(req: Request) {
     });
 
     if (!stabilityResponse.ok) {
+        console.error(`Error in stability.ai`);
         return new Response(stabilityResponse.statusText, { status: stabilityResponse.status });
     }
 
