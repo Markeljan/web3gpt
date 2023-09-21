@@ -6,7 +6,7 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
     description: 'Deploy a smart contract',
     parameters: {
       type: 'object',
-      description: `This function deploys a smart contract to an EVM compatible chain.  It returns the tx hash of the deployment and an IPFS url to a directory of files used for the contract.  Only call this function in a separate chat message do not call it from a message with other text.  Share the explorer url and ipfs url with the user and make the links open in new tab.`,
+      description: `This function deploys a smart contract to an EVM compatible chain.  It returns the tx hash of the deployment and an IPFS url to a directory of files used for the contract.  Only call this function in a separate chat message do not call it from a message with other text.  Share the explorer url and ipfs url with the user.`,
       properties: {
         contractName: {
           type: 'string'
@@ -45,7 +45,7 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
   },
   {
     name: 'text_to_image',
-    description: `This function generates an image from text.  It returns an IPFS url to the generated image and metadata.  Give both links back to the user.  Only call this function in a separate chat message do not call it from a message with other text.  Share the ipfs url with the user and make the link open in new tab.`,
+    description: `This function generates an image from text.  It returns an IPFS url to the generated image and metadata.  Give both links back to the user.  Only call this function in a separate chat message do not call it from a message with other text.  Share the ipfs url with the user.`,
     parameters: {
       type: 'object',
       properties: {
