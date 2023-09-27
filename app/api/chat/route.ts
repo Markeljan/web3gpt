@@ -9,7 +9,7 @@ export const runtime = 'edge'
 
 export async function POST(req: Request) {
   const json = await req.json()
-  const { messages, functions, function_call } = json
+  const { messages, functions } = json
   const userId = (await auth())?.user?.id
 
   // Uncomment to require authentication
@@ -28,8 +28,7 @@ export async function POST(req: Request) {
     model: userId ? 'gpt-4' : 'gpt-3.5-turbo',
     stream: true,
     messages,
-    functions,
-    function_call
+    functions
   });
 
   const stream = OpenAIStream(res, {
