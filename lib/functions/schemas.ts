@@ -19,7 +19,7 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
         sourceCode: {
           type: 'string',
           description:
-            "Source code of the smart contract. Use Solidity v0.8.20+ and ensure that it is the full source code and will compile. The source code should be formatted as a single-line string, with all line breaks and quotes escaped to be valid in a JSON context. Specifically, newline characters should be represented as '\\n', and double quotes should be escaped as '\\\"'."
+            "Source code of the smart contract. Use the latest Solidity ^0.8.23 and ensure that the source code will compile. Format as a single-line string, with all line breaks and quotes escaped to be valid stringified JSON."
         },
         constructorArgs: {
           type: 'array',

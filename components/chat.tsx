@@ -77,9 +77,6 @@ export function Chat({ id, initialMessages, className, showLanding = false, avat
     if (functionCall.name === 'deploy_contract') {
       setIsDeploying(true)
 
-      // You now have access to the parsed arguments here (assuming the JSON was valid)
-      // If JSON is invalid, return an appropriate message to the model so that it may retry?
-
       const response = await fetch('/api/deploy-contract', {
         method: 'POST',
         headers: {
@@ -101,7 +98,7 @@ export function Chat({ id, initialMessages, className, showLanding = false, avat
         content =
           JSON.stringify({ explorerUrl, ipfsUrl }) +
           '\n\n' +
-          'Your contract will be automativally verified after 4 block confirmations. Keep this tab open.'
+          'Your contract will be automatically verified. Keep this tab open.'
         role = 'function'
       } else {
         const { error } = (await response?.json()) ?? {}

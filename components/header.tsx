@@ -53,11 +53,10 @@ export async function Header() {
         <Tooltip>
           <TooltipTrigger asChild>
             <Badge
-              className={`text-xs text-slate-800 ${
-                session ? 'bg-yellow-300' : 'bg-stone-300'
-              }`}
+              className={`text-xs text-slate-800 ${session ? 'bg-yellow-300' : 'bg-stone-300'
+                }`}
             >
-              {session ? 'gpt-4' : 'gpt-3.5-turbo'} 
+              GPT-4 Turbo
             </Badge>
           </TooltipTrigger>
           <TooltipContent>

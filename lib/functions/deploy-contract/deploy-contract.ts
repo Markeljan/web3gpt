@@ -28,6 +28,7 @@ export default async function deployContract({
     };
     // loop through sources and log the keys
     const sourcesKeys = Object.keys(sources);
+    console.log("sourcesKeys", sourcesKeys);
 
     // Loop over each source
     for (const sourceKey of sourcesKeys) {

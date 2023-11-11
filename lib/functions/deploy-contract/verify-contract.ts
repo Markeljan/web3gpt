@@ -28,7 +28,7 @@ const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructo
     const verificationOK = await verifyContractRequest({
         address: deployReceipt.contractAddress as Hex,
         standardJsonInput,
-        compilerVersion: "v0.8.20+commit.a1b79de6", //TODO: make this dynamic
+        compilerVersion: "v0.8.23+commit.f704f362",
         encodedConstructorArgs,
         fileName,
         contractName,
@@ -62,7 +62,7 @@ const verifyContractRequest = async ({ address, standardJsonInput, compilerVersi
         if (encodedConstructorArgs) {
             params.append('constructorArguements', encodedConstructorArgs);
         }
-        params.append('evmversion', 'london'); // leave blank for compiler default
+        params.append('evmversion', 'london');
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
