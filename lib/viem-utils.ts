@@ -72,8 +72,22 @@ export const createViemChain = (chain: string): Chain | undefined => {
             decimals: chainMatch.nativeCurrency.decimals,
         },
         rpcUrls: {
-            public: { http: chainMatch.rpc },
-            default: { http: chainMatch.rpc },
+            public: {
+                http: chainMatch.rpc.map(
+                    (rpcUrl: string) => rpcUrl.replace(
+                        "${INFURA_API_KEY}",
+                        process.env.INFURA_API_KEY || ""
+                    )
+                )
+            },
+            default: {
+                http: chainMatch.rpc.map(
+                    (rpcUrl: string) => rpcUrl.replace(
+                        "${INFURA_API_KEY}",
+                        process.env.INFURA_API_KEY || ""
+                    )
+                )
+            },
         },
         blockExplorers: chainMatch.explorers && {
             etherscan: {
@@ -89,14 +103,6 @@ export const createViemChain = (chain: string): Chain | undefined => {
 
     return viemChain;
 };
-
-export const getRpcUrl = (viemChain: Chain): string | undefined => {
-    const rpcUrl: string = viemChain?.rpcUrls.default.http[0]?.replace(
-        "${INFURA_API_KEY}",
-        process.env.INFURA_API_KEY || ""
-    );
-    return rpcUrl;
-}
 
 export const getExplorerUrl = (viemChain: Chain): string | undefined => {
     return viemChain?.blockExplorers?.default.url;

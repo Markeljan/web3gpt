@@ -1,7 +1,7 @@
 const solc = require("solc");
 import { DeployContractConfig, DeployContractResponse, VerifyContractParams } from "@/lib/functions/types";
 import handleImports from "@/lib/functions/deploy-contract/handle-imports";
-import { getRpcUrl, createViemChain, getExplorerUrl } from "@/lib/viem-utils";
+import { createViemChain, getExplorerUrl } from "@/lib/viem-utils";
 import ipfsUpload from "@/lib/functions/deploy-contract/ipfs-upload";
 import { Hex, createPublicClient, createWalletClient, encodeDeployData, http } from "viem";
 import { polygonMumbai } from "viem/chains";
@@ -95,12 +95,10 @@ export default async function deployContract({
         bytecode = '0x' + bytecode;
     }
 
-    const rpcUrl = getRpcUrl(viemChain);
-
     //Prepare provider and signer
     const publicClient = createPublicClient({
         chain: viemChain,
-        transport: rpcUrl ? http(rpcUrl) : http()
+        transport: http()
     })
 
     if (!(await publicClient.getChainId())) {
@@ -114,7 +112,7 @@ export default async function deployContract({
     const walletClient = createWalletClient({
         account,
         chain: viemChain,
-        transport: rpcUrl ? http(rpcUrl) : http()
+        transport: http()
     })
 
     if (!(await walletClient.getAddresses())) {

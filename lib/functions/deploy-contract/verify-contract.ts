@@ -1,15 +1,14 @@
 import { Hex, createPublicClient, http } from "viem";
-import { API_KEYS, API_URLS, getRpcUrl } from "@/lib/viem-utils";
+import { API_KEYS, API_URLS } from "@/lib/viem-utils";
 import { VerifyContractParams, VerifyContractRequestParams } from "@/lib/functions/types";
 
 
 const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractParams) => {
-    const rpcUrl = getRpcUrl(viemChain);
 
     //Prepare provider
     const publicClient = createPublicClient({
         chain: viemChain,
-        transport: rpcUrl ? http(rpcUrl) : http()
+        transport: http()
     })
 
     if (!(await publicClient.getChainId())) {

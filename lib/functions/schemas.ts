@@ -14,7 +14,7 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
         chainName: {
           type: 'string',
           description:
-            `Name of the EVM compatible chain we are deploying to.  Default to 'Base Goerli Testnet' if not specified.`
+            `Name of the EVM compatible chain we are deploying to.  Goerli, Base Goerli, Mumbai, or whatever the user suggests.  If the user does not suggest a chain, use Base Goerli.`
         },
         sourceCode: {
           type: 'string',
