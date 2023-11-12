@@ -8,11 +8,16 @@ export default async function handleImports(sourceCode: string, sourcePath?: str
 
         // Merge the imported sources into the main sources object
         Object.assign(sources, importedSources);
-        console.log("in handleImports sources,", sources)
-
-        console.log("in handleImports importedSources,", importedSources)
-
+       
         let sourceFileName = importPath.split("/").pop() || importPath;
+
+
+        // if sources[sourceFileName] already exists and the content is the same, then skip, otherwise change the sourceFileName to keep the folder structure but still be a relative path
+        if (sources[sourceFileName] && sources[sourceFileName].content !== mainSourceCode) {
+            console.log(`sources[${sourceFileName}] already exists but content does not match, saving sourceFileName with relative path`)
+            sourceFileName = importPath.split("/").slice(-2).join("/");
+        }
+
         sources[sourceFileName] = {
             content: mainSourceCode,
         };
@@ -22,33 +27,33 @@ export default async function handleImports(sourceCode: string, sourcePath?: str
 }
 
 async function fetchImport(importPath: string, sourcePath?: string) {
-    console.log("Fetching import", importPath)
+    console.log("Fetching import: ", importPath)
     // Determine the URL to fetch
     let urlToFetch;
     if (importPath[0] === '.' && sourcePath) {
         // If the import path starts with '.', it's a relative path, so resolve the path
-        console.log('sourcePath', sourcePath)
         let finalPath = resolveImportPath(importPath, sourcePath);
         urlToFetch = finalPath
-        console.log('urlToFetch', urlToFetch)
+        console.log('urlToFetch using relative path:', urlToFetch)
     } else if (importPath[0] !== '@') {
         // If the import path starts with anything other than '@', use it directly
-        console.log('using actual import', importPath)
         urlToFetch = importPath;
+        console.log('urlToFetch using actual import:', urlToFetch)
     } else {
         // Otherwise, convert the import path to an unpkg URL
         urlToFetch = `https://unpkg.com/${importPath}`;
-        console.log('using unpkg url: ', urlToFetch)
+        console.log('urlToFetch using unpkg: ', urlToFetch)
     }
     // Convert GitHub URLs to raw content URLs
     if (urlToFetch.includes('github.com')) {
         urlToFetch = urlToFetch.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-        console.log('using github raw url!', urlToFetch)
+        console.log('using raw.github: ', urlToFetch)
     }
 
 
     // Fetch the imported file
     const response = await fetch(urlToFetch);
+
 
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

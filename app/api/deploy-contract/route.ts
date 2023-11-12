@@ -8,12 +8,6 @@ export async function POST(req: Request) {
     const { chainName, contractName, sourceCode, constructorArgs } = json
     console.log("request recieved:", json)
 
-    // Uncomment to require authentication
-    //const session = await auth()
-    // if (session == null) {
-    //     return new Response('Unauthorized', { status: 401 })
-    // }
-
     try {
         const deployResult = await deployContract({
             chainName,

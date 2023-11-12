@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
-import { IconRefresh, IconStop } from '@/components/ui/icons'
+import { IconRefresh, IconSpinner, IconStop } from '@/components/ui/icons'
 import { UseChatHelpers } from 'ai/react/dist'
 import { functionSchemas } from '@/lib/functions/schemas'
 
@@ -40,7 +40,7 @@ export function ChatPanel({
               onClick={() => stop()}
               className="bg-background"
             >
-              <IconStop className="mr-2" />
+              <IconSpinner className="animate-spin mr-2" />
               Stop generating
             </Button>
           ) : (

@@ -20,15 +20,15 @@ export default async function deployContract({
     // Prepare the sources object for the Solidity compiler
     const handleImportsResult = await handleImports(sourceCode);
 
+    console.log('source fileNames: ', Object.keys(handleImportsResult?.sources))
+    
     const sources = {
         [fileName]: {
             content: handleImportsResult?.sourceCode,
         },
         ...handleImportsResult?.sources,
     };
-    // loop through sources and log the keys
     const sourcesKeys = Object.keys(sources);
-    console.log("sourcesKeys", sourcesKeys);
 
     // Loop over each source
     for (const sourceKey of sourcesKeys) {
@@ -49,12 +49,16 @@ export default async function deployContract({
             const importPath = importPathMatch[1];
             const fileName = importPath.split("/").pop() || importPath;
 
+            // Check if the file is already in the sources object
+            // if (sources[fileName]) continue;
+
             // Replace the import statement with the new import statement
             sourceCode = sourceCode.replace(importStatement, `import "${fileName}";`);
         }
 
         // Update the source content in your sources object
         sources[sourceKey].content = sourceCode;
+
     }
 
     // Compile the contract
