@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { type Session } from 'next-auth'
+import { Session } from 'next-auth'
 import { signOut } from 'next-auth/react'
 
 import { Button } from '@/components/ui/button'
@@ -12,26 +12,23 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 
-export interface UserMenuProps {
-  user: Session['user']
-}
-
 function getUserInitials(name: string) {
   const [firstName, lastName] = name.split(' ')
   return lastName ? `${firstName[0]}${lastName[0]}` : firstName.slice(0, 2)
 }
 
-export function UserMenu({ user }: UserMenuProps) {
+export function UserMenu({ user }: { user: Session['user'] }) {
+
   return (
     <div className="flex items-center justify-between">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="pl-0">
-            {user?.picture ? (
+          <Button variant="ghost" className="px-2">
+            {user?.image ? (
               <Image
                 className="h-6 w-6 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
-                src={user?.picture ? `${user.picture}&s=60` : ''}
-                alt={user.name ?? 'Avatar'}
+                src={`${user.image}&s=60`}
+                alt='User profile image'
                 width={24}
                 height={24}
               />

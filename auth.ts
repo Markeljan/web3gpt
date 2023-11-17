@@ -1,29 +1,26 @@
-import NextAuth, { type DefaultSession } from 'next-auth'
+import NextAuth, { DefaultSession } from 'next-auth'
 import GitHub from 'next-auth/providers/github'
 import { storeUser } from '@/app/actions'
 
 declare module 'next-auth' {
   interface Session {
     user: {
-      /** The user's id. */
-      id: string
-      picture?: string
+      id?: string | null | undefined
     } & DefaultSession['user']
   }
 }
 
 export const {
   handlers: { GET, POST },
-  auth,
-  CSRF_experimental
+  auth
 } = NextAuth({
   providers: [GitHub],
   callbacks: {
     async jwt({ token, profile }) {
-      if (profile) {
-        token.id = profile.id
-        token.image = profile.avatar_url || profile.picture
+      if (profile?.id) {
+        token.id = String(profile.id)
         const user = {
+          ...token,
           ...profile,
           id: String(profile.id)
         }
@@ -31,10 +28,19 @@ export const {
       }
       return token
     },
+
+    async session({ session, token }) {
+      if (token?.id) {
+        session.user.id = String(token.id)
+      }
+      return session
+    }
+
     // uncomment to require authentication
     // authorized({ auth }) {
     //   return !!auth?.user
     // }
+
   },
   pages: {
     signIn: '/sign-in'

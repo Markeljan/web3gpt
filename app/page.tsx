@@ -58,7 +58,7 @@ const initialMessages: Message[] = [
 
 export default async function ChatIndexPage() {
   const session = await auth()
-  const avatarUrl = session?.user?.picture
+  const avatarUrl = session?.user?.image
   const id = nanoid()
   return <Chat initialMessages={initialMessages} id={id} showLanding avatarUrl={avatarUrl} />
 }

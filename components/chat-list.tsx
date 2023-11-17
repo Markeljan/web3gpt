@@ -6,7 +6,7 @@ import { filterMessages } from '@/lib/utils'
 
 export interface ChatList {
   messages: Message[]
-  avatarUrl?: string
+  avatarUrl?: string | null | undefined
 }
 
 export function ChatList({ messages, avatarUrl }: ChatList) {

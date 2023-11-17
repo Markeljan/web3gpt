@@ -134,7 +134,7 @@ export async function shareChat(chat: Chat) {
     }
   }
 
-  const avatarUrl = session.user.picture
+  const avatarUrl = session.user.image
 
   const payload = {
     ...chat,
@@ -155,7 +155,6 @@ export async function getUserField(fieldName: string): Promise<any> {
   try {
     // Fetch the user's session
     const session = await auth();
-
     if (!session?.user?.id) {
       throw new Error("User not logged in");
     }

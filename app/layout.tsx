@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import { Metadata, Viewport } from 'next'
 
 import { Toaster } from 'react-hot-toast'
 import { Analytics } from '@vercel/analytics/react'
@@ -18,13 +18,16 @@ export const metadata: Metadata = {
     template: `Web3 GPT`
   },
   description: 'Deploy smart contracts with ease using AI.',
+  icons: {
+    icon: '/favicon.png'
+  }
+}
+
+export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' }
   ],
-  icons: {
-    icon: '/favicon.png'
-  }
 }
 
 interface RootLayoutProps {

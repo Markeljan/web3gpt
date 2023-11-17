@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button'
 
 export interface ChatMessageProps {
   message: Message
-  avatarUrl?: string
+  avatarUrl?: string | null | undefined
 }
 
 export function ChatMessage({

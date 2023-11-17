@@ -53,14 +53,13 @@ export async function Header() {
         <Tooltip>
           <TooltipTrigger asChild>
             <Badge
-              className={`text-xs text-slate-800 ${session ? 'bg-yellow-300' : 'bg-stone-300'
-                }`}
+              className={`text-xs text-slate-800 bg-yellow-300`}
             >
               GPT-4 Turbo
             </Badge>
           </TooltipTrigger>
           <TooltipContent>
-            {session ? 'Model' : 'Login to enable gpt-4'}
+            {'Model'}
           </TooltipContent>
         </Tooltip>
         <Image src="/base.webp" alt="web3 gpt logo" width={24} height={24} />

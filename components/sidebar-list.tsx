@@ -34,7 +34,7 @@ export async function SidebarList({ userId }: SidebarListProps) {
             :
             <p className="text-sm text-muted-foreground">
               <LoginButton variant="link" text="Login" showGithubIcon={false} className="pr-0"
-              /> to save chat history and enable gpt-4.
+              /> to save chat history.
             </p>}
 
         </div>

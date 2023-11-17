@@ -19,7 +19,7 @@ export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
   showLanding?: boolean
-  avatarUrl?: string
+  avatarUrl?: string | null | undefined
 }
 
 export function Chat({ id, initialMessages, className, showLanding = false, avatarUrl }: ChatProps) {

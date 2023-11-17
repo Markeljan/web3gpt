@@ -40,7 +40,7 @@ export function ChatPanel({
               onClick={() => stop()}
               className="bg-background"
             >
-              <IconSpinner className="animate-spin mr-2" />
+              <IconSpinner className="mr-2 animate-spin" />
               Stop generating
             </Button>
           ) : (
