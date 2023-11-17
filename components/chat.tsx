@@ -171,7 +171,7 @@ export function Chat({ id, initialMessages, className, showLanding = false, avat
 
   return (
     <>
-      <div className={cn('pb-[200px] pt-4 md:pt-10 px-4', className)}>
+      <div className={cn('px-4 pb-[200px] pt-4 md:pt-10', className)}>
         {showLanding && <Landing />}
         <ChatList messages={messages} avatarUrl={avatarUrl} />
         <ChatScrollAnchor trackVisibility={isLoading} />

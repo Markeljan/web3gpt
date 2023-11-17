@@ -49,11 +49,11 @@ export async function Header() {
           )}
         </div>
       </div>
-      <div className="invisible absolute inset-0 -z-10 flex items-center justify-center md:visible gap-4">
+      <div className="invisible absolute inset-0 -z-10 flex items-center justify-center gap-4 md:visible">
         <Tooltip>
           <TooltipTrigger asChild>
             <Badge
-              className={`text-xs text-slate-800 bg-yellow-300`}
+              className={`bg-yellow-300 text-xs text-slate-800`}
             >
               GPT-4 Turbo
             </Badge>
