@@ -18,9 +18,8 @@ export async function POST(req: Request) {
 
   const openai = new OpenAIApi(configuration)
 
-  // Ask OpenAI for a streaming chat completion given the prompt
   const res = await openai.createChatCompletion({
-    model: 'gpt-4-1106-preview',
+    model: messages.length > 14 ? "gpt-3.5-turbo-1106" : 'gpt-4-1106-preview',
     stream: true,
     messages,
     functions
