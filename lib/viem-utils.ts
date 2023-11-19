@@ -1,4 +1,4 @@
-import chains from "@/lib/chains.json";
+import chains from "@/lib/chains-all.json";
 import { ChainData } from "@/lib/types";
 import { Chain } from "viem";
 import { distance } from "fastest-levenshtein";
