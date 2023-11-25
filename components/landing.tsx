@@ -10,7 +10,7 @@ import { getUserField, storeEmail } from '@/app/actions'
 import { isValidEmail } from '@/lib/utils'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 
-export function Landing({ }) {
+export function Landing() {
   const [validationError, setValidationError] = useState<string | null>(null)
   const [email, setEmail] = useState<string>('')
   const [localIsSubscribed, setLocalIsSubscribed] = useLocalStorage('email_subscribed', false)

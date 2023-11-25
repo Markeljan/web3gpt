@@ -1,7 +1,4 @@
-// import { auth } from '@/auth'
 import deployContract from '@/lib/functions/deploy-contract/deploy-contract';
-
-const runtime = 'edge'
 
 export async function POST(req: Request) {
     const json = await req.json()

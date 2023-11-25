@@ -7,9 +7,10 @@ import '@/app/globals.css'
 import { fontMono, fontSans } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
-import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
 import { IsClientContextProvider } from '@/lib/is-client-context'
+import { Providers } from '@/components/providers/ui-providers'
+import { Web3Provider } from '@/components/providers/wallet-provider'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://w3gpt.ai'),
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     default: 'Web3 GPT',
     template: `Web3 GPT`
   },
-  description: 'Deploy smart contracts with ease using AI.',
+  description: 'Generate and deploy smart contracts with AI.',
   icons: {
     icon: '/favicon.png'
   }
@@ -45,17 +46,19 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontMono.variable
         )}
       >
-        <IsClientContextProvider>
-          <Toaster />
-          <Providers attribute="class" defaultTheme="system" enableSystem>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex flex-1 flex-col bg-muted/50">{children}</main>
-            </div>
-            <Analytics />
-            <TailwindIndicator />
-          </Providers>
-        </IsClientContextProvider>
+        <Toaster />
+        <Providers attribute="class" defaultTheme="system" enableSystem>
+          <div className="flex min-h-screen flex-col">
+            <main className="flex flex-1 flex-col bg-muted/50">
+              <Web3Provider>
+                <Header />
+                {children}
+              </Web3Provider>
+            </main>
+          </div>
+          <Analytics />
+          <TailwindIndicator />
+        </Providers>
       </body>
     </html>
   )
