@@ -1,82 +1,100 @@
-import { Hex, createPublicClient, http } from "viem";
-import { API_KEYS, API_URLS } from "@/lib/viem-utils";
-import { VerifyContractParams, VerifyContractRequestParams } from "@/lib/functions/types";
+import { Hex, createPublicClient, http } from 'viem'
+import { API_KEYS, API_URLS } from '@/lib/viem-utils'
+import { VerifyContractParams } from '@/lib/functions/types'
 
+export const verifyContract = async ({
+  deployHash,
+  standardJsonInput,
+  encodedConstructorArgs,
+  fileName,
+  contractName,
+  viemChain
+}: VerifyContractParams) => {
+  const publicClient = createPublicClient({
+    chain: viemChain,
+    transport: http()
+  })
 
-const verifyContract = async ({ deployHash, standardJsonInput, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractParams) => {
+  if (!(await publicClient.getChainId())) {
+    throw new Error(`Provider for chain ${viemChain.name} not available`)
+  }
 
-    //Prepare provider
-    const publicClient = createPublicClient({
-        chain: viemChain,
-        transport: http()
+  const txConfirmations = await publicClient
+    .getTransactionConfirmations({ hash: deployHash })
+    .catch(error => {
+      throw new Error(`Error waiting for transaction receipt: ${error.message}`)
     })
 
-    if (!(await publicClient.getChainId())) {
-        throw new Error(`Provider for chain ${viemChain.name} not available`);
-    }
-
-    const txConfirmations = await publicClient.getTransactionConfirmations({ hash: deployHash })
-        .catch(error => {
-            throw new Error(`Error waiting for transaction receipt: ${error.message}`);
-        });
-
-    console.log('txConfirmations', txConfirmations)
-    const deployReceipt = await publicClient.getTransactionReceipt({ hash: deployHash }).catch(error => {
-        throw new Error(`Error getting transaction receipt: ${error.message}`);
-    });
-    const verificationOK = await verifyContractRequest({
-        address: deployReceipt.contractAddress as Hex,
-        standardJsonInput,
-        compilerVersion: "v0.8.23+commit.f704f362",
-        encodedConstructorArgs,
-        fileName,
-        contractName,
-        viemChain
-    });
-    if (verificationOK) {
-        return deployReceipt.contractAddress;
-    } else {
-        throw new Error("Contract verification failed");
-    }
+  console.log('txConfirmations', txConfirmations)
+  const deployReceipt = await publicClient
+    .getTransactionReceipt({ hash: deployHash })
+    .catch(error => {
+      throw new Error(`Error getting transaction receipt: ${error.message}`)
+    })
+  const verificationOK = await verifyContractRequest({
+    address: deployReceipt.contractAddress as Hex,
+    standardJsonInput,
+    compilerVersion: 'v0.8.23+commit.f704f362',
+    encodedConstructorArgs,
+    fileName,
+    contractName,
+    viemChain
+  })
+  if (verificationOK) {
+    return deployReceipt.contractAddress
+  } else {
+    throw new Error('Contract verification failed')
+  }
 }
 
-const verifyContractRequest = async ({ address, standardJsonInput, compilerVersion, encodedConstructorArgs, fileName, contractName, viemChain }: VerifyContractRequestParams) => {
-    const apiUrl = API_URLS[viemChain['name']];
-    const apiKey = API_KEYS[viemChain['name']];
-    if (!apiKey) {
-        throw new Error(`Unsupported chain or explorer API_KEY.  Network: ${viemChain["network"]}`);
-    }
+const verifyContractRequest = async ({
+  address,
+  standardJsonInput,
+  compilerVersion,
+  encodedConstructorArgs,
+  fileName,
+  contractName,
+  viemChain
+}: VerifyContractParams) => {
+  const apiUrl = API_URLS[viemChain['name']]
+  const apiKey = API_KEYS[viemChain['name']]
+  if (!apiKey) {
+    throw new Error(
+      `Unsupported chain or explorer API_KEY.  Network: ${viemChain['network']}`
+    )
+  }
 
-    try {
-        const params = new URLSearchParams();
-        params.append('apikey', apiKey);
-        params.append('module', 'contract');
-        params.append('action', 'verifysourcecode');
-        params.append('contractaddress', address);
-        params.append('sourceCode', standardJsonInput);
-        params.append('codeformat', 'solidity-standard-json-input');
-        params.append('contractname', fileName + ':' + contractName);
-        params.append('compilerversion', compilerVersion);
-        params.append('optimizationused', '0');
-        if (encodedConstructorArgs) {
-            params.append('constructorArguements', encodedConstructorArgs);
-        }
-        params.append('evmversion', 'london');
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
-            body: new URLSearchParams(params).toString()
-        });
-        if (!response.ok) {
-            throw new Error(`Explorer API request failed with status ${response.status}`);
-        }
-        return response.ok;
-    } catch (error) {
-        throw new Error(`Error verifying contract: ${(error as Error).message}`);
+  try {
+    const params = new URLSearchParams()
+    params.append('apikey', apiKey)
+    params.append('module', 'contract')
+    params.append('action', 'verifysourcecode')
+    params.append('contractaddress', address)
+    params.append('sourceCode', standardJsonInput)
+    params.append('codeformat', 'solidity-standard-json-input')
+    params.append('contractname', fileName + ':' + contractName)
+    params.append('compilerversion', compilerVersion)
+    params.append('optimizationused', '0')
+    if (encodedConstructorArgs) {
+      params.append('constructorArguements', encodedConstructorArgs)
     }
+    params.append('evmversion', 'london')
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+      },
+      body: new URLSearchParams(params).toString()
+    })
+    if (!response.ok) {
+      throw new Error(
+        `Explorer API request failed with status ${response.status}`
+      )
+    }
+    return response.ok
+  } catch (error) {
+    throw new Error(`Error verifying contract: ${(error as Error).message}`)
+  }
 }
 
-
-export default verifyContract;
+export default verifyContract

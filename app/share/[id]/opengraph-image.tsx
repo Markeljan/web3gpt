@@ -1,10 +1,11 @@
 import { ImageResponse } from 'next/og'
 
 import { getSharedChat } from '@/app/actions'
+import { IconW3GPT } from '@/components/ui/icons'
 
 export const runtime = 'edge'
 
-export const alt = 'AI Chatbot'
+export const alt = 'Web3 GPT'
 
 export const size = {
   width: 1200,
@@ -38,7 +39,7 @@ export default async function Image({ params }: ImageProps) {
 
   return new ImageResponse(
     (
-      <div tw="flex w-full items-start h-full flex-col bg-[#09090b] text-white p-[80px]">
+      <div tw="flex w-full items-start h-full flex-col bg-[#191817] text-white p-[80px]">
         <div tw="flex flex-col w-full pt-[40px]">
           <div tw={`flex w-full ${textAlign}`}>
             <div tw="flex h-18 w-18 items-center justify-center rounded-md border border-[#9b9ba4]">
@@ -78,22 +79,13 @@ export default async function Image({ params }: ImageProps) {
         </div>
         <div tw="flex items-center justify-between w-full mt-auto">
           <div tw="flex items-center">
-            <svg
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="#9b9ba4"
-              width={40}
-              height={40}
-            >
-              <path d="M24 22.525H0l12-21.05 12 21.05z" />
-            </svg>
+            <IconW3GPT />
             <div tw="flex text-[1.8rem] ml-4 text-[#9b9ba4]">
-              Built with{' '}
-              <div tw="flex text-[#eaeaf0] ml-2 mr-2">Vercel AI SDK</div> &
-              <div tw="flex text-[#eaeaf0] ml-2">KV</div>
+              Write and deploy smart contracts with
+              <div tw="flex text-[#eaeaf0] ml-2 mr-2">Web3 GPT</div>
             </div>
           </div>
-          <div tw="text-[1.8rem] ml-auto text-[#9b9ba4]">chat.vercel.ai</div>
+          <div tw="text-[1.8rem] ml-auto text-[#9b9ba4]">w3gpt.ai</div>
         </div>
       </div>
     ),

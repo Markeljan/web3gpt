@@ -35,7 +35,7 @@ export async function fetcher<JSON = any>(
 }
 
 export function formatDate(input: string | number | Date): string {
-  const date = new Date(input)
+  const date = new Date(Number(input))
   return date.toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -44,8 +44,8 @@ export function formatDate(input: string | number | Date): string {
 }
 
 export function isValidEmail(email: string): boolean {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(email);
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return regex.test(email)
 }
 
 export function filterMessages(messages: Message[]): Message[] {

@@ -45,7 +45,7 @@ export const programmingLanguages: languageMap = {
   sql: '.sql',
   html: '.html',
   css: '.css',
-  solidity: '.sol',
+  solidity: '.sol'
   // add more file extensions here, make sure the key is same as language prop in CodeBlock.tsx component
 }
 
@@ -62,7 +62,6 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
   const { resolvedTheme } = useTheme()
   const [isDark, setIsDark] = useState(resolvedTheme === 'dark')
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
-  console.log('value', value)
   useEffect(() => {
     setIsDark(resolvedTheme === 'dark')
   }, [resolvedTheme])

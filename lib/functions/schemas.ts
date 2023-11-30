@@ -13,13 +13,12 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
         },
         chainName: {
           type: 'string',
-          description:
-            `Name of the EVM compatible chain we are deploying to.  If the user does not suggest a chain, use Base Goerli Testnet.`
+          description: `Name of the EVM compatible chain we are deploying to.  If the user does not suggest a chain, use Base Goerli Testnet.`
         },
         sourceCode: {
           type: 'string',
           description:
-            "Source code of the smart contract. Use the latest Solidity ^0.8.23 and ensure that the source code will compile. Format as a single-line string, with all line breaks and quotes escaped to be valid stringified JSON."
+            'Source code of the smart contract. Format as a single-line string, with all line breaks and quotes escaped to be valid stringified JSON.'
         },
         constructorArgs: {
           type: 'array',

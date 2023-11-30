@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import { type Chat } from '@/lib/types'
+import { ChatListItem } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { IconMessage, IconUsers } from '@/components/ui/icons'
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/tooltip'
 
 interface SidebarItemProps {
-  chat: Chat
+  chat: ChatListItem
   children: React.ReactNode
 }
 

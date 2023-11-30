@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { Suspense } from 'react'
 
 import { auth } from '@/auth'
@@ -16,7 +15,7 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip'
 import { Badge } from '@/components/ui/badge'
-import { ConnectWalletButton } from '@/components/connect-wallet-button'
+import { ConnectButton } from '@/components/connect-button'
 import { SettingsDropDown } from './settings-drop-down'
 
 export async function Header() {
@@ -49,20 +48,15 @@ export async function Header() {
       <div className="invisible absolute inset-0 -z-10 flex items-center justify-center gap-4 md:visible">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Badge
-              className={`bg-yellow-300 text-xs text-slate-800`}
-            >
+            <Badge className={`bg-yellow-300 text-xs text-slate-800`}>
               GPT-4 Turbo
             </Badge>
           </TooltipTrigger>
-          <TooltipContent>
-            {'Model'}
-          </TooltipContent>
+          <TooltipContent>{'Model'}</TooltipContent>
         </Tooltip>
-        <Image src="/base.webp" alt="web3 gpt logo" width={24} height={24} />
       </div>
       <div className="flex items-center justify-end space-x-2">
-        <ConnectWalletButton />
+        <ConnectButton />
         <SettingsDropDown />
       </div>
     </header>

@@ -21,7 +21,7 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 export function SettingsDropDown() {
-  const { setTheme, resolvedTheme } = useTheme()
+  const { setTheme } = useTheme()
   const [_, startTransition] = React.useTransition()
 
   return (

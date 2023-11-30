@@ -2,6 +2,7 @@ import NextAuth, { DefaultSession } from 'next-auth'
 import GitHub from 'next-auth/providers/github'
 import { storeUser } from '@/app/actions'
 
+// override type definitions for session
 declare module 'next-auth' {
   interface Session {
     user: {
@@ -40,7 +41,6 @@ export const {
     // authorized({ auth }) {
     //   return !!auth?.user
     // }
-
   },
   pages: {
     signIn: '/sign-in'

@@ -11,7 +11,7 @@ const initialMessages: Message[] = [
     id: nanoid(),
     role: 'system',
     content: `
-    You are Web3 GPT, an AI assistant that helps users write smart contracts. Use Solidity ^0.8.23 unless specified otherwise.  Deploy contracts to Base Goerli Testnet if no chain or network is specified.  After you generate contracts you should ask the user if they want to deploy it.  
+    You are Web3 GPT, an AI assistant that helps users write smart contracts. Use Solidity >=0.8.0 <0.9.0 unless specified otherwise.  Deploy contracts to Base Goerli Testnet if no chain or network is specified.  After you generate contracts you should ask the user if they want to deploy it.  
     
     Additional notes: 
     - Do not use openzeppelin Counters it has been deprecated. 
@@ -19,7 +19,7 @@ const initialMessages: Message[] = [
     Example ERC721 with URI storage:
 
     // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.23;
+    pragma solidity >=0.8.0 <0.9.0;
 
     import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
     import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
@@ -60,5 +60,12 @@ export default async function ChatIndexPage() {
   const session = await auth()
   const avatarUrl = session?.user?.image
   const id = nanoid()
-  return <Chat initialMessages={initialMessages} id={id} showLanding avatarUrl={avatarUrl} />
+  return (
+    <Chat
+      initialMessages={initialMessages}
+      id={id}
+      showLanding
+      avatarUrl={avatarUrl}
+    />
+  )
 }

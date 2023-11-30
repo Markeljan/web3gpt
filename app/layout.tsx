@@ -6,11 +6,9 @@ import { Analytics } from '@vercel/analytics/react'
 import '@/app/globals.css'
 import { fontMono, fontSans } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
-import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { Header } from '@/components/header'
-import { IsClientContextProvider } from '@/lib/is-client-context'
 import { Providers } from '@/components/providers/ui-providers'
-import { Web3Provider } from '@/components/providers/wallet-provider'
+import { Web3Provider } from '@/components/providers/web3-provider'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://w3gpt.ai'),
@@ -18,7 +16,7 @@ export const metadata: Metadata = {
     default: 'Web3 GPT',
     template: `Web3 GPT`
   },
-  description: 'Generate and deploy smart contracts with AI.',
+  description: 'Write and deploy smart contracts with AI.',
   icons: {
     icon: '/favicon.png'
   }
@@ -28,7 +26,7 @@ export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' }
-  ],
+  ]
 }
 
 interface RootLayoutProps {
@@ -57,7 +55,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </main>
           </div>
           <Analytics />
-          <TailwindIndicator />
         </Providers>
       </body>
     </html>

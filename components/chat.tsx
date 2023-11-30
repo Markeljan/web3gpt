@@ -10,10 +10,11 @@ import { ChatPanel } from '@/components/chat-panel'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { nanoid } from '@/lib/utils'
 import { functionSchemas } from '@/lib/functions/schemas'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { createPublicClient, http } from 'viem'
-import { VerifyContractParams } from '@/lib/functions/types'
-import { Landing } from './landing'
+import { VerifyContractConfig } from '@/lib/functions/types'
+import { Landing } from '@/components/landing'
+import { useGlobalStore } from '@/app/state/global-store'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -22,108 +23,21 @@ export interface ChatProps extends React.ComponentProps<'div'> {
   avatarUrl?: string | null | undefined
 }
 
-export function Chat({ id, initialMessages, className, showLanding = false, avatarUrl }: ChatProps) {
-  const [verificationParams, setVerificationParams] = useState<VerifyContractParams>();
-  const [polling, setPolling] = useState(false);
-  const [isDeploying, setIsDeploying] = useState(false);
-
-  useEffect(() => {
-    const verifyFunction = async (verificationParams: VerifyContractParams) => {
-      if (verificationParams) {
-        const publicClient = createPublicClient({
-          chain: verificationParams?.viemChain,
-          transport: http(
-            verificationParams?.viemChain?.rpcUrls?.default?.http[0]
-          )
-        })
-        try {
-          console.log('waiting for 4 confirmations')
-          const transactionReceipt =
-            await publicClient.waitForTransactionReceipt({
-              hash: verificationParams?.deployHash,
-              confirmations: 4
-            })
-          console.log('got 4 confirmations, verifying contract')
-          if (transactionReceipt) {
-            const verifyResponse = await fetch('/api/verify-contract', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(verificationParams)
-            })
-            if (verifyResponse.ok) {
-              setPolling(false)
-            }
-          }
-        } catch (e) {
-          console.log('Verification failed, may need more confirmations.', e)
-        }
-      }
-    }
-
-    if (polling && verificationParams) {
-      const interval = setInterval(() => {
-        verifyFunction(verificationParams)
-      }, 10000)
-      return () => clearInterval(interval)
-    }
-  }, [polling, verificationParams])
+export function Chat({
+  id,
+  initialMessages,
+  className,
+  showLanding = false,
+  avatarUrl
+}: ChatProps) {
+  const { isDeploying, verifyContractConfig, isVerifying, setIsVerifying } =
+    useGlobalStore()
 
   const functionCallHandler: FunctionCallHandler = async (
     chatMessages,
     functionCall
   ) => {
-    if (functionCall.name === 'deploy_contract') {
-      setIsDeploying(true)
-
-      const response = await fetch('/api/deploy-contract', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: functionCall.arguments
-      })
-
-      setIsDeploying(false)
-
-      let content: string
-      let role: 'system' | 'function'
-
-      if (response.ok) {
-        const { explorerUrl, ipfsUrl, verificationParams } =
-          await response.json()
-        setVerificationParams(verificationParams)
-        setPolling(true)
-        content =
-          JSON.stringify({ explorerUrl, ipfsUrl }) +
-          '\n\n' +
-          'Your contract will be automatically verified. Keep this tab open.'
-        role = 'function'
-      } else {
-        const { error } = (await response?.json()) ?? {}
-        content =
-          JSON.stringify({ error }) +
-          '\n\n' +
-          'Try to fix the error and show the user the updated code.'
-        role = 'system'
-      }
-
-      const functionResponse: ChatRequest = {
-        messages: [
-          ...chatMessages,
-          {
-            id: nanoid(),
-            name: 'deploy_contract',
-            role: role,
-            content: content,
-          }
-        ],
-        functions: functionSchemas
-      }
-
-      return functionResponse
-    } else if (functionCall.name === 'text_to_image') {
+    if (functionCall.name === 'text_to_image') {
       const response = await fetch('/api/text-to-image', {
         method: 'POST',
         headers: {
@@ -166,8 +80,6 @@ export function Chat({ id, initialMessages, className, showLanding = false, avat
         }
       }
     })
-
-
 
   return (
     <>

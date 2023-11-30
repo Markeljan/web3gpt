@@ -5,18 +5,19 @@ import { redirect } from 'next/navigation'
 import { kv } from '@vercel/kv'
 
 import { auth } from '@/auth'
-import { type Chat } from '@/lib/types'
+import { Chat, ChatListItem } from '@/lib/types'
 
 // Store a new user's details
-export async function storeUser(user: { id: string } & Record<string, any>) {
-  // Assuming user has an 'id' field
-  const userKey = `user:details:${user.id}`;
+export async function storeUser(
+  user: { id: string | number } & Record<string, any>
+) {
+  const userKey = `user:details:${user.id}`
 
   // Save user details
-  await kv.hmset(userKey, user);
+  await kv.hmset(userKey, user)
 
   // Add user's ID to the list of all users
-  await kv.sadd('users:list', user.id);
+  await kv.sadd('users:list', user.id)
 }
 
 export async function storeEmail(email: string) {
@@ -29,7 +30,43 @@ export async function storeEmail(email: string) {
       email_subscribed: true
     })
   }
+}
 
+// Get all chatIds and titles for a user
+export async function getChatList() {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return []
+  }
+
+  const pipeline = kv.pipeline()
+  const chats: string[] = await kv.zrange(
+    `user:chat:${session.user.id}`,
+    0,
+    -1,
+    {
+      rev: true
+    }
+  )
+
+  for (const chat of chats) {
+    // get chat id and title
+    pipeline.hmget(
+      chat,
+      'id',
+      'title',
+      'path',
+      'sharePath',
+      'createdAt',
+      'avatarUrl',
+      'userId'
+    )
+  }
+
+  const results = await pipeline.exec()
+
+  return results as ChatListItem[]
 }
 
 export async function getChats(userId?: string | null) {
@@ -48,7 +85,6 @@ export async function getChats(userId?: string | null) {
     }
 
     const results = await pipeline.exec()
-
     return results as Chat[]
   } catch (error) {
     return []
@@ -76,7 +112,7 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
 
   const uid = await kv.hget<string>(`chat:${id}`, 'userId')
 
-  if (uid !== session?.user?.id) {
+  if (String(uid) !== session?.user?.id) {
     return {
       error: 'Unauthorized'
     }
@@ -125,24 +161,20 @@ export async function getSharedChat(id: string) {
   return chat
 }
 
-export async function shareChat(chat: Chat) {
+export async function shareChat(chat: ChatListItem) {
   const session = await auth()
 
-  if (!session?.user?.id || session.user.id !== chat.userId) {
+  console.log('{ session, chat }', { session, chat })
+
+  if (!session?.user?.id || session.user.id !== String(chat.userId)) {
     return {
       error: 'Unauthorized'
     }
   }
 
-  const avatarUrl = session.user.image
-
   const payload = {
     ...chat,
-    sharePath: `/share/${chat.id}`,
-    ...(avatarUrl &&
-      { avatarUrl: avatarUrl }
-    )
-
+    sharePath: `/share/${chat.id}`
   }
 
   await kv.hmset(`chat:${chat.id}`, payload)
@@ -150,23 +182,24 @@ export async function shareChat(chat: Chat) {
   return payload
 }
 
-
 export async function getUserField(fieldName: string): Promise<any> {
   try {
     // Fetch the user's session
-    const session = await auth();
+    const session = await auth()
     if (!session?.user?.id) {
-      throw new Error("User not logged in");
+      return {
+        error: 'No user session'
+      }
     }
 
     // Fetch the user's details from KV using their ID
-    const userKey = `user:details:${session.user.id}`;
-    const userDetails = await kv.hgetall(userKey);
+    const userKey = `user:details:${session.user.id}`
+    const userDetails = await kv.hgetall(userKey)
 
     // Return the value of the specified field name
-    return userDetails?.[fieldName];
+    return userDetails?.[fieldName]
   } catch (error: any) {
-    console.error(error.message);
-    return null;  // or throw error or return undefined, based on your preference
+    console.error(error.message)
+    return null // or throw error or return undefined, based on your preference
   }
 }

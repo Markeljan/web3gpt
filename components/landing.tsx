@@ -13,17 +13,21 @@ import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 export function Landing() {
   const [validationError, setValidationError] = useState<string | null>(null)
   const [email, setEmail] = useState<string>('')
-  const [localIsSubscribed, setLocalIsSubscribed] = useLocalStorage('email_subscribed', false)
+  const [localIsSubscribed, setLocalIsSubscribed] = useLocalStorage(
+    'email_subscribed',
+    false
+  )
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     async function fetchUserSubscribed() {
       const backendIsSubscribed = await getUserField('email_subscribed')
       if (backendIsSubscribed === true) {
         setLocalIsSubscribed(true)
-      } else {
-        if (localIsSubscribed !== true) {
-          setLocalIsSubscribed(false)
-        }
       }
     }
 
@@ -69,9 +73,9 @@ export function Landing() {
               speed={0.5}
               direction={-1}
               path="/lotties/puzzle.json"
-              className='h-24 w-24 md:h-32 md:w-full'
+              className="h-24 w-24 md:h-32 md:w-full"
             />
-            <div className='col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center'>
+            <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
               <h3 className="font-bold md:mb-2">Generate</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Generate custom smart contracts using a prompt.
@@ -86,9 +90,9 @@ export function Landing() {
               speed={0.5}
               direction={1}
               path="/lotties/globe.json"
-              className='h-24 w-24 md:h-32 md:w-full'
+              className="h-24 w-24 md:h-32 md:w-full"
             />
-            <div className='col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center'>
+            <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
               <h3 className="font-bold md:mb-2">Deploy</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Deploy your smart contracts from the chat.
@@ -101,10 +105,10 @@ export function Landing() {
               loop={false}
               speed={0.5}
               path="/lotties/clock.json"
-              className='h-24 w-24 md:h-32 md:w-full'
+              className="h-24 w-24 md:h-32 md:w-full"
             />
 
-            <div className='col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center'>
+            <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
               <h3 className="font-bold md:mb-2">Speed Up</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Code faster by skipping long and complex setups.
@@ -116,7 +120,7 @@ export function Landing() {
 
       <hr className="mb-4 md:hidden" />
 
-      {localIsSubscribed === false && (
+      {mounted && localIsSubscribed === false && (
         <div className="mx-auto mb-16 max-w-2xl rounded-2xl border-gray-600/25 px-4 text-center dark:border-gray-600/50 md:border">
           <div className="my-5 flex flex-col gap-4">
             <p className="mt-8 scroll-m-20 text-2xl tracking-tight">
