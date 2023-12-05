@@ -18,9 +18,9 @@ export async function POST(req: Request) {
   const session = await auth()
   const { id: userId, image: avatarUrl } = session?.user ?? {}
 
-  // Limit the number of messages to 15, removing from the middle of the array
+  // Limit the number of messages to 30, removing from the middle of the array
   function limitedMessagesArray(messages: ChatCompletionMessageParam[]) {
-    const messageLimit = 15
+    const messageLimit = 30
 
     if (messages.length > messageLimit) {
       const numberOfElementsToRemove = messages.length - messageLimit

@@ -15,7 +15,6 @@ const client = new NFTStorage({ token: process.env.NFT_STORAGE_API_KEY as string
 export async function POST(req: Request) {
     const { text } = await req.json();
     const engine_id = 'stable-diffusion-xl-1024-v1-0';
-    console.log('text received:', text)
 
     const stabilityResponse = await fetch(`https://api.stability.ai/v1/generation/${engine_id}/text-to-image`, {
         method: 'POST',
