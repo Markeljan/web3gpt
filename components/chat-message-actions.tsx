@@ -13,8 +13,9 @@ interface ChatMessageActionsProps extends React.ComponentProps<'div'> {
 export function ChatMessageActions({
   message,
   className,
+  onExpandClick,
   ...props
-}: ChatMessageActionsProps) {
+}: ChatMessageActionsProps & { onExpandClick?: () => void }) {
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
   return (
@@ -25,6 +26,13 @@ export function ChatMessageActions({
       )}
       {...props}
     >
+      {message.function_call && (
+        <Button variant="ghost" size="icon" onClick={onExpandClick}>
+          <IconChevronUpDown />
+          <span className="sr-only">Expand</span>
+        </Button>
+      )}
+
       <Button
         variant="ghost"
         size="icon"

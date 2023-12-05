@@ -10,7 +10,7 @@ import { getUserField, storeEmail } from '@/app/actions'
 import { isValidEmail } from '@/lib/utils'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 
-export function Landing() {
+export function Landing({disableAnimations = false}) {
   const [validationError, setValidationError] = useState<string | null>(null)
   const [email, setEmail] = useState<string>('')
   const [localIsSubscribed, setLocalIsSubscribed] = useLocalStorage(
@@ -68,7 +68,7 @@ export function Landing() {
         <div className="grid-row-3 my-5 mb-8 grid grid-flow-row gap-1 md:grid-flow-col md:gap-4">
           <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
             <Player
-              play
+              play = {!disableAnimations}
               loop={false}
               speed={0.5}
               direction={-1}
@@ -85,7 +85,7 @@ export function Landing() {
 
           <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
             <Player
-              play
+              play = {!disableAnimations}
               loop={false}
               speed={0.5}
               direction={1}
@@ -101,7 +101,7 @@ export function Landing() {
           </div>
           <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
             <Player
-              play
+              play = {!disableAnimations}
               loop={false}
               speed={0.5}
               path="/lotties/clock.json"

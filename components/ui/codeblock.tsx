@@ -11,6 +11,8 @@ import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
 import { IconCheck, IconCopy, IconDownload } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
+import { DeployContractButton } from '../deploy-contract-button'
+import { useGlobalStore } from '@/app/state/global-store'
 
 interface Props {
   language: string
@@ -62,6 +64,8 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
   const { resolvedTheme } = useTheme()
   const [isDark, setIsDark] = useState(resolvedTheme === 'dark')
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
+  const { isGenerating } = useGlobalStore()
+
   useEffect(() => {
     setIsDark(resolvedTheme === 'dark')
   }, [resolvedTheme])
@@ -71,9 +75,9 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
       return
     }
     const fileExtension = programmingLanguages[language] || '.file'
-    const suggestedFileName = `file-${generateRandomString(
+    const suggestedFileName = `W3GPT${generateRandomString(
       3,
-      true
+      false
     )}${fileExtension}`
     const fileName = window.prompt('Enter file name' || '', suggestedFileName)
 
@@ -102,16 +106,19 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
   return (
     <div
       className={`codeblock relative w-full ${
-        isDark ? 'bg-zinc-950' : 'bg-gray-50'
+        isDark ? 'bg-zinc-950' : 'bg-gray-200'
       } font-sans`}
     >
       <div
         className={`flex w-full items-center justify-between ${
           isDark ? 'bg-zinc-800 text-zinc-100' : 'bg-gray-300 text-gray-950'
-        } px-6 py-2 pr-4`}
+        } px-6 py-3 pr-4`}
       >
         <span className="text-xs lowercase">{language}</span>
         <div className="flex items-center space-x-1">
+          {language === 'solidity' && (
+            <DeployContractButton sourceCode={value} />
+          )}
           <Button
             variant="ghost"
             className="focus-visible:ring-1 focus-visible:ring-gray-700 focus-visible:ring-offset-0"

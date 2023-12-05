@@ -14,16 +14,13 @@ export default async function deployContract({
   chainId,
   contractName,
   sourceCode,
-  constructorArgs,
-  evmVersion
+  constructorArgs
 }: DeployContractParams): Promise<DeployContractResult> {
   const viemChain = getChainById(Number(chainId))
   const fileName = contractName.replace(/[\/\\:*?"<>|.\s]+$/g, '_') + '.sol'
 
   // Prepare the sources object for the Solidity compiler
   const handleImportsResult = await handleImports(sourceCode)
-
-  console.log('source fileNames: ', Object.keys(handleImportsResult?.sources))
 
   const sources = {
     [fileName]: {
@@ -64,11 +61,12 @@ export default async function deployContract({
   }
 
   // Compile the contract
+  // TODO: enable optimizer
   const standardJsonInput = JSON.stringify({
     language: 'Solidity',
     sources,
     settings: {
-      evmVersion: evmVersion,
+      evmVersion: 'paris',
       outputSelection: {
         '*': {
           '*': ['*']
@@ -128,8 +126,7 @@ export default async function deployContract({
     args: constructorArgs
   })
 
-  const deployTxUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
-  console.log('Deploy URL: ', deployTxUrl)
+  const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
 
   const ipfsCid = await ipfsUpload(
     sources,
@@ -139,7 +136,6 @@ export default async function deployContract({
   )
 
   const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`
-  console.log(`IPFS URL: ${ipfsUrl}`)
 
   const encodedConstructorArgs = deployData.slice(bytecode?.length)
 
@@ -153,11 +149,10 @@ export default async function deployContract({
   }
 
   const deploymentData = {
-    explorerUrl: deployTxUrl,
+    explorerUrl,
     ipfsUrl,
     verifyContractConfig
   }
-  console.log(`Deployment data: `, deploymentData)
 
   return deploymentData
 }

@@ -1,20 +1,23 @@
 import deployContract from '@/lib/functions/deploy-contract/deploy-contract'
 
+// TODO: try to enable edge runtime
+export const runtime = 'nodejs'
+
+
 export async function POST(req: Request) {
   const json = await req.json()
-  const { chainId, contractName, sourceCode, constructorArgs, evmVersion } =
-    json
-
-  console.log(
-    `Received request to deploy contract ${contractName} on chain ${chainId}`
-  )
+  const {
+    chainId,
+    contractName,
+    sourceCode,
+    constructorArgs,
+  } = json
 
   try {
     const deployResult = await deployContract({
       chainId,
       contractName,
       sourceCode,
-      evmVersion,
       constructorArgs
     })
     return new Response(JSON.stringify(deployResult))

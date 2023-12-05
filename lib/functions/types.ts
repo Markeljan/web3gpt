@@ -2,8 +2,7 @@ import { Chain, Hex } from 'viem'
 
 export type GlobalConfig = {
   viemChain: Chain
-  solidityVersion: string
-  evmVersion: string
+  compilerVersion: string
   useWallet: boolean
 }
 
@@ -12,12 +11,12 @@ export type DeployContractParams = {
   contractName: string
   sourceCode: string
   constructorArgs: Array<string | string[]>
-  evmVersion: string
 }
 
 export type DeployContractResult = {
   explorerUrl: string
   ipfsUrl: string
+  verifyContractConfig: VerifyContractParams
 }
 
 export type VerifyContractParams = {
@@ -29,12 +28,9 @@ export type VerifyContractParams = {
   viemChain: Chain
 }
 
-export type VerifyContractResult = {
+export type ContractDeploymentData = {
   address: Hex
-  standardJsonInput: string
-  compilerVersion: string
-  encodedConstructorArgs: string
-  fileName: string
-  contractName: string
-  viemChain: Chain
+  transactionHash: Hex
+  explorerUrl: string
+  ipfsUrl: string
 }

@@ -3,8 +3,6 @@ import { ImageResponse } from 'next/og'
 import { getSharedChat } from '@/app/actions'
 import { IconW3GPT } from '@/components/ui/icons'
 
-export const runtime = 'edge'
-
 export const alt = 'Web3 GPT'
 
 export const size = {

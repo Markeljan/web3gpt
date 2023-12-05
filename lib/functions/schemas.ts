@@ -1,5 +1,4 @@
 import { ChatRequestOptions } from 'ai'
-
 export const functionSchemas: ChatRequestOptions['functions'] = [
   {
     name: 'deploy_contract',
@@ -11,9 +10,16 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
         contractName: {
           type: 'string'
         },
-        chainName: {
+        chainId: {
           type: 'string',
-          description: `Name of the EVM compatible chain we are deploying to.  If the user does not suggest a chain, use Base Goerli Testnet.`
+          description: `Do not use this parameter unless the user specificaly specifies it!
+          Supported chainIds:
+          5: goerli,
+          84531: base goerli,
+          80001: mumbai,
+          11155111: sepolia,
+          421613: arbitrum goerli
+          `
         },
         sourceCode: {
           type: 'string',
@@ -36,10 +42,10 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
             ]
           },
           description:
-            "Arguments for the contract's constructor. Each argument can be a string or an array of strings. But the final constructor arguments must be an array.  Can be empty array if the constructor has no arguments."
+            "Array of arguments for the contract's constructor. Each Array item a string or an array of strings.  Empty array if the constructor has no arguments."
         }
       },
-      required: ['contractName', 'chainName', 'sourceCode', 'constructorArgs']
+      required: ['contractName', 'sourceCode', 'constructorArgs']
     }
   },
   {

@@ -1,6 +1,7 @@
-import { Hex, createPublicClient, http } from 'viem'
+import { createPublicClient, http } from 'viem'
 import { API_KEYS, API_URLS } from '@/lib/viem-utils'
 import { VerifyContractParams } from '@/lib/functions/types'
+import { DEFAULT_GLOBAL_CONFIG } from '@/lib/constants'
 
 export const verifyContract = async ({
   deployHash,
@@ -19,48 +20,24 @@ export const verifyContract = async ({
     throw new Error(`Provider for chain ${viemChain.name} not available`)
   }
 
-  const txConfirmations = await publicClient
-    .getTransactionConfirmations({ hash: deployHash })
-    .catch(error => {
-      throw new Error(`Error waiting for transaction receipt: ${error.message}`)
-    })
-
-  console.log('txConfirmations', txConfirmations)
   const deployReceipt = await publicClient
     .getTransactionReceipt({ hash: deployHash })
     .catch(error => {
       throw new Error(`Error getting transaction receipt: ${error.message}`)
     })
-  const verificationOK = await verifyContractRequest({
-    address: deployReceipt.contractAddress as Hex,
-    standardJsonInput,
-    compilerVersion: 'v0.8.23+commit.f704f362',
-    encodedConstructorArgs,
-    fileName,
-    contractName,
-    viemChain
-  })
-  if (verificationOK) {
-    return deployReceipt.contractAddress
-  } else {
-    throw new Error('Contract verification failed')
-  }
-}
 
-const verifyContractRequest = async ({
-  address,
-  standardJsonInput,
-  compilerVersion,
-  encodedConstructorArgs,
-  fileName,
-  contractName,
-  viemChain
-}: VerifyContractParams) => {
-  const apiUrl = API_URLS[viemChain['name']]
-  const apiKey = API_KEYS[viemChain['name']]
+  const contractAddress = deployReceipt.contractAddress
+  if (!contractAddress) {
+    throw new Error(
+      `Contract address not found in transaction receipt for ${deployHash}`
+    )
+  }
+
+  const apiUrl = API_URLS[viemChain.id]
+  const apiKey = API_KEYS[viemChain.id]
   if (!apiKey) {
     throw new Error(
-      `Unsupported chain or explorer API_KEY.  Network: ${viemChain['network']}`
+      `Unsupported chain or explorer API_KEY.  Network: ${viemChain.name} ChainId: ${viemChain.id}`
     )
   }
 
@@ -69,16 +46,16 @@ const verifyContractRequest = async ({
     params.append('apikey', apiKey)
     params.append('module', 'contract')
     params.append('action', 'verifysourcecode')
-    params.append('contractaddress', address)
+    params.append('contractaddress', contractAddress)
     params.append('sourceCode', standardJsonInput)
     params.append('codeformat', 'solidity-standard-json-input')
     params.append('contractname', fileName + ':' + contractName)
-    params.append('compilerversion', compilerVersion)
-    params.append('optimizationused', '0')
+    params.append('compilerversion', DEFAULT_GLOBAL_CONFIG.compilerVersion)
+    // TODO: Enable optimizer
+    params.append('optimizationUsed', '0')
     if (encodedConstructorArgs) {
       params.append('constructorArguements', encodedConstructorArgs)
     }
-    params.append('evmversion', 'london')
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -91,10 +68,10 @@ const verifyContractRequest = async ({
         `Explorer API request failed with status ${response.status}`
       )
     }
-    return response.ok
   } catch (error) {
+    console.log('Verify response failed: ', error)
     throw new Error(`Error verifying contract: ${(error as Error).message}`)
   }
-}
 
-export default verifyContract
+  return contractAddress
+}

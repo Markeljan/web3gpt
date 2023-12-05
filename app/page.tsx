@@ -4,8 +4,6 @@ import { Chat } from '@/components/chat'
 import { nanoid } from '@/lib/utils'
 import { auth } from '@/auth'
 
-export const runtime = 'edge'
-
 const initialMessages: Message[] = [
   {
     id: nanoid(),

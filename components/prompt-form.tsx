@@ -1,4 +1,8 @@
-import * as React from 'react'
+'use client'
+
+import { useRouter } from 'next/navigation'
+import { useEffect, useRef } from 'react'
+
 import Textarea from 'react-textarea-autosize'
 
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
@@ -24,10 +28,11 @@ export function PromptForm({
   setInput,
   isLoading
 }: PromptProps) {
+  const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
-  const inputRef = React.useRef<HTMLTextAreaElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus()
     }
@@ -45,21 +50,21 @@ export function PromptForm({
       }}
       ref={formRef}
     >
-      <div className="relative flex w-full grow flex-col overflow-hidden bg-background px-8 sm:rounded-md sm:border sm:px-12">
+      <div className="relative flex w-full grow flex-col overflow-hidden px-8 sm:rounded-md sm:border sm:px-12">
         <Tooltip>
           <TooltipTrigger asChild>
-            <button
+            <Button
               onClick={() => {
-                location.href = '/'
+                router.push(`/`, { shallow: false })
               }}
               className={cn(
-                buttonVariants({ size: 'sm', variant: 'outline' }),
-                'absolute left-0 top-4 h-8 w-8 rounded-full bg-background p-0 sm:left-4'
+                buttonVariants({ size: 'sm', variant: 'secondary' }),
+                'absolute left-0 top-4 h-8 w-8 rounded-full border p-0 sm:left-4'
               )}
             >
               <IconHome />
               <span className="sr-only">New Chat</span>
-            </button>
+            </Button>
           </TooltipTrigger>
           <TooltipContent>New Chat</TooltipContent>
         </Tooltip>

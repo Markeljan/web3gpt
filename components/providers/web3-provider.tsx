@@ -46,14 +46,15 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider
         chains={chains}
+        initialChain={baseGoerli}
         theme={
           resolvedTheme === 'dark'
             ? darkTheme({
-                accentColor: '#21DA03',
+                accentColor: '#21C55E',
                 accentColorForeground: 'black'
               })
             : lightTheme({
-                accentColor: '#21DA03',
+                accentColor: '#21C55E',
                 accentColorForeground: 'white'
               })
         }

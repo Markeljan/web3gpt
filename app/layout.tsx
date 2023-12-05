@@ -10,6 +10,8 @@ import { Header } from '@/components/header'
 import { Providers } from '@/components/providers/ui-providers'
 import { Web3Provider } from '@/components/providers/web3-provider'
 
+export const runtime = 'edge'
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://w3gpt.ai'),
   title: {
