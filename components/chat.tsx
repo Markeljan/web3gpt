@@ -38,6 +38,7 @@ export function Chat({
     useGlobalStore()
   const { deploy } = useW3GPTDeploy()
   const { chain } = useNetwork()
+  const fallbackChainId = chain?.unsupported === false ? chain.id : 84531
 
   const functionCallHandler: FunctionCallHandler = async (
     chatMessages,
@@ -50,14 +51,14 @@ export function Chat({
       )
 
       setDeployContractConfig({
-        chainId: chainId || chain?.id || 84531,
+        chainId: chainId ?? fallbackChainId,
         contractName,
         sourceCode,
         constructorArgs
       })
 
       const verifiedContractAddress = await deploy({
-        chainId: chainId || chain?.id || 84531,
+        chainId: chainId ?? fallbackChainId,
         contractName,
         sourceCode,
         constructorArgs
