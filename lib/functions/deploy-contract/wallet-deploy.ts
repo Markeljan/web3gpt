@@ -174,7 +174,7 @@ export function useDeployWithWallet() {
       const transactionReceipt = await toast.promise(
         publicClient.waitForTransactionReceipt({
           hash: verifyContractConfig?.deployHash,
-          confirmations: 6
+          confirmations: 5
         }),
         {
           loading: 'Waiting for confirmations...',
