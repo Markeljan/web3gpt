@@ -18,8 +18,8 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
           84531: base goerli,
           80001: mumbai,
           11155111: sepolia,
-          421613: arbitrum goerli
           `
+          // 421613: arbitrum goerli removed due to trannsaction building issues
         },
         sourceCode: {
           type: 'string',

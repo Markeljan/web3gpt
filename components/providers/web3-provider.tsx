@@ -11,7 +11,7 @@ import { configureChains, createConfig, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import {
-  arbitrumGoerli,
+  // arbitrumGoerli, removed due to tx building errors
   baseGoerli,
   goerli,
   polygonMumbai,
@@ -20,7 +20,7 @@ import {
 import { useTheme } from 'next-themes'
 
 const { chains, publicClient } = configureChains(
-  [arbitrumGoerli, baseGoerli, goerli, polygonMumbai, sepolia],
+  [baseGoerli, goerli, polygonMumbai, sepolia],
   [
     alchemyProvider({ apiKey: `${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}` }),
     publicProvider()
