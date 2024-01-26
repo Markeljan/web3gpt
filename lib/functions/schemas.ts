@@ -12,12 +12,13 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
         },
         chainId: {
           type: 'string',
-          description: `Do not use this parameter unless the user specificaly specifies it!
+          description: `Do not use this parameter unless the user specificaly specifies a chain or chainID.
           Supported chainIds:
           5: goerli,
           84531: base goerli,
           80001: mumbai,
           11155111: sepolia,
+          5001: mantle goerli,
           `
           // 421613: arbitrum goerli removed due to trannsaction building issues
         },

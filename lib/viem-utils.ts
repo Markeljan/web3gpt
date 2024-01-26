@@ -20,7 +20,8 @@ export const API_URLS: Record<Chain['id'], string> = {
   421613: 'https://api-goerli.arbiscan.io/api',
   80001: 'https://api-testnet.polygonscan.com/api',
   420: 'https://api-goerli.optimistic.etherscan.io/api',
-  84531: 'https://api-goerli.basescan.org/api'
+  84531: 'https://api-goerli.basescan.org/api',
+  5001: 'https://explorer.testnet.mantle.xyz/api'
 }
 
 export const API_KEYS: Record<Chain['id'], string> = {
@@ -30,7 +31,8 @@ export const API_KEYS: Record<Chain['id'], string> = {
   421613: `${process.env.ARBITRUM_EXPLORER_API_KEY}`,
   80001: `${process.env.POLYGON_EXPLORER_API_KEY}`,
   420: `${process.env.OPTIMISM_EXPLORER_API_KEY}`,
-  84531: `${process.env.BASE_EXPLORER_API_KEY}`
+  84531: `${process.env.BASE_EXPLORER_API_KEY}`,
+  5001: `${process.env.MANTLE_EXPLORER_API_KEY}` // no key needed
 }
 
 export const getExplorerUrl = (viemChain: Chain): string | undefined => {

@@ -38,7 +38,7 @@ export function Chat({
     useGlobalStore()
   const { deploy } = useW3GPTDeploy()
   const { chain } = useNetwork()
-  const fallbackChainId = chain?.unsupported === false ? chain.id : 84531
+  const fallbackChainId = chain?.unsupported === false ? chain.id : 5001
 
   const functionCallHandler: FunctionCallHandler = async (
     chatMessages,

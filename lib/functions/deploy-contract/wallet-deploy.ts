@@ -77,6 +77,7 @@ export function useDeployWithWallet() {
       language: 'Solidity',
       sources,
       settings: {
+        evmVersion: 'paris',
         outputSelection: {
           '*': {
             '*': ['*']

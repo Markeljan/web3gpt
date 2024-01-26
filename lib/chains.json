@@ -40,9 +40,7 @@
     "name": "Polygon zkEVM",
     "title": "Polygon zkEVM",
     "chain": "Polygon",
-    "rpc": [
-      "https://zkevm-rpc.com"
-    ],
+    "rpc": ["https://zkevm-rpc.com"],
     "faucets": [],
     "nativeCurrency": {
       "name": "Ether",
@@ -76,9 +74,7 @@
     "name": "Polygon zkEVM Testnet",
     "title": "Polygon zkEVM Testnet",
     "chain": "Polygon",
-    "rpc": [
-      "https://rpc.public.zkevm-test.net"
-    ],
+    "rpc": ["https://rpc.public.zkevm-test.net"],
     "faucets": [],
     "nativeCurrency": {
       "name": "Ether",
@@ -106,9 +102,7 @@
       "https://rpc-mumbai.maticvigil.com",
       "https://rpc-mainnet.matic.quiknode.pro"
     ],
-    "faucets": [
-      "https://faucet.polygon.technology/"
-    ],
+    "faucets": ["https://faucet.polygon.technology/"],
     "nativeCurrency": {
       "name": "MATIC",
       "symbol": "MATIC",
@@ -291,9 +285,7 @@
       "symbol": "ETH",
       "decimals": 18
     },
-    "rpc": [
-      "https://nova.arbitrum.io/rpc"
-    ],
+    "rpc": ["https://nova.arbitrum.io/rpc"],
     "faucets": [],
     "explorers": [
       {
@@ -326,9 +318,7 @@
       "symbol": "AGOR",
       "decimals": 18
     },
-    "rpc": [
-      "https://goerli-rollup.arbitrum.io/rpc/"
-    ],
+    "rpc": ["https://goerli-rollup.arbitrum.io/rpc/"],
     "faucets": [],
     "infoURL": "https://arbitrum.io/",
     "explorers": [
@@ -349,14 +339,32 @@
     }
   },
   {
+    "name": "Mantle Testnet",
+    "chain": "ETH",
+    "rpc": ["https://rpc.testnet.mantle.xyz"],
+    "faucets": ["https://faucet.testnet.mantle.xyz"],
+    "nativeCurrency": {
+      "name": "Testnet BitDAO",
+      "symbol": "BIT",
+      "decimals": 18
+    },
+    "infoURL": "https://mantle.xyz",
+    "shortName": "mantle-testnet",
+    "chainId": 5001,
+    "networkId": 5001,
+    "explorers": [
+      {
+        "name": "Mantle Testnet Explorer",
+        "url": "https://explorer.testnet.mantle.xyz",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
     "name": "Base",
     "chain": "ETH",
-    "rpc": [
-      "https://goerli.base.org"
-    ],
-    "faucets": [
-      "https://www.coinbase.com/faucets/base-ethereum-goerli-faucet"
-    ],
+    "rpc": ["https://goerli.base.org"],
+    "faucets": ["https://www.coinbase.com/faucets/base-ethereum-goerli-faucet"],
     "nativeCurrency": {
       "name": "Goerli Ether",
       "symbol": "ETH",
@@ -382,12 +390,8 @@
   {
     "name": "Base Goerli Testnet",
     "chain": "ETH",
-    "rpc": [
-      "https://goerli.base.org"
-    ],
-    "faucets": [
-      "https://www.coinbase.com/faucets/base-ethereum-goerli-faucet"
-    ],
+    "rpc": ["https://goerli.base.org"],
+    "faucets": ["https://www.coinbase.com/faucets/base-ethereum-goerli-faucet"],
     "nativeCurrency": {
       "name": "Goerli Ether",
       "symbol": "ETH",
@@ -413,9 +417,7 @@
   {
     "name": "Optimism",
     "chain": "ETH",
-    "rpc": [
-      "https://mainnet.optimism.io/"
-    ],
+    "rpc": ["https://mainnet.optimism.io/"],
     "faucets": [],
     "nativeCurrency": {
       "name": "Ether",
@@ -437,9 +439,7 @@
   {
     "name": "Optimism Goerli Testnet",
     "chain": "ETH",
-    "rpc": [
-      "https://goerli.optimism.io/"
-    ],
+    "rpc": ["https://goerli.optimism.io/"],
     "faucets": [],
     "nativeCurrency": {
       "name": "Goerli Ether",

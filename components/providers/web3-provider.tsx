@@ -12,6 +12,7 @@ import { publicProvider } from 'wagmi/providers/public'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import {
   // arbitrumGoerli, removed due to tx building errors
+  mantleTestnet,
   baseGoerli,
   goerli,
   polygonMumbai,
@@ -19,8 +20,12 @@ import {
 } from 'wagmi/chains'
 import { useTheme } from 'next-themes'
 
+const mantleTestnetWithLogo = {
+  ...mantleTestnet,
+  iconUrl: '/mantle-logo.jpeg'
+}
 const { chains, publicClient } = configureChains(
-  [baseGoerli, goerli, polygonMumbai, sepolia],
+  [mantleTestnetWithLogo, baseGoerli, goerli, polygonMumbai, sepolia],
   [
     alchemyProvider({ apiKey: `${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}` }),
     publicProvider()
@@ -46,7 +51,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider
         chains={chains}
-        initialChain={baseGoerli}
+        initialChain={mantleTestnet}
         theme={
           resolvedTheme === 'dark'
             ? darkTheme({
