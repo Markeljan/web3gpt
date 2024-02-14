@@ -41,7 +41,7 @@ export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
 
   // function to get the contract name from the source code
   const getContractName = () => {
-    const contractNameRegex = /contract\s+(\w+)/
+    const contractNameRegex = /contract\s+(\w+)\s*(?:is|{)/;
     const contractNameMatch = contractNameRegex.exec(sourceCode)
     return contractNameMatch ? contractNameMatch[1] : ''
   }
