@@ -116,15 +116,11 @@ export default async function deployContract({
     console.log(error)
   }
 
-  console.log('Wallet OK')
-
   const deployData = encodeDeployData({
     abi: abi,
     bytecode: bytecode,
     args: constructorArgs
   })
-
-  console.log('Building deployData OK.')
 
   const deployHash = await walletClient.deployContract({
     abi: abi,

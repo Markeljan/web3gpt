@@ -37,7 +37,7 @@ export function DeployFrontendButton({
   const _address = address || lastDeploymentData?.address || ''
   const _abi = abi || lastDeploymentData?.abi
 
-  const disabled = !sourceCode || !address || !abi
+  const disabled = !sourceCode || !_address || !_abi
 
   async function handleDeployFrontend() {
     const deployment = await deployFrontend({
@@ -144,7 +144,6 @@ async function deployFrontend({
   )
 
   const deployResult = await res.json()
-  console.log('deployResult', deployResult)
 
   return deployResult
 }
