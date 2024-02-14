@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 import { DeployContractButton } from '../deploy-contract-button'
 import { useGlobalStore } from '@/app/state/global-store'
+import { DeployFrontendButton } from '../deploy-frontend-button'
 
 interface Props {
   language: string
@@ -119,6 +120,7 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
           {language === 'solidity' && (
             <DeployContractButton sourceCode={value} />
           )}
+          {language === 'html' && <DeployFrontendButton sourceCode={value} />}
           <Button
             variant="ghost"
             className="focus-visible:ring-1 focus-visible:ring-gray-700 focus-visible:ring-offset-0"

@@ -1,8 +1,9 @@
 import { DEFAULT_GLOBAL_CONFIG } from '@/lib/constants'
 import {
-  ContractDeploymentData,
+  LastDeploymentData,
   DeployContractParams,
-  GlobalConfig
+  GlobalConfig,
+  VerifyContractParams
 } from '@/lib/functions/types'
 import { create } from 'zustand'
 
@@ -10,6 +11,11 @@ interface GlobalState {
   // configs
   globalConfig: GlobalConfig
   setGlobalConfig: (globalConfig: GlobalConfig) => void
+
+  verifyContractConfig?: Partial<VerifyContractParams>
+  setVerifyContractConfig: (
+    verifyContractConfig: Partial<VerifyContractParams>
+  ) => void
 
   deployContractConfig?: Partial<DeployContractParams>
   setDeployContractConfig: (
@@ -25,12 +31,20 @@ interface GlobalState {
   setIsDeploying: (isDeploying: boolean) => void
   isVerifying: boolean
   setIsVerifying: (isPolling: boolean) => void
+
+  // last deployment data
+  lastDeploymentData?: LastDeploymentData
+  setLastDeploymentData: (lastDeploymentData: LastDeploymentData) => void
 }
 
 export const useGlobalStore = create<GlobalState>(set => ({
   // configs
   globalConfig: DEFAULT_GLOBAL_CONFIG,
   setGlobalConfig: (globalConfig: GlobalConfig) => set({ globalConfig }),
+  verifyContractConfig: undefined,
+  setVerifyContractConfig: (
+    verifyContractConfig: Partial<VerifyContractParams>
+  ) => set({ verifyContractConfig }),
 
   deployContractConfig: undefined,
   setDeployContractConfig: (
@@ -45,5 +59,10 @@ export const useGlobalStore = create<GlobalState>(set => ({
   isDeploying: false,
   setIsDeploying: (isDeploying: boolean) => set({ isDeploying }),
   isVerifying: false,
-  setIsVerifying: (isVerifying: boolean) => set({ isVerifying })
+  setIsVerifying: (isVerifying: boolean) => set({ isVerifying }),
+
+  // last deployment data
+  lastDeploymentData: undefined,
+  setLastDeploymentData: (lastDeploymentData: LastDeploymentData) =>
+    set({ lastDeploymentData })
 }))

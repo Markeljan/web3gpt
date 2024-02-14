@@ -4,6 +4,7 @@ import { getExplorerUrl } from '@/lib/viem-utils'
 import { encodeDeployData } from 'viem'
 import { useNetwork, usePublicClient, useWalletClient } from 'wagmi'
 import toast from 'react-hot-toast'
+import { useGlobalStore } from '@/app/state/global-store'
 
 export function useDeployWithWallet() {
   const { chain: viemChain } = useNetwork()
@@ -11,6 +12,7 @@ export function useDeployWithWallet() {
   const publicClient = usePublicClient({
     chainId: viemChain?.id
   })
+  const { setLastDeploymentData, setVerifyContractConfig } = useGlobalStore()
 
   async function deploy({
     contractName,
@@ -142,8 +144,6 @@ export function useDeployWithWallet() {
       }
     )
 
-    const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
-
     const ipfsUploadResponse = await fetch('/api/ipfs-upload', {
       method: 'POST',
       headers: {
@@ -171,60 +171,48 @@ export function useDeployWithWallet() {
       viemChain
     }
 
+    setVerifyContractConfig(verifyContractConfig)
+
+    const txHashExplorerUrl = getExplorerUrl(viemChain) + `/tx/${deployHash}`
+
     try {
       const transactionReceipt = await toast.promise(
         publicClient.waitForTransactionReceipt({
-          hash: verifyContractConfig?.deployHash,
-          confirmations: 5
+          hash: verifyContractConfig?.deployHash
         }),
         {
           loading: 'Waiting for confirmations...',
-          success: 'Received enough confirmations',
+          success: 'Transaction confirmed!',
           error: 'Failed to receive enough confirmations'
         }
       )
-      if (transactionReceipt) {
-        const verifiedContractResponse = await toast.promise(
-          fetch('/api/verify-contract', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(verifyContractConfig)
-          }),
-          {
-            loading: 'Verifying contract...',
-            success: 'Contract verified successfully!',
-            error: 'Failed to verify contract'
-          }
-        )
+      const address = transactionReceipt?.contractAddress || undefined
 
-        const verifiedContractAddress = await verifiedContractResponse.json()
-
-        if (verifiedContractAddress) {
-          return {
-            explorerUrl:
-              explorerUrl.split('/tx')[0] +
-              `/address/${verifiedContractAddress}`,
-            ipfsUrl,
-            verificationStatus: 'success'
-          }
-        }
-      }
       const deploymentData = {
-        explorerUrl,
+        address,
+        transactionHash: deployHash,
         ipfsUrl,
-        verifyContractConfig
+        explorerUrl: txHashExplorerUrl,
+        verificationStatus: 'pending',
+        standardJsonInput,
+        abi,
+        sourceCode
       }
-
+      setLastDeploymentData(deploymentData)
       return deploymentData
     } catch (error) {
       console.log(error)
-      return {
-        explorerUrl,
+      const deploymentData = {
+        transactionHash: deployHash,
+        explorerUrl: txHashExplorerUrl,
         ipfsUrl,
-        verificationStatus: 'failed'
+        verificationStatus: 'pending',
+        standardJsonInput,
+        abi,
+        sourceCode
       }
+      setLastDeploymentData(deploymentData)
+      return deploymentData
     }
   }
 

@@ -73,7 +73,7 @@ export function Landing({disableAnimations = false}) {
               speed={0.5}
               direction={-1}
               path="/lotties/puzzle.json"
-              className="h-24 w-24 md:h-32 md:w-full"
+              className="size-24 md:h-32 md:w-full"
             />
             <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
               <h3 className="font-bold md:mb-2">Generate</h3>
@@ -90,7 +90,7 @@ export function Landing({disableAnimations = false}) {
               speed={0.5}
               direction={1}
               path="/lotties/globe.json"
-              className="h-24 w-24 md:h-32 md:w-full"
+              className="size-24 md:h-32 md:w-full"
             />
             <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
               <h3 className="font-bold md:mb-2">Deploy</h3>
@@ -105,7 +105,7 @@ export function Landing({disableAnimations = false}) {
               loop={false}
               speed={0.5}
               path="/lotties/clock.json"
-              className="h-24 w-24 md:h-32 md:w-full"
+              className="size-24 md:h-32 md:w-full"
             />
 
             <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">

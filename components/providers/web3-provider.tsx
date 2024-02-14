@@ -11,9 +11,8 @@ import { configureChains, createConfig, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import {
-  // arbitrumGoerli, removed due to tx building errors
   mantleTestnet,
-  baseGoerli,
+  baseSepolia,
   goerli,
   polygonMumbai,
   sepolia
@@ -25,7 +24,7 @@ const mantleTestnetWithLogo = {
   iconUrl: '/mantle-logo.jpeg'
 }
 const { chains, publicClient } = configureChains(
-  [mantleTestnetWithLogo, baseGoerli, goerli, polygonMumbai, sepolia],
+  [mantleTestnetWithLogo, baseSepolia, goerli, polygonMumbai, sepolia],
   [
     alchemyProvider({ apiKey: `${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}` }),
     publicProvider()

@@ -16,6 +16,7 @@ import { Landing } from '@/components/landing'
 import { useGlobalStore } from '@/app/state/global-store'
 import { useW3GPTDeploy } from '@/lib/hooks/use-w3gpt-deploy'
 import { useNetwork } from 'wagmi'
+import { useEffect } from 'react'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -34,11 +35,63 @@ export function Chat({
   const router = useRouter()
   const path = usePathname()
   const isChatPage = path.includes('chat')
-  const { setIsGenerating, setIsDeploying, setDeployContractConfig } =
-    useGlobalStore()
-  const { deploy } = useW3GPTDeploy()
+  const {
+    setIsGenerating,
+    setIsDeploying,
+    setDeployContractConfig,
+    verifyContractConfig,
+    lastDeploymentData,
+    setLastDeploymentData
+  } = useGlobalStore()
   const { chain } = useNetwork()
   const fallbackChainId = chain?.unsupported === false ? chain.id : 5001
+  const activeChainId = chain?.id ?? fallbackChainId
+  const { deploy } = useW3GPTDeploy({ chainId: activeChainId })
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function verifyContract() {
+      if (
+        !verifyContractConfig?.deployHash ||
+        lastDeploymentData?.verificationStatus === 'success'
+      ) {
+        return
+      }
+
+      try {
+        const response = await fetch('/api/verify-contract', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(verifyContractConfig)
+        })
+
+        const data = await response.json()
+
+        if (typeof data === 'string' && data.startsWith('0x') && isMounted) {
+          toast.success('Contract verified successfully!')
+          lastDeploymentData &&
+            setLastDeploymentData({
+              ...lastDeploymentData,
+              verificationStatus: 'success'
+            })
+        } else {
+          setTimeout(verifyContract, 15000) // Retry after 15 seconds
+        }
+      } catch (error) {
+        console.error('Verification failed', error)
+        setTimeout(verifyContract, 15000) // Retry after 15 seconds
+      }
+    }
+
+    verifyContract()
+
+    return () => {
+      isMounted = false
+    }
+  }, [lastDeploymentData, verifyContractConfig, setLastDeploymentData])
 
   const functionCallHandler: FunctionCallHandler = async (
     chatMessages,
@@ -51,14 +104,14 @@ export function Chat({
       )
 
       setDeployContractConfig({
-        chainId: chainId ?? fallbackChainId,
+        chainId: chainId ?? activeChainId,
         contractName,
         sourceCode,
         constructorArgs
       })
 
       const verifiedContractAddress = await deploy({
-        chainId: chainId ?? fallbackChainId,
+        chainId: chainId ?? activeChainId,
         contractName,
         sourceCode,
         constructorArgs

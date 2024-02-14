@@ -6,12 +6,12 @@ import {
 } from '@/lib/functions/types'
 import toast from 'react-hot-toast'
 
-export function useW3GPTDeploy() {
-  const { globalConfig, deployContractConfig, setIsDeploying, setIsVerifying } =
+export function useW3GPTDeploy({ chainId }: { chainId: number }) {
+  const { setIsDeploying, setLastDeploymentData, setVerifyContractConfig } =
     useGlobalStore()
-  const chainId = deployContractConfig?.chainId
+
   const publicClient = usePublicClient({
-    chainId: Number(chainId)
+    chainId
   })
 
   async function deploy(_deployContractConfig?: DeployContractParams) {
@@ -23,7 +23,7 @@ export function useW3GPTDeploy() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(_deployContractConfig || deployContractConfig)
+        body: JSON.stringify(_deployContractConfig)
       }),
       {
         loading: 'Sending deploy transaction...',
@@ -35,58 +35,57 @@ export function useW3GPTDeploy() {
     setIsDeploying(false)
 
     if (deployContractResponse.ok) {
-      setIsVerifying(true)
       const {
-        explorerUrl,
+        explorerUrl: txHashExplorerUrl,
         ipfsUrl,
-        verifyContractConfig
+        verifyContractConfig,
+        abi,
+        sourceCode,
+        standardJsonInput
       }: DeployContractResult = await deployContractResponse.json()
+
+      setVerifyContractConfig(verifyContractConfig)
 
       try {
         const transactionReceipt = await toast.promise(
           publicClient.waitForTransactionReceipt({
-            hash: verifyContractConfig?.deployHash,
-            confirmations: 5
+            hash: verifyContractConfig?.deployHash
           }),
           {
             loading: 'Waiting for confirmations...',
-            success: 'Received enough confirmations',
+            success: 'Transaction confirmed!',
             error: 'Failed to receive enough confirmations'
           }
         )
-        if (transactionReceipt) {
-          const verifiedContractResponse = await toast.promise(
-            fetch('/api/verify-contract', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(verifyContractConfig)
-            }),
-            {
-              loading: 'Verifying contract...',
-              success: 'Contract verified successfully',
-              error: 'Failed to verify contract'
-            }
-          )
 
-          const verifiedContractAddress = await verifiedContractResponse.json()
+        const address = transactionReceipt?.contractAddress || undefined
+        const explorerUrl =
+          txHashExplorerUrl.split('/tx')[0] + `/address/${address}`
 
-          if (verifiedContractAddress) {
-            return {
-              explorerUrl:
-                explorerUrl.split('/tx')[0] +
-                `/address/${verifiedContractAddress}`,
-              ipfsUrl,
-              verificationStatus: 'success'
-            }
-          }
+        const deploymentData = {
+          explorerUrl,
+          ipfsUrl,
+          verificationStatus: 'pending',
+          address: address,
+          sourceCode,
+          abi,
+          transactionHash: verifyContractConfig?.deployHash,
+          standardJsonInput
         }
-        setIsVerifying(false)
-        return { explorerUrl, ipfsUrl, verificationStatus: 'failed' }
+        setLastDeploymentData(deploymentData)
+        return deploymentData
       } catch (e) {
-        setIsVerifying(false)
-        return { explorerUrl, ipfsUrl, verificationStatus: 'failed' }
+        const deploymentData = {
+          explorerUrl: txHashExplorerUrl,
+          ipfsUrl,
+          verificationStatus: 'pending',
+          sourceCode,
+          abi,
+          transactionHash: verifyContractConfig?.deployHash,
+          standardJsonInput
+        }
+        setLastDeploymentData(deploymentData)
+        return deploymentData
       }
     } else {
       return {

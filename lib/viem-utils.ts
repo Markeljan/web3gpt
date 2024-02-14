@@ -20,7 +20,7 @@ export const API_URLS: Record<Chain['id'], string> = {
   421613: 'https://api-goerli.arbiscan.io/api',
   80001: 'https://api-testnet.polygonscan.com/api',
   420: 'https://api-goerli.optimistic.etherscan.io/api',
-  84531: 'https://api-goerli.basescan.org/api',
+  84531: 'https://api-sepolia.basescan.org/api',
   5001: 'https://explorer.testnet.mantle.xyz/api'
 }
 

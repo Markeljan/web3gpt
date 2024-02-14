@@ -32,7 +32,7 @@ export function ChatMessage({
         className="group relative mb-4 flex items-start md:-ml-12"
         {...props}
       >
-        <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow">
+        <div className="flex size-8 shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow">
           <IconF />
         </div>
         <div className="ml-4 flex-1 space-y-2 px-1">
@@ -52,7 +52,7 @@ export function ChatMessage({
     >
       <div
         className={cn(
-          'relative flex h-8 w-8 shrink-0 select-none items-center justify-center overflow-hidden rounded-md border shadow '
+          'relative flex size-8 shrink-0 select-none items-center justify-center overflow-hidden rounded-md border shadow '
         )}
       >
         {message.role === 'user' ? (

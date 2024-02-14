@@ -96,7 +96,7 @@ export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
         sourceCode,
         constructorArgs: constructorArgs
       })
-      setExplorerUrl(explorerUrl)
+      explorerUrl && setExplorerUrl(explorerUrl)
       setIpfsUrl(ipfsUrl)
 
       setIsDeploying(false)
@@ -177,7 +177,7 @@ export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
               </p>
             )}
             {isDeploying && (
-              <IconSpinner className="h-8 w-8 animate-spin text-gray-500" />
+              <IconSpinner className="size-8 animate-spin text-gray-500" />
             )}
             {explorerUrl && (
               <Link

@@ -7,8 +7,10 @@ import {
 import handleImports from '@/lib/functions/deploy-contract/handle-imports'
 import { getChainById, getExplorerUrl } from '@/lib/viem-utils'
 import ipfsUpload from '@/lib/functions/deploy-contract/ipfs-upload'
-import { Hex, createWalletClient, encodeDeployData, http } from 'viem'
+import { Chain, Hex, createWalletClient, encodeDeployData, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
+
+const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
 
 export default async function deployContract({
   chainId,
@@ -16,7 +18,8 @@ export default async function deployContract({
   sourceCode,
   constructorArgs
 }: DeployContractParams): Promise<DeployContractResult> {
-  const viemChain = getChainById(Number(chainId))
+  const viemChain = getChainById(Number(chainId)) as Chain
+
   const fileName = contractName.replace(/[\/\\:*?"<>|.\s]+$/g, '_') + '.sol'
 
   // Prepare the sources object for the Solidity compiler
@@ -98,10 +101,14 @@ export default async function deployContract({
   const deployerPk: Hex = `0x${process.env.DEPLOYER_PRIVATE_KEY}`
   const account = privateKeyToAccount(deployerPk)
 
+  const alchemyHttpUrl = viemChain?.rpcUrls?.alchemy?.http[0]
+    ? `${viemChain.rpcUrls.alchemy.http[0]}/${ALCHEMY_API_KEY}`
+    : undefined
+
   const walletClient = createWalletClient({
     account,
     chain: viemChain,
-    transport: http()
+    transport: http(alchemyHttpUrl)
   })
 
   if (!(await walletClient.getAddresses())) {
@@ -149,9 +156,12 @@ export default async function deployContract({
   }
 
   const deploymentData = {
+    sourceCode,
     explorerUrl,
     ipfsUrl,
-    verifyContractConfig
+    verifyContractConfig,
+    abi,
+    standardJsonInput
   }
 
   return deploymentData

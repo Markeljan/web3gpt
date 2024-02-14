@@ -14,9 +14,12 @@ export type DeployContractParams = {
 }
 
 export type DeployContractResult = {
+  sourceCode: string
   explorerUrl: string
   ipfsUrl: string
   verifyContractConfig: VerifyContractParams
+  abi: any
+  standardJsonInput: string
 }
 
 export type VerifyContractParams = {
@@ -28,9 +31,13 @@ export type VerifyContractParams = {
   viemChain: Chain
 }
 
-export type ContractDeploymentData = {
-  address: Hex
+export type LastDeploymentData = {
+  address?: Hex
   transactionHash: Hex
   explorerUrl: string
-  ipfsUrl: string
+  ipfsUrl?: string
+  abi: string
+  verificationStatus: string
+  standardJsonInput: string
+  sourceCode: string
 }
