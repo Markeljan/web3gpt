@@ -15,7 +15,7 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
           description: `Do not use this parameter unless the user specificaly specifies a chain or chainID.
           Supported chainIds:
           5: goerli,
-          84531: base sepolia,
+          84532: base sepolia,
           80001: mumbai,
           11155111: sepolia,
           5001: mantle goerli,
