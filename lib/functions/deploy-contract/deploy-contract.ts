@@ -69,6 +69,10 @@ export default async function deployContract({
     language: 'Solidity',
     sources,
     settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      },
       evmVersion: 'paris',
       outputSelection: {
         '*': {

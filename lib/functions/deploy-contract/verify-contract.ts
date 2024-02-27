@@ -52,8 +52,7 @@ export const verifyContract = async ({
     params.append('contractname', fileName + ':' + contractName)
     params.append('compilerversion', DEFAULT_GLOBAL_CONFIG.compilerVersion)
     params.append('evmversion', 'paris')
-    // TODO: Enable optimizer
-    params.append('optimizationUsed', '0')
+    params.append('optimizationUsed', '1')
     if (encodedConstructorArgs) {
       params.append('constructorArguements', encodedConstructorArgs)
     }
