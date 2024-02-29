@@ -13,16 +13,17 @@ const nextConfig = {
       {
         source: '/api/deploy-contract',
         headers: [
-          { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: '*' }, // replace this your actual origin
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*' // Set your origin
+          },
           {
             key: 'Access-Control-Allow-Methods',
-            value: 'POST'
+            value: 'POST, PUT, OPTIONS'
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value:
-              'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+            value: 'Content-Type, Authorization'
           }
         ]
       }
