@@ -9,14 +9,21 @@ const nextConfig = {
     ]
   },
   async headers() {
-    // allow for any requests to the /api/deploy-contract/route.ts from any origin
     return [
       {
-        source: '/api/deploy-contract/route.ts',
+        source: '/api/deploy-contract',
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
-            value: '*'
+            value: 'http://localhost:3000, https://agentswithbenefits.xyz'
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'POST, PUT, OPTIONS'
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization'
           }
         ]
       }
