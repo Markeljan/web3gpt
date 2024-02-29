@@ -11,8 +11,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // matching all API routes
-        source: '/api/deploy-contract*',
+        source: '/api/deploy-contract',
         headers: [
           { key: 'Access-Control-Allow-Credentials', value: 'true' },
           { key: 'Access-Control-Allow-Origin', value: '*' }, // replace this your actual origin
