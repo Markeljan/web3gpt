@@ -8,6 +8,7 @@ const nextConfig = {
       }
     ]
   },
+  // modify the headers to allow CORS
   async headers() {
     return [
       {
