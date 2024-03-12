@@ -9,6 +9,7 @@ import { getChainById, getExplorerUrl } from '@/lib/viem-utils'
 import ipfsUpload from '@/lib/functions/deploy-contract/ipfs-upload'
 import { Chain, Hex, createWalletClient, encodeDeployData, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
+import { track } from '@vercel/analytics/server'
 
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
 
@@ -162,6 +163,11 @@ export default async function deployContract({
     abi,
     standardJsonInput
   }
+
+  track('deployed_contract', {
+    contractName,
+    explorerUrl
+  })
 
   return deploymentData
 }

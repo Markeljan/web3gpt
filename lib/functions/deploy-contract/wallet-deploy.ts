@@ -5,6 +5,7 @@ import { encodeDeployData } from 'viem'
 import { useNetwork, usePublicClient, useWalletClient } from 'wagmi'
 import toast from 'react-hot-toast'
 import { useGlobalStore } from '@/app/state/global-store'
+import { track } from '@vercel/analytics'
 
 export function useDeployWithWallet() {
   const { chain: viemChain } = useNetwork()
@@ -178,6 +179,11 @@ export function useDeployWithWallet() {
 
     const txHashExplorerUrl = getExplorerUrl(viemChain) + `/tx/${deployHash}`
 
+    track('deployed_contract', {
+      contractName,
+      explorerUrl: txHashExplorerUrl
+    })
+
     try {
       const transactionReceipt = await toast.promise(
         publicClient.waitForTransactionReceipt({
@@ -201,6 +207,7 @@ export function useDeployWithWallet() {
         abi,
         sourceCode
       }
+
       setLastDeploymentData(deploymentData)
       return deploymentData
     } catch (error) {
