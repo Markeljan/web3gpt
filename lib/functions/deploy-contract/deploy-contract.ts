@@ -64,20 +64,19 @@ export default async function deployContract({
   }
 
   // Compile the contract
-  // TODO: enable optimizer
   const standardJsonInput = JSON.stringify({
     language: 'Solidity',
     sources,
     settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200
-      },
       evmVersion: 'paris',
       outputSelection: {
         '*': {
           '*': ['*']
         }
+      },
+      optimizer: {
+        enabled: true,
+        runs: 200
       }
     }
   })
