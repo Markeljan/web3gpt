@@ -83,11 +83,11 @@ export function useDeployWithWallet() {
         outputSelection: {
           '*': {
             '*': ['*']
-          },
-          optimizer: {
-            enabled: true,
-            runs: 200
           }
+        },
+        optimizer: {
+          enabled: true,
+          runs: 200
         }
       }
     })
