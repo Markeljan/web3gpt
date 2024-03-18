@@ -9,6 +9,8 @@ export const verifyContract = async ({
   encodedConstructorArgs,
   fileName,
   contractName,
+  
+
   viemChain
 }: VerifyContractParams) => {
   const publicClient = createPublicClient({

@@ -3,6 +3,16 @@ import * as allViemChains from 'viem/chains'
 
 const { ...chains } = allViemChains
 
+const holeskyWithBlockExplorer = {
+  ...chains.holesky,
+  blockExplorers: {
+    default: {
+      name: 'Etherscan',
+      url: 'https://holesky.etherscan.io'
+    }
+  }
+}
+
 export function getChainById(chainId: number) {
   for (const chain of Object.values(chains)) {
     if (chain.id === chainId) {
@@ -15,7 +25,7 @@ export function getChainById(chainId: number) {
 
 export const API_URLS: Record<Chain['id'], string> = {
   1: 'https://api.etherscan.io/api',
-  5: 'https://api-goerli.etherscan.io/api',
+  17000: 'https://api-holesky.etherscan.io/api',
   11155111: 'https://api-sepolia.etherscan.io/api',
   421613: 'https://api-goerli.arbiscan.io/api',
   80001: 'https://api-testnet.polygonscan.com/api',
@@ -26,7 +36,7 @@ export const API_URLS: Record<Chain['id'], string> = {
 
 export const API_KEYS: Record<Chain['id'], string> = {
   1: `${process.env.ETHEREUM_EXPLORER_API_KEY}`,
-  5: `${process.env.ETHEREUM_EXPLORER_API_KEY}`,
+  17000: `${process.env.ETHEREUM_EXPLORER_API_KEY}`,
   11155111: `${process.env.ETHEREUM_EXPLORER_API_KEY}`,
   421613: `${process.env.ARBITRUM_EXPLORER_API_KEY}`,
   80001: `${process.env.POLYGON_EXPLORER_API_KEY}`,
@@ -36,5 +46,9 @@ export const API_KEYS: Record<Chain['id'], string> = {
 }
 
 export const getExplorerUrl = (viemChain: Chain): string | undefined => {
+  if (viemChain.id === chains.holesky.id) {
+    return holeskyWithBlockExplorer.blockExplorers?.default.url
+  }
+
   return viemChain?.blockExplorers?.default.url
 }
