@@ -45,7 +45,9 @@ export function Chat({
   } = useGlobalStore()
   const { chain } = useNetwork()
   const fallbackChainId = chain?.unsupported === false ? chain.id : 5001
-  const activeChainId = chain?.id ?? fallbackChainId
+  const activeChainId = chain?.unsupported
+    ? fallbackChainId
+    : chain?.id ?? fallbackChainId
   const { deploy } = useW3GPTDeploy({ chainId: activeChainId })
 
   useEffect(() => {
