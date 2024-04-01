@@ -11,20 +11,21 @@ import { configureChains, createConfig, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import {
-  mantleTestnet,
   baseSepolia,
   holesky,
   polygonMumbai,
   sepolia
 } from 'wagmi/chains'
+import { mantleSepolia } from '@/lib/mantle-sepolia'
 import { useTheme } from 'next-themes'
 
-const mantleTestnetWithLogo = {
-  ...mantleTestnet,
+const mantleSepoliaWithLogo = {
+  ...mantleSepolia,
   iconUrl: '/mantle-logo.jpeg'
 }
+
 const { chains, publicClient } = configureChains(
-  [mantleTestnetWithLogo, baseSepolia, holesky, polygonMumbai, sepolia],
+  [mantleSepoliaWithLogo, baseSepolia, holesky, polygonMumbai, sepolia],
   [
     alchemyProvider({ apiKey: `${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}` }),
     publicProvider()
@@ -50,7 +51,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider
         chains={chains}
-        initialChain={holesky}
+        initialChain={mantleSepoliaWithLogo}
         theme={
           resolvedTheme === 'dark'
             ? darkTheme({

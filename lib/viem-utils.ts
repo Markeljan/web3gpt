@@ -1,5 +1,6 @@
 import { Chain } from 'viem'
 import * as allViemChains from 'viem/chains'
+import { mantleSepolia } from './mantle-sepolia'
 
 const { ...chains } = allViemChains
 
@@ -14,6 +15,12 @@ const holeskyWithBlockExplorer = {
 }
 
 export function getChainById(chainId: number) {
+  if (chainId === mantleSepolia.id) {
+    return mantleSepolia
+  }
+  if (chainId === chains.holesky.id) {
+    return holeskyWithBlockExplorer
+  }
   for (const chain of Object.values(chains)) {
     if (chain.id === chainId) {
       return chain
@@ -31,7 +38,7 @@ export const API_URLS: Record<Chain['id'], string> = {
   80001: 'https://api-testnet.polygonscan.com/api',
   420: 'https://api-goerli.optimistic.etherscan.io/api',
   84532: 'https://api-sepolia.basescan.org/api',
-  5001: 'https://explorer.testnet.mantle.xyz/api'
+  5003: 'https://explorer.sepolia.mantle.xyz/api'
 }
 
 export const API_KEYS: Record<Chain['id'], string> = {
@@ -42,7 +49,7 @@ export const API_KEYS: Record<Chain['id'], string> = {
   80001: `${process.env.POLYGON_EXPLORER_API_KEY}`,
   420: `${process.env.OPTIMISM_EXPLORER_API_KEY}`,
   84532: `${process.env.BASE_EXPLORER_API_KEY}`,
-  5001: `${process.env.MANTLE_EXPLORER_API_KEY}` // no key needed
+  5003: `${process.env.MANTLE_EXPLORER_API_KEY}`
 }
 
 export const getExplorerUrl = (viemChain: Chain): string | undefined => {

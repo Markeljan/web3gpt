@@ -44,7 +44,7 @@ export function Chat({
     setLastDeploymentData
   } = useGlobalStore()
   const { chain } = useNetwork()
-  const fallbackChainId = chain?.unsupported === false ? chain.id : 5001
+  const fallbackChainId = chain?.unsupported === false ? chain.id : 5003
   const activeChainId = chain?.unsupported
     ? fallbackChainId
     : chain?.id ?? fallbackChainId

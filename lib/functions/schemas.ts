@@ -18,7 +18,7 @@ export const functionSchemas: ChatRequestOptions['functions'] = [
           84532: base sepolia,
           80001: mumbai,
           11155111: sepolia,
-          5001: mantle goerli,
+          5003: mantle sepolia,
           `
         },
         sourceCode: {
