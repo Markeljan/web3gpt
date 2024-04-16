@@ -17,9 +17,11 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { ConnectButton } from '@/components/connect-button'
 import { SettingsDropDown } from './settings-drop-down'
+import { cn } from '@/lib/utils'
 
 export async function Header() {
   const session = await auth()
+  const isSignedIn = !!session?.user
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-background px-4">
       <div className="flex items-center">
@@ -28,7 +30,7 @@ export async function Header() {
             <SidebarList userId={`${session?.user?.id}`} />
           </Suspense>
           <SidebarFooter className="justify-end">
-            {session && <ClearHistory clearChats={clearChats} />}
+            {isSignedIn && <ClearHistory clearChats={clearChats} />}
           </SidebarFooter>
         </Sidebar>
         <div className="flex items-center">
@@ -48,11 +50,18 @@ export async function Header() {
       <div className="invisible absolute inset-0 -z-10 flex items-center justify-center gap-4 md:visible">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Badge className={`bg-yellow-300 text-xs text-slate-800`}>
-              GPT-4 Turbo
+            <Badge
+              className={cn(`text-xs text-slate-800`, {
+                'bg-yellow-300': isSignedIn,
+                'bg-gray-300': !isSignedIn
+              })}
+            >
+              {isSignedIn ? 'GPT-4' : 'GPT-3.5'}
             </Badge>
           </TooltipTrigger>
-          <TooltipContent>{'Model'}</TooltipContent>
+          <TooltipContent>
+            {isSignedIn ? 'GPT-4 Turbo' : 'Login for GPT-4'}
+          </TooltipContent>
         </Tooltip>
       </div>
       <div className="flex items-center justify-end space-x-2">
