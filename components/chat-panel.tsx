@@ -12,7 +12,7 @@ export interface ChatPanelProps
 
 export function ChatPanel({ id, isLoading, stop, append, reload, input, setInput, messages }: ChatPanelProps) {
   return (
-    <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50%">
+    <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/0 from-0% to-muted/30 to-50%">
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         <div className="flex h-10 items-center justify-center">
