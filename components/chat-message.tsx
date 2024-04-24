@@ -14,17 +14,18 @@ import { useState } from "react"
 import { Button } from "./ui/button"
 
 export interface ChatMessageProps {
+  className?: string
   message: Message
   avatarUrl?: string | null | undefined
 }
 
-export function ChatMessage({ message, avatarUrl, ...props }: ChatMessageProps) {
+export function ChatMessage({ message, avatarUrl, className, ...props }: ChatMessageProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const onExpandClick = () => setIsExpanded(!isExpanded)
   if (message.function_call && !isExpanded) {
     return (
-      <div className="group relative mb-4 flex items-start md:-ml-12" {...props}>
+      <div className={cn("group relative mb-4 flex items-start md:-ml-12", className)} {...props}>
         <div className="flex size-8 shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow">
           <IconF />
         </div>

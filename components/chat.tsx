@@ -178,7 +178,7 @@ export function Chat({ id, initialMessages, className, showLanding = false, avat
     <>
       <div className={cn("px-4 pb-[200px] pt-4 md:pt-10", className)}>
         {showLanding && <Landing disableAnimations={isChatPage} />}
-        <ChatList messages={messages} avatarUrl={avatarUrl} />
+        <ChatList isLoading={isLoading} messages={messages} avatarUrl={avatarUrl} />
         <ChatScrollAnchor trackVisibility={isLoading} />
       </div>
       <ChatPanel
