@@ -22,7 +22,7 @@ export default async function handleImports(sourceCode: string, sourcePath?: str
     }
     sourceCodeWithImports = sourceCode.replace(match[0], `import "${sourceFileName}";`)
   }
-  return { sources, sourceCode }
+  return { sources, sourceCode: sourceCodeWithImports }
 }
 
 async function fetchImport(importPath: string, sourcePath?: string) {

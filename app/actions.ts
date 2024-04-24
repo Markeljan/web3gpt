@@ -70,7 +70,7 @@ export async function getChats(userId?: string | null) {
 
     const results = await pipeline.exec()
     return results as Chat[]
-  } catch (error) {
+  } catch {
     return []
   }
 }

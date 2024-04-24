@@ -13,7 +13,6 @@ import { Badge } from "@/components/ui/badge"
 import { ConnectButton } from "@/components/connect-button"
 import { SettingsDropDown } from "./settings-drop-down"
 import { cn } from "@/lib/utils"
-import { ExternalLink } from "./external-link"
 import Link from "next/link"
 import { Button } from "./ui/button"
 

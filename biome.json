@@ -16,19 +16,22 @@
     "formatWithErrors": false,
     "indentStyle": "space",
     "lineWidth": 120
-	
   },
   "javascript": {
-	"formatter": {
-		"enabled": true,
-		"trailingComma": "none",
-		"semicolons": "asNeeded"
-	}
+    "formatter": {
+      "enabled": true,
+      "trailingComma": "none",
+      "semicolons": "asNeeded"
+    }
   },
   "organizeImports": { "enabled": true },
   "linter": {
     "enabled": true,
-    "rules": { "recommended": true
- }
+    "rules": {
+      "recommended": true,
+      "correctness": {
+        "noUnusedVariables": "warn"
+      }
+    }
   }
 }

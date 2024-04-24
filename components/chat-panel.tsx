@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { PromptForm } from "@/components/prompt-form"
 import { ButtonScrollToBottom } from "@/components/button-scroll-to-bottom"
 import { IconRefresh, IconSpinner } from "@/components/ui/icons"
-import type { UseChatHelpers } from "ai/react/dist"
+import type { UseChatHelpers } from "ai/react"
 import { functionSchemas } from "@/lib/functions/schemas"
 
 export interface ChatPanelProps

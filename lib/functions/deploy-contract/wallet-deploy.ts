@@ -117,7 +117,7 @@ export function useDeployWithWallet() {
       // Try parsing as JSON, or return the original argument
       try {
         return JSON.parse(arg)
-      } catch (error) {
+      } catch {
         return arg
       }
     })

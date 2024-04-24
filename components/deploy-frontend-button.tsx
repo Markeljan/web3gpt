@@ -51,7 +51,7 @@ export function DeployFrontendButton({
   }
 
   return (
-    <Dialog onOpenChange={setIsOpen}>
+    <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <DialogTrigger asChild>
         <Button className="mr-2 text-primary-foreground" variant="default" disabled={disabled} size="sm">
           <p className="hidden sm:flex">Deploy Frontend</p>

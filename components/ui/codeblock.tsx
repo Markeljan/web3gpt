@@ -9,7 +9,6 @@ import { IconCheck, IconCopy, IconDownload } from "@/components/ui/icons"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "next-themes"
 import { DeployContractButton } from "../deploy-contract-button"
-import { useGlobalStore } from "@/app/state/global-store"
 import { DeployFrontendButton } from "../deploy-frontend-button"
 
 interface Props {
@@ -62,7 +61,6 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
   const { resolvedTheme } = useTheme()
   const [isDark, setIsDark] = useState(resolvedTheme === "dark")
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
-  const { isGenerating } = useGlobalStore()
 
   useEffect(() => {
     setIsDark(resolvedTheme === "dark")

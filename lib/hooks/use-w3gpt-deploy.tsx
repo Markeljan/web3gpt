@@ -71,7 +71,7 @@ export function useW3GPTDeploy({ chainId }: { chainId: number }) {
         }
         setLastDeploymentData(deploymentData)
         return deploymentData
-      } catch (e) {
+      } catch {
         const deploymentData = {
           explorerUrl: txHashExplorerUrl,
           ipfsUrl,
