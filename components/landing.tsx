@@ -48,7 +48,7 @@ export function Landing({ disableAnimations = false }) {
 
   return (
     <>
-      <div className="mx-auto mb-8 max-w-2xl rounded-2xl border-gray-600/25 px-4 text-center dark:border-gray-600/50 md:mb-12 md:border">
+      <div className="mx-auto mb-8 max-w-2xl bg-background rounded-2xl border-gray-600/25 px-4 text-center dark:border-gray-600/50 md:mb-12 md:border">
         <div className="relative my-8 flex h-8 w-full md:my-12">
           <Image
             src="/w3gpt-logo-beta.svg"
