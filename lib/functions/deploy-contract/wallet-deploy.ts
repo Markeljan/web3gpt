@@ -75,6 +75,11 @@ export function useDeployWithWallet() {
       language: "Solidity",
       sources,
       settings: {
+        metadata: {
+          // Not including the metadata hash
+          // https://github.com/paulrberg/hardhat-template/issues/31
+          bytecodeHash: "none"
+        },
         evmVersion: "paris",
         outputSelection: {
           "*": {
@@ -160,7 +165,7 @@ export function useDeployWithWallet() {
     const ipfsCid = await ipfsUploadResponse.json()
     const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`
 
-    const encodedConstructorArgs = deployData.slice(bytecode?.length)
+    const encodedConstructorArgs = deployData.slice(bytecode.length)
 
     const verifyContractConfig: VerifyContractParams = {
       deployHash,

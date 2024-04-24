@@ -63,6 +63,11 @@ export default async function deployContract({
     language: "Solidity",
     sources,
     settings: {
+      metadata: {
+        // Not including the metadata hash
+        // https://github.com/paulrberg/hardhat-template/issues/31
+        bytecodeHash: "none"
+      },
       evmVersion: "paris",
       outputSelection: {
         "*": {
@@ -127,6 +132,7 @@ export default async function deployContract({
 
   const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
 
+  console.log(`Deployed contract at ${explorerUrl}`)
   const ipfsCid = await ipfsUpload(sources, JSON.stringify(abi), bytecode, standardJsonInput)
 
   const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`
