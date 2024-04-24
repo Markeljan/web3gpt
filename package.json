@@ -1,15 +1,12 @@
 {
   "name": "w3gpt",
-  "version": "0.0.2",
-  "private": true,
+  "version": "0.0.3",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
     "preview": "next build && next start",
-    "type-check": "tsc --noEmit",
     "format:check": "bun biome ci {app,lib,components} --organize-imports-enabled false",
     "format:write": "bun biome format --write {app,lib,components}"
   },
