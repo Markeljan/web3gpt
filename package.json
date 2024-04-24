@@ -10,8 +10,8 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "type-check": "tsc --noEmit",
-    "format:write": "prettier --write \"{app,lib,components}/**/*.{ts,tsx,mdx}\" --cache",
-    "format:check": "prettier --check \"{app,lib,components}**/*.{ts,tsx,mdx}\" --cache"
+    "format:check": "bun biome ci {app,lib,components} --organize-imports-enabled false",
+    "format:write": "bun biome format --write {app,lib,components}"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "1.0.4",
@@ -23,7 +23,8 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-tooltip": "^1.0.7",
-    "@rainbow-me/rainbowkit": "^1.3.0",
+    "@rainbow-me/rainbowkit": "^2.0.5",
+    "@tanstack/react-query": "^5.32.0",
     "@vercel/analytics": "^1.1.1",
     "@vercel/kv": "^1.0.0",
     "@vercel/og": "^0.5.20",
@@ -32,9 +33,9 @@
     "clsx": "^2.0.0",
     "focus-trap-react": "^10.2.3",
     "nanoid": "^4.0.2",
-    "next": "14.0.3",
+    "next": "^14.2.2",
     "next-auth": "5.0.0-beta.3",
-    "next-themes": "^0.2.1",
+    "next-themes": "^0.3.0",
     "nft.storage": "^7.1.1",
     "openai": "^4.20.1",
     "pino-pretty": "^10.2.3",
@@ -48,28 +49,31 @@
     "react-textarea-autosize": "^8.5.3",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
-    "solc": "0.8.23-fixed",
-    "viem": "^1.19.3",
-    "wagmi": "^1.4.7",
+    "solc": "^0.8.25",
+    "viem": "^2.9.25",
+    "wagmi": "^2.5.20",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.7.1",
     "@tailwindcss/typography": "^0.5.10",
     "@types/node": "^20.10.0",
     "@types/react": "^18.2.38",
     "@types/react-dom": "^18.2.17",
     "@types/react-syntax-highlighter": "^15.5.10",
-    "@typescript-eslint/parser": "^6.12.0",
     "autoprefixer": "^10.4.16",
-    "eslint": "^8.53.0",
-    "eslint-config-next": "14.0.3",
-    "eslint-config-prettier": "^8.10.0",
-    "eslint-plugin-tailwindcss": "^3.13.0",
     "postcss": "^8.4.31",
-    "prettier": "^3.1.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss": "^3.3.5",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.3.2"
-  }
+  },
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "bufferutil",
+    "keccak",
+    "protobufjs",
+    "secp256k1",
+    "utf-8-validate"
+  ]
 }

@@ -1,22 +1,19 @@
-'use client'
+"use client"
 
-import Image from 'next/image'
-import { useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
-import Player from 'react-lottie-player'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { getUserField, storeEmail } from '@/app/actions'
-import { isValidEmail } from '@/lib/utils'
-import { useLocalStorage } from '@/lib/hooks/use-local-storage'
+import Image from "next/image"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import Player from "react-lottie-player"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { getUserField, storeEmail } from "@/app/actions"
+import { isValidEmail } from "@/lib/utils"
+import { useLocalStorage } from "@/lib/hooks/use-local-storage"
 
-export function Landing({disableAnimations = false}) {
+export function Landing({ disableAnimations = false }) {
   const [validationError, setValidationError] = useState<string | null>(null)
-  const [email, setEmail] = useState<string>('')
-  const [localIsSubscribed, setLocalIsSubscribed] = useLocalStorage(
-    'email_subscribed',
-    false
-  )
+  const [email, setEmail] = useState<string>("")
+  const [localIsSubscribed, setLocalIsSubscribed] = useLocalStorage("email_subscribed", false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -25,7 +22,7 @@ export function Landing({disableAnimations = false}) {
 
   useEffect(() => {
     async function fetchUserSubscribed() {
-      const backendIsSubscribed = await getUserField('email_subscribed')
+      const backendIsSubscribed = await getUserField("email_subscribed")
       if (backendIsSubscribed === true) {
         setLocalIsSubscribed(true)
       }
@@ -39,14 +36,14 @@ export function Landing({disableAnimations = false}) {
   async function handleSubscribe(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!isValidEmail(email)) {
-      setValidationError('Please enter a valid email')
+      setValidationError("Please enter a valid email")
       return
     }
     setValidationError(null)
     await storeEmail(email)
     setLocalIsSubscribed(true)
-    setEmail('')
-    toast.success('Thanks for subscribing!')
+    setEmail("")
+    toast.success("Thanks for subscribing!")
   }
 
   return (
@@ -61,14 +58,12 @@ export function Landing({disableAnimations = false}) {
             sizes="(max-width: 318px) 100vw, 318px"
           />
         </div>
-        <p className="text-lg font-bold tracking-tight lg:text-2xl lg:font-normal">
-          Deploy smart contracts with AI
-        </p>
+        <p className="text-lg font-bold tracking-tight lg:text-2xl lg:font-normal">Deploy smart contracts with AI</p>
 
         <div className="grid-row-3 my-5 mb-8 grid grid-flow-row gap-1 md:grid-flow-col md:gap-4">
           <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
             <Player
-              play = {!disableAnimations}
+              play={!disableAnimations}
               loop={false}
               speed={0.5}
               direction={-1}
@@ -85,7 +80,7 @@ export function Landing({disableAnimations = false}) {
 
           <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
             <Player
-              play = {!disableAnimations}
+              play={!disableAnimations}
               loop={false}
               speed={0.5}
               direction={1}
@@ -94,14 +89,12 @@ export function Landing({disableAnimations = false}) {
             />
             <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
               <h3 className="font-bold md:mb-2">Deploy</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Deploy your smart contracts from the chat.
-              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Deploy your smart contracts from the chat.</p>
             </div>
           </div>
           <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
             <Player
-              play = {!disableAnimations}
+              play={!disableAnimations}
               loop={false}
               speed={0.5}
               path="/lotties/clock.json"
@@ -123,26 +116,20 @@ export function Landing({disableAnimations = false}) {
       {mounted && localIsSubscribed === false && (
         <div className="mx-auto mb-16 max-w-2xl rounded-2xl border-gray-600/25 px-4 text-center dark:border-gray-600/50 md:border">
           <div className="my-5 flex flex-col gap-4">
-            <p className="mt-8 scroll-m-20 text-2xl tracking-tight">
-              Weekly Updates
-            </p>
+            <p className="mt-8 scroll-m-20 text-2xl tracking-tight">Weekly Updates</p>
 
             <p className="px-4 text-sm text-gray-600 dark:text-gray-400">
-              Sign up for development updates and early access to latest
-              features
+              Sign up for development updates and early access to latest features
             </p>
 
             <div className="flex justify-center gap-2">
-              <form
-                className="flex justify-center gap-2"
-                onSubmit={handleSubscribe}
-              >
+              <form className="flex justify-center gap-2" onSubmit={handleSubscribe}>
                 <Input
                   className="h-11 w-64 rounded-lg p-3"
                   type="text"
                   placeholder="Your email"
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
                 <Button type="submit" className="h-11" size="sm">
                   Send
@@ -152,9 +139,7 @@ export function Landing({disableAnimations = false}) {
             {validationError ? (
               <p className="text-xs text-red-500">{validationError}</p>
             ) : (
-              <p className="mb-8 text-xs text-gray-400">
-                No spam, we promise :)
-              </p>
+              <p className="mb-8 text-xs text-gray-400">No spam, we promise :)</p>
             )}
           </div>
         </div>

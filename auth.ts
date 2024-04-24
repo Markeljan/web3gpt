@@ -1,13 +1,13 @@
-import NextAuth, { DefaultSession } from 'next-auth'
-import GitHub from 'next-auth/providers/github'
-import { storeUser } from '@/app/actions'
+import NextAuth, { type DefaultSession } from "next-auth"
+import GitHub from "next-auth/providers/github"
+import { storeUser } from "@/app/actions"
 
 // override type definitions for session
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
     user: {
       id?: string | null | undefined
-    } & DefaultSession['user']
+    } & DefaultSession["user"]
   }
 }
 
@@ -43,6 +43,6 @@ export const {
     // }
   },
   pages: {
-    signIn: '/sign-in'
+    signIn: "/sign-in"
   }
 })

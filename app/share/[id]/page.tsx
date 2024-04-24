@@ -1,9 +1,9 @@
-import { type Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 
-import { filterMessages, formatDate } from '@/lib/utils'
-import { getSharedChat } from '@/app/actions'
-import { ChatList } from '@/components/chat-list'
+import { filterMessages, formatDate } from "@/lib/utils"
+import { getSharedChat } from "@/app/actions"
+import { ChatList } from "@/components/chat-list"
 
 interface SharePageProps {
   params: {
@@ -11,13 +11,11 @@ interface SharePageProps {
   }
 }
 
-export async function generateMetadata({
-  params
-}: SharePageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: SharePageProps): Promise<Metadata> {
   const chat = await getSharedChat(params.id)
 
   return {
-    title: chat?.title.slice(0, 50) ?? 'Chat'
+    title: chat?.title.slice(0, 50) ?? "Chat"
   }
 }
 

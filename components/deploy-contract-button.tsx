@@ -1,7 +1,7 @@
-'use client'
+"use client"
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -10,40 +10,37 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from '@/components/ui/dialog'
-import { useDeployWithWallet } from '@/lib/functions/deploy-contract/wallet-deploy'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { IconExternalLink, IconSpinner } from './ui/icons'
-import { useGlobalStore } from '@/app/state/global-store'
-import { useNetwork } from 'wagmi'
+} from "@/components/ui/dialog"
+import { useDeployWithWallet } from "@/lib/functions/deploy-contract/wallet-deploy"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useMemo, useState } from "react"
+import Link from "next/link"
+import { IconExternalLink, IconSpinner } from "./ui/icons"
+import { useGlobalStore } from "@/app/state/global-store"
+import { useAccount, useChains } from "wagmi"
+import { nanoid } from "@/lib/utils"
 
 export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
   const { deploy: deployWithWallet } = useDeployWithWallet()
   const [constructorArgs, setConstructorArgs] = useState<string[]>([])
-  const [explorerUrl, setExplorerUrl] = useState<string>('')
-  const [ipfsUrl, setIpfsUrl] = useState<string>('')
+  const [explorerUrl, setExplorerUrl] = useState<string>("")
+  const [ipfsUrl, setIpfsUrl] = useState<string>("")
   const [isErrorDeploying, setIsErrorDeploying] = useState<boolean>(false)
   const { isDeploying, setIsDeploying, isGenerating } = useGlobalStore()
-  const { chain } = useNetwork()
-  const [unsupportedNetwork, setUnsupportedNetwork] = useState<boolean>(false)
+  const supportedChains = useChains()
+  const { chain } = useAccount()
 
-  // check if the network is supported
-  useEffect(() => {
-    if (chain?.unsupported) {
-      setUnsupportedNetwork(true)
-    } else {
-      setUnsupportedNetwork(false)
-    }
-  }, [chain])
+  const isSupportedChain = useMemo(
+    () => !!chain && supportedChains.find((c) => c.id === chain.id),
+    [chain, supportedChains]
+  )
 
   // function to get the contract name from the source code
   const getContractName = () => {
-    const contractNameRegex = /contract\s+(\w+)\s*(?:is|{)/;
+    const contractNameRegex = /contract\s+(\w+)\s*(?:is|{)/
     const contractNameMatch = contractNameRegex.exec(sourceCode)
-    return contractNameMatch ? contractNameMatch[1] : ''
+    return contractNameMatch ? contractNameMatch[1] : ""
   }
 
   // function to get the constructor arguments from the source code
@@ -55,11 +52,9 @@ export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
     if (!constructorArgsMatch) return []
     const constructorArgs = constructorArgsMatch[1]
     // split the constructor arguments into an array
-    const constructorArgsArray = constructorArgs.split(',')
+    const constructorArgsArray = constructorArgs.split(",")
     // trim the whitespace from each argument
-    const trimmedConstructorArgsArray = constructorArgsArray.map(arg =>
-      arg.trim()
-    )
+    const trimmedConstructorArgsArray = constructorArgsArray.map((arg) => arg.trim())
     // return the array of constructor arguments
     return trimmedConstructorArgsArray
   }
@@ -68,12 +63,12 @@ export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
     const generatedConstructorArgs = getConstructorArgs()
     const inputFields = generatedConstructorArgs.map((arg, index) => {
       return (
-        <div key={index} className="flex flex-col gap-2">
+        <div key={`${arg}-${nanoid()}`} className="flex flex-col gap-2">
           <Label className="text-sm font-medium">{arg}</Label>
           <Input
             type="text"
-            value={constructorArgs[index] || ''}
-            onChange={e => {
+            value={constructorArgs[index] || ""}
+            onChange={(e) => {
               const newConstructorArgs = [...constructorArgs]
               newConstructorArgs[index] = e.target.value
               setConstructorArgs(newConstructorArgs)
@@ -109,10 +104,10 @@ export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
   return (
     <div className="ml-4 flex w-full justify-end">
       <Dialog
-        onOpenChange={isOpen => {
+        onOpenChange={(isOpen) => {
           if (!isOpen && !isDeploying) {
-            setExplorerUrl('')
-            setIpfsUrl('')
+            setExplorerUrl("")
+            setIpfsUrl("")
             setConstructorArgs([])
             setIsErrorDeploying(false)
           }
@@ -122,7 +117,7 @@ export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
           <Button
             className="mr-2 text-primary-foreground"
             variant="default"
-            disabled={unsupportedNetwork || isGenerating}
+            disabled={!isSupportedChain || isGenerating}
             size="sm"
           >
             <p className="hidden sm:flex">Deploy Contract</p>
@@ -133,8 +128,7 @@ export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
           <DialogHeader>
             <DialogTitle>Manually Deploy Contract</DialogTitle>
             <DialogDescription>
-              Deploy the contract using your wallet. Must be connected to a
-              supported testnet.
+              Deploy the contract using your wallet. Must be connected to a supported testnet.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-4">
@@ -157,34 +151,21 @@ export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
                 </Badge>
               </div>
               <p className="text-sm text-gray-500">
-                Sign and deploy the contract using your own wallet. Be cautious
-                of risks and network fees.
+                Sign and deploy the contract using your own wallet. Be cautious of risks and network fees.
               </p>
             </div>
             {getConstructorArgs().length > 0 && (
               <div className="flex max-h-48 flex-col gap-4 overflow-y-auto rounded border-2 p-4">
-                <DialogTitle className="text-md">
-                  Constructor Arguments
-                </DialogTitle>
+                <DialogTitle className="text-md">Constructor Arguments</DialogTitle>
                 {generateInputFields()}
               </div>
             )}
           </div>
           <div className="flex flex-col items-center gap-4 py-4">
-            {isErrorDeploying && (
-              <p className="text-sm text-destructive">
-                Error deploying contract.
-              </p>
-            )}
-            {isDeploying && (
-              <IconSpinner className="size-8 animate-spin text-gray-500" />
-            )}
+            {isErrorDeploying && <p className="text-sm text-destructive">Error deploying contract.</p>}
+            {isDeploying && <IconSpinner className="size-8 animate-spin text-gray-500" />}
             {explorerUrl && (
-              <Link
-                href={explorerUrl}
-                target="_blank"
-                className="text-sm text-green-500"
-              >
+              <Link href={explorerUrl} target="_blank" className="text-sm text-green-500">
                 <div className="flex items-center">
                   View on Explorer
                   <IconExternalLink className="ml-1" />
@@ -192,11 +173,7 @@ export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
               </Link>
             )}
             {ipfsUrl && (
-              <Link
-                href={ipfsUrl}
-                target="_blank"
-                className="text-sm text-blue-500"
-              >
+              <Link href={ipfsUrl} target="_blank" className="text-sm text-blue-500">
                 <div className="flex items-center">
                   View on IPFS
                   <IconExternalLink className="ml-1" />

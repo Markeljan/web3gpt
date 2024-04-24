@@ -1,14 +1,10 @@
-import { usePublicClient } from 'wagmi'
-import { useGlobalStore } from '@/app/state/global-store'
-import {
-  DeployContractParams,
-  DeployContractResult
-} from '@/lib/functions/types'
-import toast from 'react-hot-toast'
+import { useGlobalStore } from "@/app/state/global-store"
+import type { DeployContractParams, DeployContractResult } from "@/lib/functions/types"
+import toast from "react-hot-toast"
+import { usePublicClient } from "wagmi"
 
 export function useW3GPTDeploy({ chainId }: { chainId: number }) {
-  const { setIsDeploying, setLastDeploymentData, setVerifyContractConfig } =
-    useGlobalStore()
+  const { setIsDeploying, setLastDeploymentData, setVerifyContractConfig } = useGlobalStore()
 
   const publicClient = usePublicClient({
     chainId
@@ -18,17 +14,17 @@ export function useW3GPTDeploy({ chainId }: { chainId: number }) {
     setIsDeploying(true)
 
     const deployContractResponse = await toast.promise(
-      fetch('/api/deploy-contract', {
-        method: 'POST',
+      fetch("/api/deploy-contract", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(_deployContractConfig)
       }),
       {
-        loading: 'Sending deploy transaction...',
-        success: 'Deploy transaction submitted!',
-        error: 'Failed to send deploy transaction'
+        loading: "Sending deploy transaction...",
+        success: "Deploy transaction submitted!",
+        error: "Failed to send deploy transaction"
       }
     )
 
@@ -47,25 +43,26 @@ export function useW3GPTDeploy({ chainId }: { chainId: number }) {
       setVerifyContractConfig(verifyContractConfig)
 
       try {
-        const transactionReceipt = await toast.promise(
-          publicClient.waitForTransactionReceipt({
-            hash: verifyContractConfig?.deployHash
-          }),
-          {
-            loading: 'Waiting for confirmations...',
-            success: 'Transaction confirmed!',
-            error: 'Failed to receive enough confirmations'
-          }
-        )
+        const transactionReceipt =
+          publicClient &&
+          (await toast.promise(
+            publicClient.waitForTransactionReceipt({
+              hash: verifyContractConfig?.deployHash
+            }),
+            {
+              loading: "Waiting for confirmations...",
+              success: "Transaction confirmed!",
+              error: "Failed to receive enough confirmations"
+            }
+          ))
 
         const address = transactionReceipt?.contractAddress || undefined
-        const explorerUrl =
-          txHashExplorerUrl.split('/tx')[0] + `/address/${address}`
+        const explorerUrl = `${txHashExplorerUrl.split("/tx")[0]}/address/${address}`
 
         const deploymentData = {
           explorerUrl,
           ipfsUrl,
-          verificationStatus: 'pending',
+          verificationStatus: "pending",
           address: address,
           sourceCode,
           abi,
@@ -78,7 +75,7 @@ export function useW3GPTDeploy({ chainId }: { chainId: number }) {
         const deploymentData = {
           explorerUrl: txHashExplorerUrl,
           ipfsUrl,
-          verificationStatus: 'pending',
+          verificationStatus: "pending",
           sourceCode,
           abi,
           transactionHash: verifyContractConfig?.deployHash,
@@ -89,9 +86,7 @@ export function useW3GPTDeploy({ chainId }: { chainId: number }) {
       }
     } else {
       return {
-        error:
-          'Failed to deploy contract: ' +
-          (await deployContractResponse.json()).error
+        error: `Failed to deploy contract:${(await deployContractResponse.json()).error}`
       }
     }
   }

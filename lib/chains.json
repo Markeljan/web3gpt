@@ -94,14 +94,11 @@
     ]
   },
   {
-    "name": "Mumbai",
-    "title": "Polygon Testnet Mumbai",
+    "name": "Amoy",
+    "title": "Polygon Testnet Amoy",
     "chain": "Polygon",
     "icon": "polygon",
-    "rpc": [
-      "https://rpc-mumbai.maticvigil.com",
-      "https://rpc-mainnet.matic.quiknode.pro"
-    ],
+    "rpc": ["https://rpc-amoy.polygon.technology", "https://polygon-amoy-bor-rpc.publicnode.com"],
     "faucets": ["https://faucet.polygon.technology/"],
     "nativeCurrency": {
       "name": "MATIC",
@@ -114,13 +111,13 @@
         "name": "EIP1559"
       }
     ],
-    "shortName": "maticmum",
-    "chainId": 80001,
-    "networkId": 80001,
+    "shortName": "amoy",
+    "chainId": 80002,
+    "networkId": 80002,
     "explorers": [
       {
         "name": "polygonscan",
-        "url": "https://mumbai.polygonscan.com",
+        "url": "https://amoy.polygonscan.com",
         "standard": "EIP3091"
       }
     ]
@@ -204,14 +201,8 @@
     "name": "Sepolia",
     "title": "Ethereum Testnet Sepolia",
     "chain": "ETH",
-    "rpc": [
-      "https://rpc.sepolia.org",
-      "https://rpc2.sepolia.org",
-      "https://rpc-sepolia.rockx.com"
-    ],
-    "faucets": [
-      "http://fauceth.komputing.org?chain=11155111&address=${ADDRESS}"
-    ],
+    "rpc": ["https://rpc.sepolia.org", "https://rpc2.sepolia.org", "https://rpc-sepolia.rockx.com"],
+    "faucets": ["http://fauceth.komputing.org?chain=11155111&address=${ADDRESS}"],
     "nativeCurrency": {
       "name": "Sepolia Ether",
       "symbol": "ETH",
@@ -245,11 +236,7 @@
       "symbol": "ETH",
       "decimals": 18
     },
-    "rpc": [
-      "https://arbitrum-mainnet.infura.io/v3/${INFURA_API_KEY}",
-      "https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
-      "https://arb1.arbitrum.io/rpc"
-    ],
+    "rpc": ["https://arb1.arbitrum.io/rpc"],
     "faucets": [],
     "explorers": [
       {

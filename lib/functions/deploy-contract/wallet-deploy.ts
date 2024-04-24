@@ -1,17 +1,17 @@
-import { VerifyContractParams } from '@/lib/functions/types'
-import handleImports from '@/lib/functions/deploy-contract/handle-imports'
-import { getExplorerUrl } from '@/lib/viem-utils'
-import { encodeDeployData } from 'viem'
-import { useNetwork, usePublicClient, useWalletClient } from 'wagmi'
-import toast from 'react-hot-toast'
-import { useGlobalStore } from '@/app/state/global-store'
-import { track } from '@vercel/analytics'
+import type { VerifyContractParams } from "@/lib/functions/types"
+import handleImports from "@/lib/functions/deploy-contract/handle-imports"
+import { getExplorerUrl } from "@/lib/viem-utils"
+import { encodeDeployData } from "viem"
+import { useAccount, usePublicClient, useWalletClient } from "wagmi"
+import toast from "react-hot-toast"
+import { useGlobalStore } from "@/app/state/global-store"
+import { track } from "@vercel/analytics"
 
 export function useDeployWithWallet() {
-  const { chain: viemChain } = useNetwork()
+  const { chain: viemChain } = useAccount()
   const { data: walletClient } = useWalletClient()
   const publicClient = usePublicClient({
-    chainId: viemChain?.id
+    chainId: viemChain?.id || 5003
   })
   const { setLastDeploymentData, setVerifyContractConfig } = useGlobalStore()
 
@@ -25,9 +25,9 @@ export function useDeployWithWallet() {
     constructorArgs: Array<string>
   }) {
     if (!viemChain || !walletClient) {
-      throw new Error('Wallet not available')
+      throw new Error("Wallet not available")
     }
-    const fileName = contractName.replace(/[\/\\:*?"<>|.\s]+$/g, '_') + '.sol'
+    const fileName = `${contractName.replace(/[\/\\:*?"<>|.\s]+$/g, "_")}.sol`
 
     // Prepare the sources object for the Solidity compiler
     const handleImportsResult = await handleImports(sourceCode)
@@ -45,8 +45,7 @@ export function useDeployWithWallet() {
       let sourceCode = sources[sourceKey].content
 
       // Find all import statements in the source code
-      const importStatements =
-        sourceCode.match(/import\s+["'][^"']+["'];/g) || []
+      const importStatements = sourceCode.match(/import\s+["'][^"']+["'];/g) || []
 
       // Loop over each import statement
       for (const importStatement of importStatements) {
@@ -58,16 +57,13 @@ export function useDeployWithWallet() {
 
         // Extract the file name from the path
         const importPath = importPathMatch[1]
-        const fileName = importPath.split('/').pop() || importPath
+        const fileName = importPath.split("/").pop() || importPath
 
         // Check if the file is already in the sources object
         // if (sources[fileName]) continue;
 
         // Replace the import statement with the new import statement
-        sourceCode = sourceCode.replace(
-          importStatement,
-          `import "${fileName}";`
-        )
+        sourceCode = sourceCode.replace(importStatement, `import "${fileName}";`)
       }
 
       // Update the source content in your sources object
@@ -76,13 +72,13 @@ export function useDeployWithWallet() {
 
     // Compile the contract
     const standardJsonInput = JSON.stringify({
-      language: 'Solidity',
+      language: "Solidity",
       sources,
       settings: {
-        evmVersion: 'paris',
+        evmVersion: "paris",
         outputSelection: {
-          '*': {
-            '*': ['*']
+          "*": {
+            "*": ["*"]
           }
         },
         optimizer: {
@@ -92,10 +88,10 @@ export function useDeployWithWallet() {
       }
     })
 
-    const compileContractResponse = await fetch('/api/compile-contract', {
-      method: 'POST',
+    const compileContractResponse = await fetch("/api/compile-contract", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         standardJsonInput,
@@ -106,15 +102,15 @@ export function useDeployWithWallet() {
     const compileResult = await compileContractResponse.json()
     const { abi, bytecode } = compileResult
 
-    const parsedConstructorArgs = constructorArgs.map(arg => {
-      if (arg.startsWith('[') && arg.endsWith(']')) {
+    const parsedConstructorArgs = constructorArgs.map((arg) => {
+      if (arg.startsWith("[") && arg.endsWith("]")) {
         // Check if the string doesn't have double or single quotes after '[' and before ']'
         if (arg.match(/(?<=\[)(?=[^"'])(.*)(?<=[^"'])(?=\])/g)) {
           // Split the string by commas and remove the brackets
-          const elements = arg.slice(1, -1).split(',')
+          const elements = arg.slice(1, -1).split(",")
 
           // Trim each element to remove extra spaces and return as an array
-          return elements.map(item => item.trim())
+          return elements.map((item) => item.trim())
         }
       }
 
@@ -142,16 +138,16 @@ export function useDeployWithWallet() {
         args: parsedConstructorArgs
       }),
       {
-        loading: 'Sending deploy transaction...',
-        success: 'Deploy transaction submitted!',
-        error: 'Failed to deploy contract'
+        loading: "Sending deploy transaction...",
+        success: "Deploy transaction submitted!",
+        error: "Failed to deploy contract"
       }
     )
 
-    const ipfsUploadResponse = await fetch('/api/ipfs-upload', {
-      method: 'POST',
+    const ipfsUploadResponse = await fetch("/api/ipfs-upload", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         sources,
@@ -177,24 +173,26 @@ export function useDeployWithWallet() {
 
     setVerifyContractConfig(verifyContractConfig)
 
-    const txHashExplorerUrl = getExplorerUrl(viemChain) + `/tx/${deployHash}`
+    const txHashExplorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
 
-    track('deployed_contract', {
+    track("deployed_contract", {
       contractName,
       explorerUrl: txHashExplorerUrl
     })
 
     try {
-      const transactionReceipt = await toast.promise(
-        publicClient.waitForTransactionReceipt({
-          hash: verifyContractConfig?.deployHash
-        }),
-        {
-          loading: 'Waiting for confirmations...',
-          success: 'Transaction confirmed!',
-          error: 'Failed to receive enough confirmations'
-        }
-      )
+      const transactionReceipt =
+        publicClient &&
+        (await toast.promise(
+          publicClient.waitForTransactionReceipt({
+            hash: verifyContractConfig?.deployHash
+          }),
+          {
+            loading: "Waiting for confirmations...",
+            success: "Transaction confirmed!",
+            error: "Failed to receive enough confirmations"
+          }
+        ))
       const address = transactionReceipt?.contractAddress || undefined
 
       const deploymentData = {
@@ -202,7 +200,7 @@ export function useDeployWithWallet() {
         transactionHash: deployHash,
         ipfsUrl,
         explorerUrl: txHashExplorerUrl,
-        verificationStatus: 'pending',
+        verificationStatus: "pending",
         standardJsonInput,
         abi,
         sourceCode
@@ -216,7 +214,7 @@ export function useDeployWithWallet() {
         transactionHash: deployHash,
         explorerUrl: txHashExplorerUrl,
         ipfsUrl,
-        verificationStatus: 'pending',
+        verificationStatus: "pending",
         standardJsonInput,
         abi,
         sourceCode

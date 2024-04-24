@@ -1,17 +1,11 @@
-const solc = require('solc')
-import {
-  DeployContractParams,
-  DeployContractResult,
-  VerifyContractParams
-} from '@/lib/functions/types'
-import handleImports from '@/lib/functions/deploy-contract/handle-imports'
-import { getChainById, getExplorerUrl } from '@/lib/viem-utils'
-import ipfsUpload from '@/lib/functions/deploy-contract/ipfs-upload'
-import { Chain, Hex, createWalletClient, encodeDeployData, http } from 'viem'
-import { privateKeyToAccount } from 'viem/accounts'
-import { track } from '@vercel/analytics/server'
-
-const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
+const solc = require("solc")
+import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/functions/types"
+import handleImports from "@/lib/functions/deploy-contract/handle-imports"
+import { getChainById, getExplorerUrl } from "@/lib/viem-utils"
+import ipfsUpload from "@/lib/functions/deploy-contract/ipfs-upload"
+import { type Chain, type Hex, createWalletClient, encodeDeployData, http } from "viem"
+import { privateKeyToAccount } from "viem/accounts"
+import { track } from "@vercel/analytics/server"
 
 export default async function deployContract({
   chainId,
@@ -21,7 +15,7 @@ export default async function deployContract({
 }: DeployContractParams): Promise<DeployContractResult> {
   const viemChain = getChainById(Number(chainId)) as Chain
 
-  const fileName = contractName.replace(/[\/\\:*?"<>|.\s]+$/g, '_') + '.sol'
+  const fileName = `${contractName.replace(/[\/\\:*?"<>|.\s]+$/g, "_")}.sol`
 
   // Prepare the sources object for the Solidity compiler
   const handleImportsResult = await handleImports(sourceCode)
@@ -51,7 +45,7 @@ export default async function deployContract({
 
       // Extract the file name from the path
       const importPath = importPathMatch[1]
-      const fileName = importPath.split('/').pop() || importPath
+      const fileName = importPath.split("/").pop() || importPath
 
       // Check if the file is already in the sources object
       // if (sources[fileName]) continue;
@@ -66,13 +60,13 @@ export default async function deployContract({
 
   // Compile the contract
   const standardJsonInput = JSON.stringify({
-    language: 'Solidity',
+    language: "Solidity",
     sources,
     settings: {
-      evmVersion: 'paris',
+      evmVersion: "paris",
       outputSelection: {
-        '*': {
-          '*': ['*']
+        "*": {
+          "*": ["*"]
         }
       },
       optimizer: {
@@ -85,9 +79,7 @@ export default async function deployContract({
   const output = JSON.parse(solc.compile(standardJsonInput))
   if (output.errors) {
     // Filter out warnings
-    const errors = output.errors.filter(
-      (error: { severity: string }) => error.severity === 'error'
-    )
+    const errors = output.errors.filter((error: { severity: string }) => error.severity === "error")
     if (errors.length > 0) {
       const error = new Error(errors[0].formattedMessage)
       throw error
@@ -98,15 +90,15 @@ export default async function deployContract({
   // Get the contract ABI and bytecode
   const abi = contract[contractName].abi
   let bytecode = contract[contractName].evm.bytecode.object
-  if (!bytecode.startsWith('0x')) {
-    bytecode = '0x' + bytecode
+  if (!bytecode.startsWith("0x")) {
+    bytecode = `0x${bytecode}`
   }
 
   const deployerPk: Hex = `0x${process.env.DEPLOYER_PRIVATE_KEY}`
   const account = privateKeyToAccount(deployerPk)
 
   const alchemyHttpUrl = viemChain?.rpcUrls?.alchemy?.http[0]
-    ? `${viemChain.rpcUrls.alchemy.http[0]}/${ALCHEMY_API_KEY}`
+    ? `${viemChain.rpcUrls.alchemy.http[0]}/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
     : undefined
 
   const walletClient = createWalletClient({
@@ -135,12 +127,7 @@ export default async function deployContract({
 
   const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
 
-  const ipfsCid = await ipfsUpload(
-    sources,
-    JSON.stringify(abi),
-    bytecode,
-    standardJsonInput
-  )
+  const ipfsCid = await ipfsUpload(sources, JSON.stringify(abi), bytecode, standardJsonInput)
 
   const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`
 
@@ -164,7 +151,7 @@ export default async function deployContract({
     standardJsonInput
   }
 
-  track('deployed_contract', {
+  track("deployed_contract", {
     contractName,
     explorerUrl
   })

@@ -1,28 +1,18 @@
-'use client'
+"use client"
 
-import * as React from 'react'
-import { useTheme } from 'next-themes'
+import { useTheme } from "next-themes"
 
-import { Button, buttonVariants } from '@/components/ui/button'
-import {
-  IconCog,
-  IconGitHub,
-  IconTelegram,
-  IconTwitter
-} from '@/components/ui/icons'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem
-} from '@/components/ui/dropdown-menu'
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
-import Link from 'next/link'
-import { cn } from '@/lib/utils'
+import { useTransition } from "react"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { IconCog, IconGitHub, IconTelegram, IconTwitter } from "@/components/ui/icons"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
+import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 export function SettingsDropDown() {
   const { setTheme } = useTheme()
-  const [_, startTransition] = React.useTransition()
+  const [_, startTransition] = useTransition()
 
   return (
     <DropdownMenu>
@@ -38,7 +28,7 @@ export function SettingsDropDown() {
         <DropdownMenuItem
           onClick={() => {
             startTransition(() => {
-              setTheme('light')
+              setTheme("light")
             })
           }}
         >
@@ -47,7 +37,7 @@ export function SettingsDropDown() {
         <DropdownMenuItem
           onClick={() => {
             startTransition(() => {
-              setTheme('dark')
+              setTheme("dark")
             })
           }}
         >
@@ -56,7 +46,7 @@ export function SettingsDropDown() {
         <DropdownMenuItem
           onClick={() => {
             startTransition(() => {
-              setTheme('system')
+              setTheme("system")
             })
           }}
         >
@@ -66,9 +56,7 @@ export function SettingsDropDown() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                className={cn(
-                  buttonVariants({ variant: 'ghost', size: 'icon' })
-                )}
+                className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
                 href="https://twitter.com/w3gpt_ai"
                 target="_blank"
                 rel="nofollow"
@@ -82,9 +70,7 @@ export function SettingsDropDown() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                className={cn(
-                  buttonVariants({ variant: 'ghost', size: 'icon' })
-                )}
+                className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
                 href="https://t.me/+Lt21CyCEO0k0Nzcx"
                 target="_blank"
                 rel="nofollow"
@@ -98,9 +84,7 @@ export function SettingsDropDown() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                className={cn(
-                  buttonVariants({ variant: 'ghost', size: 'icon' })
-                )}
+                className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
                 href="https://github.com/markeljan/web3gpt"
                 target="_blank"
                 rel="nofollow"

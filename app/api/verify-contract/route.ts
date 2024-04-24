@@ -1,18 +1,11 @@
-import { verifyContract } from '@/lib/functions/deploy-contract/verify-contract'
+import { verifyContract } from "@/lib/functions/deploy-contract/verify-contract"
 
 // TODO: try to enable edge runtime
-export const runtime = 'edge'
+export const runtime = "edge"
 
 export async function POST(req: Request) {
   const json = await req.json()
-  const {
-    deployHash,
-    standardJsonInput,
-    encodedConstructorArgs,
-    fileName,
-    contractName,
-    viemChain
-  } = json
+  const { deployHash, standardJsonInput, encodedConstructorArgs, fileName, contractName, viemChain } = json
 
   try {
     const deployResult = await verifyContract({
@@ -27,9 +20,6 @@ export async function POST(req: Request) {
   } catch (error) {
     const err = error as Error
     console.error(`Error in verifyContract: ${err.message}`)
-    return new Response(
-      JSON.stringify({ error: `Error in verifyContract: ${err.message}` }),
-      { status: 500 }
-    )
+    return new Response(JSON.stringify({ error: `Error in verifyContract: ${err.message}` }), { status: 500 })
   }
 }

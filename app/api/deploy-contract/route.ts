@@ -1,17 +1,11 @@
-import deployContract from '@/lib/functions/deploy-contract/deploy-contract'
+import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
 
 // TODO: try to enable edge runtime
-export const runtime = 'nodejs'
-
+export const runtime = "nodejs"
 
 export async function POST(req: Request) {
   const json = await req.json()
-  const {
-    chainId,
-    contractName,
-    sourceCode,
-    constructorArgs,
-  } = json
+  const { chainId, contractName, sourceCode, constructorArgs } = json
 
   try {
     const deployResult = await deployContract({
@@ -24,9 +18,6 @@ export async function POST(req: Request) {
   } catch (error) {
     const err = error as Error
     console.error(`Error in deployContract: ${err.message}`)
-    return new Response(
-      JSON.stringify({ error: `Error in deployContract: ${err.message}` }),
-      { status: 500 }
-    )
+    return new Response(JSON.stringify({ error: `Error in deployContract: ${err.message}` }), { status: 500 })
   }
 }

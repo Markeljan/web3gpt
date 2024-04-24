@@ -1,12 +1,12 @@
-import { kv } from '@vercel/kv'
-import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
-import OpenAI from 'openai'
-import { ChatCompletionMessageParam } from 'openai/resources/chat/completions'
+import { kv } from "@vercel/kv"
+import { type Message, StreamingTextResponse, OpenAIStream } from "ai"
+import OpenAI from "openai"
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions"
 
-import { auth } from '@/auth'
-import { nanoid } from '@/lib/utils'
+import { auth } from "@/auth"
+import { nanoid } from "@/lib/utils"
 
-export const runtime = 'edge'
+export const runtime = "edge"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -24,9 +24,7 @@ export async function POST(req: Request) {
 
     if (messages.length > messageLimit) {
       const numberOfElementsToRemove = messages.length - messageLimit
-      const startIndex = Math.floor(
-        (messages.length - numberOfElementsToRemove) / 2
-      )
+      const startIndex = Math.floor((messages.length - numberOfElementsToRemove) / 2)
       messages.splice(startIndex, numberOfElementsToRemove)
     }
 
@@ -34,7 +32,7 @@ export async function POST(req: Request) {
   }
 
   const res = await openai.chat.completions.create({
-    model: userId ? 'gpt-4-turbo' : 'gpt-3.5-turbo',
+    model: userId ? "gpt-4-turbo" : "gpt-3.5-turbo",
     stream: true,
     messages: limitedMessagesArray(messages),
     functions
@@ -43,9 +41,7 @@ export async function POST(req: Request) {
   const stream = OpenAIStream(res, {
     async onCompletion(completion) {
       if (userId) {
-        const title = messages
-          .find((m: Message) => m.role !== 'system')
-          ?.content.substring(0, 100)
+        const title = messages.find((m: Message) => m.role !== "system")?.content.substring(0, 100)
         const id = String(json.id ?? nanoid())
         const createdAt = Date.now()
         const path = `/chat/${id}`
@@ -60,7 +56,7 @@ export async function POST(req: Request) {
             ...messages,
             {
               content: completion,
-              role: 'assistant'
+              role: "assistant"
             }
           ]
         }

@@ -1,4 +1,4 @@
-import { Chain, Hex } from 'viem'
+import type { Chain, Hex } from "viem"
 
 export type GlobalConfig = {
   viemChain: Chain
@@ -18,7 +18,7 @@ export type DeployContractResult = {
   explorerUrl: string
   ipfsUrl: string
   verifyContractConfig: VerifyContractParams
-  abi: any
+  abi: string
   standardJsonInput: string
 }
 

@@ -1,33 +1,33 @@
-import { Metadata, Viewport } from 'next'
+import type { Metadata, Viewport } from "next"
 
-import { Toaster } from 'react-hot-toast'
-import { Analytics } from '@vercel/analytics/react'
+import { Analytics } from "@vercel/analytics/react"
+import { Toaster } from "react-hot-toast"
 
-import '@/app/globals.css'
-import { fontMono, fontSans } from '@/lib/fonts'
-import { cn } from '@/lib/utils'
-import { Header } from '@/components/header'
-import { Providers } from '@/components/providers/ui-providers'
-import { Web3Provider } from '@/components/providers/web3-provider'
+import "@/app/globals.css"
+import { Header } from "@/components/header"
+import { Providers } from "@/components/providers/ui-providers"
+import { Web3Provider } from "@/components/providers/web3-provider"
+import { fontMono, fontSans } from "@/lib/fonts"
+import { cn } from "@/lib/utils"
 
-export const runtime = 'edge'
+export const runtime = "edge"
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://w3gpt.ai'),
+  metadataBase: new URL("https://w3gpt.ai"),
   title: {
-    default: 'Web3 GPT',
-    template: `Web3 GPT`
+    default: "Web3 GPT",
+    template: "Web3 GPT"
   },
-  description: 'Write and deploy smart contracts with AI.',
+  description: "Write and deploy smart contracts with AI.",
   icons: {
-    icon: '/favicon.png'
+    icon: "/favicon.png"
   }
 }
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' }
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" }
   ]
 }
 
@@ -39,13 +39,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body
-        className={cn(
-          'font-sans antialiased',
-          fontSans.variable,
-          fontMono.variable
-        )}
-      >
+      <body className={cn("font-sans antialiased", fontSans.variable, fontMono.variable)}>
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <div className="flex min-h-screen flex-col">

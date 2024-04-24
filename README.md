@@ -6,7 +6,6 @@ Web3-GPT is a chat tool that combines the power of Large Language Models (LLMs) 
 
 ![image](https://github.com/Markeljan/Web3GPT/assets/12901349/c84ec7ed-3657-4d19-a739-2285e25c29a1)
 
-
 ## Features 🌟
 
 - **Deploy Smart Contracts:** Seamlessly deploy contracts on any EVM-compatible blockchain directly from a chat interface.

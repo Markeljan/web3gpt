@@ -1,13 +1,13 @@
-import { Message } from 'ai'
+import type { Message } from "ai"
 
-import { Chat } from '@/components/chat'
-import { nanoid } from '@/lib/utils'
-import { auth } from '@/auth'
+import { auth } from "@/auth"
+import { Chat } from "@/components/chat"
+import { nanoid } from "@/lib/utils"
 
 const initialMessages: Message[] = [
   {
     id: nanoid(),
-    role: 'system',
+    role: "system",
     content: `
 # Web3 GPT: Your AI Smart Contract Assistant
 
@@ -49,12 +49,5 @@ export default async function ChatIndexPage() {
   const session = await auth()
   const avatarUrl = session?.user?.image
   const id = nanoid()
-  return (
-    <Chat
-      initialMessages={initialMessages}
-      id={id}
-      showLanding
-      avatarUrl={avatarUrl}
-    />
-  )
+  return <Chat initialMessages={initialMessages} id={id} showLanding avatarUrl={avatarUrl} />
 }

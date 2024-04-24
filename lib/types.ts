@@ -1,6 +1,8 @@
-import { type Message } from 'ai'
+import type { Message } from "ai"
 
-export interface Chat extends Record<string, any> {
+type ChatValue = string | null | undefined
+
+export type Chat = Record<string, ChatValue> & {
   id: string
   title: string
   createdAt: Date
@@ -10,7 +12,7 @@ export interface Chat extends Record<string, any> {
   sharePath?: string
 }
 
-export interface ChatListItem extends Record<string, any> {
+export type ChatListItem = {
   id: string
   createdAt: Date
   title: string

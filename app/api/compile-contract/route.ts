@@ -1,6 +1,6 @@
-import compileContract from '@/lib/functions/deploy-contract/compile-contract'
+import compileContract from "@/lib/functions/deploy-contract/compile-contract"
 
-export const runtime = 'nodejs'
+export const runtime = "nodejs"
 
 export async function POST(req: Request) {
   const json = await req.json()
@@ -14,9 +14,6 @@ export async function POST(req: Request) {
   } catch (error) {
     const err = error as Error
     console.error(`Error in compileContract: ${err.message}`)
-    return new Response(
-      JSON.stringify({ error: `Error in compileContract: ${err.message}` }),
-      { status: 500 }
-    )
+    return new Response(JSON.stringify({ error: `Error in compileContract: ${err.message}` }), { status: 500 })
   }
 }

@@ -1,33 +1,23 @@
-'use client'
+"use client"
 
-import { useRouter } from 'next/navigation'
-import { useEffect, useRef } from 'react'
+import { useRouter } from "next/navigation"
+import { useEffect, useRef } from "react"
 
-import Textarea from 'react-textarea-autosize'
+import Textarea from "react-textarea-autosize"
 
-import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
-import { cn } from '@/lib/utils'
-import { Button, buttonVariants } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger
-} from '@/components/ui/tooltip'
-import { IconArrowElbow, IconHome } from '@/components/ui/icons'
-import { UseChatHelpers } from 'ai/react'
+import { useEnterSubmit } from "@/lib/hooks/use-enter-submit"
+import { cn } from "@/lib/utils"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { IconArrowElbow, IconHome } from "@/components/ui/icons"
+import type { UseChatHelpers } from "ai/react"
 
-export interface PromptProps
-  extends Pick<UseChatHelpers, 'input' | 'setInput'> {
+export interface PromptProps extends Pick<UseChatHelpers, "input" | "setInput"> {
   onSubmit: (value: string) => void
   isLoading: boolean
 }
 
-export function PromptForm({
-  onSubmit,
-  input,
-  setInput,
-  isLoading
-}: PromptProps) {
+export function PromptForm({ onSubmit, input, setInput, isLoading }: PromptProps) {
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -40,12 +30,12 @@ export function PromptForm({
 
   return (
     <form
-      onSubmit={async e => {
+      onSubmit={async (e) => {
         e.preventDefault()
         if (!input?.trim() || isLoading) {
           return
         }
-        setInput('')
+        setInput("")
         await onSubmit(input)
       }}
       ref={formRef}
@@ -55,11 +45,11 @@ export function PromptForm({
           <TooltipTrigger asChild>
             <Button
               onClick={() => {
-                router.push(`/`, { shallow: false })
+                router.push("/")
               }}
               className={cn(
-                buttonVariants({ size: 'sm', variant: 'secondary' }),
-                'absolute left-0 top-4 h-8 w-8 rounded-full border p-0 sm:left-4'
+                buttonVariants({ size: "sm", variant: "secondary" }),
+                "absolute left-0 top-4 size-8 rounded-full border p-0 sm:left-4"
               )}
             >
               <IconHome />
@@ -74,7 +64,7 @@ export function PromptForm({
           onKeyDown={onKeyDown}
           rows={1}
           value={input}
-          onChange={e => setInput(e.target.value)}
+          onChange={(e) => setInput(e.target.value)}
           placeholder="Send a message."
           spellCheck={false}
           className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
@@ -82,11 +72,7 @@ export function PromptForm({
         <div className="absolute right-0 top-4 sm:right-4">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                type="submit"
-                size="icon"
-                disabled={isLoading || !input?.trim()}
-              >
+              <Button type="submit" size="icon" disabled={isLoading || !input?.trim()}>
                 <IconArrowElbow className="fill-white" />
                 <span className="sr-only">Send message</span>
               </Button>
