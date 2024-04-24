@@ -58,16 +58,13 @@ export default async function deployContract({
     sources[sourceKey].content = sourceCode
   }
 
+  console.log(sources)
+
   // Compile the contract
   const standardJsonInput = JSON.stringify({
     language: "Solidity",
     sources,
     settings: {
-      metadata: {
-        // Not including the metadata hash
-        // https://github.com/paulrberg/hardhat-template/issues/31
-        bytecodeHash: "none"
-      },
       evmVersion: "paris",
       outputSelection: {
         "*": {
