@@ -17867,6 +17867,29 @@
     }
   },
   {
+    "name": "Arbitrum Sepolia",
+    "title": "Arbitrum Sepolia Rollup Testnet",
+    "chainId": 421614,
+    "shortName": "arb-sep",
+    "chain": "ETH",
+    "networkId": 421614,
+    "nativeCurrency": {
+      "name": "Arbitrum Sepolia Ether",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "rpc": ["https://arbitrum-sepolia.blockpi.network/v1/rpc/public"],
+    "faucets": [],
+    "infoURL": "https://arbitrum.io/",
+    "explorers": [
+      {
+        "name": "Arbitrum Sepolia Rollup Explorer",
+        "url": "https://sepolia-explorer.arbitrum.io",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
     "name": "Fastex Chain testnet",
     "chain": "FTN",
     "title": "Fastex Chain testnet",

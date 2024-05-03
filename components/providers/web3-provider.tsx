@@ -7,7 +7,7 @@ import "@rainbow-me/rainbowkit/styles.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useTheme } from "next-themes"
 import { http, WagmiProvider } from "wagmi"
-import { baseSepolia, holesky, polygonAmoy, sepolia } from "wagmi/chains"
+import { baseSepolia, holesky, polygonAmoy, sepolia, arbitrumSepolia } from "wagmi/chains"
 
 const mantleSepoliaWithLogo = {
   ...mantleSepolia,
@@ -19,7 +19,7 @@ const amoyWithLogo = {
   iconUrl: "/polygon-logo.png"
 }
 
-const chains = [mantleSepoliaWithLogo, baseSepolia, holesky, amoyWithLogo, sepolia] as const
+const chains = [mantleSepoliaWithLogo, baseSepolia, holesky, amoyWithLogo, sepolia, arbitrumSepolia] as const
 
 const queryClient = new QueryClient()
 
@@ -34,6 +34,7 @@ const config = getDefaultConfig({
     [sepolia.id]: http(FULL_RPC_URLS[sepolia.id]),
     [amoyWithLogo.id]: http(FULL_RPC_URLS[amoyWithLogo.id]),
     [baseSepolia.id]: http(FULL_RPC_URLS[baseSepolia.id]),
+    [arbitrumSepolia.id]: http(FULL_RPC_URLS[arbitrumSepolia.id]),
     [mantleSepoliaWithLogo.id]: http(),
     [holesky.id]: http()
   },
