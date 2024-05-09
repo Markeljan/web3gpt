@@ -1,5 +1,5 @@
 import { auth } from "@/auth"
-import { LoginButton } from "@/components/login-button"
+import { LoginButton } from "@/components/header/login-button"
 import { redirect } from "next/navigation"
 
 export default async function SignInPage() {

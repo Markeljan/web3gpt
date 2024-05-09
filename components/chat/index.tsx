@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 import type { ChatRequest, FunctionCallHandler } from "ai"
 import { useAssistant } from "ai/react"
@@ -15,7 +15,7 @@ import { functionSchemas } from "@/lib/functions/schemas"
 import { useW3GPTDeploy } from "@/lib/hooks/use-w3gpt-deploy"
 import { cn } from "@/lib/utils"
 import { nanoid } from "@/lib/utils"
-import { FileViewer } from "@/components/file-viewer"
+// import { FileViewer } from "@/components/file-viewer"
 
 export type ChatProps = {
   className?: string
@@ -25,11 +25,32 @@ export type ChatProps = {
 const Chat = ({ threadId, className }: ChatProps) => {
   const { setIsDeploying, setDeployContractConfig, verifyContractConfig, lastDeploymentData, setLastDeploymentData } =
     useGlobalStore()
+  const [chatThreadId, setChatThreadId] = useState(threadId)
   const supportedChains = useChains()
   const { chain } = useAccount()
   const isSupportedChain = !!(chain && supportedChains.find((c) => c.id === chain.id))
   const activeChainId = isSupportedChain ? chain.id : 5003
   const { deploy } = useW3GPTDeploy({ chainId: activeChainId })
+
+  const { messages, status, input, submitMessage, handleInputChange } = useAssistant({
+    threadId: chatThreadId,
+    api: `/api/assistants/threads/${chatThreadId}/messages`
+  })
+  const isLoading = status === "in_progress"
+
+  useEffect(() => {
+    const createThread = async () => {
+      const res = await fetch("/api/assistants/threads", {
+        method: "POST"
+      })
+      const { threadId } = await res.json()
+
+      setChatThreadId(threadId)
+    }
+    if (!chatThreadId) {
+      createThread()
+    }
+  }, [chatThreadId])
 
   useEffect(() => {
     let isMounted = true
@@ -135,21 +156,14 @@ const Chat = ({ threadId, className }: ChatProps) => {
     }
   }
 
-  const { messages, append, status, input, setInput, submitMessage, setMessages, error, handleInputChange } =
-    useAssistant({
-      threadId: threadId,
-      api: "/api/assistants/threads"
-    })
-  const isLoading = status === "in_progress"
-
   return (
     <>
       <div className={cn("px-4 pb-[200px] pt-4 md:pt-10", className)}>
         <ChatList isLoading={isLoading} messages={messages} />
         <ChatScrollAnchor trackVisibility={isLoading} />
       </div>
-      <FileViewer />
-      <ChatPanel submitMessage={submitMessage} input={input} setInput={setInput} status={status} />
+      {/* <FileViewer /> */}
+      <ChatPanel submitMessage={submitMessage} input={input} handleInputChange={handleInputChange} status={status} />
     </>
   )
 }

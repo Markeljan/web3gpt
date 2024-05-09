@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-
 import { IconTrash } from "@/components/ui/icons"
+import { Button } from "@/components/ui/button"
 
 export const FileViewer = () => {
   const [files, setFiles] = useState([])
@@ -46,7 +46,7 @@ export const FileViewer = () => {
     <div>
       <div>
         {files?.length === 0 ? (
-          <div>Attach files to test file search</div>
+          <div>Attach file to test file search</div>
         ) : Array.isArray(files) ? (
           files?.map((file: { file_id: string; filename: string; status: string }) => (
             <div key={file.file_id}>
@@ -54,16 +54,16 @@ export const FileViewer = () => {
                 <span>{file.filename}</span>
                 <span>{file.status}</span>
               </div>
-              <span onClick={() => handleFileDelete(file.file_id)} onKeyDown={() => handleFileDelete(file.file_id)}>
+              <Button size="icon" onClick={() => handleFileDelete(file.file_id)}>
                 <IconTrash />
-              </span>
+              </Button>
             </div>
           ))
         ) : null}
       </div>
       <div>
         <label htmlFor="file-upload">Attach files</label>
-        <input type="file" id="file-upload" name="file-upload" multiple onChange={handleFileUpload} />
+        <input type="file" id="file-upload" name="file-upload" multiple={false} onChange={handleFileUpload} />
       </div>
     </div>
   )

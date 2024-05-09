@@ -41,6 +41,7 @@ export function ChatMessage({ message, className, ...props }: ChatMessageProps) 
       </div>
     )
   }
+  console.log("message", message)
 
   return (
     <div className={cn("group relative mb-4 flex items-start md:-ml-12")} {...props}>

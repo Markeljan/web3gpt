@@ -1,22 +1,23 @@
-import { Suspense } from "react"
-import { auth } from "@/auth"
-import { clearChats } from "@/app/actions"
-import { Sidebar } from "@/components/sidebar"
-import { SidebarList } from "@/components/sidebar-list"
-import { IconExternalLink, IconSeparator } from "@/components/ui/icons"
-import { SidebarFooter } from "@/components/sidebar-footer"
-import { ClearHistory } from "@/components/clear-history"
-import { UserMenu } from "@/components/user-menu"
-import { LoginButton } from "@/components/login-button"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Badge } from "@/components/ui/badge"
-import { ConnectButton } from "@/components/connect-button"
-import { SettingsDropDown } from "./settings-drop-down"
-import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { Button } from "./ui/button"
+import { Suspense } from "react"
 
-export async function Header() {
+import { clearChats } from "@/app/actions"
+import { auth } from "@/auth"
+import { ConnectButton } from "@/components/connect-button"
+import { ClearHistory } from "@/components/header/clear-history"
+import { LoginButton } from "@/components/header/login-button"
+import { SettingsDropDown } from "@/components/header/settings-drop-down"
+import { UserMenu } from "@/components/header/user-menu"
+import Sidebar from "@/components/sidebar"
+import { SidebarFooter } from "@/components/sidebar/sidebar-footer"
+import { SidebarList } from "@/components/sidebar/sidebar-list"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { IconExternalLink, IconSeparator } from "@/components/ui/icons"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
+
+export default async function Header() {
   const session = await auth()
   const isSignedIn = !!session?.user
   return (

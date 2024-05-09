@@ -8,7 +8,7 @@ export interface SidebarProps {
   children?: React.ReactNode
 }
 
-export function Sidebar({ children }: SidebarProps) {
+export default function Sidebar({ children }: SidebarProps) {
   return (
     <Sheet>
       <SheetTrigger asChild>

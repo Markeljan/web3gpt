@@ -6,7 +6,7 @@ import { useTransition } from "react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { IconCog, IconGitHub, IconTelegram, IconTwitter } from "@/components/ui/icons"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 

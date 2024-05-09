@@ -1,5 +1,10 @@
 "use client"
+import Link from "next/link"
+import { useMemo, useState } from "react"
 
+import { useAccount, useChains } from "wagmi"
+
+import { useGlobalStore } from "@/app/state/global-store"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,14 +16,10 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { useDeployWithWallet } from "@/lib/functions/deploy-contract/wallet-deploy"
+import { IconExternalLink, IconSpinner } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useMemo, useState } from "react"
-import Link from "next/link"
-import { IconExternalLink, IconSpinner } from "./ui/icons"
-import { useGlobalStore } from "@/app/state/global-store"
-import { useAccount, useChains } from "wagmi"
+import { useDeployWithWallet } from "@/lib/functions/deploy-contract/wallet-deploy"
 import { nanoid } from "@/lib/utils"
 
 export function DeployContractButton({ sourceCode }: { sourceCode: string }) {

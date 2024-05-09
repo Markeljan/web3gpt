@@ -3,18 +3,18 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useRef } from "react"
 
+import type { UseAssistantHelpers } from "ai/react"
 import Textarea from "react-textarea-autosize"
 
+import { Button, buttonVariants } from "@/components/ui/button"
+import { IconArrowElbow, IconHome } from "@/components/ui/icons"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useEnterSubmit } from "@/lib/hooks/use-enter-submit"
 import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { IconArrowElbow, IconHome } from "@/components/ui/icons"
-import type { UseAssistantHelpers } from "ai/react"
 
-export type PromptProps = Pick<UseAssistantHelpers, "submitMessage" | "input" | "setInput" | "status">
+export type PromptProps = Pick<UseAssistantHelpers, "submitMessage" | "input" | "handleInputChange" | "status">
 
-export function PromptForm({ submitMessage, input, setInput, status }: PromptProps) {
+export function PromptForm({ submitMessage, input, handleInputChange, status }: PromptProps) {
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -32,7 +32,6 @@ export function PromptForm({ submitMessage, input, setInput, status }: PromptPro
         if (!input?.trim() || status === "in_progress") {
           return
         }
-        setInput("")
         await submitMessage(e)
       }}
       ref={formRef}
@@ -61,7 +60,7 @@ export function PromptForm({ submitMessage, input, setInput, status }: PromptPro
           onKeyDown={onKeyDown}
           rows={1}
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={handleInputChange}
           placeholder="Send a message."
           spellCheck={false}
           className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"

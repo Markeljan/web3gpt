@@ -2,15 +2,15 @@ import type { Metadata, Viewport } from "next"
 
 import { Analytics } from "@vercel/analytics/react"
 import { Toaster } from "react-hot-toast"
+import { SessionProvider } from "next-auth/react"
 
 import "@/app/globals.css"
-import { Header } from "@/components/header"
+import { auth } from "@/auth"
+import Header from "@/components/header"
 import { Providers } from "@/components/providers/ui-providers"
 import { Web3Provider } from "@/components/providers/web3-provider"
 import { fontMono, fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
-import { SessionProvider } from "next-auth/react"
-import { auth } from "@/auth"
 
 export const runtime = "edge"
 
