@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 
 import { filterMessages, formatDate } from "@/lib/utils"
 import { getSharedChat } from "@/app/actions"
-import { ChatList } from "@/components/chat-list"
+import { ChatList } from "@/components/chat/chat-list"
 
 interface SharePageProps {
   params: {
@@ -22,7 +22,6 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
 export default async function SharePage({ params }: SharePageProps) {
   const chat = await getSharedChat(params.id)
   const filteredMessages = filterMessages(chat?.messages ?? [])
-  const avatarUrl = chat?.avatarUrl
 
   if (!chat || !chat?.sharePath) {
     notFound()
@@ -41,7 +40,7 @@ export default async function SharePage({ params }: SharePageProps) {
             </div>
           </div>
         </div>
-        <ChatList messages={chat.messages} avatarUrl={avatarUrl} />
+        <ChatList messages={chat.messages} />
       </div>
     </>
   )

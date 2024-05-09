@@ -9,6 +9,8 @@ import { Providers } from "@/components/providers/ui-providers"
 import { Web3Provider } from "@/components/providers/web3-provider"
 import { fontMono, fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
+import { SessionProvider } from "next-auth/react"
+import { auth } from "@/auth"
 
 export const runtime = "edge"
 
@@ -35,7 +37,8 @@ interface RootLayoutProps {
   children: React.ReactNode
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const session = await auth()
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -46,7 +49,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <main className="flex flex-1 flex-col bg-muted/50">
               <Web3Provider>
                 <Header />
-                {children}
+                <SessionProvider session={session}>{children}</SessionProvider>
               </Web3Provider>
             </main>
           </div>

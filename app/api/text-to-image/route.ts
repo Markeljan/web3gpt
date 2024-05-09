@@ -1,6 +1,6 @@
 import { NFTStorage, File } from "nft.storage"
 
-export const runtime = "edge"
+export const runtime = "nodejs"
 
 interface GenerationResponse {
   artifacts: Array<{

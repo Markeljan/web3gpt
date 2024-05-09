@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation"
 
 import { auth } from "@/auth"
 import { getChat } from "@/app/actions"
-import { Chat } from "@/components/chat"
+import Chat from "@/components/chat"
 
 export interface ChatPageProps {
   params: {
@@ -28,7 +28,6 @@ export async function generateMetadata({ params }: ChatPageProps): Promise<Metad
 
 export default async function ChatPage({ params }: ChatPageProps) {
   const session = await auth()
-  const avatarUrl = session?.user?.image
 
   if (!session?.user?.id) {
     redirect(`/sign-in?next=/chat/${params.id}`)
@@ -44,5 +43,5 @@ export default async function ChatPage({ params }: ChatPageProps) {
     notFound()
   }
 
-  return <Chat showLanding id={chat.id} initialMessages={chat.messages} avatarUrl={avatarUrl} />
+  return <Chat />
 }

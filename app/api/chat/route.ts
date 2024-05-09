@@ -1,16 +1,13 @@
 import { kv } from "@vercel/kv"
 import { type Message, StreamingTextResponse, OpenAIStream } from "ai"
-import OpenAI from "openai"
+
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions"
 
 import { auth } from "@/auth"
 import { nanoid } from "@/lib/utils"
+import { openai } from "@/app/config"
 
 export const runtime = "edge"
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-})
 
 export async function POST(req: Request) {
   const json = await req.json()

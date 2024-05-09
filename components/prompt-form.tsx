@@ -10,14 +10,11 @@ import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { IconArrowElbow, IconHome } from "@/components/ui/icons"
-import type { UseChatHelpers } from "ai/react"
+import type { UseAssistantHelpers } from "ai/react"
 
-export interface PromptProps extends Pick<UseChatHelpers, "input" | "setInput"> {
-  onSubmit: (value: string) => void
-  isLoading: boolean
-}
+export type PromptProps = Pick<UseAssistantHelpers, "submitMessage" | "input" | "setInput" | "status">
 
-export function PromptForm({ onSubmit, input, setInput, isLoading }: PromptProps) {
+export function PromptForm({ submitMessage, input, setInput, status }: PromptProps) {
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -32,11 +29,11 @@ export function PromptForm({ onSubmit, input, setInput, isLoading }: PromptProps
     <form
       onSubmit={async (e) => {
         e.preventDefault()
-        if (!input?.trim() || isLoading) {
+        if (!input?.trim() || status === "in_progress") {
           return
         }
         setInput("")
-        await onSubmit(input)
+        await submitMessage(e)
       }}
       ref={formRef}
     >
@@ -72,7 +69,7 @@ export function PromptForm({ onSubmit, input, setInput, isLoading }: PromptProps
         <div className="absolute right-0 top-4 sm:right-4">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button type="submit" size="icon" disabled={isLoading || !input?.trim()}>
+              <Button type="submit" size="icon" disabled={status === "in_progress" || !input?.trim()}>
                 <IconArrowElbow className="fill-white" />
                 <span className="sr-only">Send message</span>
               </Button>

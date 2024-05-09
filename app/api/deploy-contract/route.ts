@@ -1,6 +1,5 @@
 import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
 
-// TODO: try to enable edge runtime
 export const runtime = "nodejs"
 
 export async function POST(req: Request) {

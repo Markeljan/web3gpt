@@ -1,28 +1,31 @@
 "use client"
 
+import Image from "next/image"
+import { useState } from "react"
+
+import type { Message } from "ai"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
-import type { Message } from "ai"
-import Image from "next/image"
 
-import { cn } from "@/lib/utils"
-import { CodeBlock } from "@/components/ui/codeblock"
+import { ChatMessageActions } from "@/components/chat/chat-message-actions"
 import { MemoizedReactMarkdown } from "@/components/markdown"
+import { Button } from "@/components/ui/button"
+import { CodeBlock } from "@/components/ui/codeblock"
 import { IconF, IconUser, IconW3GPT } from "@/components/ui/icons"
-import { ChatMessageActions } from "@/components/chat-message-actions"
-import { useState } from "react"
-import { Button } from "./ui/button"
+import { useAvatar } from "@/lib/hooks/use-avatar"
+import { cn } from "@/lib/utils"
 
 export interface ChatMessageProps {
   className?: string
   message: Message
-  avatarUrl?: string | null | undefined
 }
 
-export function ChatMessage({ message, avatarUrl, className, ...props }: ChatMessageProps) {
+export function ChatMessage({ message, className, ...props }: ChatMessageProps) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const avatarUrl = useAvatar()
 
   const onExpandClick = () => setIsExpanded(!isExpanded)
+
   if (message.function_call && !isExpanded) {
     return (
       <div className={cn("group relative mb-4 flex items-start md:-ml-12", className)} {...props}>

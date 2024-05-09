@@ -1,7 +1,6 @@
 import { verifyContract } from "@/lib/functions/deploy-contract/verify-contract"
 
-// TODO: try to enable edge runtime
-export const runtime = "edge"
+export const runtime = "nodejs"
 
 export async function POST(req: Request) {
   const json = await req.json()
