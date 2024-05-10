@@ -209,7 +209,7 @@ export function useDeployWithWallet() {
       setLastDeploymentData(deploymentData)
       return deploymentData
     } catch (error) {
-      console.log(error)
+      console.error(error)
       const deploymentData = {
         transactionHash: deployHash,
         explorerUrl: txHashExplorerUrl,

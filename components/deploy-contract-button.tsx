@@ -97,7 +97,7 @@ export function DeployContractButton({ sourceCode }: { sourceCode: string }) {
 
       setIsDeploying(false)
     } catch (e) {
-      console.log(e)
+      console.error(e)
       setIsErrorDeploying(true)
       setIsDeploying(false)
     }

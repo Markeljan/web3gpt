@@ -58,8 +58,6 @@ export default async function deployContract({
     sources[sourceKey].content = sourceCode
   }
 
-  console.log(sources)
-
   // Compile the contract
   const standardJsonInput = JSON.stringify({
     language: "Solidity",
@@ -111,7 +109,7 @@ export default async function deployContract({
 
   if (!(await walletClient.getAddresses())) {
     const error = new Error(`Wallet for chain ${viemChain.name} not available`)
-    console.log(error)
+    console.error(error)
   }
 
   const deployData = encodeDeployData({
@@ -128,8 +126,7 @@ export default async function deployContract({
   })
 
   const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
-
-  console.log(`Deployed contract at ${explorerUrl}`)
+  
   const ipfsCid = await ipfsUpload(sources, JSON.stringify(abi), bytecode, standardJsonInput)
 
   const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`

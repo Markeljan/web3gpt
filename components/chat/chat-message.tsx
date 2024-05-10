@@ -26,22 +26,23 @@ export function ChatMessage({ message, className, ...props }: ChatMessageProps) 
 
   const onExpandClick = () => setIsExpanded(!isExpanded)
 
-  if (message.function_call && !isExpanded) {
-    return (
-      <div className={cn("group relative mb-4 flex items-start md:-ml-12", className)} {...props}>
-        <div className="flex size-8 shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow">
-          <IconF />
-        </div>
-        <div className="ml-4 flex-1 space-y-2 px-1">
-          <Button onClick={onExpandClick} variant="default">
-            Function Call
-          </Button>
-          <ChatMessageActions message={message} onExpandClick={onExpandClick} />
-        </div>
-      </div>
-    )
-  }
   console.log("message", message)
+
+  // if (message.function_call && !isExpanded) {
+  //   return (
+  //     <div className={cn("group relative mb-4 flex items-start md:-ml-12", className)} {...props}>
+  //       <div className="flex size-8 shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow">
+  //         <IconF />
+  //       </div>
+  //       <div className="ml-4 flex-1 space-y-2 px-1">
+  //         <Button onClick={onExpandClick} variant="default">
+  //           Function Call
+  //         </Button>
+  //         <ChatMessageActions message={message} onExpandClick={onExpandClick} />
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className={cn("group relative mb-4 flex items-start md:-ml-12")} {...props}>

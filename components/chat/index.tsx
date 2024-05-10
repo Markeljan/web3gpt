@@ -1,10 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-
 import type { ChatRequest, FunctionCallHandler } from "ai"
 import { useAssistant } from "ai/react"
-import toast from "react-hot-toast"
 import { useAccount, useChains } from "wagmi"
 
 import { useGlobalStore } from "@/app/state/global-store"
@@ -22,77 +19,82 @@ export type ChatProps = {
   threadId?: string
 }
 
-const Chat = ({ threadId, className }: ChatProps) => {
+const Chat = ({ threadId: clientThreadId, className }: ChatProps) => {
   const { setIsDeploying, setDeployContractConfig, verifyContractConfig, lastDeploymentData, setLastDeploymentData } =
     useGlobalStore()
-  const [chatThreadId, setChatThreadId] = useState(threadId)
   const supportedChains = useChains()
   const { chain } = useAccount()
   const isSupportedChain = !!(chain && supportedChains.find((c) => c.id === chain.id))
   const activeChainId = isSupportedChain ? chain.id : 5003
   const { deploy } = useW3GPTDeploy({ chainId: activeChainId })
 
-  const { messages, status, input, submitMessage, handleInputChange } = useAssistant({
-    threadId: chatThreadId,
-    api: `/api/assistants/threads/${chatThreadId}/messages`
+  const { messages, status, input, submitMessage, handleInputChange, threadId } = useAssistant({
+    threadId: clientThreadId,
+    api: "/api/assistants/threads/messages"
   })
+
+  if (!clientThreadId) {
+    clientThreadId = threadId
+  }
+
   const isLoading = status === "in_progress"
 
-  useEffect(() => {
-    const createThread = async () => {
-      const res = await fetch("/api/assistants/threads", {
-        method: "POST"
-      })
-      const { threadId } = await res.json()
+  // useEffect(() => {
+  //   const createThread = async () => {
+  //     const res = await fetch("/api/assistants/threads", {
+  //       method: "POST"
+  //     })
+  //     const { threadId } = await res.json()
+  //     console.log("threadId", threadId)
 
-      setChatThreadId(threadId)
-    }
-    if (!chatThreadId) {
-      createThread()
-    }
-  }, [chatThreadId])
+  //     setChatThreadId(threadId)
+  //   }
+  //   if (!chatThreadId) {
+  //     createThread()
+  //   }
+  // }, [chatThreadId])
 
-  useEffect(() => {
-    let isMounted = true
+  // useEffect(() => {
+  //   let isMounted = true
 
-    async function verifyContract() {
-      if (!verifyContractConfig?.deployHash || lastDeploymentData?.verificationStatus === "success") {
-        return
-      }
+  //   async function verifyContract() {
+  //     if (!verifyContractConfig?.deployHash || lastDeploymentData?.verificationStatus === "success") {
+  //       return
+  //     }
 
-      try {
-        const response = await fetch("/api/verify-contract", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(verifyContractConfig)
-        })
+  //     try {
+  //       const response = await fetch("/api/verify-contract", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json"
+  //         },
+  //         body: JSON.stringify(verifyContractConfig)
+  //       })
 
-        const data = await response.json()
+  //       const data = await response.json()
 
-        if (typeof data === "string" && data.startsWith("0x") && isMounted) {
-          toast.success("Contract verified successfully!")
-          lastDeploymentData &&
-            setLastDeploymentData({
-              ...lastDeploymentData,
-              verificationStatus: "success"
-            })
-        } else {
-          setTimeout(verifyContract, 15000) // Retry after 15 seconds
-        }
-      } catch (error) {
-        console.error("Verification failed", error)
-        setTimeout(verifyContract, 15000) // Retry after 15 seconds
-      }
-    }
+  //       if (typeof data === "string" && data.startsWith("0x") && isMounted) {
+  //         toast.success("Contract verified successfully!")
+  //         lastDeploymentData &&
+  //           setLastDeploymentData({
+  //             ...lastDeploymentData,
+  //             verificationStatus: "success"
+  //           })
+  //       } else {
+  //         setTimeout(verifyContract, 15000) // Retry after 15 seconds
+  //       }
+  //     } catch (error) {
+  //       console.error("Verification failed", error)
+  //       setTimeout(verifyContract, 15000) // Retry after 15 seconds
+  //     }
+  //   }
 
-    verifyContract()
+  //   verifyContract()
 
-    return () => {
-      isMounted = false
-    }
-  }, [lastDeploymentData, verifyContractConfig, setLastDeploymentData])
+  //   return () => {
+  //     isMounted = false
+  //   }
+  // }, [lastDeploymentData, verifyContractConfig, setLastDeploymentData])
 
   const _functionCallHandler: FunctionCallHandler = async (chatMessages, functionCall) => {
     if (functionCall.name === "deploy_contract") {
@@ -105,7 +107,6 @@ const Chat = ({ threadId, className }: ChatProps) => {
         sourceCode,
         constructorArgs
       })
-      console.log("Deploying contract")
       const verifiedContractAddress = await deploy({
         chainId: chainId || activeChainId,
         contractName,
@@ -121,33 +122,6 @@ const Chat = ({ threadId, className }: ChatProps) => {
             name: "deploy_contract",
             role: "function",
             content: JSON.stringify({ verifiedContractAddress })
-          }
-        ],
-        functions: functionSchemas
-      }
-      return functionResponse
-    }
-    if (functionCall.name === "text_to_image") {
-      const response = await fetch("/api/text-to-image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ text: functionCall.arguments })
-      })
-      if (!response.ok) {
-        throw new Error(response.statusText)
-      }
-      const { imageUrl, metadataUrl } = await response.json()
-
-      const functionResponse: ChatRequest = {
-        messages: [
-          ...chatMessages,
-          {
-            id: nanoid(),
-            name: "text-to-image",
-            role: "function",
-            content: JSON.stringify({ imageUrl, metadataUrl })
           }
         ],
         functions: functionSchemas

@@ -45,10 +45,10 @@ export async function getChatList() {
 
   for (const chat of chats) {
     // get chat id and title
-    pipeline.hmget(chat, "id", "title", "path", "sharePath", "createdAt", "avatarUrl", "userId")
+    pipeline?.hmget(chat, "id", "title", "path", "sharePath", "createdAt", "avatarUrl", "userId")
   }
 
-  const results = await pipeline.exec()
+  const results = await pipeline?.exec()
 
   return results as ChatListItem[]
 }
@@ -68,7 +68,7 @@ export async function getChats(userId?: string | null) {
       pipeline.hgetall(chat)
     }
 
-    const results = await pipeline.exec()
+    const results = await pipeline?.exec()
     return results as Chat[]
   } catch {
     return []
@@ -147,8 +147,6 @@ export async function getSharedChat(id: string) {
 
 export async function shareChat(chat: ChatListItem) {
   const session = await auth()
-
-  console.log("{ session, chat }", { session, chat })
 
   if (!session?.user?.id || session.user.id !== String(chat.userId)) {
     return {

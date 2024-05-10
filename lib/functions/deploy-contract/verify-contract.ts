@@ -62,7 +62,7 @@ export const verifyContract = async ({
       throw new Error(`Explorer API request failed with status ${response.status}`)
     }
   } catch (error) {
-    console.log("Verify response failed: ", error)
+    console.error("Verify response failed: ", error)
     throw new Error(`Error verifying contract: ${(error as Error).message}`)
   }
 

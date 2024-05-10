@@ -1,8 +1,8 @@
 import type { UseAssistantHelpers } from "ai/react"
 
-import { Button } from "@/components/ui/button"
-import { PromptForm } from "@/components/chat/prompt-form"
 import { ButtonScrollToBottom } from "@/components/chat/button-scroll-to-bottom"
+import { PromptForm } from "@/components/chat/prompt-form"
+import { Button } from "@/components/ui/button"
 import { IconSpinner } from "@/components/ui/icons"
 
 export type ChatPanelProps = Pick<UseAssistantHelpers, "status" | "submitMessage" | "input" | "handleInputChange">

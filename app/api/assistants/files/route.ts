@@ -41,7 +41,6 @@ export async function GET() {
       }
     })
   )
-  console.log("filesArray", filesArray)
   return Response.json(filesArray)
 }
 

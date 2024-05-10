@@ -6,6 +6,7 @@ import type { ChatCompletionMessageParam } from "openai/resources/chat/completio
 import { auth } from "@/auth"
 import { nanoid } from "@/lib/utils"
 import { openai } from "@/app/config"
+import { getChat } from "@/app/actions"
 
 export const runtime = "edge"
 
