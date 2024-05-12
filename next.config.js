@@ -11,7 +11,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/api/external-contract",
+        source: "/api/external-deploy",
         headers: [
           {
             key: "Access-Control-Allow-Origin",
