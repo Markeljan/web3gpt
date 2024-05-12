@@ -1,8 +1,9 @@
 import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const json = await req.json()
   const { chainId, contractName, sourceCode, constructorArgs } = json
 
@@ -13,10 +14,16 @@ export async function POST(req: Request) {
       sourceCode,
       constructorArgs
     })
-    return new Response(JSON.stringify(deployResult))
+    return NextResponse.json(deployResult)
   } catch (error) {
     const err = error as Error
     console.error(`Error in deployContract: ${err.message}`)
     return new Response(JSON.stringify({ error: `Error in deployContract: ${err.message}` }), { status: 500 })
   }
+}
+
+export const OPTIONS = async (req: NextRequest) => {
+  return NextResponse.json("", {
+    status: 200
+  })
 }
