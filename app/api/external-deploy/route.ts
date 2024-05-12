@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
   try {
     const deployResult = await deployContract({
       chainId,
-      contractName: name,
+      contractName: "ConfigurableNFT",
       sourceCode,
       constructorArgs
     })
