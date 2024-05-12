@@ -11,6 +11,8 @@ interface SharePageProps {
   }
 }
 
+export const runtime = "nodejs"
+
 export async function generateMetadata({ params }: SharePageProps): Promise<Metadata> {
   const chat = await getSharedChat(params.id)
 
