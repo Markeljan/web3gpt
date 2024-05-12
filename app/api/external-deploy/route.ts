@@ -20,7 +20,7 @@ const contractBuilder = ({
   symbol = "NFT",
   maxSupply = 1000,
   mintPrice = Number(parseEther("0.001")),
-  baseURI = ""
+  baseURI = "ipfs://"
 }: ContractBuilderParams) => {
   const sourceCode = `
     // SPDX-License-Identifier: MIT
@@ -79,7 +79,7 @@ const contractBuilder = ({
     }
   `
 
-  const constructorArgs = [ownerAddress, name, symbol, maxSupply.toString(), mintPrice.toString(), baseURI]
+  const constructorArgs = [ownerAddress, name, symbol, maxSupply?.toString(), mintPrice?.toString(), baseURI]
 
   return { sourceCode, constructorArgs }
 }
