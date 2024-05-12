@@ -2,7 +2,7 @@ import { holesky } from "viem/chains"
 import type { GlobalConfig } from "@/lib/functions/types"
 import type { Agent } from "./types"
 
-export const APP_URL = process.env.NEXTAUTH_URL
+export const APP_URL = process.env.NEXTAUTH_URL || "https://w3gpt.ai"
 export const W3GPT_API_SECRET = process.env.W3GPT_API_SECRET
 
 export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {
