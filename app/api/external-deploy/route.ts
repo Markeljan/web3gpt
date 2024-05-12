@@ -1,19 +1,23 @@
 import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const json = await req.json()
 
   if (!json.ownerAddress) {
-
     return new Response(JSON.stringify({ error: "No ownerAddress provided" }), { status: 400 })
   }
 
   return NextResponse.json({ message: "success" }, { status: 200 })
 }
 
+export const OPTIONS = async (req: NextRequest) => {
+  return NextResponse.json("", {
+    status: 200
+  })
+}
 
 //   const { chainId, contractName, sourceCode, constructorArgs } = json
 
