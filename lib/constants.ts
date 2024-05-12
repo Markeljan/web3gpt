@@ -11,6 +11,7 @@ export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {
   useWallet: false
 }
 
+//
 export const DEFAULT_AGENT: Agent = {
   id: "asst_Tgzrzv0VaSgTRMn8ufAULlZG",
   name: "W3GPT",
