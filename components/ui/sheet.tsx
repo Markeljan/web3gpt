@@ -41,6 +41,9 @@ const SheetContent = React.forwardRef<
   <SheetPortal>
     <SheetPrimitive.Content
       ref={ref}
+      onOpenAutoFocus={(e) => {
+        e.preventDefault()
+      }}
       className={cn(
         "fixed z-50 h-full border-r bg-background p-6 opacity-100 shadow-lg data-[state=closed]:animate-slide-to-left data-[state=open]:animate-slide-from-left",
         className

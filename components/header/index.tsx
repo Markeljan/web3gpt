@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { Suspense } from "react"
 
 import { clearChats } from "@/app/actions"
 import { auth } from "@/auth"
@@ -9,11 +8,13 @@ import { LoginButton } from "@/components/header/login-button"
 import { SettingsDropDown } from "@/components/header/settings-drop-down"
 import { UserMenu } from "@/components/header/user-menu"
 import Sidebar from "@/components/sidebar"
+import { SidebarAgents } from "@/components/sidebar/sidebar-agents"
 import { SidebarFooter } from "@/components/sidebar/sidebar-footer"
 import { SidebarList } from "@/components/sidebar/sidebar-list"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { IconExternalLink, IconSeparator } from "@/components/ui/icons"
+import { SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
@@ -24,9 +25,18 @@ export default async function Header() {
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-background px-4">
       <div className="flex items-center">
         <Sidebar>
-          <Suspense fallback={<div className="flex-1 overflow-auto" />}>
-            <SidebarList userId={`${session?.user?.id}`} />
-          </Suspense>
+          <div className="flex flex-col space-y-4">
+            <SheetHeader className="p-4 pt-8">
+              <SheetTitle className="text-md">Agents</SheetTitle>
+            </SheetHeader>
+            <SidebarAgents />
+          </div>
+          {/* divider line */}
+          <div className="border-t border-muted px-8 mt-4" />
+          <SheetHeader className="p-4">
+            <SheetTitle className="text-md">Chat History</SheetTitle>
+          </SheetHeader>
+          <SidebarList userId={`${session?.user?.id}`} />
           <SidebarFooter className="justify-end">
             {isSignedIn && <ClearHistory clearChats={clearChats} />}
           </SidebarFooter>

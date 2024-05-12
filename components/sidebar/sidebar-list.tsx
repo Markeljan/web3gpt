@@ -1,7 +1,7 @@
 import { getChatList, removeChat, shareChat } from "@/app/actions"
+import { LoginButton } from "@/components/header/login-button"
 import { SidebarActions } from "@/components/sidebar/sidebar-actions"
 import { SidebarItem } from "@/components/sidebar/sidebar-item"
-import { LoginButton } from "@/components/header/login-button"
 
 export interface SidebarListProps {
   userId?: string
@@ -9,7 +9,6 @@ export interface SidebarListProps {
 
 export async function SidebarList({ userId }: SidebarListProps) {
   const chats = await getChatList()
-  console.log("chats", chats)
   return (
     <div className="flex-1 overflow-auto">
       {chats?.length ? (

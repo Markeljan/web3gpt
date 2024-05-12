@@ -18,6 +18,7 @@ export const FileViewer = () => {
   const fetchFiles = async () => {
     const resp = await fetch("/api/assistants/files", {
       method: "GET"
+      
     })
     const data = await resp.json()
     setFiles(data)

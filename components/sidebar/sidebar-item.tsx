@@ -3,20 +3,20 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-import type { ChatListItem } from "@/lib/types"
+import type { DbChatListItem } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { IconMessage, IconUsers } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface SidebarItemProps {
-  chat: ChatListItem
+  chat: DbChatListItem
   children: React.ReactNode
 }
 
 export function SidebarItem({ chat, children }: SidebarItemProps) {
   const pathname = usePathname()
-  const isActive = pathname === chat.path
+  const isActive = pathname === `/chat/${chat.id}`
 
   if (!chat?.id) return null
 
@@ -35,7 +35,7 @@ export function SidebarItem({ chat, children }: SidebarItemProps) {
         )}
       </div>
       <Link
-        href={chat.path}
+        href={`/chat/${chat.id}`}
         className={cn(buttonVariants({ variant: "ghost" }), "group w-full pl-8 pr-16", isActive && "bg-accent")}
       >
         <div className="relative max-h-5 flex-1 select-none overflow-hidden text-ellipsis break-all" title={chat.title}>

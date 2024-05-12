@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-import { filterMessages, formatDate } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
 import { getSharedChat } from "@/app/actions"
 import { ChatList } from "@/components/chat/chat-list"
 
@@ -21,7 +21,6 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
 
 export default async function SharePage({ params }: SharePageProps) {
   const chat = await getSharedChat(params.id)
-  const filteredMessages = filterMessages(chat?.messages ?? [])
 
   if (!chat || !chat?.sharePath) {
     notFound()
@@ -35,7 +34,7 @@ export default async function SharePage({ params }: SharePageProps) {
             <div className="space-y-1 md:-mx-8">
               <h1 className="text-2xl font-bold">{chat.title}</h1>
               <div className="text-sm text-muted-foreground">
-                {formatDate(chat?.createdAt)} · {filteredMessages.length} messages
+                {formatDate(chat?.createdAt)} · {chat.messages.length} messages
               </div>
             </div>
           </div>

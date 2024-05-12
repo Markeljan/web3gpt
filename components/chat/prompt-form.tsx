@@ -61,7 +61,7 @@ export function PromptForm({ submitMessage, input, handleInputChange, status }: 
           rows={1}
           value={input}
           onChange={handleInputChange}
-          placeholder="Send a message."
+          placeholder="send a message"
           spellCheck={false}
           className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
         />

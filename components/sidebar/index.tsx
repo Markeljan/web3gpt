@@ -1,10 +1,10 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { IconSidebar } from "@/components/ui/icons"
 
-export interface SidebarProps {
+export type SidebarProps = {
   children?: React.ReactNode
 }
 
@@ -17,12 +17,7 @@ export default function Sidebar({ children }: SidebarProps) {
           <span className="sr-only">Toggle Sidebar</span>
         </Button>
       </SheetTrigger>
-      <SheetContent className="inset-y-0 flex h-auto w-[300px] flex-col p-0">
-        <SheetHeader className="p-4">
-          <SheetTitle className="text-sm">Chat History</SheetTitle>
-        </SheetHeader>
-        {children}
-      </SheetContent>
+      <SheetContent className="inset-y-0 flex h-auto w-[300px] flex-col p-0">{children}</SheetContent>
     </Sheet>
   )
 }

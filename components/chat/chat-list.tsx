@@ -4,7 +4,7 @@ import { ChatMessage } from "@/components/chat/chat-message"
 import { Separator } from "@/components/ui/separator"
 import { cn, nanoid } from "@/lib/utils"
 
-export interface ChatList {
+export type ChatList = {
   messages: Message[]
   isLoading?: boolean
 }

@@ -1,4 +1,5 @@
 import type { ChatRequestOptions } from "ai"
+import type { AssistantCreateParams } from "openai/resources/beta/assistants.mjs"
 export const functionSchemas: ChatRequestOptions["functions"] = [
   {
     name: "deploy_contract",

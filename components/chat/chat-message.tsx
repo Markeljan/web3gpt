@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
 
 import type { Message } from "ai"
 import remarkGfm from "remark-gfm"
@@ -9,9 +8,8 @@ import remarkMath from "remark-math"
 
 import { ChatMessageActions } from "@/components/chat/chat-message-actions"
 import { MemoizedReactMarkdown } from "@/components/markdown"
-import { Button } from "@/components/ui/button"
 import { CodeBlock } from "@/components/ui/codeblock"
-import { IconF, IconUser, IconW3GPT } from "@/components/ui/icons"
+import { IconUser, IconW3GPT } from "@/components/ui/icons"
 import { useAvatar } from "@/lib/hooks/use-avatar"
 import { cn } from "@/lib/utils"
 
@@ -21,28 +19,7 @@ export interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, className, ...props }: ChatMessageProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
   const avatarUrl = useAvatar()
-
-  const onExpandClick = () => setIsExpanded(!isExpanded)
-
-  console.log("message", message)
-
-  // if (message.function_call && !isExpanded) {
-  //   return (
-  //     <div className={cn("group relative mb-4 flex items-start md:-ml-12", className)} {...props}>
-  //       <div className="flex size-8 shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow">
-  //         <IconF />
-  //       </div>
-  //       <div className="ml-4 flex-1 space-y-2 px-1">
-  //         <Button onClick={onExpandClick} variant="default">
-  //           Function Call
-  //         </Button>
-  //         <ChatMessageActions message={message} onExpandClick={onExpandClick} />
-  //       </div>
-  //     </div>
-  //   )
-  // }
 
   return (
     <div className={cn("group relative mb-4 flex items-start md:-ml-12")} {...props}>
@@ -57,10 +34,6 @@ export function ChatMessage({ message, className, ...props }: ChatMessageProps) 
           ) : (
             <IconUser />
           )
-        ) : message.function_call ? (
-          <div className="flex size-8 shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow">
-            <IconF />
-          </div>
         ) : (
           <IconW3GPT />
         )}
@@ -104,14 +77,10 @@ export function ChatMessage({ message, className, ...props }: ChatMessageProps) 
             }
           }}
         >
-          {message.content === ""
-            ? typeof message.function_call === "string"
-              ? message.function_call
-              : JSON.stringify(message.function_call)
-            : message.content ?? ""}
+          {message.content}
         </MemoizedReactMarkdown>
         <div className="flex flex-col justify-end">
-          <ChatMessageActions message={message} onExpandClick={onExpandClick} />
+          <ChatMessageActions message={message} />
         </div>
       </div>
     </div>

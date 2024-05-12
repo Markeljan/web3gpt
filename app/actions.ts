@@ -5,7 +5,8 @@ import { redirect } from "next/navigation"
 import { kv } from "@vercel/kv"
 
 import { auth } from "@/auth"
-import type { Chat, ChatListItem } from "@/lib/types"
+import type { Agent, DbChat, DbChatListItem } from "@/lib/types"
+import { AGENTS_ARRAY } from "@/lib/constants"
 
 // Store a new user's details
 export async function storeUser(user: { id: string | number }) {
@@ -38,19 +39,23 @@ export async function getChatList() {
     return []
   }
 
-  const pipeline = kv.pipeline()
-  const chats: string[] = await kv.zrange(`user:chat:${session.user.id}`, 0, -1, {
-    rev: true
-  })
+  try {
+    const pipeline = kv.pipeline()
+    const chats: string[] = await kv.zrange(`user:chat:${session.user.id}`, 0, -1, {
+      rev: true
+    })
 
-  for (const chat of chats) {
-    // get chat id and title
-    pipeline?.hmget(chat, "id", "title", "path", "sharePath", "createdAt", "avatarUrl", "userId")
+    for (const chat of chats) {
+      // get chat id and title
+      pipeline?.hmget(chat, "id", "title", "sharePath", "createdAt", "avatarUrl", "userId")
+    }
+
+    const results = await pipeline?.exec()
+
+    return results as DbChatListItem[]
+  } catch {
+    return []
   }
-
-  const results = await pipeline?.exec()
-
-  return results as ChatListItem[]
 }
 
 export async function getChats(userId?: string | null) {
@@ -69,14 +74,14 @@ export async function getChats(userId?: string | null) {
     }
 
     const results = await pipeline?.exec()
-    return results as Chat[]
+    return results as DbChat[]
   } catch {
     return []
   }
 }
 
 export async function getChat(id: string, userId: string) {
-  const chat = await kv.hgetall<Chat>(`chat:${id}`)
+  const chat = await kv.hgetall<DbChat>(`chat:${id}`)
 
   if (!chat || (userId && chat.userId !== userId)) {
     return null
@@ -136,7 +141,7 @@ export async function clearChats() {
 }
 
 export async function getSharedChat(id: string) {
-  const chat = await kv.hgetall<Chat>(`chat:${id}`)
+  const chat = await kv.hgetall<DbChat>(`chat:${id}`)
 
   if (!chat || !chat.sharePath) {
     return null
@@ -145,7 +150,7 @@ export async function getSharedChat(id: string) {
   return chat
 }
 
-export async function shareChat(chat: ChatListItem) {
+export async function shareChat(chat: DbChatListItem) {
   const session = await auth()
 
   if (!session?.user?.id || session.user.id !== String(chat.userId)) {
@@ -184,4 +189,60 @@ export async function getUserField(fieldName: string) {
     console.error(error)
     return null // or throw error or return undefined, based on your preference
   }
+}
+
+export const storeAgent = async (agent: Agent) => {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return {
+      error: "Unauthorized"
+    }
+  }
+  await kv.hmset(`agent:${agent.id}`, agent)
+  await kv.sadd("agents:list", agent.id)
+}
+
+export const deleteAgent = async (id: string) => {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return {
+      error: "Unauthorized"
+    }
+  }
+
+  // get the id make sure the creator is the user
+  const agent = await kv.hgetall<Agent>(`agent:${id}`)
+  if (!agent) {
+    return {
+      error: "Agent not found"
+    }
+  }
+
+  if (agent.creator !== session.user.id) {
+    return {
+      error: "Not authorized"
+    }
+  }
+
+  await kv.del(`agent:${id}`)
+  await kv.srem("agents:list", id)
+}
+
+export const getAgent = async (id: string) => {
+  const agent = await kv.hgetall<Agent>(`agent:${id}`)
+  return agent
+}
+
+export const getAgents = async () => {
+  const agents = await kv.smembers("agents:list")
+  const pipeline = kv.pipeline()
+
+  for (const agentId of agents) {
+    pipeline.hgetall(`agent:${agentId}`)
+  }
+
+  const results = await pipeline.exec()
+  return results as Agent[]
 }

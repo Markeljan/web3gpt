@@ -2,14 +2,10 @@ import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
 
 import { auth } from "@/auth"
-import { getChat } from "@/app/actions"
+import { getAgent, getChat } from "@/app/actions"
 import Chat from "@/components/chat"
-
-export interface ChatPageProps {
-  params: {
-    id: string
-  }
-}
+import { openai } from "@/app/config"
+import type { ChatPageProps } from "@/app/page"
 
 export async function generateMetadata({ params }: ChatPageProps): Promise<Metadata> {
   const session = await auth()
@@ -22,11 +18,11 @@ export async function generateMetadata({ params }: ChatPageProps): Promise<Metad
 
   const chat = await getChat(params.id, session?.user?.id)
   return {
-    title: chat?.title.toString().slice(0, 50) ?? "Chat"
+    title: chat?.title.toString().slice(0, 50) ?? "W3GPT Chat"
   }
 }
 
-export default async function ChatPage({ params }: ChatPageProps) {
+export default async function ChatPage({ params, searchParams }: ChatPageProps) {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -43,5 +39,25 @@ export default async function ChatPage({ params }: ChatPageProps) {
     notFound()
   }
 
-  return <Chat threadId={chat.id} />
+  const agentId = chat.agentId || (searchParams?.a as string | undefined)
+  const agent = (agentId && (await getAgent(agentId))) || undefined
+
+  const threadId = chat.id
+
+  const fullMessages = (await openai.beta.threads.messages.list(threadId, { order: "asc" }))?.data
+
+  const messages = fullMessages?.map((message) => {
+    const { id, content, role, created_at: createdAt } = message
+    const textContent = content.find((c) => c.type === "text")
+    const text = textContent?.type === "text" ? textContent.text.value : ""
+
+    return {
+      id,
+      content: text,
+      role,
+      createdAt: new Date(createdAt)
+    }
+  })
+
+  return <Chat agent={agent} threadId={threadId} initialMessages={messages} />
 }

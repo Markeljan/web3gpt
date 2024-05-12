@@ -1,23 +1,63 @@
 import type { Message } from "ai"
 
-type ChatValue = string | null | undefined
+type ImageFileContentBlock = {
+  image_file: {
+    file_id: string
 
-export type Chat = Record<string, ChatValue> & {
+    detail?: "auto" | "low" | "high"
+  }
+  type: "image_file"
+}
+
+type ImageURLContentBlock = {
+  image_url: {
+    url: string
+    detail?: "auto" | "low" | "high"
+  }
+  type: "image_url"
+}
+
+type TextContentBlock = {
+  // biome-ignore lint/complexity/noBannedTypes: <explanation>
+  text: { annotations: Array<Object>; value: string }
+  type: "text"
+}
+export type MessageContent = ImageFileContentBlock | ImageURLContentBlock | TextContentBlock
+export type OpenAIThreadMessage = {
   id: string
+  assistant_id: string | null
+  // biome-ignore lint/complexity/noBannedTypes: <explanation>
+  attachments: Array<Object> | null
+  completed_at: number | null
+  content: Array<MessageContent>
+  created_at: number
+  incomplete_at: number | null
+  // biome-ignore lint/complexity/noBannedTypes: <explanation>
+  incomplete_details: Object | null
+  metadata: unknown | null
+  object: "thread.message"
+  role: "user" | "assistant"
+  run_id: string | null
+  status: "in_progress" | "incomplete" | "completed"
+  thread_id: string
+}
+
+export type DbChat = {
+  id: string
+  agentId: string
   title: string
   createdAt: Date
   userId: string
-  path: string
   messages: Message[]
   sharePath?: string
 }
 
-export type ChatListItem = {
+export type DbChatListItem = {
   id: string
+  agentId: string
   createdAt: Date
   title: string
   userId: string
-  path: string
   sharePath?: string
 }
 
@@ -54,4 +94,12 @@ export type ChainData = {
     standard?: string
     icon?: string
   }[]
+}
+
+export type Agent = {
+  id: string
+  name: string
+  description: string
+  imageUrl: string
+  creator: string
 }

@@ -25,15 +25,15 @@ import {
 } from "@/components/ui/dialog"
 import { IconShare, IconSpinner, IconTrash, IconUsers } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import type { ChatListItem, ServerActionResult } from "@/lib/types"
+import type { DbChatListItem, ServerActionResult } from "@/lib/types"
 import { cn, formatDate } from "@/lib/utils"
 import Link from "next/link"
 import { useCallback, useState, useTransition } from "react"
 
 interface SidebarActionsProps {
-  chat: ChatListItem
+  chat: DbChatListItem
   removeChat: (args: { id: string; path: string }) => ServerActionResult<void>
-  shareChat: (chat: ChatListItem) => ServerActionResult<ChatListItem>
+  shareChat: (chat: DbChatListItem) => ServerActionResult<DbChatListItem>
 }
 
 export function SidebarActions({ chat, removeChat, shareChat }: SidebarActionsProps) {
@@ -43,7 +43,7 @@ export function SidebarActions({ chat, removeChat, shareChat }: SidebarActionsPr
   const [isSharePending, startShareTransition] = useTransition()
   const router = useRouter()
 
-  const copyShareLink = useCallback(async (chat: ChatListItem) => {
+  const copyShareLink = useCallback(async (chat: DbChatListItem) => {
     if (!chat.sharePath) {
       return toast.error("Could not copy share link to clipboard")
     }
@@ -164,7 +164,7 @@ export function SidebarActions({ chat, removeChat, shareChat }: SidebarActionsPr
                 startRemoveTransition(async () => {
                   const result = await removeChat({
                     id: chat.id,
-                    path: chat.path
+                    path: `chat/${chat.id}`
                   })
 
                   if (result && "error" in result) {

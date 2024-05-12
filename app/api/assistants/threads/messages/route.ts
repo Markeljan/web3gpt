@@ -1,62 +1,66 @@
-import { openai, OPENAI_ASSISTANT_ID } from "@/app/config"
+import type { NextRequest } from "next/server"
+
+import { openai } from "@/app/config"
 import { auth } from "@/auth"
 import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
 import { kv } from "@vercel/kv"
 import { AssistantResponse, type ToolCall } from "ai"
-import type { NextRequest } from "next/server"
-import type { TextContentBlock } from "openai/resources/beta/threads/messages.mjs"
+import createAgent from "@/lib/functions/deploy-contract/create-agent"
+import { APP_URL } from "@/lib/constants"
 
 export const runtime = "nodejs"
 
 // Send a new message to a thread
 export async function POST(request: NextRequest) {
-  const { message, threadId: threadIdFromClient } = await request.json()
-
-  const threadId = threadIdFromClient || (await openai.beta.threads.create()).id
-
   const session = await auth()
   const { id: userId, image: avatarUrl } = session?.user ?? {}
 
-  const [{ created_at: createdAt, id: messageId }, title] = await Promise.all([
-    openai.beta.threads.messages.create(threadId, {
-      role: "user",
-      content: message
-    }),
-    // Get the first message in the thread to use as the title or fallback to the message
-    (
-      (
-        (
-          await openai.beta.threads.messages.list(threadId, {
-            limit: 1,
-            order: "desc"
-          })
-        )?.data?.[0]?.content?.[0] as TextContentBlock
-      )?.text?.value || message
-    )?.substring(0, 100)
-  ])
-
-  const path = `/chat/${threadId}`
-
-  const payload = {
-    id: threadId,
-    title,
-    userId,
-    createdAt,
-    avatarUrl,
-    path
+  if (!userId) {
+    throw new Error("Not authorized")
   }
-  await kv.hmset(`chat:${threadId}`, payload)
-  await kv.zadd(`user:chat:${userId}`, {
-    score: createdAt,
-    member: `chat:${threadId}`
+
+  const {
+    message,
+    threadId: threadIdFromClient,
+    assistantId
+  } = (await request.json()) as {
+    message: string
+    threadId: string
+    assistantId: string
+  }
+
+  if (!assistantId) {
+    throw new Error("Assistant ID is required")
+  }
+
+  const threadId = threadIdFromClient || (await openai.beta.threads.create()).id
+
+  const { created_at: createdAt, id: messageId } = await openai.beta.threads.messages.create(threadId, {
+    role: "user",
+    content: message
   })
 
-  console.log("path", path)
+  if (!threadIdFromClient) {
+    const title = message.slice(0, 50)
+    const newChat = {
+      id: threadId,
+      title,
+      agentId: assistantId,
+      userId,
+      createdAt,
+      avatarUrl
+    }
+    await kv.hmset(`chat:${threadId}`, newChat)
+    await kv.zadd(`user:chat:${userId}`, {
+      score: createdAt,
+      member: `chat:${threadId}`
+    })
+  }
 
   return AssistantResponse({ threadId, messageId }, async ({ forwardStream, sendDataMessage }) => {
     // Run the assistant on the thread
     const runStream = openai.beta.threads.runs.stream(threadId, {
-      assistant_id: OPENAI_ASSISTANT_ID,
+      assistant_id: assistantId,
       stream: true
     })
 
@@ -98,6 +102,30 @@ export async function POST(request: NextRequest) {
                 }
               }
             }
+            case "create_agent": {
+              const { name, description, instructions, creator, imageUrl } = parameters
+              const assistantId = await createAgent({
+                name,
+                description,
+                instructions,
+                creator: creator,
+                imageUrl: imageUrl || avatarUrl || "/assets/agent-factory.webp"
+              })
+
+              if (!assistantId) {
+                return {
+                  output: JSON.stringify({ error: "Error creating agent" }),
+                  tool_call_id: toolCall.id
+                }
+              }
+
+              const agentChatUrl = `${APP_URL}/?a=${assistantId}`
+
+              return {
+                output: `Agent created: successfully, agent chat url: ${agentChatUrl}`,
+                tool_call_id: toolCall.id
+              }
+            }
 
             default:
               throw new Error(`Unknown tool call function: ${toolCall.function.name}`)
@@ -106,7 +134,7 @@ export async function POST(request: NextRequest) {
       )
 
       runResult = await forwardStream(
-        openai.beta.threads.runs.submitToolOutputsStream(threadId, runResult.id, { tool_outputs })
+        openai.beta.threads.runs.submitToolOutputsStream(threadId, runResult.id, { tool_outputs, stream: true })
       )
     }
   })

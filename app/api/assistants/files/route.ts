@@ -1,13 +1,12 @@
 import type { NextRequest } from "next/server"
 
-import { OPENAI_ASSISTANT_ID } from "@/app/config"
 import { openai } from "@/app/config"
 
 // upload file to assistant's vector store
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest, { assistantId }: { assistantId: string }) {
   const formData = await request.formData()
   const file = formData.get("file") as File
-  const vectorStoreId = await getOrCreateVectorStore()
+  const vectorStoreId = await getOrCreateVectorStore(assistantId) // get or create vector store
 
   if (!file) {
     return new Response("No file found in request", { status: 400 })
@@ -26,8 +25,8 @@ export async function POST(request: NextRequest) {
 }
 
 // list files in assistant's vector store
-export async function GET() {
-  const vectorStoreId = await getOrCreateVectorStore() // get or create vector store
+export async function GET(request: NextRequest, { assistantId }: { assistantId: string }) {
+  const vectorStoreId = await getOrCreateVectorStore(assistantId) // get or create vector store
   const fileList = await openai.beta.vectorStores.files.list(vectorStoreId)
 
   const filesArray = await Promise.all(
@@ -45,11 +44,11 @@ export async function GET() {
 }
 
 // delete file from assistant's vector store
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: NextRequest, { assistantId }: { assistantId: string }) {
   const body = await request.json()
   const fileId = body.fileId
 
-  const vectorStoreId = await getOrCreateVectorStore() // get or create vector store
+  const vectorStoreId = await getOrCreateVectorStore(assistantId) // get or create vector store
   await openai.beta.vectorStores.files.del(vectorStoreId, fileId) // delete file from vector store
 
   return new Response()
@@ -57,8 +56,8 @@ export async function DELETE(request: NextRequest) {
 
 /* Helper functions */
 
-const getOrCreateVectorStore = async () => {
-  const assistant = await openai.beta.assistants.retrieve(OPENAI_ASSISTANT_ID)
+const getOrCreateVectorStore = async (assistantId: string) => {
+  const assistant = await openai.beta.assistants.retrieve(assistantId)
   const vectorStoreIds = assistant.tool_resources?.file_search?.vector_store_ids
   // if the assistant already has a vector store, return it
   if (vectorStoreIds && vectorStoreIds?.length > 0) {
@@ -68,7 +67,7 @@ const getOrCreateVectorStore = async () => {
   const vectorStore = await openai.beta.vectorStores.create({
     name: "default-assistant-vector-store"
   })
-  await openai.beta.assistants.update(OPENAI_ASSISTANT_ID, {
+  await openai.beta.assistants.update(assistantId, {
     tool_resources: {
       file_search: {
         vector_store_ids: [vectorStore.id]
