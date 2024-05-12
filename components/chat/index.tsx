@@ -21,7 +21,7 @@ type ChatProps = {
   initialMessages?: Message[]
 }
 
-const Chat = ({ threadId, initialMessages, agent = DEFAULT_AGENT, className }: ChatProps) => {
+const Chat = ({ threadId, initialMessages, agent, className }: ChatProps) => {
   const {
     messages,
     status,
@@ -34,7 +34,7 @@ const Chat = ({ threadId, initialMessages, agent = DEFAULT_AGENT, className }: C
     threadId,
     api: "/api/assistants/threads/messages",
     body: {
-      assistantId: agent?.id
+      assistantId: agent?.id || DEFAULT_AGENT.id
     }
   })
 
