@@ -11,6 +11,7 @@ import { DEFAULT_AGENT } from "@/lib/constants"
 import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { AgentCard } from "@/components/agent-card"
+import { useRouter } from "next/navigation"
 
 // import { FileViewer } from "@/components/file-viewer"
 
@@ -22,6 +23,7 @@ type ChatProps = {
 }
 
 const Chat = ({ threadId, initialMessages, agent, className }: ChatProps) => {
+  const router = useRouter()
   const {
     messages,
     status,
@@ -43,6 +45,12 @@ const Chat = ({ threadId, initialMessages, agent, className }: ChatProps) => {
       setMessages(initialMessages)
     }
   }, [setMessages, initialMessages, messages])
+
+  useEffect(() => {
+    if (threadIdFromAi && threadIdFromAi !== threadId && status !== "in_progress") {
+      router.replace(`/chat/${threadIdFromAi}`)
+    }
+  }, [threadIdFromAi, threadId, router, status])
 
   const isLoading = status === "in_progress"
   return (

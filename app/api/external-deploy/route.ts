@@ -1,3 +1,4 @@
+import { W3GPT_API_SECRET } from "@/lib/constants"
 import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
 import { type NextRequest, NextResponse } from "next/server"
 import { parseEther } from "viem"
@@ -83,6 +84,10 @@ const contractBuilder = ({
   return { sourceCode, constructorArgs }
 }
 export async function POST(req: NextRequest) {
+  const apiSecret = req.headers.get("W3GPT_API_SECRET")
+  if (apiSecret !== W3GPT_API_SECRET) {
+    return NextResponse.json({ error: "Unauthorized: invalid W3GPT_API_SECRET" }, { status: 401 })
+  }
   const json = await req.json()
 
   // const { ownerAddress, contractName, sourceCode, constructorArgs } = json

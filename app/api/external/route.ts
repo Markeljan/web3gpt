@@ -9,14 +9,12 @@ import { APP_URL, W3GPT_API_SECRET } from "@/lib/constants"
 
 export const runtime = "nodejs"
 
-// const { ownerAddress, contractName, sourceCode, constructorArgs } = json
-
 // Send a new message to a thread
 export async function POST(req: NextRequest) {
-  // const apiSecret = req.headers.get("W3GPT_API_SECRET")
-  // if (apiSecret !== W3GPT_API_SECRET) {
-  //   return NextResponse.json({ error: "Unauthorized: invalid W3GPT_API_SECRET" }, { status: 401 })
-  // }
+  const apiSecret = req.headers.get("W3GPT_API_SECRET")
+  if (apiSecret !== W3GPT_API_SECRET) {
+    return NextResponse.json({ error: "Unauthorized: invalid W3GPT_API_SECRET" }, { status: 401 })
+  }
 
   const resJson = await req.json()
   console.log("reqJson", resJson)
