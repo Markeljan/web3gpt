@@ -22,8 +22,7 @@ const contractBuilder = ({
   mintPrice = Number(parseEther("0.001")),
   baseURI = "ipfs://"
 }: ContractBuilderParams) => {
-  const sourceCode = `
-    // SPDX-License-Identifier: MIT
+  const sourceCode = `// SPDX-License-Identifier: MIT
     pragma solidity ^0.8.0;
 
     import "@openzeppelin/contracts@4.9.3/token/ERC721/extensions/ERC721URIStorage.sol";
