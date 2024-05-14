@@ -54,27 +54,10 @@ export default async function Header() {
         <div className="flex items-center justify-center space-x-4 translate-x-1/2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge
-                className={cn("text-xs text-slate-800", {
-                  "bg-yellow-300": isSignedIn,
-                  "bg-gray-300": !isSignedIn
-                })}
-              >
-                {isSignedIn ? "GPT-4" : "GPT-3.5"}
-              </Badge>
+              <Badge className={cn("text-xs text-slate-800 bg-yellow-300")}>GPT-4o</Badge>
             </TooltipTrigger>
-            <TooltipContent>{isSignedIn ? "GPT-4 Turbo" : "Login for GPT-4"}</TooltipContent>
+            <TooltipContent>Using the latest GPT-4o</TooltipContent>
           </Tooltip>
-          <Link className="flex" href="https://d.w3gpt.ai/gg20" target="_blank" rel="noreferrer">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button size="sm" variant="link" className="text-xs">
-                  Gitcoin GG20 <IconExternalLink className="size-4 ml-1" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Support us in the GG20 Developer Tooling Track!</TooltipContent>
-            </Tooltip>
-          </Link>
         </div>
       </div>
       <div className="flex items-center justify-end space-x-2">

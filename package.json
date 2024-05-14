@@ -34,7 +34,7 @@
     "next-auth": "5.0.0-beta.3",
     "next-themes": "^0.3.0",
     "nft.storage": "^7.1.1",
-    "openai": "^4.42.0",
+    "openai": "^4.46.1",
     "pino-pretty": "^10.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

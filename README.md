@@ -15,7 +15,6 @@ Web3-GPT is a chat tool that combines the power of Large Language Models (LLMs) 
 ### WIP:
 
 - **Automated Testing:** Generate tests for your contracts and ensure their integrity post-deployment.
-- **Plug-in Ready:** Compatible with Chat GPT-4 plugin.
 
 ## Getting Started 🚀
 
