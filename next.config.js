@@ -27,7 +27,7 @@ const nextConfig = {
           },
           {
             key: "Access-Control-Allow-Headers",
-            value: "Content-Type, Authorization"
+            value: "Content-Type, Authorization, w3gpt-api-key"
           }
         ]
       }

@@ -86,7 +86,7 @@ const contractBuilder = ({
 export async function POST(req: NextRequest) {
   const apiSecret = req.headers.get("W3GPT_API_SECRET")
   if (apiSecret !== W3GPT_API_SECRET) {
-    return NextResponse.json({ error: "Unauthorized: invalid W3GPT_API_SECRET" }, { status: 401 })
+    return NextResponse.json({ error: "Unauthorized: invalid w3gpt-api-key" }, { status: 401 })
   }
   const json = await req.json()
 
