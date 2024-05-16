@@ -8,17 +8,9 @@ import { openai } from "@/app/config"
 import type { ChatPageProps } from "@/app/page"
 
 export async function generateMetadata({ params }: ChatPageProps): Promise<Metadata> {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    return {
-      title: "Chat"
-    }
-  }
-
-  const chat = await getChat(params.id, session?.user?.id)
+  const chat = await getChat(params.id)
   return {
-    title: chat?.title.toString().slice(0, 50) ?? "W3GPT Chat"
+    title: chat?.title.toString().slice(0, 50) || "W3GPT Chat"
   }
 }
 
@@ -29,13 +21,9 @@ export default async function ChatPage({ params, searchParams }: ChatPageProps) 
     redirect(`/sign-in?next=/chat/${params.id}`)
   }
 
-  const chat = await getChat(params.id, session.user.id)
+  const chat = await getChat(params.id)
 
   if (!chat) {
-    notFound()
-  }
-
-  if (chat?.userId !== session?.user?.id) {
     notFound()
   }
 

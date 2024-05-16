@@ -10,14 +10,9 @@ import { APP_URL } from "@/lib/constants"
 
 export const runtime = "nodejs"
 
-// Send a new message to a thread
 export async function POST(request: NextRequest) {
   const session = await auth()
-  const { id: userId, image: avatarUrl } = session?.user ?? {}
-
-  // if (!userId) {
-  //   throw new Error("Not authorized")
-  // }
+  const { id: userId, image: avatarUrl } = session?.user || {}
 
   const {
     message,

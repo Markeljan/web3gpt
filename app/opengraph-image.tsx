@@ -1,7 +1,5 @@
-import Image from "next/image"
 import { ImageResponse } from "next/og"
 
-import { auth } from "@/auth"
 import { getAgent, getChat } from "@/app/actions"
 import type { ChatPageProps } from "@/app/page"
 import W3GPTLogo from "@/public/w3gpt-logo-beta.svg"
@@ -24,22 +22,12 @@ const interBold = fetch(new URL("/public/assets/fonts/Inter-Bold.woff", import.m
 )
 
 export default async function OpenGraphImage({ params, searchParams }: ChatPageProps) {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    return null
-  }
-
-  const chat = await getChat(params.id, session.user.id)
+  const chat = await getChat(params.id)
 
   const agentId = chat?.agentId || (searchParams?.a as string | undefined)
-  const agent = (agentId && (await getAgent(agentId))) || undefined
+  const agent = agentId ? await getAgent(agentId) : null
 
-  if (!chat) {
-    return null
-  }
-
-  const textAlign = chat?.title?.length > 40 ? "items-start" : "items-center"
+  const textAlign = chat && chat.title.length > 40 ? "items-start" : "items-center"
 
   return new ImageResponse(
     <div tw="flex w-full items-start h-full flex-col bg-[#191817] text-white p-[80px]">
@@ -59,7 +47,7 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
             </svg>
           </div>
           <div tw="flex text-white font-bold text-4xl leading-normal ml-10">
-            {chat.title.length > 120 ? `${chat.title.slice(0, 120)}...` : chat.title}
+            {chat ? (chat?.title?.length > 120 ? `${chat.title.slice(0, 120)}...` : chat.title) : "Shared Chat"}
           </div>
         </div>
         <div tw="flex w-full mt-14 items-start">
@@ -83,7 +71,7 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
         <div tw="flex items-center">
           {agent ? (
             <div className="flex flex-col mx-auto  text-center items-center justify-center mb-8 max-w-2xl bg-background rounded-2xl border-gray-600/25 p-8 dark:border-gray-600/50 md:mb-12 md:border space-y-8">
-              <Image src={agent.imageUrl} alt={`${agent.name}`} width={160} height={160} />
+              <img src={agent.imageUrl} alt={`${agent.name}`} width={160} height={160} />
               <div className="flex flex-col items-center justify-center w-full space-y-2">
                 <p className="text-md font-bold tracking-tight lg:text-2xl lg:font-normal">Agent: {agent.name}</p>
                 <p className="text-md font-normal tracking-tight lg:text-lg lg:font-normal">{agent.description}</p>
@@ -95,7 +83,7 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
           ) : (
             <div className="mx-auto mb-8 max-w-2xl bg-background rounded-2xl border-gray-600/25 px-4 text-center dark:border-gray-600/50 md:mb-12 md:border">
               <div className="relative my-8 flex h-8 w-full md:my-12">
-                <Image src={W3GPTLogo} alt="web3 gpt logo" priority={true} fill />
+                <img src={W3GPTLogo} alt="web3 gpt logo" width={638} height={32} />
               </div>
               <p className="text-lg font-bold tracking-tight lg:text-2xl lg:font-normal">
                 Deploy smart contracts with AI

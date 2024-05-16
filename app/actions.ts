@@ -57,7 +57,14 @@ export async function getChatList() {
   }
 }
 
-export async function getChats(userId?: string | null) {
+export async function getChats() {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return null
+  }
+  const userId = session.user.id
+
   if (!userId) {
     return []
   }
@@ -79,12 +86,19 @@ export async function getChats(userId?: string | null) {
   }
 }
 
-export async function getChat(id: string, userId: string) {
-  const chat = await kv.hgetall<DbChat>(`chat:${id}`)
+export async function getChat(id: string) {
+  const session = await auth()
 
-  if (!chat || (userId && chat.userId !== userId)) {
+  if (!session?.user?.id) {
     return null
   }
+  const userId = session.user.id
+
+  if (!userId) {
+    return null
+  }
+
+  const chat = await kv.hgetall<DbChat>(`chat:${id}`)
 
   return chat
 }

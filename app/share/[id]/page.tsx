@@ -11,13 +11,11 @@ interface SharePageProps {
   }
 }
 
-export const runtime = "nodejs"
-
 export async function generateMetadata({ params }: SharePageProps): Promise<Metadata> {
   const chat = await getSharedChat(params.id)
 
   return {
-    title: chat?.title.slice(0, 50) ?? "Chat"
+    title: chat?.title.slice(0, 50) || "Chat"
   }
 }
 

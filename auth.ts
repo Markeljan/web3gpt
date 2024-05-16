@@ -36,11 +36,6 @@ export const {
       }
       return session
     }
-
-    // uncomment to require authentication
-    // authorized({ auth }) {
-    //   return !!auth?.user
-    // }
   },
   pages: {
     signIn: "/sign-in"
