@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og"
 
-import { getAgent, getChat } from "@/app/actions"
+import { getAgent, getSharedChat } from "@/app/actions"
 import type { ChatPageProps } from "@/app/page"
 import W3GPTLogo from "@/public/w3gpt-logo-beta.svg"
 
@@ -22,8 +22,7 @@ const interBold = fetch(new URL("/public/assets/fonts/Inter-Bold.woff", import.m
 )
 
 export default async function OpenGraphImage({ params, searchParams }: ChatPageProps) {
-  const chat = await getChat(params.id)
-
+  const chat = await getSharedChat(params.id)
   const agentId = chat?.agentId || (searchParams?.a as string | undefined)
   const agent = agentId ? await getAgent(agentId) : null
 
@@ -47,7 +46,7 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
             </svg>
           </div>
           <div tw="flex text-white font-bold text-4xl leading-normal ml-10">
-            {chat ? (chat?.title?.length > 120 ? `${chat.title.slice(0, 120)}...` : chat.title) : "Shared Chat"}
+            {chat ? (chat?.title?.length > 120 ? `${chat.title.slice(0, 120)}...` : chat.title) : "Start a chat"}
           </div>
         </div>
         <div tw="flex w-full mt-14 items-start">
