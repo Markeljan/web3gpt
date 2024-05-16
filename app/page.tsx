@@ -1,6 +1,5 @@
 import Chat from "@/components/chat"
-import { getAgent } from "./actions"
-import { revalidatePath } from "next/cache"
+import { getAgent } from "@/app/actions"
 
 export interface ChatPageProps {
   params: { id: string }
@@ -10,7 +9,6 @@ export interface ChatPageProps {
 export default async function ChatPage({ params, searchParams }: ChatPageProps) {
   const agentId = searchParams?.a as string | undefined
   const agent = (agentId && (await getAgent(agentId))) || undefined
-  revalidatePath("/")
 
   return <Chat agent={agent} />
 }

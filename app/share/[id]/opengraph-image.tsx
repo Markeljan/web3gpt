@@ -1,7 +1,12 @@
+import Image from "next/image"
 import { ImageResponse } from "next/og"
 
-import { getSharedChat } from "@/app/actions"
-import { IconW3GPT } from "@/components/ui/icons"
+import Player from "react-lottie-player"
+
+import { auth } from "@/auth"
+import { getAgent, getChat } from "@/app/actions"
+import type { ChatPageProps } from "@/app/page"
+import W3GPTLogo from "@/public/w3gpt-logo-beta.svg"
 
 export const alt = "Web3 GPT"
 
@@ -20,16 +25,19 @@ const interBold = fetch(new URL("/public/assets/fonts/Inter-Bold.woff", import.m
   res.arrayBuffer()
 )
 
-interface ImageProps {
-  params: {
-    id: string
+export default async function OpenGraphImage({ params, searchParams }: ChatPageProps) {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return null
   }
-}
 
-export default async function Image({ params }: ImageProps) {
-  const chat = await getSharedChat(params.id)
+  const chat = await getChat(params.id, session.user.id)
 
-  if (!chat || !chat?.sharePath) {
+  const agentId = chat?.agentId || (searchParams?.a as string | undefined)
+  const agent = (agentId && (await getAgent(agentId))) || undefined
+
+  if (!chat) {
     return null
   }
 
@@ -75,11 +83,79 @@ export default async function Image({ params }: ImageProps) {
       </div>
       <div tw="flex items-center justify-between w-full mt-auto">
         <div tw="flex items-center">
-          <IconW3GPT />
-          <div tw="flex text-[1.8rem] ml-4 text-[#9b9ba4]">
-            Write and deploy smart contracts with
-            <div tw="flex text-[#eaeaf0] ml-2 mr-2">Web3 GPT</div>
-          </div>
+          {agent ? (
+            <div className="flex flex-col mx-auto  text-center items-center justify-center mb-8 max-w-2xl bg-background rounded-2xl border-gray-600/25 p-8 dark:border-gray-600/50 md:mb-12 md:border space-y-8">
+              <Image src={agent.imageUrl} alt={`${agent.name}`} width={160} height={160} />
+              <div className="flex flex-col items-center justify-center w-full space-y-2">
+                <p className="text-md font-bold tracking-tight lg:text-2xl lg:font-normal">Agent: {agent.name}</p>
+                <p className="text-md font-normal tracking-tight lg:text-lg lg:font-normal">{agent.description}</p>
+                <p className="text-sm font-normal tracking-tight lg:text-md lg:font-normal">
+                  created by {agent.creator}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="mx-auto mb-8 max-w-2xl bg-background rounded-2xl border-gray-600/25 px-4 text-center dark:border-gray-600/50 md:mb-12 md:border">
+              <div className="relative my-8 flex h-8 w-full md:my-12">
+                <Image src={W3GPTLogo} alt="web3 gpt logo" priority={true} fill />
+              </div>
+              <p className="text-lg font-bold tracking-tight lg:text-2xl lg:font-normal">
+                Deploy smart contracts with AI
+              </p>
+
+              <div className="grid-row-3 my-5 mb-8 grid grid-flow-row gap-1 md:grid-flow-col md:gap-4">
+                <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
+                  <Player
+                    play={false}
+                    loop={false}
+                    speed={0.5}
+                    direction={-1}
+                    path="/lotties/puzzle.json"
+                    className="size-24 md:h-32 md:w-full"
+                  />
+                  <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
+                    <h3 className="font-bold md:mb-2">Generate</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Generate custom smart contracts using prompts.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
+                  <Player
+                    play={false}
+                    loop={false}
+                    speed={0.5}
+                    direction={1}
+                    path="/lotties/globe.json"
+                    className="size-24 md:h-32 md:w-full"
+                  />
+                  <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
+                    <h3 className="font-bold md:mb-2">Deploy</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Deploy smart contracts directly from the chat.
+                    </p>
+                  </div>
+                </div>
+                <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
+                  <Player
+                    play={false}
+                    loop={false}
+                    speed={0.5}
+                    path="/lotties/clock.json"
+                    className="size-24 md:h-32 md:w-full"
+                  />
+
+                  <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
+                    <h3 className="font-bold md:mb-2">Speed Up</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Skip the boilerplate, deploy contracts in seconds. No wallet, IDE, or setup required.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <div tw="text-[1.8rem] ml-auto text-[#9b9ba4]">w3gpt.ai</div>
       </div>
