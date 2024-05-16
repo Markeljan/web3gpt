@@ -15,9 +15,9 @@ export async function POST(request: NextRequest) {
   const session = await auth()
   const { id: userId, image: avatarUrl } = session?.user ?? {}
 
-  if (!userId) {
-    throw new Error("Not authorized")
-  }
+  // if (!userId) {
+  //   throw new Error("Not authorized")
+  // }
 
   const {
     message,
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     content: message
   })
 
-  if (!threadIdFromClient) {
+  if (!threadIdFromClient && userId) {
     const title = message.slice(0, 50)
     const newChat = {
       id: threadId,
