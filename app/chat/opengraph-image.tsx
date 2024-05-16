@@ -1,7 +1,11 @@
 import { ImageResponse } from "next/og"
 
-import { getSharedChat } from "@/app/actions"
-import { IconW3GPT } from "@/components/ui/icons"
+import { getAgent, getChat } from "@/app/actions"
+import { auth } from "@/auth"
+import { notFound, redirect } from "next/navigation"
+import type { ChatPageProps } from "../page"
+import { AgentCard } from "@/components/agent-card"
+import { Landing } from "@/components/landing"
 
 export const alt = "Web3 GPT"
 
@@ -20,14 +24,25 @@ const interBold = fetch(new URL("/public/assets/fonts/Inter-Bold.woff", import.m
   res.arrayBuffer()
 )
 
-interface ImageProps {
-  params: {
-    id: string
-  }
-}
+export default async function Image({ params, searchParams }: ChatPageProps) {
+  const session = await auth()
 
-export default async function Image({ params }: ImageProps) {
-  const chat = await getSharedChat(params.id)
+  if (!session?.user?.id) {
+    redirect(`/sign-in?next=/chat/${params.id}`)
+  }
+
+  const chat = await getChat(params.id, session.user.id)
+
+  if (!chat) {
+    notFound()
+  }
+
+  if (chat?.userId !== session?.user?.id) {
+    notFound()
+  }
+
+  const agentId = chat.agentId || (searchParams?.a as string | undefined)
+  const agent = (agentId && (await getAgent(agentId))) || undefined
 
   if (!chat || !chat?.sharePath) {
     return null
@@ -74,13 +89,7 @@ export default async function Image({ params }: ImageProps) {
         </div>
       </div>
       <div tw="flex items-center justify-between w-full mt-auto">
-        <div tw="flex items-center">
-          <IconW3GPT />
-          <div tw="flex text-[1.8rem] ml-4 text-[#9b9ba4]">
-            Write and deploy smart contracts with
-            <div tw="flex text-[#eaeaf0] ml-2 mr-2">Web3 GPT</div>
-          </div>
-        </div>
+        <div tw="flex items-center">{agent ? <AgentCard agent={agent} /> : <Landing />}</div>
         <div tw="text-[1.8rem] ml-auto text-[#9b9ba4]">w3gpt.ai</div>
       </div>
     </div>,
