@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 
 import {
@@ -41,30 +41,31 @@ export function SidebarActions({ chat, removeChat, shareChat }: SidebarActionsPr
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [isRemovePending, startRemoveTransition] = useTransition()
   const [isSharePending, startShareTransition] = useTransition()
+  const pathname = usePathname()
   const router = useRouter()
 
-  const copyShareLink = useCallback(async (chat: DbChatListItem) => {
-    if (!chat.sharePath) {
-      return toast.error("Could not copy share link to clipboard")
-    }
-
-    const url = new URL(window.location.href)
-    url.pathname = chat.sharePath
-    navigator.clipboard.writeText(url.toString())
-    setShareDialogOpen(false)
-    toast.success("Share link copied to clipboard", {
-      style: {
-        borderRadius: "10px",
-        background: "#333",
-        color: "#fff",
-        fontSize: "14px"
-      },
-      iconTheme: {
-        primary: "white",
-        secondary: "black"
+  const copyShareLink = useCallback(
+    async (chat: DbChatListItem) => {
+      if (!chat.published) {
+        return toast.error("Could not copy share link to clipboard")
       }
-    })
-  }, [])
+      navigator.clipboard.writeText(pathname)
+      setShareDialogOpen(false)
+      toast.success("Share link copied to clipboard", {
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+          fontSize: "14px"
+        },
+        iconTheme: {
+          primary: "white",
+          secondary: "black"
+        }
+      })
+    },
+    [pathname]
+  )
 
   return (
     <>
@@ -104,21 +105,21 @@ export function SidebarActions({ chat, removeChat, shareChat }: SidebarActionsPr
             <div className="text-muted-foreground">{formatDate(chat.createdAt)}</div>
           </div>
           <DialogFooter className="items-center">
-            {chat.sharePath && (
+            {chat.published && (
               <Link
-                href={chat.sharePath}
+                href={`/share/${chat.id}`}
                 className={cn(badgeVariants({ variant: "secondary" }), "mr-auto")}
                 target="_blank"
               >
                 <IconUsers className="mr-2" />
-                {chat.sharePath}
+                {`/share/${chat.id}`}
               </Link>
             )}
             <Button
               disabled={isSharePending}
               onClick={() => {
                 startShareTransition(async () => {
-                  if (chat.sharePath) {
+                  if (chat.published) {
                     await new Promise((resolve) => setTimeout(resolve, 500))
                     copyShareLink(chat)
                     return

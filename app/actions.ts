@@ -46,7 +46,7 @@ export async function getChatList() {
 
     for (const chat of chats) {
       // get chat id and title
-      pipeline?.hmget(chat, "id", "title", "sharePath", "createdAt", "avatarUrl", "userId")
+      pipeline?.hmget(chat, "id", "title", "published", "createdAt", "avatarUrl", "userId")
     }
 
     const results = await pipeline?.exec()
@@ -99,7 +99,6 @@ export async function getChat(id: string) {
   }
 
   const chat = await kv.hgetall<DbChat>(`chat:${id}`)
-
   return chat
 }
 
@@ -156,8 +155,15 @@ export async function clearChats() {
 export async function getSharedChat(id: string) {
   const chat = await kv.hgetall<DbChat>(`chat:${id}`)
 
-  if (!chat || !chat.sharePath) {
+  if (!chat) {
     return null
+  }
+
+  if (!chat.published) {
+    return {
+      ...chat,
+      messages: []
+    }
   }
 
   return chat
@@ -165,8 +171,9 @@ export async function getSharedChat(id: string) {
 
 export async function shareChat(chat: DbChatListItem) {
   const session = await auth()
+  const userId = session?.user?.id
 
-  if (!session?.user?.id || session.user.id !== String(chat.userId)) {
+  if (userId !== chat.userId) {
     return {
       error: "Unauthorized"
     }
@@ -174,7 +181,7 @@ export async function shareChat(chat: DbChatListItem) {
 
   const payload = {
     ...chat,
-    sharePath: `/share/${chat.id}`
+    published: true
   }
 
   await kv.hmset(`chat:${chat.id}`, payload)

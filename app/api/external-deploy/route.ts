@@ -90,13 +90,6 @@ export async function POST(req: NextRequest) {
   }
   const json = await req.json()
 
-  // const { ownerAddress, contractName, sourceCode, constructorArgs } = json
-
-  // const apiSecret = req.headers.get("W3GPT_API_SECRET")
-  // if (apiSecret !== W3GPT_API_SECRET) {
-  //   return NextResponse.json({ error: "Unauthorized: invalid W3GPT_API_SECRET" }, { status: 401 })
-  // }
-
   const { ownerAddress, size, price, baseUri, name, symbol } = json
 
   if (!ownerAddress) {
@@ -134,20 +127,3 @@ export const OPTIONS = async (req: NextRequest) => {
     status: 200
   })
 }
-
-//   const { chainId, contractName, sourceCode, constructorArgs } = json
-
-//   try {
-//     const deployResult = await deployContract({
-//       chainId,
-//       contractName,
-//       sourceCode,
-//       constructorArgs
-//     })
-//     return new Response(JSON.stringify(deployResult))
-//   } catch (error) {
-//     const err = error as Error
-//     console.error(`Error in deployContract: ${err.message}`)
-//     return new Response(JSON.stringify({ error: `Error in deployContract: ${err.message}` }), { status: 500 })
-//   }
-// }

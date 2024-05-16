@@ -7,6 +7,7 @@ import { kv } from "@vercel/kv"
 import { AssistantResponse, type ToolCall } from "ai"
 import createAgent from "@/lib/functions/deploy-contract/create-agent"
 import { APP_URL } from "@/lib/constants"
+import type { DbChat } from "@/lib/types"
 
 export const runtime = "nodejs"
 
@@ -37,13 +38,15 @@ export async function POST(request: NextRequest) {
 
   if (!threadIdFromClient && userId) {
     const title = message.slice(0, 50)
-    const newChat = {
+    const newChat: DbChat = {
       id: threadId,
       title,
       agentId: assistantId,
       userId,
-      createdAt,
-      avatarUrl
+      createdAt: new Date(createdAt),
+      avatarUrl: avatarUrl,
+      published: false,
+      messages: [{ id: messageId, role: "user", content: message }]
     }
     await kv.hmset(`chat:${threadId}`, newChat)
     await kv.zadd(`user:chat:${userId}`, {
@@ -104,7 +107,7 @@ export async function POST(request: NextRequest) {
                 description,
                 instructions,
                 creator: creator,
-                imageUrl: imageUrl || avatarUrl || "/assets/agent-factory.webp"
+                imageUrl: imageUrl || "/assets/agent-factory.webp"
               })
 
               if (!assistantId) {

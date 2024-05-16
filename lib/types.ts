@@ -49,7 +49,8 @@ export type DbChat = {
   createdAt: Date
   userId: string
   messages: Message[]
-  sharePath?: string
+  published: boolean
+  avatarUrl?: string | null
 }
 
 export type DbChatListItem = {
@@ -58,7 +59,7 @@ export type DbChatListItem = {
   createdAt: Date
   title: string
   userId: string
-  sharePath?: string
+  published: boolean
 }
 
 export type ServerActionResult<Result> = Promise<
