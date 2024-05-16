@@ -1,8 +1,6 @@
 import Image from "next/image"
 import { ImageResponse } from "next/og"
 
-import Player from "react-lottie-player"
-
 import { auth } from "@/auth"
 import { getAgent, getChat } from "@/app/actions"
 import type { ChatPageProps } from "@/app/page"
@@ -105,14 +103,125 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
 
               <div className="grid-row-3 my-5 mb-8 grid grid-flow-row gap-1 md:grid-flow-col md:gap-4">
                 <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
-                  <Player
-                    play={false}
-                    loop={false}
-                    speed={0.5}
-                    direction={-1}
-                    path="/lotties/puzzle.json"
-                    className="size-24 md:h-32 md:w-full"
-                  />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlnsXlink="http://www.w3.org/1999/xlink"
+                    viewBox="0 0 500 500"
+                    width="500"
+                    height="500"
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      height: "100%",
+                      transform: "translate3d(0,0,0)",
+                      contentVisibility: "visible"
+                    }}
+                  >
+                    <title>Puzzle</title>
+                    <defs>
+                      <filter id="a" filterUnits="objectBoundingBox" x="0%" y="0%" width="100%" height="100%">
+                        <feComponentTransfer in="SourceGraphic">
+                          <feFuncA type="table" tableValues="1.0 0.0" />
+                        </feComponentTransfer>
+                      </filter>
+                      <filter id="c" filterUnits="objectBoundingBox" x="0%" y="0%" width="100%" height="100%">
+                        <feComponentTransfer in="SourceGraphic">
+                          <feFuncA type="table" tableValues="1.0 0.0" />
+                        </feComponentTransfer>
+                      </filter>
+                      <mask id="g" mask-type="alpha">
+                        <g filter="url(#a)">
+                          <path fill="#fff" opacity="0" d="M0 0h500v500H0z" />
+                          <use xlinkHref="#b" />
+                        </g>
+                      </mask>
+                      <mask id="f" mask-type="alpha">
+                        <g filter="url(#c)">
+                          <path fill="#fff" opacity="0" d="M0 0h500v500H0z" />
+                          <use xlinkHref="#d" />
+                        </g>
+                      </mask>
+                      <g style={{ display: "block" }} id="b">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          fill-opacity="0"
+                          stroke="#08A88A"
+                          stroke-width="0"
+                          d="M352.392 247.814c.987 5.163 1.506 9.625 1.506 12.64a24.87 24.87 0 0 1-24.876 24.876 24.87 24.87 0 0 1-24.877-24.877c0-3.014.523-7.476 1.51-12.639h-57.176v-57.292c5.163.987 9.625 1.506 12.64 1.506a24.87 24.87 0 0 0 24.876-24.876 24.87 24.87 0 0 0-24.876-24.877c-3.015 0-7.477.523-12.64 1.51V86.492c89.068.058 161.205 72.31 161.205 161.321z"
+                        />
+                        <path
+                          fill="#08A88A"
+                          d="M352.392 247.814c.987 5.163 1.506 9.625 1.506 12.64a24.87 24.87 0 0 1-24.876 24.876 24.87 24.87 0 0 1-24.877-24.877c0-3.014.523-7.476 1.51-12.639h-57.176v-57.292c5.163.987 9.625 1.506 12.64 1.506a24.87 24.87 0 0 0 24.876-24.876 24.87 24.87 0 0 0-24.876-24.877c-3.015 0-7.477.523-12.64 1.51V86.492c89.068.058 161.205 72.31 161.205 161.321z"
+                        />
+                        <g transform="translate(302.245 206.463)scale(3.87)" />
+                      </g>
+                      <g style={{ display: "block" }} id="d">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          fill-opacity="0"
+                          stroke="#08A88A"
+                          stroke-width="0"
+                          d="M352.392 247.814c.987 5.163 1.506 9.625 1.506 12.64a24.87 24.87 0 0 1-24.876 24.876 24.87 24.87 0 0 1-24.877-24.877c0-3.014.523-7.476 1.51-12.639h-57.176v-57.292c5.163.987 9.625 1.506 12.64 1.506a24.87 24.87 0 0 0 24.876-24.876 24.87 24.87 0 0 0-24.876-24.877c-3.015 0-7.477.523-12.64 1.51V86.492c89.068.058 161.205 72.31 161.205 161.321z"
+                        />
+                        <path
+                          fill="#08A88A"
+                          d="M352.392 247.814c.987 5.163 1.506 9.625 1.506 12.64a24.87 24.87 0 0 1-24.876 24.876 24.87 24.87 0 0 1-24.877-24.877c0-3.014.523-7.476 1.51-12.639h-57.176v-57.292c5.163.987 9.625 1.506 12.64 1.506a24.87 24.87 0 0 0 24.876-24.876 24.87 24.87 0 0 0-24.876-24.877c-3.015 0-7.477.523-12.64 1.51V86.492c89.068.058 161.205 72.31 161.205 161.321z"
+                        />
+                        <g transform="translate(302.245 206.463)scale(3.87)" />
+                      </g>
+                      <clipPath id="e">
+                        <path d="M0 0h500v500H0z" />
+                      </clipPath>
+                    </defs>
+                    <g clip-path="url(#e)">
+                      <g mask="url(#f)" style={{ display: "block" }}>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke="#393939"
+                          stroke-width="12.461"
+                          d="M409.625 250.252c-1.006 88.251-72.891 159.432-161.309 159.432v-57.292q0 0 0 0c-5.163.987-9.625 1.506-12.64 1.506a24.87 24.87 0 0 1-24.876-24.876 24.87 24.87 0 0 1 24.877-24.877c3.014 0 7.476.523 12.64 1.51v-56.49"
+                          fill="none"
+                        />
+                        <g transform="rotate(90 -6.289 295.956)scale(3.87)" />
+                      </g>
+                      <g style={{ display: "block" }}>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke="#393939"
+                          stroke-width="12.461"
+                          d="M143.739 249.285c-.987-5.163-1.506-9.625-1.506-12.64a24.87 24.87 0 0 1 24.876-24.876 24.87 24.87 0 0 1 24.877 24.877c0 3.014-.523 7.476-1.51 12.64h57.176v57.29c-5.163-.986-9.625-1.505-12.64-1.505a24.87 24.87 0 0 0-24.876 24.876 24.87 24.87 0 0 0 24.876 24.877c3.015 0 7.477-.523 12.64-1.51v57.292c-89.068-.058-161.205-72.31-161.205-161.32z"
+                          fill="none"
+                        />
+                        <g transform="rotate(180 96.943 145.318)scale(3.87)" />
+                      </g>
+                      <g mask="url(#g)" style={{ display: "block" }}>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke="#393939"
+                          stroke-width="12.461"
+                          d="M247.814 246.417v2.202h-57.292c.987-5.163 1.506-9.625 1.506-12.64a24.87 24.87 0 0 0-24.876-24.876 24.87 24.87 0 0 0-24.877 24.876c0 3.015.523 7.477 1.51 12.64H86.492c.058-87.47 69.737-158.608 156.541-161.135"
+                          fill="none"
+                        />
+                        <g transform="rotate(-90 200.658 -5.805)scale(3.87)" />
+                      </g>
+                      <g style={{ display: "block" }}>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke="#20DA03"
+                          stroke-width="12.461"
+                          d="M352.392 247.814c.987 5.163 1.506 9.625 1.506 12.64a24.87 24.87 0 0 1-24.876 24.876 24.87 24.87 0 0 1-24.877-24.877c0-3.014.523-7.476 1.51-12.639h-57.176v-57.292c5.163.987 9.625 1.506 12.64 1.506a24.87 24.87 0 0 0 24.876-24.876 24.87 24.87 0 0 0-24.876-24.877c-3.015 0-7.477.523-12.64 1.51V86.492c89.068.058 161.205 72.31 161.205 161.321z"
+                          fill="none"
+                        />
+                        <g transform="translate(302.245 206.463)scale(3.87)" />
+                      </g>
+                    </g>
+                  </svg>
                   <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
                     <h3 className="font-bold md:mb-2">Generate</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -122,14 +231,71 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
                 </div>
 
                 <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
-                  <Player
-                    play={false}
-                    loop={false}
-                    speed={0.5}
-                    direction={1}
-                    path="/lotties/globe.json"
-                    className="size-24 md:h-32 md:w-full"
-                  />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 500 500"
+                    width="500"
+                    height="500"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      transform: "translate3d(0,0,0)",
+                      contentVisibility: "visible"
+                    }}
+                  >
+                    <title>Globe</title>
+                    <defs>
+                      <clipPath id="a">
+                        <path d="M0 0h500v500H0z" />
+                      </clipPath>
+                      <clipPath id="b">
+                        <path d="M0 0h500v500H0z" />
+                      </clipPath>
+                      <clipPath id="c">
+                        <path d="M0 0h500v500H0z" />
+                      </clipPath>
+                    </defs>
+                    <g clip-path="url(#a)">
+                      <g
+                        clip-path="url(#b)"
+                        transform="translate(-27.777 -27.777)scale(1.11111)"
+                        style={{ display: "block" }}
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.5"
+                        fill="none"
+                      >
+                        <g
+                          clip-path="url(#c)"
+                          transform="matrix(.9 0 0 .9 25 25)"
+                          style={{ display: "block" }}
+                          stroke="#20DA03"
+                        >
+                          <path
+                            d="M126.667 50c-17.029 0-30.834-22.386-30.834-50s13.805-50 30.834-50m0 100c.083-8.75.166-22.386.166-50s-.083-34.25-.166-50"
+                            transform="translate(-217.488 249.997)scale(3.69)"
+                            style={{ display: "block" }}
+                          />
+                          <path
+                            d="M126.667 50C144.248 50 158.5 27.614 158.5 0s-14.252-50-31.833-50m-50 50h100"
+                            transform="translate(-217.488 249.997)scale(3.69)"
+                            style={{ display: "block" }}
+                          />
+                          <path
+                            d="M158.993-38.138c-8.71 4.56-19.99 7.31-32.32 7.31s-23.61-2.75-32.33-7.31m0 76.278c8.71-4.56 19.99-7.31 32.32-7.31s23.61 2.75 32.33 7.31"
+                            transform="translate(-217.484 249.997)scale(3.69)"
+                            style={{ display: "block" }}
+                          />
+                        </g>
+                        <path
+                          stroke="#393939"
+                          d="M176.667 0c0 27.614-22.386 50-50 50s-50-22.386-50-50 22.386-50 50-50 50 22.386 50 50"
+                          transform="translate(-170.736 250)scale(3.321)"
+                          style={{ display: "block" }}
+                        />
+                      </g>
+                    </g>
+                  </svg>
                   <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
                     <h3 className="font-bold md:mb-2">Deploy</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -138,13 +304,51 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
                   </div>
                 </div>
                 <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
-                  <Player
-                    play={false}
-                    loop={false}
-                    speed={0.5}
-                    path="/lotties/clock.json"
-                    className="size-24 md:h-32 md:w-full"
-                  />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 500 500"
+                    width="500"
+                    height="500"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      transform: "translate3d(0,0,0)",
+                      contentVisibility: "visible"
+                    }}
+                  >
+                    <title>Clock</title>
+                    <defs>
+                      <clipPath id="a">
+                        <path d="M0 0h500v500H0z" />
+                      </clipPath>
+                      <clipPath id="b">
+                        <path d="M0 0h500v500H0z" />
+                      </clipPath>
+                    </defs>
+                    <g clip-path="url(#a)">
+                      <g
+                        clip-path="url(#b)"
+                        style={{ display: "block" }}
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.36"
+                        fill="none"
+                      >
+                        <path
+                          stroke="#393939"
+                          d="M35.537 36.105c-19.526 19.526-51.184 19.526-70.71 0s-19.526-51.184 0-70.71 51.184-19.526 70.71 0 19.526 51.184 0 70.71"
+                          transform="translate(250 250)scale(3.36996)"
+                          style={{ display: "block" }}
+                        />
+                        <path
+                          stroke="#20DA03"
+                          d="M.182-.21v-34.361M.182.75l17.869-17.869"
+                          transform="translate(250 250)scale(3.36996)"
+                          style={{ display: "block" }}
+                        />
+                      </g>
+                    </g>
+                  </svg>
 
                   <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
                     <h3 className="font-bold md:mb-2">Speed Up</h3>
