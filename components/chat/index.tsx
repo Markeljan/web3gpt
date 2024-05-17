@@ -25,6 +25,7 @@ type ChatProps = {
 
 const Chat = ({ threadId, initialMessages, agent, className }: ChatProps) => {
   const session = useSession()
+  const avatarUrl = session?.data?.user?.image
   const userId = session?.data?.user?.id
   const router = useRouter()
   const {
@@ -60,7 +61,7 @@ const Chat = ({ threadId, initialMessages, agent, className }: ChatProps) => {
     <>
       <div className={cn("px-4 pb-[200px] pt-4 md:pt-10", className)}>
         {agent ? <AgentCard agent={agent} /> : <Landing />}
-        <ChatList isLoading={isLoading} messages={messages} />
+        <ChatList isLoading={isLoading} messages={messages} avatarUrl={avatarUrl} />
         <ChatScrollAnchor trackVisibility={isLoading} />
       </div>
       {/* <FileViewer /> */}

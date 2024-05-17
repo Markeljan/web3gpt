@@ -1,12 +1,9 @@
-"use server"
-
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { kv } from "@vercel/kv"
 
 import { auth } from "@/auth"
 import type { Agent, DbChat, DbChatListItem } from "@/lib/types"
-import { AGENTS_ARRAY } from "@/lib/constants"
 
 // Store a new user's details
 export async function storeUser(user: { id: string | number }) {
@@ -192,23 +189,18 @@ export async function shareChat(chat: DbChatListItem) {
 
 export async function getUserField(fieldName: string) {
   try {
-    // Fetch the user's session
     const session = await auth()
     if (!session?.user?.id) {
-      return {
-        error: "No user session"
-      }
+      return null
     }
 
-    // Fetch the user's details from KV using their ID
     const userKey = `user:details:${session.user.id}`
     const userDetails = await kv.hgetall(userKey)
 
-    // Return the value of the specified field name
     return userDetails?.[fieldName]
   } catch (error) {
     console.error(error)
-    return null // or throw error or return undefined, based on your preference
+    return null
   }
 }
 

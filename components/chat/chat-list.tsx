@@ -7,14 +7,15 @@ import { cn, nanoid } from "@/lib/utils"
 export type ChatList = {
   messages: Message[]
   isLoading?: boolean
+  avatarUrl?: string | null
 }
 
-export function ChatList({ messages }: ChatList) {
+export function ChatList({ messages, avatarUrl }: ChatList) {
   return (
     <div className={cn("relative mx-auto max-w-2xl px-2")}>
       {messages.map((message, index) => (
         <div key={`${message.id}-${nanoid()}`}>
-          <ChatMessage message={message} />
+          <ChatMessage message={message} avatarUrl={avatarUrl} />
           {index < messages.length - 1 && <Separator className="my-4 md:my-8" />}
         </div>
       ))}

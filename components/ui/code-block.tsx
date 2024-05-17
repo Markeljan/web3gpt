@@ -10,17 +10,14 @@ import { DeployContractButton } from "@/components/deploy-contract-button"
 import { Button } from "@/components/ui/button"
 import { IconCheck, IconCopy, IconDownload } from "@/components/ui/icons"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
+import { nanoid } from "@/lib/utils"
 
-interface Props {
+type CodeBlockProps = {
   language: string
   value: string
 }
 
-interface languageMap {
-  [key: string]: string | undefined
-}
-
-export const programmingLanguages: languageMap = {
+export const PROGRAMMING_LANGUAGES: Record<string, string> = {
   javascript: ".js",
   python: ".py",
   java: ".java",
@@ -44,34 +41,25 @@ export const programmingLanguages: languageMap = {
   sql: ".sql",
   html: ".html",
   css: ".css",
-  solidity: ".sol"
-  // add more file extensions here, make sure the key is same as language prop in CodeBlock.tsx component
+  solidity: ".sol",
+  clarity: ".clar"
 }
 
-export const generateRandomString = (length: number, lowercase = false) => {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXY3456789" // excluding similar looking characters like Z, 2, I, 1, O, 0
-  let result = ""
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return lowercase ? result.toLowerCase() : result
-}
-
-const CodeBlock: FC<Props> = memo(({ language, value }) => {
+const CodeBlock: FC<CodeBlockProps> = memo(({ language, value }) => {
   const { resolvedTheme } = useTheme()
-  const [isDark, setIsDark] = useState(resolvedTheme === "dark")
+  const [isDarkMode, setIsDarkMode] = useState(resolvedTheme === "dark")
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
   useEffect(() => {
-    setIsDark(resolvedTheme === "dark")
+    setIsDarkMode(resolvedTheme === "dark")
   }, [resolvedTheme])
 
   const downloadAsFile = () => {
     if (typeof window === "undefined") {
       return
     }
-    const fileExtension = programmingLanguages[language] || ".file"
-    const suggestedFileName = `W3GPT${generateRandomString(3, false)}${fileExtension}`
+    const fileExtension = PROGRAMMING_LANGUAGES[language] || ".file"
+    const suggestedFileName = `W3GPT-${nanoid(6)}${fileExtension}`
     const fileName = window.prompt("Enter file name" || "", suggestedFileName)
 
     if (!fileName) {
@@ -97,15 +85,15 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
   }
 
   return (
-    <div className={`codeblock relative w-full ${isDark ? "bg-zinc-950" : "bg-gray-200"} font-sans`}>
+    <div className="codeblock relative w-full font-sans dark:bg-zinc-950 bg-gray-200">
       <div
         className={`flex w-full items-center justify-between ${
-          isDark ? "bg-zinc-800 text-zinc-100" : "bg-gray-300 text-gray-950"
+          isDarkMode ? "bg-zinc-800 text-zinc-100" : "bg-gray-300 text-gray-950"
         } px-6 py-3 pr-4`}
       >
         <span className="text-xs lowercase">{language}</span>
         <div className="flex items-center space-x-1">
-          {language === "solidity" && <DeployContractButton sourceCode={value} />}
+          {language === "solidity" && <DeployContractButton getSourceCode={() => value} />}
           <Button
             variant="ghost"
             className="focus-visible:ring-1 focus-visible:ring-gray-700 focus-visible:ring-offset-0"
@@ -128,7 +116,7 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
       </div>
       <SyntaxHighlighter
         language={language}
-        style={isDark ? coldarkDark : coldarkCold}
+        style={isDarkMode ? coldarkDark : coldarkCold}
         PreTag="div"
         showLineNumbers
         customStyle={{

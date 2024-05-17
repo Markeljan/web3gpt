@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 
 import toast from "react-hot-toast"
 import Player from "react-lottie-player"
+import { useSession } from "next-auth/react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,29 +13,28 @@ import { getUserField, storeEmail } from "@/app/actions"
 import { isValidEmail } from "@/lib/utils"
 import { useLocalStorage } from "@/lib/hooks/use-local-storage"
 import W3GPTLogo from "@/public//w3gpt-logo-beta.svg"
+import { useIsClient } from "@/lib/hooks/use-is-client"
 
 export function Landing({ disableAnimations = false }) {
+  const { data } = useSession()
+  const userId = data?.user?.id
   const [validationError, setValidationError] = useState<string | null>(null)
   const [email, setEmail] = useState<string>("")
   const [localIsSubscribed, setLocalIsSubscribed] = useLocalStorage("email_subscribed", false)
-  const [mounted, setMounted] = useState(false)
+  const isClient = useIsClient()
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    async function fetchUserSubscribed() {
+    const fetchIsEmailSubscribed = async () => {
       const backendIsSubscribed = await getUserField("email_subscribed")
       if (backendIsSubscribed === true) {
         setLocalIsSubscribed(true)
       }
     }
 
-    if (localIsSubscribed !== true) {
-      fetchUserSubscribed()
+    if (localIsSubscribed !== true && userId) {
+      fetchIsEmailSubscribed()
     }
-  }, [localIsSubscribed, setLocalIsSubscribed])
+  }, [localIsSubscribed, setLocalIsSubscribed, userId])
 
   async function handleSubscribe(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -108,7 +108,7 @@ export function Landing({ disableAnimations = false }) {
 
       <hr className="mb-4 md:hidden" />
 
-      {mounted && localIsSubscribed === false && (
+      {isClient && localIsSubscribed === false ? (
         <div className="mx-auto mb-16 max-w-2xl rounded-2xl border-gray-600/25 px-4 text-center dark:border-gray-600/50 md:border">
           <div className="my-5 flex flex-col gap-4">
             <p className="mt-8 scroll-m-20 text-2xl tracking-tight">Weekly Updates</p>
@@ -134,11 +134,11 @@ export function Landing({ disableAnimations = false }) {
             {validationError ? (
               <p className="text-xs text-red-500">{validationError}</p>
             ) : (
-              <p className="mb-8 text-xs text-gray-400">No spam, we promise :)</p>
+              <p className="mb-8 text-xs text-gray-400">{"No spam, we promise :)"}</p>
             )}
           </div>
         </div>
-      )}
+      ) : null}
     </>
   )
 }

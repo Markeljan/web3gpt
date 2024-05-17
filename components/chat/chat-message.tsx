@@ -1,5 +1,3 @@
-"use client"
-
 import Image from "next/image"
 
 import type { Message } from "ai"
@@ -8,19 +6,17 @@ import remarkMath from "remark-math"
 
 import { ChatMessageActions } from "@/components/chat/chat-message-actions"
 import { MemoizedReactMarkdown } from "@/components/markdown"
-import { CodeBlock } from "@/components/ui/codeblock"
+import { CodeBlock } from "@/components/ui/code-block"
 import { IconUser, IconW3GPT } from "@/components/ui/icons"
-import { useAvatar } from "@/lib/hooks/use-avatar"
 import { cn } from "@/lib/utils"
 
 export interface ChatMessageProps {
   className?: string
   message: Message
+  avatarUrl?: string | null
 }
 
-export function ChatMessage({ message, className, ...props }: ChatMessageProps) {
-  const avatarUrl = useAvatar()
-
+export function ChatMessage({ message, avatarUrl, className, ...props }: ChatMessageProps) {
   return (
     <div className={cn("group relative mb-4 flex items-start md:-ml-12")} {...props}>
       <div

@@ -1,8 +1,6 @@
 import { ImageResponse } from "next/og"
 
-import { getAgent, getPublishedChat } from "@/app/actions"
-import type { ChatPageProps } from "@/app/page"
-import W3GPTLogo from "@/public/w3gpt-logo-beta.svg"
+// import { getAgent, getPublishedChat } from "@/app/actions"
 
 export const alt = "Web3 GPT"
 export const contentType = "image/png"
@@ -11,15 +9,16 @@ export const size = {
   height: 630
 }
 
-export default async function OpenGraphImage({ params, searchParams }: ChatPageProps) {
-  const chatId = params?.id
-  const chat = await getPublishedChat(chatId)
-  const agentId = searchParams?.a as string | undefined
-  const agent = agentId ? await getAgent(agentId) : null
+export default async function OpenGraphImage({ params }: { params: { id: string } }) {
+  // const chatId = params?.id
+  // const chat = await getPublishedChat(chatId)
+  // const agentId = chat?.agentId
+  // const agent = agentId ? await getAgent(agentId) : null
 
   return new ImageResponse(
     <div tw="flex w-full items-start h-full flex-col bg-[#191817] text-white p-[80px]">
-      <div tw="flex flex-col w-full pt-[40px]">
+      hey
+      {/* <div tw="flex flex-col w-full pt-[40px]">
         <div tw="flex w-full items-center">
           <div tw="flex h-18 w-18 items-center justify-center rounded-md border border-[#9b9ba4]">
             <svg
@@ -71,7 +70,7 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
           ) : (
             <div className="mx-auto mb-8 max-w-2xl bg-background rounded-2xl border-gray-600/25 px-4 text-center dark:border-gray-600/50 md:mb-12 md:border">
               <div className="relative my-8 flex h-8 w-full md:my-12">
-                <img src={W3GPTLogo} alt="web3 gpt logo" width={638} height={32} />
+                <img src={"/w3gpt-logo-beta.svg"} alt="web3 gpt logo" width={638} height={32} />
               </div>
               <p className="text-lg font-bold tracking-tight lg:text-2xl lg:font-normal">
                 Deploy smart contracts with AI
@@ -338,10 +337,10 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
           )}
         </div>
         <div tw="text-[1.8rem] ml-auto text-[#9b9ba4]">w3gpt.ai</div>
-      </div>
+      </div> */}
     </div>,
     {
-      ...size
+      ...size,
     }
   )
 }
