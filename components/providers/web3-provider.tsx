@@ -1,5 +1,6 @@
 "use client"
 
+import { APP_URL } from "@/lib/constants"
 import { mantleSepolia } from "@/lib/mantle-sepolia"
 import { FULL_RPC_URLS } from "@/lib/viem-utils"
 import { RainbowKitProvider, darkTheme, getDefaultConfig, lightTheme } from "@rainbow-me/rainbowkit"
@@ -25,8 +26,8 @@ const queryClient = new QueryClient()
 
 const config = getDefaultConfig({
   appName: "Web3 GPT",
-  appDescription: "Web3 GPT is a decentralized application that allows you to interact with the blockchain.",
-  appUrl: "https://w3gpt.ai",
+  appDescription: "Write and deploy smart contracts with AI",
+  appUrl: APP_URL,
   appIcon: "/favicon.ico",
   projectId: `${process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID}`,
   chains: chains,

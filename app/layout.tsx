@@ -11,11 +11,12 @@ import { Providers } from "@/components/providers/ui-providers"
 import { Web3Provider } from "@/components/providers/web3-provider"
 import { fontMono, fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
+import { APP_URL } from "@/lib/constants"
 
 export const runtime = "edge"
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://w3gpt.ai"),
+  metadataBase: new URL(APP_URL),
   title: {
     default: "Web3 GPT",
     template: "Web3 GPT"

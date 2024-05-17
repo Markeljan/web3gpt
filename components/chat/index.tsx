@@ -12,6 +12,7 @@ import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { AgentCard } from "@/components/agent-card"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 // import { FileViewer } from "@/components/file-viewer"
 
@@ -23,6 +24,8 @@ type ChatProps = {
 }
 
 const Chat = ({ threadId, initialMessages, agent, className }: ChatProps) => {
+  const session = useSession()
+  const userId = session?.data?.user?.id
   const router = useRouter()
   const {
     messages,
@@ -47,10 +50,10 @@ const Chat = ({ threadId, initialMessages, agent, className }: ChatProps) => {
   }, [setMessages, initialMessages, messages])
 
   useEffect(() => {
-    if (threadIdFromAi && threadIdFromAi !== threadId && status !== "in_progress") {
+    if (userId && threadIdFromAi && threadIdFromAi !== threadId && status !== "in_progress") {
       router.replace(`/chat/${threadIdFromAi}`)
     }
-  }, [threadIdFromAi, threadId, router, status])
+  }, [threadIdFromAi, threadId, router, status, userId])
 
   const isLoading = status === "in_progress"
   return (

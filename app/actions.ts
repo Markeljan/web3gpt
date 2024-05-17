@@ -6,6 +6,7 @@ import { kv } from "@vercel/kv"
 
 import { auth } from "@/auth"
 import type { Agent, DbChat, DbChatListItem } from "@/lib/types"
+import { AGENTS_ARRAY } from "@/lib/constants"
 
 // Store a new user's details
 export async function storeUser(user: { id: string | number }) {
