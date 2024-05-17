@@ -17,7 +17,7 @@ export const DEFAULT_AGENT: Agent = {
   name: "W3GPT",
   description: "Develop smart contracts",
   creator: "soko.eth",
-  imageUrl: "/assets/w3gpt.webp"
+  imageUrl: "/assets/w3gpt.png"
 }
 
 export const AGENTS_ARRAY = [
@@ -26,27 +26,27 @@ export const AGENTS_ARRAY = [
     name: "ERC20",
     description: "Develop ERC20 token contracts",
     creator: "soko.eth",
-    imageUrl: "/assets/erc20.webp"
+    imageUrl: "/assets/erc20.png"
   },
   {
     id: "asst_c5RLL0wfNkyBQJ5zLmmpHFDh",
     name: "ERC721",
     description: "ERC721 NFT contract wizard",
     creator: "soko.eth",
-    imageUrl: "/assets/erc721.webp"
+    imageUrl: "/assets/erc721.png"
   },
   {
     id: "asst_Tgzrzv0VaSgTRMn8ufAULlZG",
     name: "W3GPT",
     description: "Develop smart contracts",
     creator: "soko.eth",
-    imageUrl: "/assets/w3gpt.webp"
+    imageUrl: "/assets/w3gpt.png"
   },
   {
     id: "asst_q1i7mHlBuAbDSrpDQk9f3Egm",
     name: "Creator",
     description: "Create your own AI agent",
     creator: "soko.eth",
-    imageUrl: "/assets/agent-factory.webp"
+    imageUrl: "/assets/agent-factory.png"
   }
 ]

@@ -6,9 +6,6 @@ import { getPublishedChat } from "@/app/actions"
 import { ChatList } from "@/components/chat/chat-list"
 import type { ChatPageProps } from "@/app/page"
 
-// page size is 2.01MB must be less than 2MB for edge
-export const runtime = "nodejs"
-
 export async function generateMetadata({ params }: ChatPageProps): Promise<Metadata> {
   const chat = await getPublishedChat(params.id)
 

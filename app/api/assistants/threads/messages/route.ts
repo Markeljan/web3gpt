@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
                 description,
                 instructions,
                 creator: creator,
-                imageUrl: imageUrl || "/assets/agent-factory.webp"
+                imageUrl: imageUrl || "/assets/agent-factory.png"
               })
 
               if (!assistantId) {

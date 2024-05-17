@@ -4,8 +4,6 @@ import { getAgent, getPublishedChat } from "@/app/actions"
 import type { ChatPageProps } from "@/app/page"
 import W3GPTLogo from "@/public/w3gpt-logo-beta.svg"
 
-export const runtime = "edge"
-
 export const alt = "Web3 GPT"
 export const contentType = "image/png"
 export const size = {
