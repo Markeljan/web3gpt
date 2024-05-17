@@ -1,6 +1,7 @@
 "use client"
+
 import Link from "next/link"
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import { useAccount, useChains } from "wagmi"
 
@@ -23,16 +24,22 @@ import { useDeployWithWallet } from "@/lib/functions/deploy-contract/wallet-depl
 import { nanoid } from "@/lib/utils"
 
 type DeployContractButtonProps = {
-  getSourceCode: () => string
+  sourceCode: string
 }
 
-export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProps) => {
+// function to get the contract name from the source code
+const getContractName = (sourceCode: string) => {
+  const contractNameRegex = /contract\s+(\w+)\s*(?:is|{)/
+  const contractNameMatch = contractNameRegex.exec(sourceCode)
+  return contractNameMatch ? contractNameMatch[1] : ""
+}
+export const DeployContractButton = ({ sourceCode }: DeployContractButtonProps) => {
   const { deploy: deployWithWallet } = useDeployWithWallet()
-  const [sourceCode, setSourceCode] = useState<string>("")
   const [explorerUrl, setExplorerUrl] = useState<string>("")
   const [ipfsUrl, setIpfsUrl] = useState<string>("")
+  const [constructorArgValues, setConstructorArgValues] = useState<string[]>([])
   const [isErrorDeploying, setIsErrorDeploying] = useState<boolean>(false)
-  const { isDeploying, setIsDeploying, isGenerating } = useGlobalStore()
+  const { isDeploying, setIsDeploying } = useGlobalStore()
   const supportedChains = useChains()
   const { chain } = useAccount()
 
@@ -41,18 +48,50 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
     [chain, supportedChains]
   )
 
+  const generateInputFields = useCallback(() => {
+    return constructorArgValues.map((arg, index) => (
+      <div key={`${arg}-${nanoid()}`} className="flex flex-col gap-2">
+        <Label className="text-sm font-medium">{arg}</Label>
+        <Input
+          type="text"
+          value={constructorArgValues[index] || ""}
+          onChange={(e) => {
+            setConstructorArgValues((prev) => {
+              const newConstructorArgValues = [...prev]
+              newConstructorArgValues[index] = e.target.value
+              return newConstructorArgValues
+            })
+          }}
+          className="rounded-md border border-gray-300 p-2"
+        />
+      </div>
+    ))
+  }, [constructorArgValues])
+
+  const generateConstructorArgs = () => {
+    // regex match to get the constructor arguments from the source code.
+    const constructorArgsRegex = /constructor\(([^)]+)\)/
+    const constructorArgsMatch = constructorArgsRegex.exec(sourceCode)
+    if (!constructorArgsMatch) return []
+    const constructorArgs = constructorArgsMatch[1]
+    // split the constructor arguments into an array
+    const constructorArgsArray = constructorArgs.split(",")
+    // trim the whitespace from each argument
+    const trimmedConstructorArgsArray = constructorArgsArray.map((arg) => arg.trim())
+    // return the array of constructor arguments
+    return trimmedConstructorArgsArray
+  }
+
   const { contractName, constructorArgs, inputFields } = useMemo(() => {
     const contractName = getContractName(sourceCode)
-    const constructorArgs = generateConstructorArgs(sourceCode)
-    const inputFields = generateInputFields(sourceCode, constructorArgs)
-    return { contractName, constructorArgs, inputFields }
-  }, [sourceCode])
+    const constructorArgs = generateConstructorArgs()
+    const inputFields = generateInputFields()
+    return { sourceCode, contractName, constructorArgs, inputFields }
+  }, [generateInputFields, generateConstructorArgs, sourceCode])
 
   const handleClickDeploy = async () => {
     setIsDeploying(true)
     setIsErrorDeploying(false)
-    const sourceCode = getSourceCode()
-    setSourceCode(sourceCode)
     try {
       const { explorerUrl, ipfsUrl } = await deployWithWallet({
         contractName,
@@ -69,6 +108,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
       setIsDeploying(false)
     }
   }
+
   return (
     <div className="ml-4 flex w-full justify-end">
       <Dialog
@@ -81,12 +121,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
         }}
       >
         <DialogTrigger asChild>
-          <Button
-            className="mr-2 text-primary-foreground"
-            variant="default"
-            disabled={!isSupportedChain || isGenerating}
-            size="sm"
-          >
+          <Button className="mr-2 text-primary-foreground" variant="default" disabled={!isSupportedChain} size="sm">
             <p className="hidden sm:flex">Deploy Contract</p>
             <p className="flex sm:hidden">Deploy</p>
           </Button>
@@ -121,12 +156,12 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
                 Sign and deploy the contract using your own wallet. Be cautious of risks and network fees.
               </p>
             </div>
-            {constructorArgs.length > 0 && (
+            {inputFields.length > 0 ? (
               <div className="flex max-h-48 flex-col gap-4 overflow-y-auto rounded border-2 p-4">
                 <DialogTitle className="text-md">Constructor Arguments</DialogTitle>
                 {inputFields}
               </div>
-            )}
+            ) : null}
           </div>
           <div className="flex flex-col items-center gap-4 py-4">
             {isErrorDeploying && <p className="text-sm text-destructive">Error deploying contract.</p>}
@@ -158,46 +193,4 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
       </Dialog>
     </div>
   )
-}
-
-// function to get the contract name from the source code
-const getContractName = (sourceCode: string) => {
-  const contractNameRegex = /contract\s+(\w+)\s*(?:is|{)/
-  const contractNameMatch = contractNameRegex.exec(sourceCode)
-  return contractNameMatch ? contractNameMatch[1] : ""
-}
-
-const generateConstructorArgs = (sourceCode: string) => {
-  // regex match to get the constructor arguments from the source code.
-  const constructorArgsRegex = /constructor\(([^)]+)\)/
-  const constructorArgsMatch = constructorArgsRegex.exec(sourceCode)
-  if (!constructorArgsMatch) return []
-  const constructorArgs = constructorArgsMatch[1]
-  // split the constructor arguments into an array
-  const constructorArgsArray = constructorArgs.split(",")
-  // trim the whitespace from each argument
-  const trimmedConstructorArgsArray = constructorArgsArray.map((arg) => arg.trim())
-  // return the array of constructor arguments
-  return trimmedConstructorArgsArray
-}
-
-function generateInputFields(sourceCode: string, constructorArgs: string[]) {
-  const generatedConstructorArgs = generateConstructorArgs(sourceCode)
-  const inputFields = generatedConstructorArgs.map((arg, index) => {
-    return (
-      <div key={`${arg}-${nanoid()}`} className="flex flex-col gap-2">
-        <Label className="text-sm font-medium">{arg}</Label>
-        <Input
-          type="text"
-          value={constructorArgs[index] || ""}
-          onChange={(e) => {
-            const newConstructorArgs = [...constructorArgs]
-            newConstructorArgs[index] = e.target.value
-          }}
-          className="rounded-md border border-gray-300 p-2"
-        />
-      </div>
-    )
-  })
-  return inputFields
 }

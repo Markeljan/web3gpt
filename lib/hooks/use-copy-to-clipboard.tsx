@@ -1,23 +1,19 @@
-"use client"
-
 import { useState } from "react"
 
-export interface useCopyToClipboardProps {
+import { useIsClient } from "@/lib/hooks/use-is-client"
+
+export type useCopyToClipboardProps = {
   timeout?: number
 }
 
 export function useCopyToClipboard({ timeout = 2000 }: useCopyToClipboardProps) {
   const [isCopied, setIsCopied] = useState<boolean>(false)
+  const isClient = useIsClient()
 
   const copyToClipboard = (value: string) => {
-    if (typeof window === "undefined" || !navigator.clipboard?.writeText) {
+    if (!isClient) {
       return
     }
-
-    if (!value) {
-      return
-    }
-
     navigator.clipboard.writeText(value).then(() => {
       setIsCopied(true)
 

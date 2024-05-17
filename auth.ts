@@ -1,5 +1,6 @@
-import NextAuth, { type DefaultSession } from "next-auth"
 import GitHub from "next-auth/providers/github"
+import NextAuth, { type DefaultSession } from "next-auth"
+
 import { storeUser } from "@/app/actions"
 
 // override type definitions for session

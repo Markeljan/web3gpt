@@ -10,7 +10,7 @@ export function useW3GPTDeploy({ chainId }: { chainId: number }) {
     chainId
   })
 
-  async function deploy(_deployContractConfig?: DeployContractParams) {
+  const deploy = (_deployContractConfig?: DeployContractParams) => async () => {
     setIsDeploying(true)
 
     const deployContractResponse = await toast.promise(

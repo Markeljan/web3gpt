@@ -1,9 +1,10 @@
+import { encodeDeployData } from "viem"
+import toast from "react-hot-toast"
+
 import type { VerifyContractParams } from "@/lib/functions/types"
 import handleImports from "@/lib/functions/deploy-contract/handle-imports"
 import { getExplorerUrl } from "@/lib/viem-utils"
-import { encodeDeployData } from "viem"
 import { useAccount, usePublicClient, useWalletClient } from "wagmi"
-import toast from "react-hot-toast"
 import { useGlobalStore } from "@/app/state/global-store"
 import { track } from "@vercel/analytics"
 

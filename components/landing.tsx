@@ -12,8 +12,8 @@ import { Input } from "@/components/ui/input"
 import { getUserField, storeEmail } from "@/app/actions"
 import { isValidEmail } from "@/lib/utils"
 import { useLocalStorage } from "@/lib/hooks/use-local-storage"
-import W3GPTLogo from "@/public//w3gpt-logo-beta.svg"
 import { useIsClient } from "@/lib/hooks/use-is-client"
+import W3GPTLogo from "@/public//w3gpt-logo-beta.svg"
 
 export function Landing({ disableAnimations = false }) {
   const { data } = useSession()
@@ -31,10 +31,10 @@ export function Landing({ disableAnimations = false }) {
       }
     }
 
-    if (localIsSubscribed !== true && userId) {
+    if (localIsSubscribed !== true && userId && isClient) {
       fetchIsEmailSubscribed()
     }
-  }, [localIsSubscribed, setLocalIsSubscribed, userId])
+  }, [localIsSubscribed, setLocalIsSubscribed, userId, isClient])
 
   async function handleSubscribe(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
