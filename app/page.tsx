@@ -1,7 +1,7 @@
 import Chat from "@/components/chat"
 import { getAgent } from "@/app/actions"
 
-export interface ChatPageProps {
+export type ChatPageProps = {
   params: { id: string }
   searchParams?: { [key: string]: string | string[] | undefined }
 }

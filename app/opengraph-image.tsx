@@ -12,7 +12,7 @@ export const size = {
 }
 
 export default async function OpenGraphImage({ params, searchParams }: ChatPageProps) {
-  const chatId = params?.id as string
+  const chatId = params?.id
   const chat = await getPublishedChat(chatId)
   const agentId = searchParams?.a as string | undefined
   const agent = agentId ? await getAgent(agentId) : null
