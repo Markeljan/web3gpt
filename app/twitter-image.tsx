@@ -1,10 +1,8 @@
 import { ImageResponse } from "next/og"
 
-import { getAgent, getSharedChat } from "@/app/actions"
+import { getAgent } from "@/app/actions"
 import type { ChatPageProps } from "@/app/page"
 import W3GPTLogo from "@/public/w3gpt-logo-beta.svg"
-
-export const runtime = "nodejs"
 
 export const alt = "Web3 GPT"
 export const contentType = "image/png"
@@ -22,16 +20,13 @@ const interBold = fetch(new URL("/public/assets/fonts/Inter-Bold.woff", import.m
 )
 
 export default async function OpenGraphImage({ params, searchParams }: ChatPageProps) {
-  const chat = await getSharedChat(params.id)
-  const agentId = chat?.agentId || (searchParams?.a as string | undefined)
+  const agentId = searchParams?.a as string | undefined
   const agent = agentId ? await getAgent(agentId) : null
-
-  const textAlign = chat && chat.title.length > 40 ? "items-start" : "items-center"
 
   return new ImageResponse(
     <div tw="flex w-full items-start h-full flex-col bg-[#191817] text-white p-[80px]">
       <div tw="flex flex-col w-full pt-[40px]">
-        <div tw={`flex w-full ${textAlign}`}>
+        <div tw="flex w-full items-center">
           <div tw="flex h-18 w-18 items-center justify-center rounded-md border border-[#9b9ba4]">
             <svg
               role="img"
@@ -46,7 +41,7 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
             </svg>
           </div>
           <div tw="flex text-white font-bold text-4xl leading-normal ml-10">
-            {chat ? (chat?.title?.length > 120 ? `${chat.title.slice(0, 120)}...` : chat.title) : "Start a chat"}
+            {agent ? `Chat with ${agent.name}` : "Chat on Web3 GPT"}
           </div>
         </div>
         <div tw="flex w-full mt-14 items-start">
