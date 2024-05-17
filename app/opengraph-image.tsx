@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og"
 
-import { getAgent } from "@/app/actions"
+import { getAgent, getPublishedChat } from "@/app/actions"
 import type { ChatPageProps } from "@/app/page"
 import W3GPTLogo from "@/public/w3gpt-logo-beta.svg"
 
@@ -11,15 +11,9 @@ export const size = {
   height: 630
 }
 
-const interRegular = fetch(new URL("/public/assets/fonts/Inter-Regular.woff", import.meta.url)).then((res) =>
-  res.arrayBuffer()
-)
-
-const interBold = fetch(new URL("/public/assets/fonts/Inter-Bold.woff", import.meta.url)).then((res) =>
-  res.arrayBuffer()
-)
-
 export default async function OpenGraphImage({ params, searchParams }: ChatPageProps) {
+  const chatId = params?.id as string
+  const chat = await getPublishedChat(chatId)
   const agentId = searchParams?.a as string | undefined
   const agent = agentId ? await getAgent(agentId) : null
 
@@ -41,7 +35,7 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
             </svg>
           </div>
           <div tw="flex text-white font-bold text-4xl leading-normal ml-10">
-            {agent ? `Chat with ${agent.name}` : "Chat on Web3 GPT"}
+            {chat ? `W3GPT Chat: ${chat.title}` : agent ? `Chat with ${agent.name}` : "Chat with W3GPT"}
           </div>
         </div>
         <div tw="flex w-full mt-14 items-start">
@@ -347,21 +341,7 @@ export default async function OpenGraphImage({ params, searchParams }: ChatPageP
       </div>
     </div>,
     {
-      ...size,
-      fonts: [
-        {
-          name: "Inter",
-          data: await interRegular,
-          style: "normal",
-          weight: 400
-        },
-        {
-          name: "Inter",
-          data: await interBold,
-          style: "normal",
-          weight: 700
-        }
-      ]
+      ...size
     }
   )
 }

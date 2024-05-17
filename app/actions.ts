@@ -152,7 +152,7 @@ export async function clearChats() {
   return redirect("/")
 }
 
-export async function getSharedChat(id: string) {
+export async function getPublishedChat(id: string) {
   const chat = await kv.hgetall<DbChat>(`chat:${id}`)
 
   if (!chat) {
