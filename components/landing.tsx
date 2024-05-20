@@ -51,7 +51,7 @@ export function Landing({ disableAnimations = false }) {
 
   return (
     <>
-      <div className="mx-auto mb-8 max-w-2xl bg-background rounded-2xl border-gray-600/25 px-4 text-center dark:border-gray-600/50 md:mb-12 md:border">
+      <div className="mx-auto mb-8 max-w-2xl bg-background rounded-2xl border-gray-600/25 p-4 text-center dark:border-gray-600/50 md:mb-12 md:border">
         <div className="relative my-8 flex h-8 w-full md:my-12">
           <Image src={W3GPTLogo} alt="web3 gpt logo" priority={true} fill />
         </div>
@@ -99,7 +99,7 @@ export function Landing({ disableAnimations = false }) {
             <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
               <h3 className="font-bold md:mb-2">Speed Up</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Skip the boilerplate, deploy contracts in seconds. No wallet, IDE, or setup required.
+                Skip the boilerplate, deploy in seconds.
               </p>
             </div>
           </div>

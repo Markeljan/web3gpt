@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { useAccount, useChains } from "wagmi"
 
@@ -33,11 +33,13 @@ const getContractName = (sourceCode: string) => {
   const contractNameMatch = contractNameRegex.exec(sourceCode)
   return contractNameMatch ? contractNameMatch[1] : ""
 }
+
 export const DeployContractButton = ({ sourceCode }: DeployContractButtonProps) => {
   const { deploy: deployWithWallet } = useDeployWithWallet()
   const [explorerUrl, setExplorerUrl] = useState<string>("")
   const [ipfsUrl, setIpfsUrl] = useState<string>("")
   const [constructorArgValues, setConstructorArgValues] = useState<string[]>([])
+  const [constructorArgNames, setConstructorArgNames] = useState<string[]>([])
   const [isErrorDeploying, setIsErrorDeploying] = useState<boolean>(false)
   const { isDeploying, setIsDeploying } = useGlobalStore()
   const supportedChains = useChains()
@@ -48,46 +50,48 @@ export const DeployContractButton = ({ sourceCode }: DeployContractButtonProps) 
     [chain, supportedChains]
   )
 
-  const generateInputFields = useCallback(() => {
-    return constructorArgValues.map((arg, index) => (
-      <div key={`${arg}-${nanoid()}`} className="flex flex-col gap-2">
-        <Label className="text-sm font-medium">{arg}</Label>
-        <Input
-          type="text"
-          value={constructorArgValues[index] || ""}
-          onChange={(e) => {
-            setConstructorArgValues((prev) => {
-              const newConstructorArgValues = [...prev]
-              newConstructorArgValues[index] = e.target.value
-              return newConstructorArgValues
-            })
-          }}
-          className="rounded-md border border-gray-300 p-2"
-        />
-      </div>
-    ))
-  }, [constructorArgValues])
-
-  const generateConstructorArgs = () => {
-    // regex match to get the constructor arguments from the source code.
+  const generateConstructorArgs = useCallback(() => {
     const constructorArgsRegex = /constructor\(([^)]+)\)/
     const constructorArgsMatch = constructorArgsRegex.exec(sourceCode)
     if (!constructorArgsMatch) return []
     const constructorArgs = constructorArgsMatch[1]
-    // split the constructor arguments into an array
     const constructorArgsArray = constructorArgs.split(",")
-    // trim the whitespace from each argument
-    const trimmedConstructorArgsArray = constructorArgsArray.map((arg) => arg.trim())
-    // return the array of constructor arguments
-    return trimmedConstructorArgsArray
-  }
+    return constructorArgsArray.map((arg) => arg.trim())
+  }, [sourceCode])
 
-  const { contractName, constructorArgs, inputFields } = useMemo(() => {
-    const contractName = getContractName(sourceCode)
-    const constructorArgs = generateConstructorArgs()
-    const inputFields = generateInputFields()
-    return { sourceCode, contractName, constructorArgs, inputFields }
-  }, [generateInputFields, generateConstructorArgs, sourceCode])
+  useEffect(() => {
+    const args = generateConstructorArgs()
+    setConstructorArgNames(args.map((arg) => arg.split(" ").pop() || ""))
+    setConstructorArgValues(args.map(() => ""))
+  }, [generateConstructorArgs])
+
+  const handleInputChange = useCallback((index: number, value: string) => {
+    setConstructorArgValues((prev) => {
+      const newValues = [...prev]
+      newValues[index] = value
+      return newValues
+    })
+  }, [])
+
+  const generateInputFields = useMemo(() => {
+    return constructorArgNames.map((arg, index) => (
+      <div key={`${arg}`} className="flex flex-col gap-2">
+        <Label className="text-sm font-medium">{arg}</Label>
+        <Input
+          type="text"
+          placeholder={arg}
+          value={constructorArgValues[index]}
+          onChange={(e) => {
+            e.preventDefault()
+            handleInputChange(index, e.target.value)}
+          }
+          className="rounded-md border border-gray-300 p-2"
+        />
+      </div>
+    ))
+  }, [constructorArgNames, constructorArgValues, handleInputChange])
+
+  const contractName = useMemo(() => getContractName(sourceCode), [sourceCode])
 
   const handleClickDeploy = async () => {
     setIsDeploying(true)
@@ -96,7 +100,7 @@ export const DeployContractButton = ({ sourceCode }: DeployContractButtonProps) 
       const { explorerUrl, ipfsUrl } = await deployWithWallet({
         contractName,
         sourceCode,
-        constructorArgs
+        constructorArgs: constructorArgValues
       })
       explorerUrl && setExplorerUrl(explorerUrl)
       setIpfsUrl(ipfsUrl)
@@ -156,12 +160,11 @@ export const DeployContractButton = ({ sourceCode }: DeployContractButtonProps) 
                 Sign and deploy the contract using your own wallet. Be cautious of risks and network fees.
               </p>
             </div>
-            {inputFields.length > 0 ? (
-              <div className="flex max-h-48 flex-col gap-4 overflow-y-auto rounded border-2 p-4">
-                <DialogTitle className="text-md">Constructor Arguments</DialogTitle>
-                {inputFields}
-              </div>
-            ) : null}
+
+            <div className="flex max-h-48 flex-col gap-4 overflow-y-auto rounded border-2 p-4">
+              <DialogTitle className="text-md">Constructor Arguments</DialogTitle>
+              {generateInputFields}
+            </div>
           </div>
           <div className="flex flex-col items-center gap-4 py-4">
             {isErrorDeploying && <p className="text-sm text-destructive">Error deploying contract.</p>}

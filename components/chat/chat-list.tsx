@@ -12,7 +12,7 @@ export type ChatList = {
 
 export function ChatList({ messages, avatarUrl }: ChatList) {
   return (
-    <div className={cn("relative mx-auto max-md:max-w-2xl max-w-3xl px-2")}>
+    <div className={cn("relative mx-auto max-md:max-w-2xl max-w-3xl px-2 md:translate-x-[10%]")}>
       {messages.map((message, index) => (
         <div key={`${message.id}-${nanoid()}`}>
           <ChatMessage message={message} avatarUrl={avatarUrl} />
