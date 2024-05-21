@@ -14,6 +14,7 @@ export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {
 
 export const DEFAULT_AGENT: Agent = {
   id: "asst_Tgzrzv0VaSgTRMn8ufAULlZG",
+  userId: 12901349,
   name: "W3GPT",
   description: "Develop smart contracts",
   creator: "soko.eth",
@@ -23,6 +24,7 @@ export const DEFAULT_AGENT: Agent = {
 export const AGENTS_ARRAY = [
   {
     id: "asst_We6a5t8B5F5uCOPMadM92hCT",
+    userId: 12901349,
     name: "ERC20",
     description: "Develop ERC20 token contracts",
     creator: "soko.eth",
@@ -30,6 +32,7 @@ export const AGENTS_ARRAY = [
   },
   {
     id: "asst_c5RLL0wfNkyBQJ5zLmmpHFDh",
+    userId: 12901349,
     name: "ERC721",
     description: "ERC721 NFT contract wizard",
     creator: "soko.eth",
@@ -37,6 +40,7 @@ export const AGENTS_ARRAY = [
   },
   {
     id: "asst_Tgzrzv0VaSgTRMn8ufAULlZG",
+    userId: 12901349,
     name: "W3GPT",
     description: "Develop smart contracts",
     creator: "soko.eth",
@@ -44,6 +48,7 @@ export const AGENTS_ARRAY = [
   },
   {
     id: "asst_q1i7mHlBuAbDSrpDQk9f3Egm",
+    userId: 12901349,
     name: "Creator",
     description: "Create your own AI agent",
     creator: "soko.eth",

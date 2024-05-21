@@ -7,7 +7,7 @@ import { storeUser } from "@/app/actions"
 declare module "next-auth" {
   interface Session {
     user: {
-      id?: string | null | undefined
+      id?: number
     } & DefaultSession["user"]
   }
 }
@@ -20,11 +20,11 @@ export const {
   callbacks: {
     async jwt({ token, profile }) {
       if (profile?.id) {
-        token.id = String(profile.id)
+        token.id = profile.id
         const user = {
           ...token,
           ...profile,
-          id: String(profile.id)
+          id: Number(profile.id)
         }
         await storeUser(user)
       }
@@ -33,7 +33,7 @@ export const {
 
     async session({ session, token }) {
       if (token?.id) {
-        session.user.id = String(token.id)
+        session.user.id = Number(token.id)
       }
       return session
     }

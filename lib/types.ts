@@ -47,7 +47,7 @@ export type DbChat = {
   agentId: string
   title: string
   createdAt: Date
-  userId: string
+  userId: number
   messages: Message[]
   published: boolean
   avatarUrl?: string | null
@@ -58,7 +58,7 @@ export type DbChatListItem = {
   agentId: string
   createdAt: Date
   title: string
-  userId: string
+  userId: number
   published: boolean
 }
 
@@ -99,6 +99,7 @@ export type ChainData = {
 
 export type Agent = {
   id: string
+  userId: number
   name: string
   description: string
   imageUrl: string

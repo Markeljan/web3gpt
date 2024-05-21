@@ -1,6 +1,6 @@
 "use client"
 
-import { usePathname, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 
 import {
@@ -29,6 +29,7 @@ import type { DbChatListItem, ServerActionResult } from "@/lib/types"
 import { cn, formatDate } from "@/lib/utils"
 import Link from "next/link"
 import { useCallback, useState, useTransition } from "react"
+import { APP_URL } from "@/lib/constants"
 
 interface SidebarActionsProps {
   chat: DbChatListItem
@@ -41,31 +42,25 @@ export function SidebarActions({ chat, removeChat, shareChat }: SidebarActionsPr
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [isRemovePending, startRemoveTransition] = useTransition()
   const [isSharePending, startShareTransition] = useTransition()
-  const pathname = usePathname()
   const router = useRouter()
+  const fullShareUrl = `${APP_URL}/share/${chat.id}`
 
-  const copyShareLink = useCallback(
-    async (chat: DbChatListItem) => {
-      if (!chat.published) {
-        return toast.error("Could not copy share link to clipboard")
+  const copyShareLink = useCallback(() => {
+    navigator.clipboard.writeText(fullShareUrl)
+    setShareDialogOpen(false)
+    toast.success("Share link copied to clipboard", {
+      style: {
+        borderRadius: "10px",
+        background: "#333",
+        color: "#fff",
+        fontSize: "14px"
+      },
+      iconTheme: {
+        primary: "white",
+        secondary: "black"
       }
-      navigator.clipboard.writeText(pathname)
-      setShareDialogOpen(false)
-      toast.success("Share link copied to clipboard", {
-        style: {
-          borderRadius: "10px",
-          background: "#333",
-          color: "#fff",
-          fontSize: "14px"
-        },
-        iconTheme: {
-          primary: "white",
-          secondary: "black"
-        }
-      })
-    },
-    [pathname]
-  )
+    })
+  }, [fullShareUrl])
 
   return (
     <>
@@ -121,7 +116,7 @@ export function SidebarActions({ chat, removeChat, shareChat }: SidebarActionsPr
                 startShareTransition(async () => {
                   if (chat.published) {
                     await new Promise((resolve) => setTimeout(resolve, 500))
-                    copyShareLink(chat)
+                    copyShareLink()
                     return
                   }
 
@@ -132,7 +127,7 @@ export function SidebarActions({ chat, removeChat, shareChat }: SidebarActionsPr
                     return
                   }
 
-                  copyShareLink(result)
+                  copyShareLink()
                 })
               }}
             >

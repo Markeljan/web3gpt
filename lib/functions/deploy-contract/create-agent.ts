@@ -3,6 +3,7 @@ import { storeAgent } from "@/app/actions"
 
 type CreateAgentParams = {
   name: string
+  userId: number
   description: string
   instructions: string
   creator: string
@@ -11,6 +12,7 @@ type CreateAgentParams = {
 
 export default async function createAgent({
   name,
+  userId,
   description,
   instructions,
   creator,
@@ -24,8 +26,13 @@ export default async function createAgent({
     })
   ).id
 
+  if (!userId) {
+    throw new Error("Unauthorized")
+  }
+
   const res = await storeAgent({
     id: assistantId,
+    userId,
     name,
     description,
     creator,

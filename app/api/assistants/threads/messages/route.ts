@@ -101,9 +101,16 @@ export async function POST(request: NextRequest) {
               }
             }
             case "create_agent": {
+              if (!userId) {
+                return {
+                  output: JSON.stringify({ error: "Unauthorized, user not signed in." }),
+                  tool_call_id: toolCall.id
+                }
+              }
               const { name, description, instructions, creator, imageUrl } = parameters
               const assistantId = await createAgent({
                 name,
+                userId,
                 description,
                 instructions,
                 creator: creator,

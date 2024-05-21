@@ -8,7 +8,7 @@ import { auth } from "@/auth"
 import type { Agent, DbChat, DbChatListItem } from "@/lib/types"
 
 // Store a new user's details
-export async function storeUser(user: { id: string | number }) {
+export async function storeUser(user: { id: number }) {
   const userKey = `user:details:${user.id}`
 
   // Save user details
@@ -111,9 +111,9 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
     }
   }
 
-  const uid = await kv.hget<string>(`chat:${id}`, "userId")
+  const userId = await kv.hget<number>(`chat:${id}`, "userId")
 
-  if (String(uid) !== session?.user?.id) {
+  if (userId !== session?.user?.id) {
     return {
       error: "Unauthorized"
     }
@@ -235,7 +235,7 @@ export const deleteAgent = async (id: string) => {
     }
   }
 
-  if (agent.creator !== session.user.id) {
+  if (agent.userId !== session.user.id) {
     return {
       error: "Not authorized"
     }

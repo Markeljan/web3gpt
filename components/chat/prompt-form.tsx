@@ -40,6 +40,7 @@ export function PromptForm({ submitMessage, input, handleInputChange, status }: 
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
+              type="button"
               onClick={() => {
                 router.push("/")
               }}
