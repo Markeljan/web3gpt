@@ -12,9 +12,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useEnterSubmit } from "@/lib/hooks/use-enter-submit"
 import { cn } from "@/lib/utils"
 
-export type PromptProps = Pick<UseAssistantHelpers, "submitMessage" | "input" | "handleInputChange" | "status">
+export type PromptProps = Pick<UseAssistantHelpers, "submitMessage" | "input" | "setInput" | "status">
 
-export function PromptForm({ submitMessage, input, handleInputChange, status }: PromptProps) {
+export function PromptForm({ submitMessage, input, setInput, status }: PromptProps) {
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -61,7 +61,7 @@ export function PromptForm({ submitMessage, input, handleInputChange, status }: 
           onKeyDown={onKeyDown}
           rows={1}
           value={input}
-          onChange={handleInputChange}
+          onChange={(e) => setInput(e.target.value)}
           placeholder="send a message"
           spellCheck={false}
           className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"

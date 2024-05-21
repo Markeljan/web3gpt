@@ -1,7 +1,8 @@
 import { createPublicClient, http } from "viem"
+
 import { API_KEYS, API_URLS } from "@/lib/viem-utils"
 import type { VerifyContractParams } from "@/lib/functions/types"
-import { DEFAULT_GLOBAL_CONFIG } from "@/lib/constants"
+import { DEFAULT_GLOBAL_CONFIG } from "@/app/config"
 
 export const verifyContract = async ({
   deployHash,

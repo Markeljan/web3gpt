@@ -11,12 +11,11 @@ import { Providers } from "@/components/providers/ui-providers"
 import { Web3Provider } from "@/components/providers/web3-provider"
 import { fontMono, fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
-import { APP_URL } from "@/lib/constants"
+import { APP_URL } from "@/app/config"
 
 export const runtime = "edge"
 
 export const metadata: Metadata = {
-  metadataBase: new URL(APP_URL),
   title: {
     default: "Web3 GPT",
     template: "Web3 GPT"
@@ -24,7 +23,8 @@ export const metadata: Metadata = {
   description: "Write and deploy smart contracts with AI.",
   icons: {
     icon: "/favicon.png"
-  }
+  },
+  metadataBase: new URL(APP_URL)
 }
 
 export const viewport: Viewport = {

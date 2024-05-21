@@ -1,8 +1,10 @@
-import { W3GPT_API_SECRET } from "@/lib/constants"
-import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
 import { type NextRequest, NextResponse } from "next/server"
+
 import { parseEther } from "viem"
 import { sepolia } from "viem/chains"
+
+import { W3GPT_API_SECRET } from "@/app/config"
+import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
 
 export const runtime = "nodejs"
 

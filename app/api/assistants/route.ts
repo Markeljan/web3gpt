@@ -1,4 +1,4 @@
-import { openai } from "@/app/config"
+import { openai } from "@/lib/openai"
 import type { NextRequest } from "next/server"
 
 export const runtime = "nodejs"

@@ -1,12 +1,13 @@
 import type { NextRequest } from "next/server"
 
-import { openai } from "@/app/config"
+import { AssistantResponse, type ToolCall } from "ai"
+import { kv } from "@vercel/kv"
+
+import { APP_URL } from "@/app/config"
+import { openai } from "@/lib/openai"
 import { auth } from "@/auth"
 import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
-import { kv } from "@vercel/kv"
-import { AssistantResponse, type ToolCall } from "ai"
-import createAgent from "@/lib/functions/deploy-contract/create-agent"
-import { APP_URL } from "@/lib/constants"
+import { createAgent } from "@/lib/actions/ai"
 import type { DbChat } from "@/lib/types"
 
 export const runtime = "nodejs"

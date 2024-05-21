@@ -1,37 +1,8 @@
 import type { Chain } from "viem"
 import * as allViemChains from "viem/chains"
-import { mantleSepolia } from "@/lib/mantle-sepolia"
-
-const { ...chains } = allViemChains
-
-const holeskyWithBlockExplorer = {
-  ...chains.holesky,
-  blockExplorers: {
-    default: {
-      name: "Etherscan",
-      url: "https://holesky.etherscan.io"
-    }
-  }
-}
-
-const polygonAmoyWithBlockExplorer = {
-  ...chains.polygonAmoy,
-  blockExplorers: {
-    default: {
-      name: "PolygonScan",
-      url: "https://amoy.polygonscan.com"
-    }
-  }
-}
 
 export function getChainById(chainId: number) {
-  if (chainId === mantleSepolia.id) {
-    return mantleSepolia
-  }
-  if (chainId === chains.holesky.id) {
-    return holeskyWithBlockExplorer
-  }
-  for (const chain of Object.values(chains)) {
+  for (const chain of Object.values(allViemChains)) {
     if (chain.id === chainId) {
       return chain
     }
@@ -70,13 +41,5 @@ export const API_KEYS: Record<Chain["id"], string> = {
 }
 
 export const getExplorerUrl = (viemChain: Chain): string | undefined => {
-  if (viemChain.id === chains.holesky.id) {
-    return holeskyWithBlockExplorer.blockExplorers.default.url
-  }
-
-  if (viemChain.id === chains.polygonAmoy.id) {
-    return polygonAmoyWithBlockExplorer.blockExplorers.default.url
-  }
-
-  return viemChain?.blockExplorers?.default.url
+  return viemChain.blockExplorers?.default.url
 }

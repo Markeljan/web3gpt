@@ -1,18 +1,10 @@
-import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
 
 import { auth } from "@/auth"
-import { getAgent, getChat } from "@/app/actions"
-import Chat from "@/components/chat"
-import { openai } from "@/app/config"
-import type { ChatPageProps } from "@/app/page"
-
-export async function generateMetadata({ params }: ChatPageProps): Promise<Metadata> {
-  const chat = await getChat(params.id)
-  return {
-    title: chat?.title.toString().slice(0, 50) || "W3GPT Chat"
-  }
-}
+import { getAgent, getChat } from "@/lib/actions/db"
+import { getAiThreadMessages } from "@/lib/actions/ai"
+import { Chat } from "@/components/chat/chat"
+import type { ChatPageProps } from "@/lib/types"
 
 export default async function ChatPage({ params, searchParams }: ChatPageProps) {
   const session = await auth()
@@ -27,25 +19,12 @@ export default async function ChatPage({ params, searchParams }: ChatPageProps) 
     notFound()
   }
 
-  const agentId = chat.agentId || (searchParams?.a as string | undefined)
+  const agentId = chat.agentId || (searchParams?.a as string)
   const agent = (agentId && (await getAgent(agentId))) || undefined
 
   const threadId = chat.id
 
-  const fullMessages = (await openai.beta.threads.messages.list(threadId, { order: "asc" }))?.data
+  const messages = await getAiThreadMessages(threadId)
 
-  const messages = fullMessages?.map((message) => {
-    const { id, content, role, created_at: createdAt } = message
-    const textContent = content.find((c) => c.type === "text")
-    const text = textContent?.type === "text" ? textContent.text.value : ""
-
-    return {
-      id,
-      content: text,
-      role,
-      createdAt: new Date(createdAt)
-    }
-  })
-
-  return <Chat agent={agent} threadId={threadId} initialMessages={messages} />
+  return <Chat agent={agent} threadId={threadId} initialMessages={messages} session={session} />
 }

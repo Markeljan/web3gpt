@@ -1,4 +1,4 @@
-import { clearChats } from "@/app/actions"
+import { clearChats } from "@/lib/actions/db"
 import { auth } from "@/auth"
 import { ConnectButton } from "@/components/connect-button"
 import { ClearHistory } from "@/components/header/clear-history"

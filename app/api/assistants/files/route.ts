@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server"
 
-import { openai } from "@/app/config"
+import { openai } from "@/lib/openai"
 
 // upload file to assistant's vector store
 export async function POST(request: NextRequest, { assistantId }: { assistantId: string }) {

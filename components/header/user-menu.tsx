@@ -1,18 +1,17 @@
-"use client"
-
 import Image from "next/image"
+
 import type { Session } from "next-auth"
-import { signOut } from "next-auth/react"
 
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { SignOutButton } from "@/components/sign-out-button"
 
 function getUserInitials(name: string) {
   const [firstName, lastName] = name.split(" ")
   return lastName ? `${firstName[0]}${lastName[0]}` : firstName.slice(0, 2)
 }
 
-export function UserMenu({ user }: { user: Session["user"] }) {
+export const UserMenu = ({ user }: { user: Session["user"] }) => {
   return (
     <div className="flex items-center justify-between">
       <DropdownMenu>
@@ -39,15 +38,8 @@ export function UserMenu({ user }: { user: Session["user"] }) {
             <div className="text-xs font-medium">{user?.name}</div>
             <div className="text-xs text-zinc-500">{user?.email}</div>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() =>
-              signOut({
-                callbackUrl: "/"
-              })
-            }
-            className="text-xs"
-          >
-            Log Out
+          <DropdownMenuItem>
+            <SignOutButton />
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -1,4 +1,4 @@
-import { getChatList, removeChat, shareChat } from "@/app/actions"
+import { getChatList, removeChat, shareChat } from "@/lib/actions/db"
 import { LoginButton } from "@/components/header/login-button"
 import { SidebarActions } from "@/components/sidebar/sidebar-actions"
 import { SidebarItem } from "@/components/sidebar/sidebar-item"

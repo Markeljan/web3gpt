@@ -1,39 +1,38 @@
 "use client"
+
 import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 import { useAssistant, type Message } from "ai/react"
+import type { Session } from "next-auth"
 
 import { ChatList } from "@/components/chat/chat-list"
 import { ChatPanel } from "@/components/chat/chat-panel"
 import { ChatScrollAnchor } from "@/components/chat/chat-scroll-anchor"
 import { Landing } from "@/components/landing"
-import { DEFAULT_AGENT } from "@/lib/constants"
+import { DEFAULT_AGENT } from "@/app/config"
 import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { AgentCard } from "@/components/agent-card"
-import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
-
-// import { FileViewer } from "@/components/file-viewer"
 
 type ChatProps = {
   className?: string
-  agent?: Agent
+  agent?: Agent | null
   threadId?: string
   initialMessages?: Message[]
+  session?: Session | null
 }
 
-const Chat = ({ threadId, initialMessages, agent, className }: ChatProps) => {
-  const session = useSession()
-  const avatarUrl = session?.data?.user?.image
-  const userId = session?.data?.user?.id
+export const Chat = ({ threadId, initialMessages, agent, className, session }: ChatProps) => {
+  const avatarUrl = session?.user?.image
+  const userId = session?.user?.id
   const router = useRouter()
   const {
     messages,
     status,
     input,
     submitMessage,
-    handleInputChange,
+    setInput,
     setMessages,
     threadId: threadIdFromAi
   } = useAssistant({
@@ -56,18 +55,14 @@ const Chat = ({ threadId, initialMessages, agent, className }: ChatProps) => {
     }
   }, [threadIdFromAi, threadId, router, status, userId])
 
-  const isLoading = status === "in_progress"
   return (
     <>
       <div className={cn("px-4 pb-[200px] pt-4 md:pt-10", className)}>
-        {agent ? <AgentCard agent={agent} /> : <Landing />}
-        <ChatList isLoading={isLoading} messages={messages} avatarUrl={avatarUrl} />
-        <ChatScrollAnchor trackVisibility={isLoading} />
+        {agent ? <AgentCard agent={agent} /> : <Landing userId={userId} />}
+        <ChatList isLoading={status === "in_progress"} messages={messages} avatarUrl={avatarUrl} />
+        <ChatScrollAnchor trackVisibility={status === "in_progress"} />
       </div>
-      {/* <FileViewer /> */}
-      <ChatPanel submitMessage={submitMessage} input={input} handleInputChange={handleInputChange} status={status} />
+      <ChatPanel submitMessage={submitMessage} input={input} setInput={setInput} status={status} />
     </>
   )
 }
-
-export default Chat

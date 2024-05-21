@@ -1,5 +1,3 @@
-"use client"
-
 import Image from "next/image"
 
 import type { Message } from "ai"
@@ -11,9 +9,6 @@ import { MemoizedReactMarkdown } from "@/components/markdown"
 import { CodeBlock } from "@/components/ui/code-block"
 import { IconUser, IconW3GPT } from "@/components/ui/icons"
 import { cn } from "@/lib/utils"
-import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
-import { useTheme } from "next-themes"
-import { useGlobalStore } from "@/app/state/global-store"
 
 export interface ChatMessageProps {
   className?: string
@@ -22,11 +17,6 @@ export interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, avatarUrl, className, ...props }: ChatMessageProps) {
-  const { isGenerating, isLoading } = useGlobalStore()
-  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
-  const { resolvedTheme } = useTheme()
-  const isDarkMode = resolvedTheme === "dark"
-
   return (
     <div className={cn("group relative mb-4 flex items-start md:-ml-12")} {...props}>
       <div
@@ -48,7 +38,7 @@ export function ChatMessage({ message, avatarUrl, className, ...props }: ChatMes
         <MemoizedReactMarkdown
           className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
           remarkPlugins={[remarkGfm, remarkMath]}
-          linkTarget={"_blank"}
+          linkTarget="_blank"
           components={{
             p({ children }) {
               return <p className="mb-2 last:mb-0">{children}</p>
@@ -76,26 +66,14 @@ export function ChatMessage({ message, avatarUrl, className, ...props }: ChatMes
 
               const language = match?.[1] || ""
 
-              return (
-                <CodeBlock
-                  deployEnabled={!isGenerating && !isLoading && language === "solidity"}
-                  key={Math.random()}
-                  language={language}
-                  isDarkMode={isDarkMode}
-                  isCopied={isCopied}
-                  handleClickCopy={() => copyToClipboard(value)}
-                  value={value}
-                  {...props}
-                />
-              )
+              return <CodeBlock key={Math.random()} language={language} value={value} {...props} />
             }
           }}
         >
           {message.content}
         </MemoizedReactMarkdown>
-        <div className="flex flex-col justify-end">
-          <ChatMessageActions message={message} />
-        </div>
+
+        <ChatMessageActions message={message} />
       </div>
     </div>
   )

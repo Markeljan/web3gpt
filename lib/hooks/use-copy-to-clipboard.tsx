@@ -11,7 +11,7 @@ export function useCopyToClipboard({ timeout = 2000 }: useCopyToClipboardProps) 
   const isClient = useIsClient()
 
   const copyToClipboard = (value: string) => {
-    if (!isClient) {
+    if (!isClient || isCopied) {
       return
     }
     navigator.clipboard.writeText(value).then(() => {

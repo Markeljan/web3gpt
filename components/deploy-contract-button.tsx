@@ -21,7 +21,6 @@ import { IconExternalLink, IconSpinner } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useDeployWithWallet } from "@/lib/functions/deploy-contract/wallet-deploy"
-import { nanoid } from "@/lib/utils"
 
 type DeployContractButtonProps = {
   sourceCode: string
@@ -73,7 +72,7 @@ export const DeployContractButton = ({ sourceCode }: DeployContractButtonProps) 
     })
   }, [])
 
-  const generateInputFields = useMemo(() => {
+  const generatedConstructorFields = useMemo(() => {
     return constructorArgNames.map((arg, index) => (
       <div key={`${arg}`} className="flex flex-col gap-2">
         <Label className="text-sm font-medium">{arg}</Label>
@@ -83,8 +82,8 @@ export const DeployContractButton = ({ sourceCode }: DeployContractButtonProps) 
           value={constructorArgValues[index]}
           onChange={(e) => {
             e.preventDefault()
-            handleInputChange(index, e.target.value)}
-          }
+            handleInputChange(index, e.target.value)
+          }}
           className="rounded-md border border-gray-300 p-2"
         />
       </div>
@@ -160,13 +159,14 @@ export const DeployContractButton = ({ sourceCode }: DeployContractButtonProps) 
                 Sign and deploy the contract using your own wallet. Be cautious of risks and network fees.
               </p>
             </div>
-
-            <div className="flex max-h-48 flex-col gap-4 overflow-y-auto rounded border-2 p-4">
-              <DialogTitle className="text-md">Constructor Arguments</DialogTitle>
-              {generateInputFields}
-            </div>
+            {constructorArgNames.length > 0 ? (
+              <div className="flex max-h-48 flex-col gap-4 overflow-y-auto rounded border-2 p-4">
+                <DialogTitle className="text-md">Constructor Arguments</DialogTitle>
+                {generatedConstructorFields}
+              </div>
+            ) : null}
           </div>
-          <div className="flex flex-col items-center gap-4 py-4">
+          <div className="flex flex-col items-center gap-4">
             {isErrorDeploying && <p className="text-sm text-destructive">Error deploying contract.</p>}
             {isDeploying && <IconSpinner className="size-8 animate-spin text-gray-500" />}
             {explorerUrl && (

@@ -1,6 +1,9 @@
 "use client"
 
+import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useCallback, useState, useTransition } from "react"
+
 import { toast } from "react-hot-toast"
 
 import {
@@ -27,9 +30,7 @@ import { IconShare, IconSpinner, IconTrash, IconUsers } from "@/components/ui/ic
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import type { DbChatListItem, ServerActionResult } from "@/lib/types"
 import { cn, formatDate } from "@/lib/utils"
-import Link from "next/link"
-import { useCallback, useState, useTransition } from "react"
-import { APP_URL } from "@/lib/constants"
+import { APP_URL } from "@/app/config"
 
 interface SidebarActionsProps {
   chat: DbChatListItem

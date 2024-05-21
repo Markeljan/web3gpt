@@ -1,5 +1,6 @@
-import { openai } from "@/app/config"
 import type { NextRequest } from "next/server"
+
+import { openai } from "@/lib/openai"
 
 // download file by file ID
 export async function GET(req: NextRequest, { params: { fileId } }: { params: { fileId: string } }) {

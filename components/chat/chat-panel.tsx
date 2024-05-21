@@ -5,9 +5,9 @@ import { PromptForm } from "@/components/chat/prompt-form"
 import { Button } from "@/components/ui/button"
 import { IconSpinner } from "@/components/ui/icons"
 
-export type ChatPanelProps = Pick<UseAssistantHelpers, "status" | "submitMessage" | "input" | "handleInputChange">
+export type ChatPanelProps = Pick<UseAssistantHelpers, "status" | "submitMessage" | "input" | "setInput">
 
-export function ChatPanel({ status, submitMessage, input, handleInputChange }: ChatPanelProps) {
+export function ChatPanel({ status, submitMessage, input, setInput }: ChatPanelProps) {
   return (
     <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/0 from-0% to-muted/30 to-50%">
       <ButtonScrollToBottom />
@@ -24,7 +24,7 @@ export function ChatPanel({ status, submitMessage, input, handleInputChange }: C
           <PromptForm
             submitMessage={submitMessage}
             input={input}
-            handleInputChange={handleInputChange}
+            setInput={setInput}
             status={status}
           />
         </div>

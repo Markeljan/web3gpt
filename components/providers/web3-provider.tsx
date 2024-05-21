@@ -1,17 +1,17 @@
 "use client"
 
-import { APP_URL } from "@/lib/constants"
-import { mantleSepolia } from "@/lib/mantle-sepolia"
-import { FULL_RPC_URLS } from "@/lib/viem-utils"
 import { RainbowKitProvider, darkTheme, getDefaultConfig, lightTheme } from "@rainbow-me/rainbowkit"
 import "@rainbow-me/rainbowkit/styles.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useTheme } from "next-themes"
 import { http, WagmiProvider } from "wagmi"
-import { baseSepolia, holesky, polygonAmoy, sepolia, arbitrumSepolia } from "wagmi/chains"
+import { arbitrumSepolia, baseSepolia, holesky, mantleSepoliaTestnet, polygonAmoy, sepolia } from "wagmi/chains"
+
+import { APP_URL } from "@/app/config"
+import { FULL_RPC_URLS } from "@/lib/viem-utils"
 
 const mantleSepoliaWithLogo = {
-  ...mantleSepolia,
+  ...mantleSepoliaTestnet,
   iconUrl: "/mantle-logo.jpeg"
 }
 

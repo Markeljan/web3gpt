@@ -5,19 +5,21 @@ import { useEffect, useState } from "react"
 
 import toast from "react-hot-toast"
 import Player from "react-lottie-player"
-import { useSession } from "next-auth/react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { getUserField, storeEmail } from "@/app/actions"
+import { getUserField, storeEmail } from "@/lib/actions/db"
 import { isValidEmail } from "@/lib/utils"
 import { useLocalStorage } from "@/lib/hooks/use-local-storage"
 import { useIsClient } from "@/lib/hooks/use-is-client"
 import W3GPTLogo from "@/public//w3gpt-logo-beta.svg"
 
-export function Landing({ disableAnimations = false }) {
-  const { data } = useSession()
-  const userId = data?.user?.id
+type LandingProps = {
+  userId?: number
+  disableAnimations?: boolean
+}
+
+export function Landing({ userId, disableAnimations }: LandingProps) {
   const [validationError, setValidationError] = useState<string | null>(null)
   const [email, setEmail] = useState<string>("")
   const [localIsSubscribed, setLocalIsSubscribed] = useLocalStorage("email_subscribed", false)
@@ -98,9 +100,7 @@ export function Landing({ disableAnimations = false }) {
 
             <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
               <h3 className="font-bold md:mb-2">Speed Up</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Skip the boilerplate, deploy in seconds.
-              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Skip the boilerplate, deploy in seconds.</p>
             </div>
           </div>
         </div>

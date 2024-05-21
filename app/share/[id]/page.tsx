@@ -1,25 +1,28 @@
-import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { formatDate } from "@/lib/utils"
-import { getPublishedChat } from "@/app/actions"
+import { getAgent, getPublishedChat } from "@/lib/actions/db"
+import { getAiThreadMessages } from "@/lib/actions/ai"
 import { ChatList } from "@/components/chat/chat-list"
-import type { ChatPageProps } from "@/app/page"
+import type { ChatPageProps } from "@/lib/types"
+import { AgentCard } from "@/components/agent-card"
+import { Landing } from "@/components/landing"
+import { auth } from "@/auth"
 
-export async function generateMetadata({ params }: ChatPageProps): Promise<Metadata> {
+export default async function SharePage({ params, searchParams }: ChatPageProps) {
+  const session = await auth()
+  const userId = session?.user?.id
   const chat = await getPublishedChat(params.id)
 
-  return {
-    title: chat?.title.slice(0, 50) || "Chat"
-  }
-}
-
-export default async function SharePage({ params }: ChatPageProps) {
-  const chat = await getPublishedChat(params.id)
-
-  if (!chat?.published) {
+  if (!chat || !chat.published) {
     notFound()
   }
+  const agentId = chat.agentId || (searchParams?.a as string)
+  const agent = agentId ? await getAgent(agentId) : undefined
+
+  const threadId = chat.id
+
+  const messages = await getAiThreadMessages(threadId)
 
   return (
     <>
@@ -29,12 +32,13 @@ export default async function SharePage({ params }: ChatPageProps) {
             <div className="space-y-1 md:-mx-8">
               <h1 className="text-2xl font-bold">{chat.title}</h1>
               <div className="text-sm text-muted-foreground">
-                {formatDate(chat.createdAt)} · {chat.messages.length} messages
+                {formatDate(chat.createdAt)} · {messages.length} messages
               </div>
             </div>
           </div>
         </div>
-        <ChatList messages={chat.messages} />
+        {agent ? <AgentCard agent={agent} /> : <Landing userId={userId} />}
+        <ChatList messages={messages} avatarUrl={chat.avatarUrl} />
       </div>
     </>
   )

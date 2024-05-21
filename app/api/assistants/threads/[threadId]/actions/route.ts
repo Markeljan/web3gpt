@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server"
 
-import { openai } from "@/app/config"
+import { openai } from "@/lib/openai"
 
 // Send a new message to a thread
 export async function POST(request: NextRequest, { params: { threadId } }: { params: { threadId: string } }) {
