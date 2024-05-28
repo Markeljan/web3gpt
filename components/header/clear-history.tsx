@@ -1,7 +1,8 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { toast } from "react-hot-toast"
+import { useState, useTransition } from "react"
+
+import { toast } from "sonner"
 
 import type { ServerActionResult } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -17,7 +18,6 @@ import {
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
 import { IconSpinner, IconClear } from "@/components/ui/icons"
-import { useState, useTransition } from "react"
 
 interface ClearHistoryProps {
   clearChats: () => ServerActionResult<void>
@@ -26,7 +26,6 @@ interface ClearHistoryProps {
 export function ClearHistory({ clearChats }: ClearHistoryProps) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const router = useRouter()
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -59,11 +58,10 @@ export function ClearHistory({ clearChats }: ClearHistoryProps) {
                 }
 
                 setOpen(false)
-                router.push("/")
               })
             }}
           >
-            {isPending && <IconSpinner className="mr-2 animate-spin" />}
+            {isPending ? <IconSpinner className="mr-2 animate-spin" /> : null}
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

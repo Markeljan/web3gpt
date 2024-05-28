@@ -8,7 +8,7 @@ import { auth } from "@/auth"
 import type { Agent, DbChat, DbChatListItem } from "@/lib/types"
 
 // Store a new user's details
-export async function storeUser(user: { id: number }) {
+export async function storeUser(user: { id: string }) {
   const userKey = `user:details:${user.id}`
 
   // Save user details
@@ -30,7 +30,6 @@ export async function storeEmail(email: string) {
   }
 }
 
-// Get all chatIds and titles for a user
 export async function getChatList() {
   const session = await auth()
 
@@ -45,13 +44,12 @@ export async function getChatList() {
     })
 
     for (const chat of chats) {
-      // get chat id and title
-      pipeline?.hmget(chat, "id", "title", "published", "createdAt", "avatarUrl", "userId")
+      pipeline?.hmget<DbChatListItem>(chat, "id", "title", "published", "createdAt", "avatarUrl", "userId")
     }
 
-    const results = await pipeline?.exec()
+    const results = await pipeline?.exec<DbChatListItem[]>()
 
-    return results as DbChatListItem[]
+    return results
   } catch {
     return []
   }
@@ -76,14 +74,37 @@ export async function getChats() {
     })
 
     for (const chat of chats) {
-      pipeline.hgetall(chat)
+      pipeline.hgetall<DbChat>(chat)
     }
 
-    const results = await pipeline?.exec()
-    return results as DbChat[]
+    const results = await pipeline?.exec<DbChat[]>()
+    return results
   } catch {
     return []
   }
+}
+
+export async function storeChat(chat: DbChat) {
+  const session = await auth()
+
+  const userId = session?.user?.id
+
+  if (!userId) {
+    return {
+      error: "Unauthorized"
+    }
+  }
+
+  const payload = {
+    ...chat,
+    userId
+  }
+
+  await kv.hmset(`chat:${chat.id}`, payload)
+  await kv.zadd(`user:chat:${userId}`, {
+    score: chat.createdAt,
+    member: `chat:${chat.id}`
+  })
 }
 
 export async function getChat(id: string) {
@@ -102,7 +123,7 @@ export async function getChat(id: string) {
   return chat
 }
 
-export async function removeChat({ id, path }: { id: string; path: string }) {
+export async function deleteChat({ id, path }: { id: string; path: string }) {
   const session = await auth()
 
   if (!session) {
@@ -113,7 +134,7 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
 
   const userId = await kv.hget<number>(`chat:${id}`, "userId")
 
-  if (userId !== session?.user?.id) {
+  if (String(userId) !== session?.user?.id) {
     return {
       error: "Unauthorized"
     }
@@ -173,7 +194,7 @@ export async function shareChat(chat: DbChatListItem) {
   const session = await auth()
   const userId = session?.user?.id
 
-  if (userId !== chat.userId) {
+  if (userId !== String(chat.userId)) {
     return {
       error: "Unauthorized"
     }
@@ -255,9 +276,9 @@ export const getAgents = async () => {
   const pipeline = kv.pipeline()
 
   for (const agentId of agents) {
-    pipeline.hgetall(`agent:${agentId}`)
+    pipeline.hgetall<Agent>(`agent:${agentId}`)
   }
 
-  const results = await pipeline.exec()
-  return results as Agent[]
+  const results = await pipeline.exec<Agent[]>()
+  return results
 }

@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback, useState, useTransition } from "react"
 
-import { toast } from "react-hot-toast"
+import { toast } from "sonner"
 
 import {
   AlertDialog,
@@ -34,11 +34,11 @@ import { APP_URL } from "@/app/config"
 
 interface SidebarActionsProps {
   chat: DbChatListItem
-  removeChat: (args: { id: string; path: string }) => ServerActionResult<void>
+  deleteChat: (args: { id: string; path: string }) => ServerActionResult<void>
   shareChat: (chat: DbChatListItem) => ServerActionResult<DbChatListItem>
 }
 
-export function SidebarActions({ chat, removeChat, shareChat }: SidebarActionsProps) {
+export function SidebarActions({ chat, deleteChat, shareChat }: SidebarActionsProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [isRemovePending, startRemoveTransition] = useTransition()
@@ -56,10 +56,7 @@ export function SidebarActions({ chat, removeChat, shareChat }: SidebarActionsPr
         color: "#fff",
         fontSize: "14px"
       },
-      iconTheme: {
-        primary: "white",
-        secondary: "black"
-      }
+      icon: "📋"
     })
   }, [fullShareUrl])
 
@@ -159,7 +156,7 @@ export function SidebarActions({ chat, removeChat, shareChat }: SidebarActionsPr
               onClick={(event) => {
                 event.preventDefault()
                 startRemoveTransition(async () => {
-                  const result = await removeChat({
+                  const result = await deleteChat({
                     id: chat.id,
                     path: `chat/${chat.id}`
                   })

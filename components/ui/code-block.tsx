@@ -1,6 +1,6 @@
 "use client"
 
-import { type FC, memo } from "react"
+import { memo, useMemo, useCallback } from "react"
 
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { coldarkCold, coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism"
@@ -9,8 +9,9 @@ import { useTheme } from "next-themes"
 import { DeployContractButton } from "@/components/deploy-contract-button"
 import { Button } from "@/components/ui/button"
 import { IconCheck, IconCopy, IconDownload } from "@/components/ui/icons"
-import { nanoid } from "@/lib/utils"
+import { cn, nanoid } from "@/lib/utils"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
+import { useIsClient } from "@/lib/hooks/use-is-client"
 
 export const PROGRAMMING_LANGUAGES: Record<string, string> = {
   javascript: ".js",
@@ -45,12 +46,37 @@ type CodeBlockProps = {
   value: string
 }
 
-export const CodeBlock: FC<CodeBlockProps> = memo(({ language, value }) => {
+export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
+  const isClient = useIsClient()
   const { resolvedTheme } = useTheme()
-  const isDarkMode = resolvedTheme === "dark"
+  const isDarkMode = !isClient ? true : resolvedTheme === "dark"
 
-  const downloadAsFile = () => {
+  const memoizedHighlighter = useMemo(() => {
+    return (
+      <SyntaxHighlighter
+        language={language}
+        style={isDarkMode ? coldarkDark : coldarkCold}
+        PreTag="div"
+        customStyle={{
+          margin: 0,
+          width: "100%",
+          background: "transparent",
+          padding: "1.5rem 1rem"
+        }}
+        codeTagProps={{
+          style: {
+            fontSize: "0.9rem",
+            fontFamily: "var(--font-mono)"
+          }
+        }}
+      >
+        {value}
+      </SyntaxHighlighter>
+    )
+  }, [value, language, isDarkMode])
+
+  const downloadAsFile = useCallback(() => {
     if (typeof window === "undefined") {
       return
     }
@@ -73,18 +99,19 @@ export const CodeBlock: FC<CodeBlockProps> = memo(({ language, value }) => {
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-  }
+  }, [value, language])
 
   return (
-    <div className="codeblock relative w-full font-sans dark:bg-zinc-950 bg-gray-200">
+    <div className="relative w-full font-sans dark:bg-zinc-950 bg-gray-200">
       <div
-        className={`flex w-full items-center justify-between ${
-          isDarkMode ? "bg-zinc-800 text-zinc-100" : "bg-gray-300 text-gray-950"
-        } px-6 py-3 pr-4`}
+        className={cn("flex w-full items-center justify-between px-6 py-3 pr-4", {
+          "bg-zinc-800 text-zinc-100": isDarkMode,
+          "bg-gray-300 text-gray-950": !isDarkMode
+        })}
       >
         <span className="text-xs lowercase">{language}</span>
         <div className="flex items-center space-x-1">
-          {language === "solidity" ? <DeployContractButton sourceCode={value} /> : null}
+          {language === "solidity" ? <DeployContractButton getSourceCode={() => value} /> : null}
           <Button
             variant="ghost"
             className="focus-visible:ring-1 focus-visible:ring-gray-700 focus-visible:ring-offset-0"
@@ -105,26 +132,7 @@ export const CodeBlock: FC<CodeBlockProps> = memo(({ language, value }) => {
           </Button>
         </div>
       </div>
-      <SyntaxHighlighter
-        language={language}
-        style={isDarkMode ? coldarkDark : coldarkCold}
-        PreTag="div"
-        showLineNumbers
-        customStyle={{
-          margin: 0,
-          width: "100%",
-          background: "transparent",
-          padding: "1.5rem 1rem"
-        }}
-        codeTagProps={{
-          style: {
-            fontSize: "0.9rem",
-            fontFamily: "var(--font-mono)"
-          }
-        }}
-      >
-        {value}
-      </SyntaxHighlighter>
+      {memoizedHighlighter}
     </div>
   )
 })

@@ -119,8 +119,8 @@ export async function POST(req: NextRequest) {
     return new Response(JSON.stringify(deployResult))
   } catch (error) {
     const err = error as Error
-    console.error(`Error in deployContract: ${err.message}`)
-    return new Response(JSON.stringify({ error: `Error in deployContract: ${err.message}` }), { status: 500 })
+    console.error(`Error in deployContract external: ${err.message}`)
+    return new Response(JSON.stringify({ error: `Error in deployContract external: ${err.message}` }), { status: 500 })
   }
 }
 

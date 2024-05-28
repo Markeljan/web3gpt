@@ -1,4 +1,4 @@
-const solc = require("solc")
+import solc from "solc"
 
 export default async function compileContract({
   standardJsonInput,

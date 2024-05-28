@@ -1,22 +1,26 @@
-import type { Message } from "ai"
+import type { AssistantStatus, Message } from "ai"
 
 import { ChatMessage } from "@/components/chat/chat-message"
 import { Separator } from "@/components/ui/separator"
-import { cn, nanoid } from "@/lib/utils"
+import { nanoid } from "@/lib/utils"
 
 export type ChatList = {
   messages: Message[]
-  isLoading?: boolean
   avatarUrl?: string | null
+  status?: AssistantStatus
 }
 
-export function ChatList({ messages, avatarUrl }: ChatList) {
+export function ChatList({ messages, avatarUrl, status }: ChatList) {
+  if (!messages || messages.length === 0) {
+    return null
+  }
+
   return (
-    <div className={cn("relative mx-auto max-md:max-w-2xl max-w-3xl px-2 md:translate-x-[10%]")}>
+    <div className="relative flex flex-col mx-auto max-md:max-w-2xl max-w-4xl w-full p-2 md:translate-x-[10%]">
       {messages.map((message, index) => (
-        <div key={`${message.id}-${nanoid()}`}>
-          <ChatMessage message={message} avatarUrl={avatarUrl} />
-          {index < messages.length - 1 && <Separator className="my-4 md:my-8" />}
+        <div className="flex flex-col w-full" key={`${message.id}-${nanoid()}`}>
+          <ChatMessage message={message} avatarUrl={avatarUrl} status={status} />
+          {index < messages.length - 1 && <Separator className="my-4 md:my-8 md:-translate-x-[5%]" />}
         </div>
       ))}
     </div>

@@ -1,13 +1,14 @@
 "use client"
 
+import Link from "next/link"
+import { useTransition } from "react"
+
 import { useTheme } from "next-themes"
 
-import { useTransition } from "react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { IconCog, IconGitHub, IconTelegram, IconTwitter } from "@/components/ui/icons"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 export function SettingsDropDown() {
@@ -52,7 +53,7 @@ export function SettingsDropDown() {
         >
           System
         </DropdownMenuItem>
-        <div className="mx-1 flex flex-row  justify-between border-t pt-1">
+        <div className="mx-1 flex flex-row justify-between border-t pt-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Link

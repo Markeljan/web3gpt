@@ -20,19 +20,18 @@ type ChatProps = {
   agent?: Agent | null
   threadId?: string
   initialMessages?: Message[]
-  session?: Session | null
+  session?: Session
 }
 
-export const Chat = ({ threadId, initialMessages, agent, className, session }: ChatProps) => {
+export const Chat = ({ threadId, initialMessages = [], agent, className, session }: ChatProps) => {
   const avatarUrl = session?.user?.image
   const userId = session?.user?.id
   const router = useRouter()
   const {
     messages,
     status,
-    input,
-    submitMessage,
-    setInput,
+    stop,
+    append,
     setMessages,
     threadId: threadIdFromAi
   } = useAssistant({
@@ -44,14 +43,14 @@ export const Chat = ({ threadId, initialMessages, agent, className, session }: C
   })
 
   useEffect(() => {
-    if (messages && !(messages?.length > 0) && initialMessages) {
+    if (messages.length === 0 && initialMessages?.length > 0) {
       setMessages(initialMessages)
     }
-  }, [setMessages, initialMessages, messages])
+  }, [initialMessages, messages, setMessages])
 
   useEffect(() => {
     if (userId && threadIdFromAi && threadIdFromAi !== threadId && status !== "in_progress") {
-      router.replace(`/chat/${threadIdFromAi}`)
+      router.replace(`/chat/${threadIdFromAi}`, { scroll: false })
     }
   }, [threadIdFromAi, threadId, router, status, userId])
 
@@ -59,10 +58,10 @@ export const Chat = ({ threadId, initialMessages, agent, className, session }: C
     <>
       <div className={cn("px-4 pb-[200px] pt-4 md:pt-10", className)}>
         {agent ? <AgentCard agent={agent} /> : <Landing userId={userId} />}
-        <ChatList isLoading={status === "in_progress"} messages={messages} avatarUrl={avatarUrl} />
+        <ChatList messages={messages} avatarUrl={avatarUrl} status={status} />
         <ChatScrollAnchor trackVisibility={status === "in_progress"} />
       </div>
-      <ChatPanel submitMessage={submitMessage} input={input} setInput={setInput} status={status} />
+      <ChatPanel stop={stop} append={append} status={status} />
     </>
   )
 }

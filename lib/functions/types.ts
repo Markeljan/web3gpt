@@ -1,4 +1,4 @@
-import type { Chain, Hex } from "viem"
+import type { Chain, Hash, Hex } from "viem"
 
 export type GlobalConfig = {
   viemChain: Chain
@@ -23,7 +23,7 @@ export type DeployContractResult = {
 }
 
 export type VerifyContractParams = {
-  deployHash: Hex
+  deployHash: Hash
   standardJsonInput: string
   encodedConstructorArgs: string
   fileName: string

@@ -1,28 +1,38 @@
 import type { Metadata, Viewport } from "next"
+import { JetBrains_Mono as FontMono, Inter as FontSans } from "next/font/google"
 
 import { Analytics } from "@vercel/analytics/react"
-import { Toaster } from "react-hot-toast"
-import { SessionProvider } from "next-auth/react"
+import { Toaster } from "@/components/ui/sonner"
 
 import "@/app/globals.css"
-import { auth } from "@/auth"
-import Header from "@/components/header"
+import { Header } from "@/components/header/header"
 import { Providers } from "@/components/providers/ui-providers"
 import { Web3Provider } from "@/components/providers/web3-provider"
-import { fontMono, fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import { APP_URL } from "@/app/config"
+
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans"
+})
+
+const fontMono = FontMono({
+  subsets: ["latin"],
+  variable: "--font-mono"
+})
 
 export const runtime = "edge"
 
 export const metadata: Metadata = {
   title: {
-    default: "Web3 GPT",
-    template: "Web3 GPT"
+    default: "W3GPT",
+    template: "%s - W3GPT"
   },
   description: "Write and deploy smart contracts with AI.",
   icons: {
-    icon: "/favicon.png"
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png"
   },
   metadataBase: new URL(APP_URL)
 }
@@ -39,18 +49,16 @@ interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-  const session = await auth()
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
       <body className={cn("font-sans antialiased", fontSans.variable, fontMono.variable)}>
-        <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <div className="flex min-h-screen flex-col">
             <main className="flex flex-1 flex-col bg-muted/50">
               <Web3Provider>
                 <Header />
-                <SessionProvider session={session}>{children}</SessionProvider>
+                {children}
+                <Toaster />
               </Web3Provider>
             </main>
           </div>

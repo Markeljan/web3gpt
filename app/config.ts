@@ -17,7 +17,7 @@ export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {
 
 export const DEFAULT_AGENT: Agent = {
   id: "asst_Tgzrzv0VaSgTRMn8ufAULlZG",
-  userId: 12901349,
+  userId: "12901349",
   name: "W3GPT",
   description: "Develop smart contracts",
   creator: "soko.eth",

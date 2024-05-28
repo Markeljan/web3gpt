@@ -1,5 +1,5 @@
 import { encodeDeployData } from "viem"
-import toast from "react-hot-toast"
+import { toast } from "sonner"
 
 import type { VerifyContractParams } from "@/lib/functions/types"
 import handleImports from "@/lib/functions/deploy-contract/handle-imports"
@@ -131,20 +131,21 @@ export function useDeployWithWallet() {
 
     const [account] = await walletClient.getAddresses()
 
-    const deployHash = await toast.promise(
-      walletClient.deployContract({
-        abi: abi,
-        bytecode: bytecode,
-        account: account,
-        args: parsedConstructorArgs
-      }),
-      {
-        loading: "Sending deploy transaction...",
-        success: "Deploy transaction submitted!",
-        error: "Failed to deploy contract"
-      }
-    )
+    const deployLoadingToast = toast.loading("Deploying contract...")
+    const deployHash = await walletClient.deployContract({
+      abi: abi,
+      bytecode: bytecode,
+      account: account,
+      args: parsedConstructorArgs
+    })
 
+    if (!deployHash) {
+      toast.dismiss(deployLoadingToast)
+      toast.error("Failed to deploy contract")
+      return
+    }
+
+    const ipfsLoadingToast = toast.loading("Uploading to IPFS...")
     const ipfsUploadResponse = await fetch("/api/ipfs-upload", {
       method: "POST",
       headers: {
@@ -160,6 +161,13 @@ export function useDeployWithWallet() {
 
     const ipfsCid = await ipfsUploadResponse.json()
     const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`
+
+    toast.dismiss(ipfsLoadingToast)
+    if (!ipfsCid) {
+      toast.error("Failed to upload to IPFS")
+    } else {
+      toast.success("Uploaded to IPFS successfully!")
+    }
 
     const encodedConstructorArgs = deployData.slice(bytecode.length)
 
@@ -182,19 +190,17 @@ export function useDeployWithWallet() {
     })
 
     try {
-      const transactionReceipt =
-        publicClient &&
-        (await toast.promise(
-          publicClient.waitForTransactionReceipt({
-            hash: verifyContractConfig?.deployHash
-          }),
-          {
-            loading: "Waiting for confirmations...",
-            success: "Transaction confirmed!",
-            error: "Failed to receive enough confirmations"
-          }
-        ))
-      const address = transactionReceipt?.contractAddress || undefined
+      const transactionReceipt = await publicClient?.waitForTransactionReceipt({
+        hash: verifyContractConfig.deployHash
+      })
+
+      const address = transactionReceipt?.contractAddress
+
+      if (!address) {
+        toast.dismiss(deployLoadingToast)
+        toast.error("Contract deployment failed")
+        return
+      }
 
       const deploymentData = {
         address,
@@ -208,9 +214,13 @@ export function useDeployWithWallet() {
       }
 
       setLastDeploymentData(deploymentData)
+      toast.dismiss(deployLoadingToast)
+      toast.success("Contract deployed successfully!")
       return deploymentData
     } catch (error) {
       console.error(error)
+      toast.dismiss(deployLoadingToast)
+      toast.error("Contract deployment failed")
       const deploymentData = {
         transactionHash: deployHash,
         explorerUrl: txHashExplorerUrl,

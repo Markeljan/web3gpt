@@ -1,33 +1,26 @@
-import { getChatList, removeChat, shareChat } from "@/lib/actions/db"
-import { LoginButton } from "@/components/header/login-button"
+import { deleteChat, shareChat } from "@/lib/actions/db"
 import { SidebarActions } from "@/components/sidebar/sidebar-actions"
 import { SidebarItem } from "@/components/sidebar/sidebar-item"
+import type { DbChatListItem } from "@/lib/types"
 
 export interface SidebarListProps {
-  userId?: string
+  chatList?: DbChatListItem[]
 }
 
-export async function SidebarList({ userId }: SidebarListProps) {
-  const chats = await getChatList()
+export async function SidebarList({ chatList }: SidebarListProps) {
   return (
     <div className="flex-1 overflow-auto">
-      {chats?.length ? (
+      {chatList?.length ? (
         <div className="space-y-2 px-2">
-          {chats.map((chat) => (
+          {chatList.map((chat) => (
             <SidebarItem key={chat.id} chat={chat}>
-              <SidebarActions chat={chat} removeChat={removeChat} shareChat={shareChat} />
+              <SidebarActions chat={chat} deleteChat={deleteChat} shareChat={shareChat} />
             </SidebarItem>
           ))}
         </div>
       ) : (
         <div className="p-8 text-center">
-          {userId ? (
-            <p className="text-sm text-muted-foreground">No chat history</p>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              <LoginButton variant="link" text="Login" showGithubIcon={false} className="pr-0" /> to save chat history.
-            </p>
-          )}
+          <p className="text-sm text-muted-foreground">No chat history found</p>
         </div>
       )}
     </div>

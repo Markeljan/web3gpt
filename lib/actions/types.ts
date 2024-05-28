@@ -1,6 +1,6 @@
 export type CreateAgentParams = {
   name: string
-  userId: number
+  userId: string
   description: string
   instructions: string
   creator: string

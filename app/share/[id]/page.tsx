@@ -8,21 +8,34 @@ import type { ChatPageProps } from "@/lib/types"
 import { AgentCard } from "@/components/agent-card"
 import { Landing } from "@/components/landing"
 import { auth } from "@/auth"
+import type { Metadata } from "next"
+import { APP_URL } from "@/app/config"
+
+export async function generateMetadata({ params }: ChatPageProps) {
+  const metadata: Metadata = {
+    title: "Chat",
+    description: "Chat with an AI assistant",
+    openGraph: {
+      images: [`${APP_URL}/api/og?id=${params.id}&h=630`]
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: "@w3gpt_ai",
+      images: [`${APP_URL}/api/og?id=${params.id}&h=675`]
+    }
+  }
+  return metadata
+}
 
 export default async function SharePage({ params, searchParams }: ChatPageProps) {
-  const session = await auth()
+  const [session, chat] = await Promise.all([auth(), getPublishedChat(params.id)])
   const userId = session?.user?.id
-  const chat = await getPublishedChat(params.id)
 
   if (!chat || !chat.published) {
     notFound()
   }
   const agentId = chat.agentId || (searchParams?.a as string)
-  const agent = agentId ? await getAgent(agentId) : undefined
-
-  const threadId = chat.id
-
-  const messages = await getAiThreadMessages(threadId)
+  const [agent, messages] = await Promise.all([agentId ? getAgent(agentId) : undefined, getAiThreadMessages(chat.id)])
 
   return (
     <>

@@ -9,8 +9,8 @@ export type DbChat = {
   id: string
   agentId: string
   title: string
-  createdAt: Date
-  userId: number
+  createdAt: number
+  userId: string
   messages: Message[]
   published: boolean
   avatarUrl?: string | null
@@ -19,9 +19,9 @@ export type DbChat = {
 export type DbChatListItem = {
   id: string
   agentId: string
-  createdAt: Date
+  createdAt: number
   title: string
-  userId: number
+  userId: string
   published: boolean
 }
 
@@ -34,7 +34,7 @@ export type ServerActionResult<Result> = Promise<
 
 export type Agent = {
   id: string
-  userId: number
+  userId: string
   name: string
   description: string
   imageUrl: string

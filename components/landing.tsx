@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { useEffect, useState } from "react"
 
-import toast from "react-hot-toast"
+import { toast } from "sonner"
 import Player from "react-lottie-player"
 
 import { Button } from "@/components/ui/button"
@@ -15,7 +15,7 @@ import { useIsClient } from "@/lib/hooks/use-is-client"
 import W3GPTLogo from "@/public//w3gpt-logo-beta.svg"
 
 type LandingProps = {
-  userId?: number
+  userId?: string
   disableAnimations?: boolean
 }
 

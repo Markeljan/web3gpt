@@ -1,15 +1,29 @@
-import { clsx, type ClassValue } from "clsx"
-import { customAlphabet } from "nanoid"
+import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { customAlphabet } from "nanoid"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 7) // 7-character random string
+export const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 7)
 
 export function formatDate(input: string | number | Date): string {
-  const date = new Date(Number(input))
+  let date: Date
+  if (typeof input === "number") {
+    if (input.toString().length === 10) {
+      date = new Date(input * 1000)
+    }
+  }
+  if (typeof input === "string") {
+    date = new Date(input)
+  }
+  if (input instanceof Date) {
+    date = input
+  } else {
+    date = new Date()
+  }
+  
   return date.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",

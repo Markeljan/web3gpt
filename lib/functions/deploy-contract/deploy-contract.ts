@@ -1,11 +1,13 @@
-const solc = require("solc")
+import { track } from "@vercel/analytics/server"
+
+import solc from "solc"
+import { type Chain, type Hex, createWalletClient, encodeDeployData, http } from "viem"
+import { privateKeyToAccount } from "viem/accounts"
+
 import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/functions/types"
 import handleImports from "@/lib/functions/deploy-contract/handle-imports"
 import { getChainById, getExplorerUrl } from "@/lib/viem-utils"
 import ipfsUpload from "@/lib/functions/deploy-contract/ipfs-upload"
-import { type Chain, type Hex, createWalletClient, encodeDeployData, http } from "viem"
-import { privateKeyToAccount } from "viem/accounts"
-import { track } from "@vercel/analytics/server"
 
 export default async function deployContract({
   chainId,
@@ -26,6 +28,7 @@ export default async function deployContract({
     },
     ...handleImportsResult?.sources
   }
+
   const sourcesKeys = Object.keys(sources)
 
   // Loop over each source
@@ -126,7 +129,7 @@ export default async function deployContract({
   })
 
   const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
-  
+
   const ipfsCid = await ipfsUpload(sources, JSON.stringify(abi), bytecode, standardJsonInput)
 
   const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`
@@ -151,7 +154,7 @@ export default async function deployContract({
     standardJsonInput
   }
 
-  track("deployed_contract", {
+  await track("deployed_contract", {
     contractName,
     explorerUrl
   })

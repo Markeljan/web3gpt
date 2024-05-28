@@ -8,7 +8,7 @@ export type SidebarProps = {
   children?: React.ReactNode
 }
 
-export default function Sidebar({ children }: SidebarProps) {
+export const Sidebar = ({ children }: SidebarProps) => {
   return (
     <Sheet>
       <SheetTrigger asChild>

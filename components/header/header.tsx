@@ -1,11 +1,10 @@
-import { clearChats } from "@/lib/actions/db"
 import { auth } from "@/auth"
 import { ConnectButton } from "@/components/connect-button"
 import { ClearHistory } from "@/components/header/clear-history"
 import { LoginButton } from "@/components/header/login-button"
 import { SettingsDropDown } from "@/components/header/settings-drop-down"
 import { UserMenu } from "@/components/header/user-menu"
-import Sidebar from "@/components/sidebar"
+import { Sidebar } from "@/components/sidebar/sidebar"
 import { SidebarAgents } from "@/components/sidebar/sidebar-agents"
 import { SidebarFooter } from "@/components/sidebar/sidebar-footer"
 import { SidebarList } from "@/components/sidebar/sidebar-list"
@@ -13,11 +12,14 @@ import { Badge } from "@/components/ui/badge"
 import { IconSeparator } from "@/components/ui/icons"
 import { SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { clearChats, getChatList } from "@/lib/actions/db"
 import { cn } from "@/lib/utils"
 
-export default async function Header() {
+export const Header = async () => {
   const session = await auth()
-  const isSignedIn = !!session?.user
+  const user = session?.user
+  const chatList = await getChatList()
+
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-background px-4">
       <div className="flex items-center">
@@ -28,20 +30,23 @@ export default async function Header() {
             </SheetHeader>
             <SidebarAgents />
           </div>
-          {/* divider line */}
           <div className="border-t border-muted px-8 mt-4" />
           <SheetHeader className="p-4">
             <SheetTitle className="text-md">Chat History</SheetTitle>
           </SheetHeader>
-          <SidebarList userId={`${session?.user?.id}`} />
-          <SidebarFooter className="justify-end">
-            {isSignedIn && <ClearHistory clearChats={clearChats} />}
-          </SidebarFooter>
+          {user ? (
+            <>
+              <SidebarList chatList={chatList} />
+              <SidebarFooter className="justify-end">
+                <ClearHistory clearChats={clearChats} />
+              </SidebarFooter>
+            </>
+          ) : null}
         </Sidebar>
         <div className="flex items-center">
           <IconSeparator className="size-6 text-muted-foreground/50" />
-          {session?.user ? (
-            <UserMenu user={session.user} />
+          {user ? (
+            <UserMenu user={user} />
           ) : (
             <LoginButton variant="link" showGithubIcon={true} text="Login" className="-ml-2" />
           )}

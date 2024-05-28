@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label"
 import { useDeployWithWallet } from "@/lib/functions/deploy-contract/wallet-deploy"
 
 type DeployContractButtonProps = {
-  sourceCode: string
+  getSourceCode: () => string
 }
 
 // function to get the contract name from the source code
@@ -33,13 +33,14 @@ const getContractName = (sourceCode: string) => {
   return contractNameMatch ? contractNameMatch[1] : ""
 }
 
-export const DeployContractButton = ({ sourceCode }: DeployContractButtonProps) => {
+export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProps) => {
   const { deploy: deployWithWallet } = useDeployWithWallet()
   const [explorerUrl, setExplorerUrl] = useState<string>("")
   const [ipfsUrl, setIpfsUrl] = useState<string>("")
   const [constructorArgValues, setConstructorArgValues] = useState<string[]>([])
   const [constructorArgNames, setConstructorArgNames] = useState<string[]>([])
   const [isErrorDeploying, setIsErrorDeploying] = useState<boolean>(false)
+  const [sourceCode, setSourceCode] = useState<string>("")
   const { isDeploying, setIsDeploying } = useGlobalStore()
   const supportedChains = useChains()
   const { chain } = useAccount()
@@ -96,11 +97,23 @@ export const DeployContractButton = ({ sourceCode }: DeployContractButtonProps) 
     setIsDeploying(true)
     setIsErrorDeploying(false)
     try {
-      const { explorerUrl, ipfsUrl } = await deployWithWallet({
+      const deploymentData = await deployWithWallet({
         contractName,
         sourceCode,
         constructorArgs: constructorArgValues
       })
+      if (!deploymentData) {
+        setIsErrorDeploying(true)
+        setIsDeploying(false)
+        return
+      }
+
+      const { explorerUrl, ipfsUrl } = deploymentData
+      if (!explorerUrl || !ipfsUrl) {
+        setIsErrorDeploying(true)
+        setIsDeploying(false)
+        return
+      }
       explorerUrl && setExplorerUrl(explorerUrl)
       setIpfsUrl(ipfsUrl)
 
@@ -117,14 +130,20 @@ export const DeployContractButton = ({ sourceCode }: DeployContractButtonProps) 
       <Dialog
         onOpenChange={(isOpen) => {
           if (!isOpen && !isDeploying) {
-            setExplorerUrl("")
-            setIpfsUrl("")
             setIsErrorDeploying(false)
           }
         }}
       >
         <DialogTrigger asChild>
-          <Button className="mr-2 text-primary-foreground" variant="default" disabled={!isSupportedChain} size="sm">
+          <Button
+            onClick={() => {
+              setSourceCode(getSourceCode())
+            }}
+            className="mr-2 text-primary-foreground"
+            variant="default"
+            disabled={!isSupportedChain}
+            size="sm"
+          >
             <p className="hidden sm:flex">Deploy Contract</p>
             <p className="flex sm:hidden">Deploy</p>
           </Button>

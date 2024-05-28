@@ -1,7 +1,6 @@
 import type { NextRequest } from "next/server"
 
 import { AssistantResponse, type ToolCall } from "ai"
-import { kv } from "@vercel/kv"
 
 import { APP_URL } from "@/app/config"
 import { openai } from "@/lib/openai"
@@ -9,6 +8,7 @@ import { auth } from "@/auth"
 import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
 import { createAgent } from "@/lib/actions/ai"
 import type { DbChat } from "@/lib/types"
+import { storeChat } from "@/lib/actions/db"
 
 export const runtime = "nodejs"
 
@@ -41,26 +41,23 @@ export async function POST(request: NextRequest) {
     const title = message.slice(0, 50)
     const newChat: DbChat = {
       id: threadId,
+      userId,
       title,
       agentId: assistantId,
-      userId,
-      createdAt: new Date(createdAt),
+      createdAt: createdAt,
       avatarUrl: avatarUrl,
       published: false,
       messages: [{ id: messageId, role: "user", content: message }]
     }
-    await kv.hmset(`chat:${threadId}`, newChat)
-    await kv.zadd(`user:chat:${userId}`, {
-      score: createdAt,
-      member: `chat:${threadId}`
-    })
+
+    await storeChat(newChat)
   }
 
   return AssistantResponse({ threadId, messageId }, async ({ forwardStream, sendDataMessage }) => {
     // Run the assistant on the thread
     const runStream = openai.beta.threads.runs.stream(threadId, {
       assistant_id: assistantId,
-      stream: true
+      stream: true,
     })
 
     // forward run status would stream message deltas
@@ -94,9 +91,9 @@ export async function POST(request: NextRequest) {
                 }
               } catch (error) {
                 const err = error as Error
-                console.error(`Error in deployContract: ${err.message}`)
+                console.error(`Error in deployContract tool: ${err.message}`)
                 return {
-                  output: JSON.stringify({ error: `Error in deployContract: ${err.message}` }),
+                  output: JSON.stringify({ error: `Error in deployContract tool: ${err.message}` }),
                   tool_call_id: toolCall.id
                 }
               }
