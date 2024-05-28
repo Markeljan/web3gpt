@@ -9,6 +9,7 @@ import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
 import { createAgent } from "@/lib/actions/ai"
 import type { DbChat } from "@/lib/types"
 import { storeChat } from "@/lib/actions/db"
+import type { BadRequestError } from "openai/error.mjs"
 
 export const runtime = "nodejs"
 
@@ -32,10 +33,24 @@ export async function POST(request: NextRequest) {
 
   const threadId = threadIdFromClient || (await openai.beta.threads.create()).id
 
-  const { created_at: createdAt, id: messageId } = await openai.beta.threads.messages.create(threadId, {
-    role: "user",
-    content: message
-  })
+  const { created_at: createdAt, id: messageId } = await openai.beta.threads.messages
+    .create(threadId, {
+      role: "user",
+      content: message
+    })
+    .catch(async (reqError: BadRequestError & { error: Error }) => {
+      const { error } = reqError
+      if (error.message.includes("run_")) {
+        console.error("Found pending run, cancelling run and retrying message")
+        const runId = `run_${error.message.split("run_")[1].split(" ")[0]}`
+        await openai.beta.threads.runs.cancel(threadId, runId)
+        return await openai.beta.threads.messages.create(threadId, {
+          role: "user",
+          content: message
+        })
+      }
+      throw error
+    })
 
   if (!threadIdFromClient && userId) {
     const title = message.slice(0, 50)
@@ -54,10 +69,9 @@ export async function POST(request: NextRequest) {
   }
 
   return AssistantResponse({ threadId, messageId }, async ({ forwardStream, sendDataMessage }) => {
-    // Run the assistant on the thread
     const runStream = openai.beta.threads.runs.stream(threadId, {
       assistant_id: assistantId,
-      stream: true,
+      stream: true
     })
 
     // forward run status would stream message deltas
