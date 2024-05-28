@@ -13,10 +13,11 @@ import { APP_URL } from "@/app/config"
 
 export async function generateMetadata({ params }: ChatPageProps) {
   const metadata: Metadata = {
-    title: "Chat",
-    description: "Chat with an AI assistant",
+    title: "Shared Chat",
+    description: "Write and deploy smart contracts with AI",
     openGraph: {
-      images: [`${APP_URL}/api/og?id=${params.id}&h=630`]
+      images: [`${APP_URL}/api/og?id=${params.id}&h=630`],
+      url: `${APP_URL}/share/${params.id}`
     },
     twitter: {
       card: "summary_large_image",
