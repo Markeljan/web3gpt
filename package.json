@@ -44,7 +44,7 @@
     "react-textarea-autosize": "^8.5.3",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
-    "solc": "^0.8.25",
+    "solc": "^0.8.26",
     "sonner": "^1.4.41",
     "viem": "^2.10.9",
     "wagmi": "^2.9.1",

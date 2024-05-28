@@ -66,7 +66,7 @@ export default async function deployContract({
     language: "Solidity",
     sources,
     settings: {
-      evmVersion: "paris",
+      // evmVersion: "paris",
       outputSelection: {
         "*": {
           "*": ["*"]

@@ -11,7 +11,7 @@ export const W3GPT_API_SECRET = process.env.W3GPT_API_SECRET
 
 export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {
   viemChain: mantleSepoliaTestnet,
-  compilerVersion: "v0.8.25+commit.b61c2a91",
+  compilerVersion: "v0.8.26+commit.8a97fa7a",
   useWallet: false
 }
 

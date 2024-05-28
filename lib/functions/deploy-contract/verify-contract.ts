@@ -47,7 +47,7 @@ export const verifyContract = async ({
     params.append("codeformat", "solidity-standard-json-input")
     params.append("contractname", `${fileName}:${contractName}`)
     params.append("compilerversion", DEFAULT_GLOBAL_CONFIG.compilerVersion)
-    params.append("evmversion", "paris")
+    // params.append("evmversion", "paris")
     params.append("optimizationUsed", "1")
     if (encodedConstructorArgs) {
       params.append("constructorArguements", encodedConstructorArgs)
