@@ -103,6 +103,7 @@ export function SidebarActions({ chat, deleteChat, shareChat }: SidebarActionsPr
                 href={`/share/${chat.id}`}
                 className={cn(badgeVariants({ variant: "secondary" }), "mr-auto")}
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 <IconUsers className="mr-2" />
                 {`/share/${chat.id}`}

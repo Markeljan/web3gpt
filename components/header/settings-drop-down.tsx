@@ -60,7 +60,7 @@ export function SettingsDropDown() {
                 className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
                 href="https://twitter.com/w3gpt_ai"
                 target="_blank"
-                rel="nofollow"
+                rel="noopener noreferrer"
               >
                 <IconTwitter />
                 <span className="sr-only">Twitter</span>
@@ -74,7 +74,7 @@ export function SettingsDropDown() {
                 className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
                 href="https://t.me/+Lt21CyCEO0k0Nzcx"
                 target="_blank"
-                rel="nofollow"
+                rel="noopener noreferrer"
               >
                 <IconTelegram />
                 <span className="sr-only">Telegram</span>
@@ -88,7 +88,7 @@ export function SettingsDropDown() {
                 className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
                 href="https://github.com/markeljan/web3gpt"
                 target="_blank"
-                rel="nofollow"
+                rel="noopener noreferrer"
               >
                 <IconGitHub />
                 <span className="sr-only">Github</span>

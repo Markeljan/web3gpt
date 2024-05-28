@@ -189,7 +189,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
             {isErrorDeploying && <p className="text-sm text-destructive">Error deploying contract.</p>}
             {isDeploying && <IconSpinner className="size-8 animate-spin text-gray-500" />}
             {explorerUrl && (
-              <Link href={explorerUrl} target="_blank" className="text-sm text-green-500">
+              <Link href={explorerUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-green-500">
                 <div className="flex items-center">
                   View on Explorer
                   <IconExternalLink className="ml-1" />
@@ -197,7 +197,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
               </Link>
             )}
             {ipfsUrl && (
-              <Link href={ipfsUrl} target="_blank" className="text-sm text-blue-500">
+              <Link href={ipfsUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500">
                 <div className="flex items-center">
                   View on IPFS
                   <IconExternalLink className="ml-1" />
