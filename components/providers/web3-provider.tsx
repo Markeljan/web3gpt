@@ -5,7 +5,15 @@ import "@rainbow-me/rainbowkit/styles.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useTheme } from "next-themes"
 import { http, WagmiProvider } from "wagmi"
-import { arbitrumSepolia, baseSepolia, holesky, mantleSepoliaTestnet, polygonAmoy, sepolia } from "wagmi/chains"
+import {
+  arbitrumSepolia,
+  baseSepolia,
+  holesky,
+  mantleSepoliaTestnet,
+  polygonAmoy,
+  sepolia,
+  rootstockTestnet
+} from "wagmi/chains"
 
 import { APP_URL } from "@/app/config"
 import { FULL_RPC_URLS } from "@/lib/viem-utils"
@@ -20,7 +28,20 @@ const amoyWithLogo = {
   iconUrl: "/polygon-logo.png"
 }
 
-const chains = [mantleSepoliaWithLogo, baseSepolia, holesky, amoyWithLogo, sepolia, arbitrumSepolia] as const
+const rootstockWithLogo = {
+  ...rootstockTestnet,
+  iconUrl: "/assets/rootstock.png"
+}
+
+const chains = [
+  mantleSepoliaWithLogo,
+  baseSepolia,
+  holesky,
+  amoyWithLogo,
+  sepolia,
+  arbitrumSepolia,
+  rootstockWithLogo
+] as const
 
 const queryClient = new QueryClient()
 
@@ -33,11 +54,12 @@ const config = getDefaultConfig({
   chains: chains,
   transports: {
     [sepolia.id]: http(FULL_RPC_URLS[sepolia.id]),
-    [amoyWithLogo.id]: http(FULL_RPC_URLS[amoyWithLogo.id]),
+    [polygonAmoy.id]: http(FULL_RPC_URLS[amoyWithLogo.id]),
     [baseSepolia.id]: http(FULL_RPC_URLS[baseSepolia.id]),
     [arbitrumSepolia.id]: http(FULL_RPC_URLS[arbitrumSepolia.id]),
-    [mantleSepoliaWithLogo.id]: http(),
-    [holesky.id]: http()
+    [mantleSepoliaTestnet.id]: http(),
+    [holesky.id]: http(),
+    [rootstockTestnet.id]: http()
   },
   ssr: true
 })
