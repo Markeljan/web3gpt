@@ -11,10 +11,10 @@ import { track } from "@vercel/analytics"
 export function useDeployWithWallet() {
   const { chain: viemChain } = useAccount()
   const { data: walletClient } = useWalletClient()
+  const { setLastDeploymentData, setVerifyContractConfig, globalConfig } = useGlobalStore()
   const publicClient = usePublicClient({
-    chainId: viemChain?.id || 5003
+    chainId: viemChain?.id || globalConfig.viemChain.id
   })
-  const { setLastDeploymentData, setVerifyContractConfig } = useGlobalStore()
 
   async function deploy({
     contractName,

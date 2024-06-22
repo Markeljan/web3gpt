@@ -1,4 +1,4 @@
-import { mantleSepoliaTestnet } from "viem/chains"
+import { baseSepolia } from "viem/chains"
 
 import type { Agent } from "@/lib/types"
 import type { GlobalConfig } from "@/lib/functions/types"
@@ -10,7 +10,7 @@ export const APP_URL = isProd ? (process.env.NEXT_PUBLIC_APP_URL as string) : "h
 export const W3GPT_API_SECRET = process.env.W3GPT_API_SECRET
 
 export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {
-  viemChain: mantleSepoliaTestnet,
+  viemChain: baseSepolia,
   compilerVersion: "v0.8.26+commit.8a97fa7a",
   useWallet: false
 }

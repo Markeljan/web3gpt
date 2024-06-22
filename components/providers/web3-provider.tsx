@@ -34,8 +34,8 @@ const rootstockWithLogo = {
 }
 
 const chains = [
-  mantleSepoliaWithLogo,
   baseSepolia,
+  mantleSepoliaWithLogo,
   holesky,
   amoyWithLogo,
   sepolia,
