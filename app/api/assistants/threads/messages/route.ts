@@ -10,6 +10,7 @@ import { createAgent } from "@/lib/actions/ai"
 import type { DbChat } from "@/lib/types"
 import { storeChat } from "@/lib/actions/db"
 import type { BadRequestError } from "openai/error.mjs"
+import { resolveAddress, resolveDomain } from "@/lib/actions/tools"
 // import sendEther from "@/lib/functions/send-ether"
 
 export const runtime = "nodejs"
@@ -168,6 +169,40 @@ export async function POST(request: NextRequest) {
             //     }
             //   }
             // }
+            case "resolveDomain": {
+              const { domain, ticker = "ETH" } = parameters
+              try {
+                const address = await resolveDomain(domain, ticker)
+                return {
+                  output: `Resolved address for domain ${domain}: ${address}`,
+                  tool_call_id: toolCall.id
+                }
+              } catch (error) {
+                const err = error as Error
+                console.error(`Error in resolveDomain tool: ${err.message}`)
+                return {
+                  output: JSON.stringify({ error: `Error in resolveDomain tool: ${err.message}` }),
+                  tool_call_id: toolCall.id
+                }
+              }
+            }
+            case "resolveAddress": {
+              const { address } = parameters
+              try {
+                const domain = await resolveAddress(address)
+                return {
+                  output: `Resolved domain for address ${address}: ${domain}`,
+                  tool_call_id: toolCall.id
+                }
+              } catch (error) {
+                const err = error as Error
+                console.error(`Error in resolveAddress tool: ${err.message}`)
+                return {
+                  output: JSON.stringify({ error: `Error in resolveAddress tool: ${err.message}` }),
+                  tool_call_id: toolCall.id
+                }
+              }
+            }
 
             default:
               throw new Error(`Unknown tool call function: ${toolCall.function.name}`)

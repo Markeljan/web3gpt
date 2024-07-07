@@ -9,6 +9,8 @@ export const APP_URL = isProd ? (process.env.NEXT_PUBLIC_APP_URL as string) : "h
 
 export const W3GPT_API_SECRET = process.env.W3GPT_API_SECRET
 
+export const INFURA_API_KEY = process.env.INFURA_API_KEY
+
 export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {
   viemChain: baseSepolia,
   compilerVersion: "v0.8.26+commit.8a97fa7a",
