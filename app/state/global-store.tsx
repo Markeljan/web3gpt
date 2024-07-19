@@ -1,6 +1,6 @@
 import { create } from "zustand"
 
-import { DEFAULT_GLOBAL_CONFIG } from "@/app/config"
+import { DEFAULT_GLOBAL_CONFIG } from "@/lib/config"
 
 import type {
   LastDeploymentData,

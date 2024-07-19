@@ -1,11 +1,12 @@
-import { encodeDeployData } from "viem"
 import { toast } from "sonner"
-
-import type { VerifyContractParams } from "@/lib/functions/types"
-import handleImports from "@/lib/functions/deploy-contract/handle-imports"
-import { getExplorerUrl } from "@/lib/viem-utils"
+import { encodeDeployData } from "viem"
 import { useAccount, usePublicClient, useWalletClient } from "wagmi"
+
 import { useGlobalStore } from "@/app/state/global-store"
+import handleImports from "@/lib/functions/deploy-contract/handle-imports"
+import type { VerifyContractParams } from "@/lib/functions/types"
+import { getGatewayUrl } from "@/lib/utils"
+import { getExplorerUrl } from "@/lib/viem-utils"
 import { track } from "@vercel/analytics"
 
 export function useDeployWithWallet() {
@@ -160,7 +161,7 @@ export function useDeployWithWallet() {
     })
 
     const ipfsCid = await ipfsUploadResponse.json()
-    const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`
+    const ipfsUrl = getGatewayUrl(ipfsCid)
 
     toast.dismiss(ipfsLoadingToast)
     if (!ipfsCid) {

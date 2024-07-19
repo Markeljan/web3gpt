@@ -15,7 +15,7 @@ import {
   rootstockTestnet
 } from "wagmi/chains"
 
-import { APP_URL } from "@/app/config"
+import { APP_URL } from "@/lib/config"
 import { FULL_RPC_URLS } from "@/lib/viem-utils"
 
 const mantleSepoliaWithLogo = {

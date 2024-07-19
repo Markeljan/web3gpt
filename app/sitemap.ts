@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-import { APP_URL } from "@/app/config"
+import { APP_URL } from "@/lib/config"
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

@@ -9,7 +9,7 @@ import { AgentCard } from "@/components/agent-card"
 import { Landing } from "@/components/landing"
 import { auth } from "@/auth"
 import type { Metadata } from "next"
-import { APP_URL } from "@/app/config"
+import { APP_URL } from "@/lib/config"
 
 export async function generateMetadata({ params }: ChatPageProps) {
   const metadata: Metadata = {

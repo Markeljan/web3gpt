@@ -9,7 +9,7 @@ import { Header } from "@/components/header/header"
 import { Providers } from "@/components/providers/ui-providers"
 import { Web3Provider } from "@/components/providers/web3-provider"
 import { cn } from "@/lib/utils"
-import { APP_URL } from "@/app/config"
+import { APP_URL } from "@/lib/config"
 
 const fontSans = FontSans({
   subsets: ["latin"],

@@ -1,3 +1,5 @@
+"use server"
+
 import { track } from "@vercel/analytics/server"
 
 import solc from "solc"
@@ -7,14 +9,16 @@ import { privateKeyToAccount } from "viem/accounts"
 import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/functions/types"
 import handleImports from "@/lib/functions/deploy-contract/handle-imports"
 import { getChainById, getExplorerUrl } from "@/lib/viem-utils"
-import ipfsUpload from "@/lib/functions/deploy-contract/ipfs-upload"
+import { ipfsUpload } from "@/lib/functions/deploy-contract/ipfs-upload"
+import { getGatewayUrl } from "@/lib/utils"
+import { storeDeployment, storeVerification } from "@/lib/actions/db"
 
-export default async function deployContract({
+export const deployContract = async ({
   chainId,
   contractName,
   sourceCode,
   constructorArgs
-}: DeployContractParams): Promise<DeployContractResult> {
+}: DeployContractParams): Promise<DeployContractResult> => {
   const viemChain = getChainById(Number(chainId)) as Chain
 
   const fileName = `${contractName.replace(/[\/\\:*?"<>|.\s]+$/g, "_")}.sol`
@@ -130,9 +134,9 @@ export default async function deployContract({
 
   const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
 
-  const ipfsCid = await ipfsUpload(sources, JSON.stringify(abi), bytecode, standardJsonInput)
+  const cid = await ipfsUpload(sources, JSON.stringify(abi), bytecode, standardJsonInput)
 
-  const ipfsUrl = `https://nftstorage.link/ipfs/${ipfsCid}`
+  const ipfsUrl = getGatewayUrl(cid)
 
   const encodedConstructorArgs = deployData.slice(bytecode?.length)
 
@@ -153,6 +157,14 @@ export default async function deployContract({
     abi,
     standardJsonInput
   }
+
+  await storeDeployment({
+    chainId,
+    deployHash,
+    cid
+  })
+
+  await storeVerification(verifyContractConfig)
 
   await track("deployed_contract", {
     contractName,

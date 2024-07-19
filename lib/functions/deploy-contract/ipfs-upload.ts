@@ -1,34 +1,39 @@
-import { NFTStorage, File } from "nft.storage"
+"use server"
 
-const NFT_STORAGE_TOKEN = process.env.NFT_STORAGE_API_KEY || ""
-const client = new NFTStorage({ token: NFT_STORAGE_TOKEN })
+import fs from "node:fs"
+import os from "node:os"
+import path from "node:path"
 
-const ipfsUpload = async (
+import PinataSDK from "@pinata/sdk"
+
+import { PINATA_JWT } from "@/lib/config-server"
+
+const pinata = new PinataSDK({ pinataJWTKey: PINATA_JWT })
+
+export async function ipfsUpload(
   sources: { [fileName: string]: { content: string } },
   abi: string,
   bytecode: string,
   standardJsonInput: string
-): Promise<string> => {
-  const files = []
+): Promise<string> {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "pinata-upload-"))
 
-  for (const key in sources) {
-    const contractCode = new File([sources[key].content], `${key}`, {
-      type: "text/x-solidity"
-    })
-    files.push(contractCode)
+  for (const [fileName, { content }] of Object.entries(sources)) {
+    const filePath = path.join(tempDir, fileName)
+    fs.writeFileSync(filePath, content)
   }
 
-  const abiFile = new File([abi], "abi.json", { type: "application/json" })
-  const bytecodeFile = new File([bytecode], "bytecode.txt", {
-    type: "text/plain"
+  fs.writeFileSync(path.join(tempDir, "abi.json"), abi)
+  fs.writeFileSync(path.join(tempDir, "bytecode.txt"), bytecode)
+  fs.writeFileSync(path.join(tempDir, "standardJsonInput.json"), standardJsonInput)
+
+  const { IpfsHash } = await pinata.pinFromFS(tempDir, {
+    pinataOptions: {
+      cidVersion: 1
+    }
   })
-  const standardJsonInputFile = new File([standardJsonInput], "standardJsonInput.json", { type: "application/json" })
 
-  files.push(abiFile, bytecodeFile, standardJsonInputFile)
+  fs.rmSync(tempDir, { recursive: true, force: true })
 
-  const cid = await client.storeDirectory(files)
-
-  return cid
+  return IpfsHash
 }
-
-export default ipfsUpload

@@ -1,8 +1,10 @@
+"use server"
+
 import { createPublicClient, http } from "viem"
 
 import { API_KEYS, API_URLS } from "@/lib/viem-utils"
 import type { VerifyContractParams } from "@/lib/functions/types"
-import { DEFAULT_GLOBAL_CONFIG } from "@/app/config"
+import { DEFAULT_GLOBAL_CONFIG } from "@/lib/config"
 
 export const verifyContract = async ({
   deployHash,
@@ -36,6 +38,8 @@ export const verifyContract = async ({
   if (!apiKey) {
     throw new Error(`Unsupported chain or explorer API_KEY.  Network: ${viemChain.name} ChainId: ${viemChain.id}`)
   }
+  const stringifiedStandardJsonInput =
+    typeof standardJsonInput === "string" ? standardJsonInput : JSON.stringify(standardJsonInput)
 
   try {
     const params = new URLSearchParams()
@@ -43,12 +47,13 @@ export const verifyContract = async ({
     params.append("module", "contract")
     params.append("action", "verifysourcecode")
     params.append("contractaddress", contractAddress)
-    params.append("sourceCode", standardJsonInput)
+    params.append("sourceCode", stringifiedStandardJsonInput)
     params.append("codeformat", "solidity-standard-json-input")
     params.append("contractname", `${fileName}:${contractName}`)
     params.append("compilerversion", DEFAULT_GLOBAL_CONFIG.compilerVersion)
     // params.append("evmversion", "paris")
-    params.append("optimizationUsed", "1")
+    // params.append("optimizationUsed", "1")
+    // params.append("runs", "200")
     if (encodedConstructorArgs) {
       params.append("constructorArguements", encodedConstructorArgs)
     }
@@ -62,10 +67,19 @@ export const verifyContract = async ({
     if (!response.ok) {
       throw new Error(`Explorer API request failed with status ${response.status}`)
     }
+
+    const verifyResult = await response.json()
+    
+    if (verifyResult.status === "0") {
+      throw new Error(`Verify response failed: ${verifyResult.message}`)
+    }
+    if (verifyResult.status === "1") {
+      const guid = verifyResult.result
+
+      return guid
+    }
   } catch (error) {
     console.error("Verify response failed: ", error)
     throw new Error(`Error verifying contract: ${(error as Error).message}`)
   }
-
-  return contractAddress
 }

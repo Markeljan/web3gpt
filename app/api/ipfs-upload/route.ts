@@ -1,4 +1,4 @@
-import ipfsUpload from "@/lib/functions/deploy-contract/ipfs-upload"
+import { ipfsUpload } from "@/lib/functions/deploy-contract/ipfs-upload"
 
 export const runtime = "edge"
 

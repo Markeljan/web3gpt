@@ -30,7 +30,7 @@ import { IconShare, IconSpinner, IconTrash, IconUsers } from "@/components/ui/ic
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import type { DbChatListItem, ServerActionResult } from "@/lib/types"
 import { cn, formatDate } from "@/lib/utils"
-import { APP_URL } from "@/app/config"
+import { APP_URL } from "@/lib/config"
 
 interface SidebarActionsProps {
   chat: DbChatListItem

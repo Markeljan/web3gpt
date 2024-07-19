@@ -16,7 +16,6 @@ export interface SendEtherResult {
 }
 
 export default async function sendEther({ chainId, to, amount }: SendEtherParams): Promise<SendEtherResult> {
-  console.log(`Sending ${amount} to ${to} on chain ${chainId}...`)
   const viemChain = getChainById(chainId) as Chain
 
   const senderPk: Hex = `0x${process.env.DEPLOYER_PRIVATE_KEY}`

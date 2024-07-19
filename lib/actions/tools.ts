@@ -1,5 +1,5 @@
 // pages/api/check-domain.js
-import { INFURA_API_KEY } from "@/app/config"
+import { INFURA_API_KEY } from "@/lib/config-server"
 import { Resolution } from "@unstoppabledomains/resolution"
 
 const resolution = new Resolution({

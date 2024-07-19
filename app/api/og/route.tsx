@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og"
 import type { NextRequest } from "next/server"
 
-import { APP_URL } from "@/app/config"
+import { APP_URL } from "@/lib/config"
 import { getPublishedChat } from "@/lib/actions/db"
 
 export const runtime = "edge"

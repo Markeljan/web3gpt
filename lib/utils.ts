@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
 import { customAlphabet } from "nanoid"
+import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -23,7 +23,7 @@ export function formatDate(input: string | number | Date): string {
   } else {
     date = new Date()
   }
-  
+
   return date.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -35,3 +35,5 @@ export function isValidEmail(email: string): boolean {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return regex.test(email)
 }
+
+export const getGatewayUrl = (cid: string) => `https://ipfs.io/ipfs/${cid}`

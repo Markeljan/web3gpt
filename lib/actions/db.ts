@@ -1,11 +1,12 @@
 "use server"
 
+import { kv } from "@vercel/kv"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { kv } from "@vercel/kv"
 
 import { auth } from "@/auth"
 import type { Agent, DbChat, DbChatListItem } from "@/lib/types"
+import type { VerifyContractParams } from "../functions/types"
 
 // Store a new user's details
 export async function storeUser(user: { id: string }) {
@@ -281,4 +282,66 @@ export const getAgents = async () => {
 
   const results = await pipeline.exec<Agent[]>()
   return results
+}
+
+export const storeVerification = async (data: VerifyContractParams) => {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return {
+      error: "Unauthorized"
+    }
+  }
+
+  await kv.hmset(`verification:${data.deployHash}`, data)
+}
+
+// store contract deployment.  Saves the ipfs hash of the source files
+export const storeDeployment = async (deployData: {
+  chainId: string
+  deployHash: string
+  cid: string
+}) => {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return {
+      error: "Unauthorized"
+    }
+  }
+
+  // save to unverified contracts list
+  await kv.hmset(`deployment:unverified:${deployData.cid}`, deployData)
+
+  // add to user's list of deployments
+  await kv.zadd(`user:deployments:${session.user.id}`, {
+    score: Date.now(),
+    member: `deployment:${deployData.cid}`
+  })
+}
+
+// get all verifications
+export const getVerifications = async () => {
+  const verifications = await kv.keys("verification:*")
+  const pipeline = kv.pipeline()
+
+  for (const verification of verifications) {
+    pipeline.hgetall<VerifyContractParams>(verification)
+  }
+
+  const results = await pipeline.exec<VerifyContractParams[]>()
+  return results
+}
+
+// delete a verification
+export const deleteVerification = async (deployHash: string) => {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return {
+      error: "Unauthorized"
+    }
+  }
+
+  await kv.del(`verification:${deployHash}`)
 }

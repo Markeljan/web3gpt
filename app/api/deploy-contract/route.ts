@@ -1,4 +1,4 @@
-import deployContract from "@/lib/functions/deploy-contract/deploy-contract"
+import { deployContract } from "@/lib/functions/deploy-contract/deploy-contract"
 
 export const runtime = "nodejs"
 
