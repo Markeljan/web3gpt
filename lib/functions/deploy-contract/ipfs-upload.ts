@@ -16,7 +16,7 @@ export async function ipfsUpload(
   bytecode: string,
   standardJsonInput: string
 ): Promise<string> {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "pinata-upload-"))
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "w3gpt-"))
 
   for (const [fileName, { content }] of Object.entries(sources)) {
     const filePath = path.join(tempDir, fileName)

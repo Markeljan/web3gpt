@@ -6,6 +6,7 @@ import type { GlobalConfig } from "@/lib/functions/types"
 export const IS_PRODUCTION = process.env.NODE_ENV === "production"
 
 export const APP_URL = IS_PRODUCTION ? (process.env.NEXT_PUBLIC_APP_URL as string) : "http://localhost:3000"
+export const IPFS_GATEWAY = process.env.NEXT_PUBLIC_IPFS_GATEWAY || "https://gateway.pinata.cloud"
 
 export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {
   viemChain: baseSepolia,

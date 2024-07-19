@@ -2,13 +2,13 @@ import { type ClassValue, clsx } from "clsx"
 import { customAlphabet } from "nanoid"
 import { twMerge } from "tailwind-merge"
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+import { IPFS_GATEWAY } from "@/lib/config"
+
+export const cn = (...inputs: ClassValue[]): string => twMerge(clsx(inputs))
 
 export const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 7)
 
-export function formatDate(input: string | number | Date): string {
+export const formatDate = (input: string | number | Date): string => {
   let date: Date
   if (typeof input === "number") {
     if (input.toString().length === 10) {
@@ -31,9 +31,9 @@ export function formatDate(input: string | number | Date): string {
   })
 }
 
-export function isValidEmail(email: string): boolean {
+export const isValidEmail = (email: string): boolean => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return regex.test(email)
 }
 
-export const getGatewayUrl = (cid: string) => `https://ipfs.io/ipfs/${cid}`
+export const getGatewayUrl = (cid: string): string => `${IPFS_GATEWAY}/ipfs/${cid}`

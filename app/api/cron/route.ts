@@ -13,10 +13,6 @@ export const GET = async (req: NextRequest) => {
     return new Response("Unauthorized", { status: 401 })
   }
   const verifications = await getVerifications()
-  console.log(
-    "Verifications",
-    verifications.map((v) => v.deployHash)
-  )
 
   for (const verificationData of verifications) {
     const verifyResult = await verifyContract(verificationData)
