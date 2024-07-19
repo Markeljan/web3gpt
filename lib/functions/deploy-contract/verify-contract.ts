@@ -69,7 +69,7 @@ export const verifyContract = async ({
     }
 
     const verifyResult = await response.json()
-    
+
     if (verifyResult.status === "0") {
       throw new Error(`Verify response failed: ${verifyResult.message}`)
     }
