@@ -323,25 +323,23 @@ export const storeDeployment = async (deployData: {
 // get all verifications
 export const getVerifications = async () => {
   const verifications = await kv.keys("verification:*")
+  if (!verifications || verifications.length === 0) {
+    return []
+  }
   const pipeline = kv.pipeline()
 
   for (const verification of verifications) {
     pipeline.hgetall<VerifyContractParams>(verification)
   }
 
+  if (!pipeline) {
+    return []
+  }
   const results = await pipeline.exec<VerifyContractParams[]>()
   return results
 }
 
 // delete a verification
 export const deleteVerification = async (deployHash: string) => {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    return {
-      error: "Unauthorized"
-    }
-  }
-
   await kv.del(`verification:${deployHash}`)
 }

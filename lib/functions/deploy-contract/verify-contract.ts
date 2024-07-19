@@ -41,45 +41,33 @@ export const verifyContract = async ({
   const stringifiedStandardJsonInput =
     typeof standardJsonInput === "string" ? standardJsonInput : JSON.stringify(standardJsonInput)
 
-  try {
-    const params = new URLSearchParams()
-    params.append("apikey", apiKey)
-    params.append("module", "contract")
-    params.append("action", "verifysourcecode")
-    params.append("contractaddress", contractAddress)
-    params.append("sourceCode", stringifiedStandardJsonInput)
-    params.append("codeformat", "solidity-standard-json-input")
-    params.append("contractname", `${fileName}:${contractName}`)
-    params.append("compilerversion", DEFAULT_GLOBAL_CONFIG.compilerVersion)
-    // params.append("evmversion", "paris")
-    // params.append("optimizationUsed", "1")
-    // params.append("runs", "200")
-    if (encodedConstructorArgs) {
-      params.append("constructorArguements", encodedConstructorArgs)
-    }
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
-      },
-      body: new URLSearchParams(params).toString()
-    })
-    if (!response.ok) {
-      throw new Error(`Explorer API request failed with status ${response.status}`)
-    }
-
-    const verifyResult = await response.json()
-
-    if (verifyResult.status === "0") {
-      throw new Error(`Verify response failed: ${verifyResult.message}`)
-    }
-    if (verifyResult.status === "1") {
-      const guid = verifyResult.result
-
-      return guid
-    }
-  } catch (error) {
-    console.error("Verify response failed: ", error)
-    throw new Error(`Error verifying contract: ${(error as Error).message}`)
+  const params = new URLSearchParams()
+  params.append("apikey", apiKey)
+  params.append("module", "contract")
+  params.append("action", "verifysourcecode")
+  params.append("contractaddress", contractAddress)
+  params.append("sourceCode", stringifiedStandardJsonInput)
+  params.append("codeformat", "solidity-standard-json-input")
+  params.append("contractname", `${fileName}:${contractName}`)
+  params.append("compilerversion", DEFAULT_GLOBAL_CONFIG.compilerVersion)
+  // params.append("evmversion", "paris")
+  // params.append("optimizationUsed", "1")
+  // params.append("runs", "200")
+  if (encodedConstructorArgs) {
+    params.append("constructorArguements", encodedConstructorArgs)
   }
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+    },
+    body: new URLSearchParams(params).toString()
+  })
+  if (!response.ok) {
+    throw new Error(`Explorer API request failed with status ${response.status}`)
+  }
+
+  const verifyResult = (await response.json()) as { status: string; result: string }
+
+  return verifyResult
 }
