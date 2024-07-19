@@ -4,11 +4,6 @@ import { deleteVerification, getVerifications } from "@/lib/actions/db"
 import { CRON_SECRET } from "@/lib/config-server"
 import { verifyContract } from "@/lib/functions/deploy-contract/verify-contract"
 
-const handleVerificationSuccess = async (deployHash: string, guid: string) => {
-  console.log(`Success hash: ${deployHash} - guid: ${guid}`)
-  await deleteVerification(deployHash)
-}
-
 export const GET = async (req: NextRequest) => {
   const token = req.headers.get("Authorization")
   if (!token) {
