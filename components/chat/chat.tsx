@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 
-import { useAssistant, type Message } from "ai/react"
+import { useAssistant, type Message } from "@ai-sdk/react"
 import type { Session } from "next-auth"
 
 import { ChatList } from "@/components/chat/chat-list"
