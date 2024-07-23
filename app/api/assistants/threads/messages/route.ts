@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server"
 
-import { AssistantResponse, type ToolCall } from "ai"
+import { AssistantResponse } from "ai"
 
 import { APP_URL } from "@/lib/config"
 import { openai } from "@/lib/openai"
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     // status can be: queued, in_progress, requires_action, cancelling, cancelled, failed, completed, or expired
     while (runResult?.status === "requires_action" && runResult.required_action?.type === "submit_tool_outputs") {
       const tool_outputs = await Promise.all(
-        runResult.required_action.submit_tool_outputs.tool_calls.map(async (toolCall: ToolCall) => {
+        runResult.required_action.submit_tool_outputs.tool_calls.map(async (toolCall) => {
           const parameters = JSON.parse(toolCall.function.arguments)
           switch (toolCall.function.name) {
             case "deploy_contract": {

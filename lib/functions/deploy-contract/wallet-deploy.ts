@@ -1,20 +1,22 @@
+import { track } from "@vercel/analytics"
 import { toast } from "sonner"
 import { encodeDeployData } from "viem"
 import { useAccount, usePublicClient, useWalletClient } from "wagmi"
 
 import { useGlobalStore } from "@/app/state/global-store"
+import { storeDeployment, storeVerification } from "@/lib/actions/db"
 import handleImports from "@/lib/functions/deploy-contract/handle-imports"
 import type { VerifyContractParams } from "@/lib/functions/types"
 import { getGatewayUrl } from "@/lib/utils"
 import { getExplorerUrl } from "@/lib/viem-utils"
-import { track } from "@vercel/analytics"
 
 export function useDeployWithWallet() {
   const { chain: viemChain } = useAccount()
-  const { data: walletClient } = useWalletClient()
   const { setLastDeploymentData, setVerifyContractConfig, globalConfig } = useGlobalStore()
+  const chainId = viemChain?.id || globalConfig.viemChain.id
+  const { data: walletClient } = useWalletClient()
   const publicClient = usePublicClient({
-    chainId: viemChain?.id || globalConfig.viemChain.id
+    chainId
   })
 
   async function deploy({
@@ -160,15 +162,16 @@ export function useDeployWithWallet() {
       })
     })
 
-    const ipfsCid = await ipfsUploadResponse.json()
-    const ipfsUrl = getGatewayUrl(ipfsCid)
+    const cid = await ipfsUploadResponse.json()
 
     toast.dismiss(ipfsLoadingToast)
-    if (!ipfsCid) {
+    if (!cid) {
       toast.error("Failed to upload to IPFS")
     } else {
       toast.success("Uploaded to IPFS successfully!")
     }
+
+    const ipfsUrl = getGatewayUrl(cid)
 
     const encodedConstructorArgs = deployData.slice(bytecode.length)
 
@@ -183,12 +186,21 @@ export function useDeployWithWallet() {
 
     setVerifyContractConfig(verifyContractConfig)
 
-    const txHashExplorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
+    const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
 
-    track("deployed_contract", {
-      contractName,
-      explorerUrl: txHashExplorerUrl
-    })
+    // store deployment, verificationData, track
+    await Promise.all([
+      storeDeployment({
+        chainId: chainId.toString(),
+        deployHash,
+        cid
+      }),
+      storeVerification(verifyContractConfig),
+      track("deployed_contract", {
+        contractName,
+        explorerUrl
+      })
+    ])
 
     try {
       const transactionReceipt = await publicClient?.waitForTransactionReceipt({
@@ -207,7 +219,7 @@ export function useDeployWithWallet() {
         address,
         transactionHash: deployHash,
         ipfsUrl,
-        explorerUrl: txHashExplorerUrl,
+        explorerUrl,
         verificationStatus: "pending",
         standardJsonInput,
         abi,
@@ -224,7 +236,7 @@ export function useDeployWithWallet() {
       toast.error("Contract deployment failed")
       const deploymentData = {
         transactionHash: deployHash,
-        explorerUrl: txHashExplorerUrl,
+        explorerUrl,
         ipfsUrl,
         verificationStatus: "pending",
         standardJsonInput,

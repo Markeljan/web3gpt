@@ -158,18 +158,19 @@ export const deployContract = async ({
     standardJsonInput
   }
 
-  await storeDeployment({
-    chainId,
-    deployHash,
-    cid
-  })
-
-  await storeVerification(verifyContractConfig)
-
-  await track("deployed_contract", {
-    contractName,
-    explorerUrl
-  })
+  // store deployment, verificationData, track
+  await Promise.all([
+    storeDeployment({
+      chainId,
+      deployHash,
+      cid
+    }),
+    storeVerification(verifyContractConfig),
+    track("deployed_contract", {
+      contractName,
+      explorerUrl
+    })
+  ])
 
   return deploymentData
 }
