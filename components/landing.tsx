@@ -111,7 +111,7 @@ export function Landing({ userId, disableAnimations }: LandingProps) {
       {isClient && localIsSubscribed === false ? (
         <div className="mx-auto mb-16 max-w-2xl rounded-2xl border-gray-600/25 px-4 text-center dark:border-gray-600/50 md:border">
           <div className="my-5 flex flex-col gap-4">
-            <p className="mt-8 scroll-m-20 text-2xl tracking-tight">Weekly Updates</p>
+            <p className="mt-8 scroll-m-20 text-2xl tracking-tight">Early Access</p>
 
             <p className="px-4 text-sm text-gray-600 dark:text-gray-400">
               Sign up for development updates and early access to latest features
