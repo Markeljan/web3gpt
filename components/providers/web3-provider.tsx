@@ -34,29 +34,29 @@ const rootstockWithLogo = {
 }
 
 const chains = [
+  arbitrumSepolia,
   baseSepolia,
   mantleSepoliaWithLogo,
   holesky,
   amoyWithLogo,
   sepolia,
-  arbitrumSepolia,
   rootstockWithLogo
 ] as const
 
 const queryClient = new QueryClient()
 
 const config = getDefaultConfig({
-  appName: "Web3 GPT",
-  appDescription: "Write and deploy smart contracts with AI",
+  appName: "Web3GPT",
+  appDescription: "Write and deploy Solidity smart contracts with AI",
   appUrl: APP_URL,
   appIcon: "/favicon.ico",
   projectId: `${process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID}`,
   chains: chains,
   transports: {
+    [arbitrumSepolia.id]: http(FULL_RPC_URLS[arbitrumSepolia.id]),
     [sepolia.id]: http(FULL_RPC_URLS[sepolia.id]),
     [polygonAmoy.id]: http(FULL_RPC_URLS[amoyWithLogo.id]),
     [baseSepolia.id]: http(FULL_RPC_URLS[baseSepolia.id]),
-    [arbitrumSepolia.id]: http(FULL_RPC_URLS[arbitrumSepolia.id]),
     [mantleSepoliaTestnet.id]: http(),
     [holesky.id]: http(),
     [rootstockTestnet.id]: http()
