@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next"
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "W3GPT",
-    short_name: "W3GPT",
+    name: "Web3GPT",
+    short_name: "Web3GPT",
     description: "Write and deploy smart contracts with AI.",
     start_url: "/",
     display: "standalone",

@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { parseEther } from "viem"
 import { sepolia } from "viem/chains"
 
-import { W3GPT_API_SECRET } from "@/lib/config-server"
+import { WEB3GPT_API_SECRET } from "@/lib/config-server"
 import { deployContract } from "@/lib/functions/deploy-contract/deploy-contract"
 
 export const runtime = "nodejs"
@@ -86,9 +86,9 @@ const contractBuilder = ({
   return { sourceCode, constructorArgs }
 }
 export async function POST(req: NextRequest) {
-  const apiSecret = req.headers.get("w3gpt-api-key")
-  if (apiSecret !== W3GPT_API_SECRET) {
-    return NextResponse.json({ error: "Unauthorized: invalid w3gpt-api-key" }, { status: 401 })
+  const apiSecret = req.headers.get("web3gpt-api-key")
+  if (apiSecret !== WEB3GPT_API_SECRET) {
+    return NextResponse.json({ error: "Unauthorized: invalid web3gpt-api-key" }, { status: 401 })
   }
   const json = await req.json()
 

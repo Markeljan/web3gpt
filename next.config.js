@@ -37,7 +37,7 @@ module.exports = {
           },
           {
             key: "Access-Control-Allow-Headers",
-            value: "Content-Type, Authorization, w3gpt-api-key"
+            value: "Content-Type, Authorization, web3gpt-api-key"
           }
         ]
       }

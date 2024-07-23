@@ -1,6 +1,6 @@
 {
-  "name": "w3gpt",
-  "version": "0.0.3",
+  "name": "web3gpt",
+  "version": "0.1.0",
   "license": "MIT",
   "scripts": {
     "dev": "next dev",

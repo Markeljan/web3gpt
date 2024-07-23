@@ -58,7 +58,7 @@ export function SettingsDropDown() {
             <TooltipTrigger asChild>
               <Link
                 className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
-                href="https://twitter.com/w3gpt_ai"
+                href="https://twitter.com/web3gpt_app"
                 target="_blank"
                 rel="noopener noreferrer"
               >

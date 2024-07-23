@@ -81,7 +81,7 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
       return
     }
     const fileExtension = PROGRAMMING_LANGUAGES[language] || ".file"
-    const suggestedFileName = `W3GPT-${nanoid(6)}${fileExtension}`
+    const suggestedFileName = `Web3GPT-${nanoid(6)}${fileExtension}`
     const fileName = window.prompt("Enter file name" || "", suggestedFileName)
 
     if (!fileName) {

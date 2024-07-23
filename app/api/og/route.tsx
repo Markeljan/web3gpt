@@ -6,7 +6,7 @@ import { getPublishedChat } from "@/lib/actions/db"
 
 export const runtime = "edge"
 
-const w3gptLogoUrl = `${APP_URL}/assets/w3gpt.png`
+const web3GPTLogoUrl = `${APP_URL}/assets/web3gpt.png`
 
 export async function GET(req: NextRequest) {
   const chatId = req.nextUrl.searchParams.get("id")
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         role="img"
-        aria-label="w3gpt beta"
+        aria-label="Web3GPT beta"
         width="362"
         height="59"
         viewBox="0 0 362 59"
@@ -66,13 +66,13 @@ export async function GET(req: NextRequest) {
         </div>
         <div tw="flex w-full mt-14 items-start">
           <div tw="flex h-[80px] w-[80px] items-center justify-center rounded-md border border-[#9b9ba4]">
-            <img src={w3gptLogoUrl} alt={"w3gpt assistant logo"} tw="w-full h-full object-cover rounded-md" />
+            <img src={web3GPTLogoUrl} alt={"Web3GPT assistant logo"} tw="w-full h-full object-cover rounded-md" />
           </div>
           <div tw="flex text-white font-bold text-6xl leading-none ml-10">...</div>
         </div>
       </div>
       <div tw="flex items-center justify-between w-full mt-auto">
-        <div tw="text-[1.8rem] ml-auto text-[#9b9ba4]">w3gpt.ai</div>
+        <div tw="text-[1.8rem] ml-auto text-[#9b9ba4]">Web3GPT</div>
       </div>
     </div>,
     {

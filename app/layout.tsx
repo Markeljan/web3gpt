@@ -25,8 +25,8 @@ export const runtime = "edge"
 
 export const metadata: Metadata = {
   title: {
-    default: "W3GPT",
-    template: "%s - W3GPT"
+    default: "Web3GPT",
+    template: "%s - Web3GPT"
   },
   description: "Write and deploy smart contracts with AI.",
   icons: {

@@ -7,7 +7,7 @@ import remarkMath from "remark-math"
 import { ChatMessageActions } from "@/components/chat/chat-message-actions"
 import { MemoizedReactMarkdown } from "@/components/markdown"
 import { CodeBlock } from "@/components/ui/code-block"
-import { IconUser, IconW3GPT } from "@/components/ui/icons"
+import { IconUser, IconWeb3GPT } from "@/components/ui/icons"
 import { nanoid } from "@/lib/utils"
 
 export interface ChatMessageProps {
@@ -27,7 +27,7 @@ export function ChatMessage({ message, avatarUrl, status }: ChatMessageProps) {
             <IconUser />
           )
         ) : (
-          <IconW3GPT />
+          <IconWeb3GPT />
         )}
       </div>
       <div className="ml-1 md:ml-4 flex-1 space-y-2 overflow-x-auto">

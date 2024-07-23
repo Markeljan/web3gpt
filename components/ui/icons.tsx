@@ -209,7 +209,7 @@ function IconTelegram({ className, ...props }: React.ComponentProps<"svg">) {
   )
 }
 
-function IconW3GPT({ className, ...props }: React.ComponentProps<"svg">) {
+function IconWeb3GPT({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
       viewBox="-10 0 104 32"
@@ -217,7 +217,7 @@ function IconW3GPT({ className, ...props }: React.ComponentProps<"svg">) {
       className={cn("size-8 bg-[#242424]", className)}
       {...props}
     >
-      <title>W3GPT</title>
+      <title>Web3GPT</title>
       <rect width="36" height="8" fill="#21DA03" />
       <rect x="36" y="16.0001" width="32" height="8" fill="#21DA03" />
       <rect x="19.9999" y="32" width="32" height="8" fill="#21DA03" />
@@ -638,5 +638,5 @@ export {
   IconChevronUpDown,
   IconClear,
   IconCog,
-  IconW3GPT
+  IconWeb3GPT
 }

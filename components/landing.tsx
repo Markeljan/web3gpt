@@ -12,7 +12,7 @@ import { getUserField, storeEmail } from "@/lib/actions/db"
 import { isValidEmail } from "@/lib/utils"
 import { useLocalStorage } from "@/lib/hooks/use-local-storage"
 import { useIsClient } from "@/lib/hooks/use-is-client"
-import W3GPTLogo from "@/public//w3gpt-logo-beta.svg"
+import web3GPTLogo from "@/public/web3gpt-logo-beta.svg"
 
 type LandingProps = {
   userId?: string
@@ -55,7 +55,7 @@ export function Landing({ userId, disableAnimations }: LandingProps) {
     <>
       <div className="mx-auto mb-8 max-w-2xl bg-background rounded-2xl border-gray-600/25 p-4 text-center dark:border-gray-600/50 md:mb-12 md:border">
         <div className="relative my-8 flex h-8 w-full md:my-12">
-          <Image src={W3GPTLogo} alt="web3 gpt logo" priority={true} fill />
+          <Image src={web3GPTLogo} alt="web3 gpt logo" priority={true} fill />
         </div>
         <p className="text-lg font-bold tracking-tight lg:text-2xl lg:font-normal">Deploy smart contracts with AI</p>
 

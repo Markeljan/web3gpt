@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: ChatPageProps) {
     },
     twitter: {
       card: "summary_large_image",
-      site: "@w3gpt_ai",
+      site: "@web3gpt_app",
       images: [`${APP_URL}/api/og?id=${params.id}&h=675`]
     }
   }
