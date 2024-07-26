@@ -18,7 +18,7 @@ export const SidebarAgents = () => {
                 )}
               >
                 <Image src={assistant.imageUrl} alt={assistant.name} width={24} height={24} className="rounded-full" />
-                <div className="ml-2 text-sm font-semibold">{assistant.name}</div>
+                <p className="ml-2 text-xs font-semibold">{assistant.name}</p>
               </div>
             </Link>
           </TooltipTrigger>

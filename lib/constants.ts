@@ -32,5 +32,13 @@ export const AGENTS_ARRAY: Agent[] = [
     description: "Create your own AI agent",
     creator: "soko.eth",
     imageUrl: "/assets/agent-factory.png"
+  },
+  {
+    id: "asst_mv5KGoBLhXXQFiJHpgnopGQQ",
+    userId: "12901349",
+    name: "Unstoppable Domains",
+    description: "Resolve cryptocurrency addresses to domains and vice versa",
+    creator: "soko.eth",
+    imageUrl: "https://docs.unstoppabledomains.com/images/logo.png"
   }
 ]
