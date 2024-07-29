@@ -1,8 +1,8 @@
 import { track } from "@vercel/analytics/server"
-import { type Hex, createWalletClient, http, type Address, parseEther, type Chain } from "viem"
+import { http, type Address, type Chain, type Hex, createWalletClient, parseEther } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 
-import { getChainById, getExplorerUrl } from "@/lib/viem-utils"
+import { getChainById, getExplorerDetails } from "@/lib/viem-utils"
 
 export interface SendEtherParams {
   chainId: number
@@ -44,7 +44,9 @@ export default async function sendEther({ chainId, to, amount }: SendEtherParams
     value: parseEther(amount)
   })
 
-  const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${txHash}`
+  const { url } = getExplorerDetails(viemChain)
+
+  const explorerUrl = `${url}/tx/${txHash}`
 
   await track("sent_ether", {
     to,

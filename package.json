@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "preview": "next build && next start",
-    "format:check": "bun biome ci {app,lib,components} --organize-imports-enabled false",
-    "format:write": "bun biome format --write {app,lib,components}"
+    "check": "bun biome ci {app,lib,components} --organize-imports-enabled false",
+    "format": "bun biome format --write {app,lib,components}"
   },
   "dependencies": {
     "@pinata/sdk": "^2.1.0",

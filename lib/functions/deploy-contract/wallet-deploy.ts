@@ -8,7 +8,7 @@ import { storeDeployment, storeVerification } from "@/lib/actions/db"
 import handleImports from "@/lib/functions/deploy-contract/handle-imports"
 import type { VerifyContractParams } from "@/lib/functions/types"
 import { getGatewayUrl } from "@/lib/utils"
-import { getExplorerUrl } from "@/lib/viem-utils"
+import { getExplorerDetails } from "@/lib/viem-utils"
 
 export function useDeployWithWallet() {
   const { chain: viemChain } = useAccount()
@@ -79,7 +79,6 @@ export function useDeployWithWallet() {
       language: "Solidity",
       sources,
       settings: {
-        // evmVersion: "paris",
         outputSelection: {
           "*": {
             "*": ["*"]
@@ -186,7 +185,9 @@ export function useDeployWithWallet() {
 
     setVerifyContractConfig(verifyContractConfig)
 
-    const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
+    const { url } = getExplorerDetails(viemChain)
+
+    const explorerUrl = `${url}/tx/${deployHash}`
 
     // store deployment, verificationData, track
     await Promise.all([

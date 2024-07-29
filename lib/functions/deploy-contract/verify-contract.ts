@@ -2,9 +2,9 @@
 
 import { createPublicClient, http } from "viem"
 
-import { API_KEYS, API_URLS } from "@/lib/viem-utils"
-import type { VerifyContractParams } from "@/lib/functions/types"
 import { DEFAULT_GLOBAL_CONFIG } from "@/lib/config"
+import type { VerifyContractParams } from "@/lib/functions/types"
+import { getExplorerDetails } from "@/lib/viem-utils"
 
 export const verifyContract = async ({
   deployHash,
@@ -33,11 +33,8 @@ export const verifyContract = async ({
     throw new Error(`Contract address not found in transaction receipt for ${deployHash}`)
   }
 
-  const apiUrl = API_URLS[viemChain.id]
-  const apiKey = API_KEYS[viemChain.id]
-  if (!apiKey) {
-    throw new Error(`Unsupported chain or explorer API_KEY.  Network: ${viemChain.name} ChainId: ${viemChain.id}`)
-  }
+  const { apiUrl, apiKey } = getExplorerDetails(viemChain)
+
   const stringifiedStandardJsonInput =
     typeof standardJsonInput === "string" ? standardJsonInput : JSON.stringify(standardJsonInput)
 
@@ -50,12 +47,10 @@ export const verifyContract = async ({
   params.append("codeformat", "solidity-standard-json-input")
   params.append("contractname", `${fileName}:${contractName}`)
   params.append("compilerversion", DEFAULT_GLOBAL_CONFIG.compilerVersion)
-  // params.append("evmversion", "paris")
-  // params.append("optimizationUsed", "1")
-  // params.append("runs", "200")
   if (encodedConstructorArgs) {
     params.append("constructorArguements", encodedConstructorArgs)
   }
+
   const response = await fetch(apiUrl, {
     method: "POST",
     headers: {

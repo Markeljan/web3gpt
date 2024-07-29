@@ -3,15 +3,15 @@
 import { track } from "@vercel/analytics/server"
 
 import solc from "solc"
-import { type Chain, type Hex, createWalletClient, encodeDeployData, http } from "viem"
+import { createWalletClient, encodeDeployData, http, type Chain, type Hex } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 
-import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/functions/types"
-import handleImports from "@/lib/functions/deploy-contract/handle-imports"
-import { getChainById, getExplorerUrl } from "@/lib/viem-utils"
-import { ipfsUpload } from "@/lib/functions/deploy-contract/ipfs-upload"
-import { getGatewayUrl } from "@/lib/utils"
 import { storeDeployment, storeVerification } from "@/lib/actions/db"
+import handleImports from "@/lib/functions/deploy-contract/handle-imports"
+import { ipfsUpload } from "@/lib/functions/deploy-contract/ipfs-upload"
+import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/functions/types"
+import { getGatewayUrl } from "@/lib/utils"
+import { getChainById, getExplorerDetails } from "@/lib/viem-utils"
 
 export const deployContract = async ({
   chainId,
@@ -70,7 +70,6 @@ export const deployContract = async ({
     language: "Solidity",
     sources,
     settings: {
-      // evmVersion: "paris",
       outputSelection: {
         "*": {
           "*": ["*"]
@@ -132,7 +131,9 @@ export const deployContract = async ({
     args: constructorArgs
   })
 
-  const explorerUrl = `${getExplorerUrl(viemChain)}/tx/${deployHash}`
+  const { url } = getExplorerDetails(viemChain)
+
+  const explorerUrl = `${url}/tx/${deployHash}`
 
   const cid = await ipfsUpload(sources, JSON.stringify(abi), bytecode, standardJsonInput)
 

@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     await storeChat(newChat)
   }
 
-  return AssistantResponse({ threadId, messageId }, async ({ forwardStream, sendDataMessage }) => {
+  return AssistantResponse({ threadId, messageId }, async ({ forwardStream }) => {
     const runStream = openai.beta.threads.runs.stream(threadId, {
       assistant_id: assistantId,
       stream: true,

@@ -56,7 +56,7 @@ export const Header = async () => {
         <div className="flex items-center justify-center space-x-4 translate-x-1/2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge className={cn("text-xs text-slate-800 bg-yellow-300")}>gpt-4o-mini	</Badge>
+              <Badge className={cn("text-xs text-slate-800 bg-yellow-300")}>gpt-4o-mini</Badge>
             </TooltipTrigger>
             <TooltipContent>Using the latest GPT-4o mini</TooltipContent>
           </Tooltip>

@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export const OPTIONS = async (req: NextRequest) => {
+export const OPTIONS = async (_req: NextRequest) => {
   return NextResponse.json("", {
     status: 200
   })

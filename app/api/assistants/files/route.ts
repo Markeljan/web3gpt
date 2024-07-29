@@ -25,7 +25,7 @@ export async function POST(request: NextRequest, { assistantId }: { assistantId:
 }
 
 // list files in assistant's vector store
-export async function GET(request: NextRequest, { assistantId }: { assistantId: string }) {
+export async function GET(_req: NextRequest, { assistantId }: { assistantId: string }) {
   const vectorStoreId = await getOrCreateVectorStore(assistantId) // get or create vector store
   const fileList = await openai.beta.vectorStores.files.list(vectorStoreId)
 
