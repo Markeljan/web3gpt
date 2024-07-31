@@ -1,7 +1,7 @@
 import type { Chain } from "viem"
 import * as allViemChains from "viem/chains"
 
-import { blockscoutUrls } from "@/lib/blockscout"
+import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
 
 export function getChainById(chainId: number) {
   for (const chain of Object.values(allViemChains)) {
@@ -49,7 +49,7 @@ type ExplorerDetails = {
 }
 
 export const getExplorerDetails = (viemChain: Chain): ExplorerDetails => {
-  const blockscoutUrl = blockscoutUrls[viemChain.id]
+  const blockscoutUrl = BLOCKSCOUT_URLS[viemChain.id]
   if (blockscoutUrl) {
     return {
       url: `${blockscoutUrl}`,

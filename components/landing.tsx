@@ -3,15 +3,15 @@
 import Image from "next/image"
 import { useEffect, useState } from "react"
 
-import { toast } from "sonner"
 import Player from "react-lottie-player"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { getUserField, storeEmail } from "@/lib/actions/db"
-import { isValidEmail } from "@/lib/utils"
-import { useLocalStorage } from "@/lib/hooks/use-local-storage"
 import { useIsClient } from "@/lib/hooks/use-is-client"
+import { useLocalStorage } from "@/lib/hooks/use-local-storage"
+import { isValidEmail } from "@/lib/utils"
 import web3GPTLogo from "@/public/web3gpt-logo-beta.svg"
 
 type LandingProps = {

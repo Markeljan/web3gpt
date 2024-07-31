@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 import { deleteVerification, getVerifications } from "@/lib/actions/db"
+import { verifyContract } from "@/lib/actions/solidity/verify-contract"
 import { CRON_SECRET } from "@/lib/config-server"
-import { verifyContract } from "@/lib/functions/deploy-contract/verify-contract"
 
 export const GET = async (req: NextRequest) => {
   const token = req.headers.get("Authorization")

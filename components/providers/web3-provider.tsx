@@ -1,6 +1,6 @@
 "use client"
 
-import { RainbowKitProvider, darkTheme, getDefaultConfig, lightTheme } from "@rainbow-me/rainbowkit"
+import { darkTheme, getDefaultConfig, lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import "@rainbow-me/rainbowkit/styles.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useTheme } from "next-themes"
@@ -11,12 +11,12 @@ import {
   holesky,
   mantleSepoliaTestnet,
   polygonAmoy,
-  sepolia,
-  rootstockTestnet
+  rootstockTestnet,
+  sepolia
 } from "wagmi/chains"
 
 import { APP_URL } from "@/lib/config"
-import { FULL_RPC_URLS } from "@/lib/viem-utils"
+import { FULL_RPC_URLS } from "@/lib/viem"
 
 const mantleSepoliaWithLogo = {
   ...mantleSepoliaTestnet,
@@ -71,7 +71,6 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
-          initialChain={mantleSepoliaWithLogo}
           theme={
             resolvedTheme === "dark"
               ? darkTheme({

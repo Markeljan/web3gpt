@@ -1,4 +1,5 @@
-export default async function handleImports(sourceCode: string, sourcePath?: string) {
+// Recursive function to resolve imports in a source code.  Fetches the source code of the imports one by one and returns the final source code with all imports resolved and urls / aliases replaced with relative paths.
+export async function resolveImports(sourceCode: string, sourcePath?: string) {
   const sources: { [fileName: string]: { content: string } } = {}
   const importRegex = /import\s+(?:{[^}]+}\s+from\s+)?["']([^"']+)["'];/g
   const matches = Array.from(sourceCode.matchAll(importRegex))
@@ -54,7 +55,7 @@ async function fetchImport(importPath: string, sourcePath?: string) {
   const importedSource = await response.text()
 
   // Handle any imports within the fetched source code
-  const { sources, sourceCode } = await handleImports(importedSource, urlToFetch)
+  const { sources, sourceCode } = await resolveImports(importedSource, urlToFetch)
 
   return { sources, sourceCode }
 }

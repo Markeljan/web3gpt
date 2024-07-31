@@ -1,9 +1,9 @@
 import { notFound, redirect } from "next/navigation"
 
 import { auth } from "@/auth"
-import { getAgent, getChat } from "@/lib/actions/db"
-import { getAiThreadMessages } from "@/lib/actions/ai"
 import { Chat } from "@/components/chat/chat"
+import { getAiThreadMessages } from "@/lib/actions/ai"
+import { getAgent, getChat } from "@/lib/actions/db"
 import type { ChatPageProps } from "@/lib/types"
 
 export default async function ChatPage({ params, searchParams }: ChatPageProps) {

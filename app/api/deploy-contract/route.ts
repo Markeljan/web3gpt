@@ -1,10 +1,12 @@
-import { deployContract } from "@/lib/functions/deploy-contract/deploy-contract"
+import { type NextRequest, NextResponse } from "next/server"
+
+import { deployContract } from "@/lib/actions/solidity/deploy-contract"
 
 export const runtime = "nodejs"
 
-export async function POST(req: Request) {
-  const json = await req.json()
-  const { chainId, contractName, sourceCode, constructorArgs } = json
+export async function POST(req: NextRequest) {
+  const data = await req.json()
+  const { chainId, contractName, sourceCode, constructorArgs } = data
 
   try {
     const deployResult = await deployContract({
@@ -13,10 +15,8 @@ export async function POST(req: Request) {
       sourceCode,
       constructorArgs
     })
-    return new Response(JSON.stringify(deployResult))
+    return NextResponse.json(deployResult)
   } catch (error) {
-    const err = error as Error
-    console.error(`Error in deployContract API ROUTE: ${err.message}`)
-    return new Response(JSON.stringify({ error: `Error in deployContract: ${err.message}` }), { status: 500 })
+    return NextResponse.json(`Error in deployContract API ROUTE: ${error}`)
   }
 }

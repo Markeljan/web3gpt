@@ -1,15 +1,15 @@
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-import { formatDate } from "@/lib/utils"
-import { getAgent, getPublishedChat } from "@/lib/actions/db"
-import { getAiThreadMessages } from "@/lib/actions/ai"
-import { ChatList } from "@/components/chat/chat-list"
-import type { ChatPageProps } from "@/lib/types"
-import { AgentCard } from "@/components/agent-card"
-import { Landing } from "@/components/landing"
 import { auth } from "@/auth"
-import type { Metadata } from "next"
+import { AgentCard } from "@/components/agent-card"
+import { ChatList } from "@/components/chat/chat-list"
+import { Landing } from "@/components/landing"
+import { getAiThreadMessages } from "@/lib/actions/ai"
+import { getAgent, getPublishedChat } from "@/lib/actions/db"
 import { APP_URL } from "@/lib/config"
+import type { ChatPageProps } from "@/lib/types"
+import { formatDate } from "@/lib/utils"
 
 export async function generateMetadata({ params }: ChatPageProps) {
   const metadata: Metadata = {

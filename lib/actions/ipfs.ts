@@ -8,11 +8,14 @@ import PinataSDK from "@pinata/sdk"
 
 import { PINATA_JWT } from "@/lib/config-server"
 
+import type { SolcOutput } from "solc"
+import type { Abi } from "viem"
+
 const pinata = new PinataSDK({ pinataJWTKey: PINATA_JWT })
 
 export async function ipfsUpload(
-  sources: { [fileName: string]: { content: string } },
-  abi: string,
+  sources: SolcOutput["sources"],
+  abi: Abi,
   bytecode: string,
   standardJsonInput: string
 ): Promise<string> {
@@ -23,7 +26,7 @@ export async function ipfsUpload(
     fs.writeFileSync(filePath, content)
   }
 
-  fs.writeFileSync(path.join(tempDir, "abi.json"), abi)
+  fs.writeFileSync(path.join(tempDir, "abi.json"), JSON.stringify(abi, null, 2))
   fs.writeFileSync(path.join(tempDir, "bytecode.txt"), bytecode)
   fs.writeFileSync(path.join(tempDir, "standardJsonInput.json"), standardJsonInput)
 

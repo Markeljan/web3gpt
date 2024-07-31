@@ -1,17 +1,17 @@
 import type { NextRequest } from "next/server"
 
 import { AssistantResponse } from "ai"
+import type { BadRequestError } from "openai/error"
 
+import { auth } from "@/auth"
+import { createAgent } from "@/lib/actions/ai"
+import { storeChat } from "@/lib/actions/db"
+import { deployContract } from "@/lib/actions/solidity/deploy-contract"
+import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
 import { APP_URL } from "@/lib/config"
 import { openai } from "@/lib/openai"
-import { auth } from "@/auth"
-import { deployContract } from "@/lib/functions/deploy-contract/deploy-contract"
-import { createAgent } from "@/lib/actions/ai"
+import { ToolName } from "@/lib/tools"
 import type { DbChat } from "@/lib/types"
-import { storeChat } from "@/lib/actions/db"
-import type { BadRequestError } from "openai/error.mjs"
-import { resolveAddress, resolveDomain } from "@/lib/actions/tools"
-// import sendEther from "@/lib/functions/send-ether"
 
 export const runtime = "nodejs"
 
@@ -81,15 +81,14 @@ export async function POST(request: NextRequest) {
     // forward run status would stream message deltas
     let runResult = await forwardStream(runStream)
 
-    // status can be: queued, in_progress, requires_action, cancelling, cancelled, failed, completed, or expired
     while (runResult?.status === "requires_action" && runResult.required_action?.type === "submit_tool_outputs") {
       const tool_outputs = await Promise.all(
         runResult.required_action.submit_tool_outputs.tool_calls.map(async (toolCall) => {
           const parameters = JSON.parse(toolCall.function.arguments)
-          switch (toolCall.function.name) {
-            case "deploy_contract": {
-              const { chainId, contractName, sourceCode, constructorArgs } = parameters
-              try {
+          try {
+            switch (toolCall.function.name) {
+              case ToolName.DeployContract: {
+                const { chainId, contractName, sourceCode, constructorArgs } = parameters
                 const deployResult = await deployContract({
                   chainId,
                   contractName,
@@ -98,108 +97,68 @@ export async function POST(request: NextRequest) {
                 })
 
                 return {
-                  output: `Contract deployed: ${deployResult.explorerUrl} code uploaded on IPFS: ${deployResult.ipfsUrl}`,
+                  output: `Contract Deployed: ${deployResult.explorerUrl} IPFS Repository: ${deployResult.ipfsUrl}`,
                   tool_call_id: toolCall.id
                 }
-              } catch (error) {
-                const err = error as Error
-                console.error(`Error in deployContract tool: ${err.message}`)
+              }
+              case ToolName.CreateAgent: {
+                if (!userId) {
+                  return {
+                    output: JSON.stringify({ error: "Unauthorized, user not signed in." }),
+                    tool_call_id: toolCall.id
+                  }
+                }
+                const { name, description, instructions, creator, imageUrl } = parameters
+                const assistantId = await createAgent({
+                  name,
+                  userId,
+                  description,
+                  instructions,
+                  creator: creator,
+                  imageUrl: imageUrl || "/assets/agent-factory.png"
+                })
+
+                if (!assistantId) {
+                  return {
+                    output: JSON.stringify({ error: "Error creating agent" }),
+                    tool_call_id: toolCall.id
+                  }
+                }
+
+                const agentChatUrl = `${APP_URL}/?a=${assistantId}`
+
                 return {
-                  output: JSON.stringify({ error: `Error in deployContract tool: ${err.message}` }),
+                  output: `Agent created: successfully, agent chat url: ${agentChatUrl}`,
                   tool_call_id: toolCall.id
                 }
               }
-            }
-            case "create_agent": {
-              if (!userId) {
-                return {
-                  output: JSON.stringify({ error: "Unauthorized, user not signed in." }),
-                  tool_call_id: toolCall.id
-                }
-              }
-              const { name, description, instructions, creator, imageUrl } = parameters
-              const assistantId = await createAgent({
-                name,
-                userId,
-                description,
-                instructions,
-                creator: creator,
-                imageUrl: imageUrl || "/assets/agent-factory.png"
-              })
-
-              if (!assistantId) {
-                return {
-                  output: JSON.stringify({ error: "Error creating agent" }),
-                  tool_call_id: toolCall.id
-                }
-              }
-
-              const agentChatUrl = `${APP_URL}/?a=${assistantId}`
-
-              return {
-                output: `Agent created: successfully, agent chat url: ${agentChatUrl}`,
-                tool_call_id: toolCall.id
-              }
-            }
-            // case "send_ether": {
-            //   const { chainId, to, amount } = parameters
-            //   try {
-            //     const sendEtherResult = await sendEther({
-            //       chainId,
-            //       to,
-            //       amount
-            //     })
-
-            //     return {
-            //       output: `Sent ${amount} to ${to} txHash: ${sendEtherResult.txHash} explorerUrl: ${sendEtherResult.explorerUrl}`,
-            //       tool_call_id: toolCall.id
-            //     }
-            //   } catch (error) {
-            //     const err = error as Error
-            //     console.error(`Error in sendEther tool: ${err.message}`)
-            //     return {
-            //       output: JSON.stringify({ error: `Error in sendEther tool: ${err.message}` }),
-            //       tool_call_id: toolCall.id
-            //     }
-            //   }
-            // }
-            case "resolveDomain": {
-              const { domain, ticker = "ETH" } = parameters
-              try {
+              case ToolName.ResolveDomain: {
+                const { domain, ticker = "ETH" } = parameters
                 const address = await resolveDomain(domain, ticker)
                 return {
                   output: `Resolved address for domain ${domain}: ${address}`,
                   tool_call_id: toolCall.id
                 }
-              } catch (error) {
-                const err = error as Error
-                console.error(`Error in resolveDomain tool: ${err.message}`)
-                return {
-                  output: JSON.stringify({ error: `Error in resolveDomain tool: ${err.message}` }),
-                  tool_call_id: toolCall.id
-                }
               }
-            }
-            case "resolveAddress": {
-              const { address } = parameters
-              try {
+              case ToolName.ResolveAddress: {
+                const { address } = parameters
                 const domain = await resolveAddress(address)
                 return {
                   output: `Resolved domain for address ${address}: ${domain}`,
                   tool_call_id: toolCall.id
                 }
-              } catch (error) {
-                const err = error as Error
-                console.error(`Error in resolveAddress tool: ${err.message}`)
-                return {
-                  output: JSON.stringify({ error: `Error in resolveAddress tool: ${err.message}` }),
-                  tool_call_id: toolCall.id
-                }
               }
-            }
 
-            default:
-              throw new Error(`Unknown tool call function: ${toolCall.function.name}`)
+              default:
+                throw new Error(`Unknown tool call function: ${toolCall.function.name}`)
+            }
+          } catch (error) {
+            const err = error as Error
+            console.error(`Error in tool call: ${err.message}`)
+            return {
+              output: JSON.stringify({ error: `Error in tool call: ${err.message}` }),
+              tool_call_id: toolCall.id
+            }
           }
         })
       )

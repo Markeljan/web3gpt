@@ -3,8 +3,8 @@
 import { createPublicClient, http } from "viem"
 
 import { DEFAULT_GLOBAL_CONFIG } from "@/lib/config"
-import type { VerifyContractParams } from "@/lib/functions/types"
-import { getExplorerDetails } from "@/lib/viem-utils"
+import type { VerifyContractParams } from "@/lib/types"
+import { getExplorerDetails } from "@/lib/viem"
 
 export const verifyContract = async ({
   deployHash,
@@ -12,7 +12,6 @@ export const verifyContract = async ({
   encodedConstructorArgs,
   fileName,
   contractName,
-
   viemChain
 }: VerifyContractParams) => {
   const publicClient = createPublicClient({
@@ -35,15 +34,12 @@ export const verifyContract = async ({
 
   const { apiUrl, apiKey } = getExplorerDetails(viemChain)
 
-  const stringifiedStandardJsonInput =
-    typeof standardJsonInput === "string" ? standardJsonInput : JSON.stringify(standardJsonInput)
-
   const params = new URLSearchParams()
   params.append("apikey", apiKey)
   params.append("module", "contract")
   params.append("action", "verifysourcecode")
   params.append("contractaddress", contractAddress)
-  params.append("sourceCode", stringifiedStandardJsonInput)
+  params.append("sourceCode", standardJsonInput)
   params.append("codeformat", "solidity-standard-json-input")
   params.append("contractname", `${fileName}:${contractName}`)
   params.append("compilerversion", DEFAULT_GLOBAL_CONFIG.compilerVersion)

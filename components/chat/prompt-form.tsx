@@ -46,7 +46,7 @@ export const PromptForm = ({ append, status }: PromptProps) => {
       }}
     >
       <div className="relative flex w-full grow flex-col overflow-hidden px-8 sm:rounded-md sm:border sm:px-12">
-        <Tooltip>
+        <Tooltip delayDuration={200}>
           <TooltipTrigger asChild>
             <Button
               type="button"

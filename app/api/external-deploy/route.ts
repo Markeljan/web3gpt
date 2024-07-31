@@ -1,10 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 import { parseEther } from "viem"
-import { sepolia } from "viem/chains"
+import { arbitrumSepolia } from "viem/chains"
 
+import { deployContract } from "@/lib/actions/solidity/deploy-contract"
 import { WEB3GPT_API_SECRET } from "@/lib/config-server"
-import { deployContract } from "@/lib/functions/deploy-contract/deploy-contract"
 
 export const runtime = "nodejs"
 
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
     baseURI: baseUri
   })
 
-  const chainId = sepolia.id.toString()
+  const chainId = arbitrumSepolia.id.toString()
 
   try {
     const deployResult = await deployContract({
@@ -116,11 +116,9 @@ export async function POST(req: NextRequest) {
       sourceCode,
       constructorArgs
     })
-    return new Response(JSON.stringify(deployResult))
+    return NextResponse.json(deployResult)
   } catch (error) {
-    const err = error as Error
-    console.error(`Error in deployContract external: ${err.message}`)
-    return new Response(JSON.stringify({ error: `Error in deployContract external: ${err.message}` }), { status: 500 })
+    return NextResponse.json({ error: `Error in deployContract external: ${error}` }, { status: 500 })
   }
 }
 

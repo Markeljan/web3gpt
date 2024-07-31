@@ -2,9 +2,9 @@ import Image from "next/image"
 
 import type { Session } from "next-auth"
 
+import { SignOutButton } from "@/components/sign-out-button"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { SignOutButton } from "@/components/sign-out-button"
 
 function getUserInitials(name: string) {
   const [firstName, lastName] = name.split(" ")

@@ -6,7 +6,7 @@ import { redirect } from "next/navigation"
 
 import { auth } from "@/auth"
 import type { Agent, DbChat, DbChatListItem } from "@/lib/types"
-import type { VerifyContractParams } from "../functions/types"
+import type { VerifyContractParams } from "@/lib/types"
 
 // Store a new user's details
 export async function storeUser(user: { id: string }) {

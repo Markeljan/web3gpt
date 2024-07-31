@@ -20,7 +20,7 @@ import {
 import { IconExternalLink, IconSpinner } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useDeployWithWallet } from "@/lib/functions/deploy-contract/wallet-deploy"
+import { useWalletDeploy } from "@/lib/hooks/use-wallet-deploy"
 
 type DeployContractButtonProps = {
   getSourceCode: () => string
@@ -34,7 +34,7 @@ const getContractName = (sourceCode: string) => {
 }
 
 export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProps) => {
-  const { deploy: deployWithWallet } = useDeployWithWallet()
+  const { deploy: deployWithWallet } = useWalletDeploy()
   const [explorerUrl, setExplorerUrl] = useState<string>("")
   const [ipfsUrl, setIpfsUrl] = useState<string>("")
   const [constructorArgValues, setConstructorArgValues] = useState<string[]>([])

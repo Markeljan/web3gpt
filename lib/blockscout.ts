@@ -1,4 +1,4 @@
-export const blockscoutUrls: Record<number, string> = {
+export const BLOCKSCOUT_URLS: Record<number, string> = {
   0: "https://evm.findorascan.io",
   1: "https://eth.blockscout.com",
   3: "https://blockexplorer.bloxberg.org",

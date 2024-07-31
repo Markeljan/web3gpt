@@ -1,4 +1,5 @@
-// pages/api/check-domain.js
+"use server"
+
 import { INFURA_API_KEY } from "@/lib/config-server"
 import { Resolution } from "@unstoppabledomains/resolution"
 

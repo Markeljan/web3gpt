@@ -1,17 +1,17 @@
 "use client"
 
-import { memo, useMemo, useCallback } from "react"
+import { memo, useCallback, useMemo } from "react"
 
+import { useTheme } from "next-themes"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { coldarkCold, coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism"
-import { useTheme } from "next-themes"
 
 import { DeployContractButton } from "@/components/deploy-contract-button"
 import { Button } from "@/components/ui/button"
 import { IconCheck, IconCopy, IconDownload } from "@/components/ui/icons"
-import { cn, nanoid } from "@/lib/utils"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import { useIsClient } from "@/lib/hooks/use-is-client"
+import { cn, nanoid } from "@/lib/utils"
 
 export const PROGRAMMING_LANGUAGES: Record<string, string> = {
   javascript: ".js",
@@ -81,7 +81,7 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
       return
     }
     const fileExtension = PROGRAMMING_LANGUAGES[language] || ".file"
-    const suggestedFileName = `Web3GPT-${nanoid(6)}${fileExtension}`
+    const suggestedFileName = `web3gpt-${nanoid(6)}${fileExtension}`
     const fileName = window.prompt("Enter file name" || "", suggestedFileName)
 
     if (!fileName) {

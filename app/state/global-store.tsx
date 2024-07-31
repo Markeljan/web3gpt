@@ -1,13 +1,7 @@
 import { create } from "zustand"
 
 import { DEFAULT_GLOBAL_CONFIG } from "@/lib/config"
-
-import type {
-  LastDeploymentData,
-  DeployContractParams,
-  GlobalConfig,
-  VerifyContractParams
-} from "@/lib/functions/types"
+import type { DeployContractParams, GlobalConfig, LastDeploymentData, VerifyContractParams } from "@/lib/types"
 
 interface GlobalState {
   // configs

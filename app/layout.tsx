@@ -1,15 +1,15 @@
 import type { Metadata, Viewport } from "next"
 import { JetBrains_Mono as FontMono, Inter as FontSans } from "next/font/google"
 
-import { Analytics } from "@vercel/analytics/react"
 import { Toaster } from "@/components/ui/sonner"
+import { Analytics } from "@vercel/analytics/react"
 
 import "@/app/globals.css"
 import { Header } from "@/components/header/header"
 import { Providers } from "@/components/providers/ui-providers"
 import { Web3Provider } from "@/components/providers/web3-provider"
-import { cn } from "@/lib/utils"
 import { APP_URL } from "@/lib/config"
+import { cn } from "@/lib/utils"
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -20,8 +20,6 @@ const fontMono = FontMono({
   subsets: ["latin"],
   variable: "--font-mono"
 })
-
-export const runtime = "edge"
 
 export const metadata: Metadata = {
   title: {

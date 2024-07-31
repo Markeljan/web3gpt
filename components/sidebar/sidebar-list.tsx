@@ -1,6 +1,6 @@
-import { deleteChat, shareChat } from "@/lib/actions/db"
 import { SidebarActions } from "@/components/sidebar/sidebar-actions"
 import { SidebarItem } from "@/components/sidebar/sidebar-item"
+import { deleteChat, shareChat } from "@/lib/actions/db"
 import type { DbChatListItem } from "@/lib/types"
 
 export interface SidebarListProps {

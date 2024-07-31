@@ -3,6 +3,7 @@ import { customAlphabet } from "nanoid"
 import { twMerge } from "tailwind-merge"
 
 import { IPFS_GATEWAY } from "@/lib/config"
+import type { Hash } from "viem"
 
 export const cn = (...inputs: ClassValue[]): string => twMerge(clsx(inputs))
 
@@ -37,3 +38,7 @@ export const isValidEmail = (email: string): boolean => {
 }
 
 export const getGatewayUrl = (cid: string): string => `${IPFS_GATEWAY}/ipfs/${cid}`
+
+export function ensureHashPrefix(bytecode: string | Hash): Hash {
+  return `0x${bytecode.replace(/^0x/, "")}`
+}

@@ -4,8 +4,6 @@ import { useState, useTransition } from "react"
 
 import { toast } from "sonner"
 
-import type { ServerActionResult } from "@/lib/types"
-import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +15,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
-import { IconSpinner, IconClear } from "@/components/ui/icons"
+import { Button } from "@/components/ui/button"
+import { IconClear, IconSpinner } from "@/components/ui/icons"
+import type { ServerActionResult } from "@/lib/types"
 
 interface ClearHistoryProps {
   clearChats: () => ServerActionResult<void>

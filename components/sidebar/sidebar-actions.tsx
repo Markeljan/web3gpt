@@ -28,9 +28,9 @@ import {
 } from "@/components/ui/dialog"
 import { IconShare, IconSpinner, IconTrash, IconUsers } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { APP_URL } from "@/lib/config"
 import type { DbChatListItem, ServerActionResult } from "@/lib/types"
 import { cn, formatDate } from "@/lib/utils"
-import { APP_URL } from "@/lib/config"
 
 interface SidebarActionsProps {
   chat: DbChatListItem

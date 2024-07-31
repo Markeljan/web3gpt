@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 
-import { useAssistant, type Message } from "@ai-sdk/react"
+import { type Message, useAssistant } from "@ai-sdk/react"
 import type { Session } from "next-auth"
 
+import { AgentCard } from "@/components/agent-card"
 import { ChatList } from "@/components/chat/chat-list"
 import { ChatPanel } from "@/components/chat/chat-panel"
 import { ChatScrollAnchor } from "@/components/chat/chat-scroll-anchor"
@@ -13,7 +14,6 @@ import { Landing } from "@/components/landing"
 import { DEFAULT_AGENT } from "@/lib/config"
 import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
-import { AgentCard } from "@/components/agent-card"
 
 type ChatProps = {
   className?: string
