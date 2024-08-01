@@ -4,6 +4,9 @@ import { deleteVerification, getVerifications } from "@/lib/actions/db"
 import { checkVerifyStatus, verifyContract } from "@/lib/actions/solidity/verify-contract"
 import { CRON_SECRET } from "@/lib/config-server"
 
+const PASS_MESSAGE = "Pass - Verified"
+const ALLREADY_VERIFIED_MESSAGE = "Smart-contract already verified."
+
 export const GET = async (req: NextRequest) => {
   const token = req.headers.get("Authorization")
   if (!token) {
@@ -15,24 +18,15 @@ export const GET = async (req: NextRequest) => {
   const verifications = await getVerifications()
 
   for (const verificationData of verifications) {
-    const verifyResult = await verifyContract(verificationData)
-
-    if (verifyResult.status === "0") {
-      // If the verification failed, we  check the verification status
-      const guid = verifyResult.result
-      const verificationStatus = await checkVerifyStatus(guid, verificationData.viemChain)
-      if (verificationStatus.status === "0") {
-        continue
-      }
-      if (verificationStatus.status === "1") {
-        console.log(`Verification success: ${verificationData.deployHash}`)
-        await deleteVerification(verificationData.deployHash)
-        continue
-      }
+    const { result: guid } = await verifyContract(verificationData)
+    if (guid === ALLREADY_VERIFIED_MESSAGE) {
+      console.log(`${verificationData.viemChain.name} ${verificationData.deployHash}`)
+      await deleteVerification(verificationData.deployHash)
+      continue
     }
-    if (verifyResult.status === "1") {
-      const guid = verifyResult.result
-      console.log(`Verify success: ${verificationData.deployHash} - ${guid}`)
+    const verificationStatus = await checkVerifyStatus(guid, verificationData.viemChain)
+    if (verificationStatus.result === PASS_MESSAGE) {
+      console.log(`${verificationData.viemChain.name} ${verificationData.deployHash}`)
       await deleteVerification(verificationData.deployHash)
     }
   }
