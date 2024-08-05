@@ -1,7 +1,14 @@
 "use client"
 
-import { darkTheme, getDefaultConfig, lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit"
+import { RainbowKitProvider, type Wallet, darkTheme, getDefaultConfig, lightTheme } from "@rainbow-me/rainbowkit"
 import "@rainbow-me/rainbowkit/styles.css"
+import {
+  coinbaseWallet,
+  injectedWallet,
+  metaMaskWallet,
+  rainbowWallet,
+  walletConnectWallet
+} from "@rainbow-me/rainbowkit/wallets"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useTheme } from "next-themes"
 import { http, WagmiProvider } from "wagmi"
@@ -14,6 +21,7 @@ import {
   rootstockTestnet,
   sepolia
 } from "wagmi/chains"
+import { safe } from "wagmi/connectors"
 
 import { APP_URL } from "@/lib/config"
 import { FULL_RPC_URLS } from "@/lib/viem"
@@ -45,11 +53,24 @@ const chains = [
 
 const queryClient = new QueryClient()
 
+const customSafeWallet: () => Wallet = () => ({
+  id: "safe-wallet",
+  name: "Safe Wallet",
+  iconUrl: "/assets/safe-logo.svg",
+  iconBackground: "#0EFF80",
+  createConnector: () =>
+    safe({
+      // app.safe.global and *.blockscout.com
+      allowedDomains: [/^app\.safe\.global$/, /^.*\.blockscout\.com$/],
+      debug: false
+    })
+})
+
 const config = getDefaultConfig({
   appName: "Web3GPT",
   appDescription: "Write and deploy Solidity smart contracts with AI",
   appUrl: APP_URL,
-  appIcon: "/favicon.ico",
+  appIcon: "/assets/web3gpt.png",
   projectId: `${process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID}`,
   chains: chains,
   transports: {
@@ -61,6 +82,12 @@ const config = getDefaultConfig({
     [holesky.id]: http(),
     [rootstockTestnet.id]: http()
   },
+  wallets: [
+    {
+      groupName: "Supported",
+      wallets: [customSafeWallet, metaMaskWallet, rainbowWallet, coinbaseWallet, walletConnectWallet, injectedWallet]
+    }
+  ],
   ssr: true
 })
 
@@ -71,6 +98,17 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
+          appInfo={{
+            appName: "Web3GPT",
+            disclaimer: ({ Text, Link }) => (
+              <Text>
+                Web3GPT is an experimental AI tool. Beware of the{" "}
+                <Link href="https://docs.soliditylang.org/en/latest/security-considerations.html">risks</Link>{" "}
+                associated with deploying smart contracts.
+              </Text>
+            ),
+            learnMoreUrl: "https://x.com/web3gpt_app"
+          }}
           theme={
             resolvedTheme === "dark"
               ? darkTheme({

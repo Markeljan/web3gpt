@@ -36,7 +36,7 @@ module.exports = {
             value: "Content-Type, Authorization, web3gpt-api-key"
           }
         ]
-      }
+      },
     ]
   }
 }

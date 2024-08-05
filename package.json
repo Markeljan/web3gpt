@@ -46,8 +46,8 @@
     "remark-math": "^5.1.1",
     "solc": "^0.8.26",
     "sonner": "^1.4.41",
-    "viem": "^2.10.9",
-    "wagmi": "^2.9.1",
+    "viem": "^2.18.8",
+    "wagmi": "^2.12.2",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
