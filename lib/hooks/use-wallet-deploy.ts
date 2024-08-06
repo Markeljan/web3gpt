@@ -60,7 +60,8 @@ export function useWalletDeploy() {
       abi: abi,
       bytecode: bytecode,
       account: address,
-      args: parsedConstructorArgs
+      args: parsedConstructorArgs,
+      value: 0n
     })
 
     if (!deployHash) {
