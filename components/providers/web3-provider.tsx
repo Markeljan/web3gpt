@@ -7,6 +7,7 @@ import {
   injectedWallet,
   metaMaskWallet,
   rainbowWallet,
+  safeWallet,
   walletConnectWallet
 } from "@rainbow-me/rainbowkit/wallets"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -53,17 +54,15 @@ const chains = [
 
 const queryClient = new QueryClient()
 
-const customSafeWallet: () => Wallet = () => ({
-  id: "safe",
-  name: "Safe Wallet",
-  iconUrl: "/assets/safe-logo.svg",
-  iconBackground: "#0EFF80",
-  createConnector: () =>
-    safe({
-      // app.safe.global and *.blockscout.com
-      allowedDomains: [/^app\.safe\.global$/, /^.*\.blockscout\.com$/]
-    })
-})
+const safeWalletObject = safeWallet()
+
+safeWalletObject.createConnector = () =>
+  safe({
+    // app.safe.global and *.blockscout.com
+    allowedDomains: [/^app\.safe\.global$/, /^.*\.blockscout\.com$/]
+  })
+
+const customSafeWallet: () => Wallet = () => safeWalletObject
 
 const config = getDefaultConfig({
   appName: "Web3GPT",
