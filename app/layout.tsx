@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   description: "Write and deploy smart contracts with AI.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/logo.svg",
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png"
   },
