@@ -1,12 +1,13 @@
 "use client"
 
-import { RainbowKitProvider, type Wallet, darkTheme, getDefaultConfig, lightTheme } from "@rainbow-me/rainbowkit"
+import { darkTheme, getDefaultConfig, lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import "@rainbow-me/rainbowkit/styles.css"
 import {
   coinbaseWallet,
   injectedWallet,
   metaMaskWallet,
   rainbowWallet,
+  safeWallet,
   walletConnectWallet
 } from "@rainbow-me/rainbowkit/wallets"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -21,7 +22,6 @@ import {
   rootstockTestnet,
   sepolia
 } from "wagmi/chains"
-import { safe } from "wagmi/connectors"
 
 import { APP_URL } from "@/lib/config"
 import { FULL_RPC_URLS } from "@/lib/viem"
@@ -53,19 +53,6 @@ const chains = [
 
 const queryClient = new QueryClient()
 
-const customSafeWallet: () => Wallet = () => ({
-  id: "safe-wallet",
-  name: "Safe Wallet",
-  iconUrl: "/assets/safe-logo.svg",
-  iconBackground: "#0EFF80",
-  createConnector: () =>
-    safe({
-      // app.safe.global and *.blockscout.com
-      allowedDomains: [/^app\.safe\.global$/, /^.*\.blockscout\.com$/],
-      debug: false
-    })
-})
-
 const config = getDefaultConfig({
   appName: "Web3GPT",
   appDescription: "Write and deploy Solidity smart contracts with AI",
@@ -85,7 +72,7 @@ const config = getDefaultConfig({
   wallets: [
     {
       groupName: "Supported",
-      wallets: [customSafeWallet, metaMaskWallet, rainbowWallet, coinbaseWallet, walletConnectWallet, injectedWallet]
+      wallets: [safeWallet, metaMaskWallet, rainbowWallet, coinbaseWallet, walletConnectWallet, injectedWallet]
     }
   ],
   ssr: true
