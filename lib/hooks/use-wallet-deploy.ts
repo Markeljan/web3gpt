@@ -12,7 +12,7 @@ import { getContractFileName, getExplorerUrl, getIpfsUrl } from "@/lib/contracts
 import type { LastDeploymentData, VerifyContractParams } from "@/lib/types"
 
 export function useWalletDeploy() {
-  const { chain: viemChain } = useAccount()
+  const { chain: viemChain, address } = useAccount()
   const { setLastDeploymentData, setVerifyContractConfig, globalConfig } = useGlobalStore()
   const chainId = viemChain?.id || globalConfig.viemChain.id
   const { data: walletClient } = useWalletClient()
@@ -55,13 +55,11 @@ export function useWalletDeploy() {
       args: parsedConstructorArgs
     })
 
-    const [account] = await walletClient.getAddresses()
-
     const deployLoadingToast = toast.loading("Deploying contract...")
     const deployHash = await walletClient.deployContract({
       abi: abi,
       bytecode: bytecode,
-      account: account,
+      account: address,
       args: parsedConstructorArgs
     })
 

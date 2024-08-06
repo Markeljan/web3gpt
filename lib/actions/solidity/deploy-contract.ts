@@ -11,6 +11,8 @@ import { getContractFileName, getExplorerUrl, getIpfsUrl } from "@/lib/contracts
 import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/types"
 import { getChainById } from "@/lib/viem"
 
+const deployAccount = privateKeyToAccount(`0x${process.env.DEPLOYER_PRIVATE_KEY}`)
+
 export const deployContract = async ({
   chainId,
   contractName,
@@ -21,15 +23,12 @@ export const deployContract = async ({
 
   const { abi, bytecode, standardJsonInput, sources } = await compileContract({ contractName, sourceCode })
 
-  const deployerPk: Hex = `0x${process.env.DEPLOYER_PRIVATE_KEY}`
-  const account = privateKeyToAccount(deployerPk)
-
   const alchemyHttpUrl = viemChain?.rpcUrls?.alchemy?.http[0]
     ? `${viemChain.rpcUrls.alchemy.http[0]}/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
     : undefined
 
   const walletClient = createWalletClient({
-    account,
+    account: deployAccount,
     chain: viemChain,
     transport: http(alchemyHttpUrl)
   })
@@ -48,7 +47,7 @@ export const deployContract = async ({
   const deployHash = await walletClient.deployContract({
     abi,
     bytecode,
-    account,
+    account: deployAccount,
     args: constructorArgs
   })
 
