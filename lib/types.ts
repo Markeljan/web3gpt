@@ -84,6 +84,8 @@ export type VerifyContractParams = {
 
 export type LastDeploymentData = DeployContractResult & {
   address?: Hex
+  chainId: number
   verificationStatus: string
   transactionHash: Hex
+  ipfsUrl?: string
 }
