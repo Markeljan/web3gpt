@@ -1,6 +1,7 @@
-import type { VerifyContractParams } from "@/lib/functions/types"
-import handleImports from "@/lib/functions/deploy-contract/handle-imports"
-import { getExplorerUrl } from "@/lib/viem-utils"
+
+import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/types"
+//import handleImports from "@/lib/functions/deploy-contract/handle-imports"
+//import { getExplorerUrl } from "@/lib/viem-utils"
 import { encodeFunctionData } from "viem"
 import { useAccount, usePublicClient, useWalletClient } from "wagmi"
 import { toast } from "sonner"
