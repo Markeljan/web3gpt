@@ -7,6 +7,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { coldarkCold, coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism"
 
 import { DeployContractButton } from "@/components/deploy-contract-button"
+import { DeployTokenScriptButton } from "@/components/deploy-tokenscript-button"
 import { Button } from "@/components/ui/button"
 import { IconCheck, IconCopy, IconDownload } from "@/components/ui/icons"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
@@ -38,7 +39,9 @@ export const PROGRAMMING_LANGUAGES: Record<string, string> = {
   html: ".html",
   css: ".css",
   solidity: ".sol",
-  clarity: ".clar"
+  clarity: ".clar",
+  tokenscript: ".xml",
+  tokenscripttsml: ".tsml"
 }
 
 type CodeBlockProps = {
@@ -112,6 +115,9 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
         <span className="text-xs lowercase">{language}</span>
         <div className="flex items-center space-x-1">
           {language === "solidity" ? <DeployContractButton getSourceCode={() => value} /> : null}
+          {language === "tokenscript" ? <DeployTokenScriptButton getSourceCode={() => value} /> : null}
+          {language === "tokenscripttsml" ? <DeployTokenScriptButton getSourceCode={() => value} /> : null}
+          {language === "xml" ? <DeployTokenScriptButton getSourceCode={() => value} /> : null}
           <Button
             variant="ghost"
             className="focus-visible:ring-1 focus-visible:ring-gray-700 focus-visible:ring-offset-0"

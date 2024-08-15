@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 import { type Message, useAssistant } from "@ai-sdk/react"
 import type { Session } from "next-auth"
@@ -14,6 +14,7 @@ import { Landing } from "@/components/landing"
 import { DEFAULT_AGENT } from "@/lib/config"
 import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { useGlobalStore } from "@/app/state/global-store"
 
 type ChatProps = {
   className?: string
@@ -27,6 +28,7 @@ export const Chat = ({ threadId, initialMessages = [], agent, className, session
   const avatarUrl = session?.user?.image
   const userId = session?.user?.id
   const router = useRouter()
+  const { tokenScriptViewerUrl, lastDeploymentData, completedDeploymentReport, setCompletedDeploymentReport, setTokenScriptViewerUrl } = useGlobalStore()
   const {
     messages,
     status,
@@ -42,6 +44,11 @@ export const Chat = ({ threadId, initialMessages = [], agent, className, session
     }
   })
 
+  const isSmartToken = agent?.name.includes("Smart Token");
+
+  // Ref for chat container
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (messages.length === 0 && initialMessages?.length > 0) {
       setMessages(initialMessages)
@@ -54,9 +61,41 @@ export const Chat = ({ threadId, initialMessages = [], agent, className, session
     }
   }, [threadIdFromAi, threadId, router, status, userId])
 
+  useEffect(() => {
+    if (isSmartToken && lastDeploymentData && !completedDeploymentReport && status !== "in_progress") {
+      const contractAddress = lastDeploymentData.address;
+      const chainId = lastDeploymentData.chainId;
+      console.log("new deployment detected ", lastDeploymentData)
+      append({
+        id: threadId,
+        role: "system",
+        content: `The user has successfully deployed a contract manually here are the details: \n\n Address: ${contractAddress} ChainId: ${chainId}`
+      });
+      setCompletedDeploymentReport(true);
+    }
+  }, [threadIdFromAi, threadId, router, status, append, userId]);
+
+  useEffect(() => {
+    if (tokenScriptViewerUrl && completedDeploymentReport && status !== "in_progress") {
+      append({
+        id: threadId,
+        role: "system",
+        content: `The user has set the scriptURI and deployed the TokenScript here are the details for you to share with the user: \n\n${JSON.stringify(tokenScriptViewerUrl, null, 2)}`
+      });
+      setTokenScriptViewerUrl(null);
+    }
+  }, [threadIdFromAi, threadId, router, status, append, userId])
+
+  // Scroll to bottom when deployment completes
+  useEffect(() => {
+    if (completedDeploymentReport && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [completedDeploymentReport, messages]);
+
   return (
     <>
-      <div className={cn("px-4 pb-[200px] pt-4 md:pt-10", className)}>
+      <div ref={chatContainerRef} className={cn("px-4 pb-[200px] pt-4 md:pt-10", className)}>
         {agent ? <AgentCard agent={agent} /> : <Landing userId={userId} />}
         <ChatList messages={messages} avatarUrl={avatarUrl} status={status} />
         <ChatScrollAnchor trackVisibility={status === "in_progress"} />

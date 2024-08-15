@@ -28,6 +28,7 @@
     "@vercel/kv": "^1.0.1",
     "@vercel/og": "^0.6.2",
     "ai": "^3.2.40",
+    "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "nanoid": "^4.0.2",

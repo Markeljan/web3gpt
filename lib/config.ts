@@ -66,5 +66,13 @@ export const AGENTS_ARRAY: Agent[] = [
     description: "Create your own AI agent",
     creator: "soko.eth",
     imageUrl: "/assets/agent-factory.png"
+  },
+  {
+    id: "asst_fns5bh6XGZ8SHcmI60syHuHh",
+    userId: "12689544",
+    name: "Smart Token",
+    description: "Create a Smart Token - create and self deploy a token, then power it with a TokenScript",
+    creator: "61cygni.eth",
+    imageUrl: "/assets/tokenscript.png"
   }
 ]
