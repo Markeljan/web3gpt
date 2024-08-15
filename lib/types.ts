@@ -87,5 +87,4 @@ export type LastDeploymentData = DeployContractResult & {
   chainId: number
   verificationStatus: string
   transactionHash: Hex
-  ipfsUrl?: string
 }

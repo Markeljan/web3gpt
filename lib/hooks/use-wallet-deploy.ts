@@ -139,6 +139,7 @@ export function useWalletDeploy() {
 
       const deploymentData: LastDeploymentData = {
         address,
+        chainId,
         transactionHash: deployHash,
         ipfsUrl,
         explorerUrl,
@@ -159,6 +160,7 @@ export function useWalletDeploy() {
       toast.error("Contract deployment failed")
       const deploymentData: LastDeploymentData = {
         transactionHash: deployHash,
+        chainId,
         explorerUrl,
         ipfsUrl,
         verificationStatus: "pending",
