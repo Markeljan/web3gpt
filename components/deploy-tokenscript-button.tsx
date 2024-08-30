@@ -1,7 +1,6 @@
 "use client"
 
-import Link from "next/link"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 
 import { useAccount, useChains } from "wagmi"
 
@@ -17,7 +16,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { IconExternalLink, IconSpinner } from "@/components/ui/icons"
+import { IconSpinner } from "@/components/ui/icons"
 import { useWriteToIPFS } from "@/lib/hooks/use-tokenscript-deploy"
 
 type DeployContractButtonProps = {
@@ -27,31 +26,17 @@ type DeployContractButtonProps = {
 export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonProps) => {
   const { deploy: deployIPFS } = useWriteToIPFS()
   const [explorerUrl, setExplorerUrl] = useState<string>("")
-  const [ipfsUrl, setIpfsUrl] = useState<string>("")
   const [isErrorDeploying, setIsErrorDeploying] = useState<boolean>(false)
   const [sourceCode, setSourceCode] = useState<string>("")
   const { isDeploying, setIsDeploying, setTokenScriptViewerUrl } = useGlobalStore()
   const supportedChains = useChains()
   const { chain } = useAccount()
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const isSupportedChain = useMemo(
     () => !!chain && supportedChains.find((c) => c.id === chain.id),
     [chain, supportedChains]
   )
-
-  const generateConstructorArgs = useCallback(() => {
-    const constructorArgsRegex = /constructor\(([^)]+)\)/
-    const constructorArgsMatch = constructorArgsRegex.exec(sourceCode)
-    if (!constructorArgsMatch) return []
-    const constructorArgs = constructorArgsMatch[1]
-    const constructorArgsArray = constructorArgs.split(",")
-    return constructorArgsArray.map((arg) => arg.trim())
-  }, [sourceCode])
-
-  useEffect(() => {
-    const args = generateConstructorArgs()
-  }, [generateConstructorArgs])
 
   const handleDeployToIPFS = async () => {
     setIsDeploying(true)
@@ -67,10 +52,10 @@ export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonP
       }
 
       explorerUrl && setExplorerUrl(explorerUrl)
-      setTokenScriptViewerUrl(tokenscriptViewerUrl as string);
+      setTokenScriptViewerUrl(tokenscriptViewerUrl as string)
 
       setIsDeploying(false)
-      setIsDialogOpen(false); // Close the dialog
+      setIsDialogOpen(false) // Close the dialog
     } catch (e) {
       console.error(e)
       setIsErrorDeploying(true)
@@ -83,7 +68,7 @@ export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonP
       <Dialog
         open={isDialogOpen}
         onOpenChange={(isOpen) => {
-          setIsDialogOpen(isOpen);
+          setIsDialogOpen(isOpen)
           if (!isOpen && !isDeploying) {
             setIsErrorDeploying(false)
           }
@@ -93,7 +78,7 @@ export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonP
           <Button
             onClick={() => {
               setSourceCode(getSourceCode())
-              setIsDialogOpen(true);
+              setIsDialogOpen(true)
             }}
             className="mr-2 text-primary-foreground"
             variant="default"
@@ -107,9 +92,7 @@ export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonP
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Manually Deploy TokenScript</DialogTitle>
-            <DialogDescription>
-                Deploy the TokenScript.
-            </DialogDescription>
+            <DialogDescription>Deploy the TokenScript.</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-4">
             <div className="flex flex-col gap-2">
@@ -120,22 +103,14 @@ export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonP
                 </Badge>
               </div>
               <p className="text-sm text-gray-500">
-                We will deploy the TokenScript to IPFS
-                Then update the ScriptURI on the contract to point to the TokenScript
+                We will deploy the TokenScript to IPFS Then update the ScriptURI on the contract to point to the
+                TokenScript
               </p>
             </div>
           </div>
           <div className="flex flex-col items-center gap-4">
             {isErrorDeploying && <p className="text-sm text-destructive">Error deploying TokenScript.</p>}
             {isDeploying && <IconSpinner className="size-8 animate-spin text-gray-500" />}
-            {ipfsUrl && (
-              <Link href={ipfsUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500">
-                <div className="flex items-center">
-                  View on IPFS
-                  <IconExternalLink className="ml-1" />
-                </div>
-              </Link>
-            )}
           </div>
 
           <DialogFooter>

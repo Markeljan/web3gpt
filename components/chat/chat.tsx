@@ -28,7 +28,13 @@ export const Chat = ({ threadId, initialMessages = [], agent, className, session
   const avatarUrl = session?.user?.image
   const userId = session?.user?.id
   const router = useRouter()
-  const { tokenScriptViewerUrl, lastDeploymentData, completedDeploymentReport, setCompletedDeploymentReport, setTokenScriptViewerUrl } = useGlobalStore()
+  const {
+    tokenScriptViewerUrl,
+    lastDeploymentData,
+    completedDeploymentReport,
+    setCompletedDeploymentReport,
+    setTokenScriptViewerUrl
+  } = useGlobalStore()
   const {
     messages,
     status,
@@ -44,10 +50,10 @@ export const Chat = ({ threadId, initialMessages = [], agent, className, session
     }
   })
 
-  const isSmartToken = agent?.name.includes("Smart Token");
+  const isSmartToken = agent?.name.includes("Smart Token")
 
   // Ref for chat container
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (messages.length === 0 && initialMessages?.length > 0) {
@@ -63,35 +69,49 @@ export const Chat = ({ threadId, initialMessages = [], agent, className, session
 
   useEffect(() => {
     if (isSmartToken && lastDeploymentData && !completedDeploymentReport && status !== "in_progress") {
-      const contractAddress = lastDeploymentData.address;
-      const chainId = lastDeploymentData.chainId;
+      const contractAddress = lastDeploymentData.address
+      const chainId = lastDeploymentData.chainId
       console.log("new deployment detected ", lastDeploymentData)
       append({
         id: threadId,
         role: "system",
         content: `The user has successfully deployed a contract manually here are the details: \n\n Address: ${contractAddress} ChainId: ${chainId}`
-      });
-      setCompletedDeploymentReport(true);
+      })
+      setCompletedDeploymentReport(true)
     }
-  }, [threadIdFromAi, threadId, router, status, append, userId]);
+  }, [
+    threadId,
+    status,
+    append,
+    setCompletedDeploymentReport,
+    lastDeploymentData,
+    lastDeploymentData?.chainId,
+    lastDeploymentData?.address,
+    isSmartToken,
+    completedDeploymentReport
+  ])
 
   useEffect(() => {
     if (tokenScriptViewerUrl && completedDeploymentReport && status !== "in_progress") {
       append({
         id: threadId,
         role: "system",
-        content: `The user has set the scriptURI and deployed the TokenScript here are the details for you to share with the user: \n\n${JSON.stringify(tokenScriptViewerUrl, null, 2)}`
-      });
-      setTokenScriptViewerUrl(null);
+        content: `The user has set the scriptURI and deployed the TokenScript here are the details for you to share with the user: \n\n${JSON.stringify(
+          tokenScriptViewerUrl,
+          null,
+          2
+        )}`
+      })
+      setTokenScriptViewerUrl(null)
     }
-  }, [threadIdFromAi, threadId, router, status, append, userId])
+  }, [threadId, status, append, tokenScriptViewerUrl, completedDeploymentReport, setTokenScriptViewerUrl])
 
   // Scroll to bottom when deployment completes
   useEffect(() => {
     if (completedDeploymentReport && chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
-  }, [completedDeploymentReport, messages]);
+  }, [completedDeploymentReport])
 
   return (
     <>

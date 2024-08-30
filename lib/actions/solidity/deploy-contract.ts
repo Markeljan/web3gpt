@@ -5,7 +5,7 @@ import { http, type Chain, type Hex, createWalletClient, encodeDeployData } from
 import { privateKeyToAccount } from "viem/accounts"
 
 import { storeDeployment, storeVerification } from "@/lib/actions/db"
-import { ipfsUpload } from "@/lib/actions/ipfs"
+import { ipfsUploadDir } from "@/lib/actions/ipfs"
 import { compileContract } from "@/lib/actions/solidity/compile-contract"
 import { getContractFileName, getExplorerUrl, getIpfsUrl } from "@/lib/contracts/contract-utils"
 import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/types"
@@ -53,7 +53,10 @@ export const deployContract = async ({
 
   const explorerUrl = getExplorerUrl(viemChain, deployHash)
 
-  const cid = await ipfsUpload(sources, abi, bytecode, standardJsonInput)
+  const cid = await ipfsUploadDir(sources, abi, bytecode, standardJsonInput)
+  if (!cid) {
+    throw new Error("Error uploading to IPFS")
+  }
 
   const ipfsUrl = getIpfsUrl(cid)
 

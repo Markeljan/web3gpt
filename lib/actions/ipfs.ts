@@ -1,42 +1,60 @@
 "use server"
 
-import fs from "node:fs"
-import os from "node:os"
-import path from "node:path"
-
-import PinataSDK from "@pinata/sdk"
-
-import { PINATA_JWT } from "@/lib/config-server"
-
+import { type FileObject, PinataSDK } from "pinata"
 import type { SolcOutput } from "solc"
 import type { Abi } from "viem"
 
-const pinata = new PinataSDK({ pinataJWTKey: PINATA_JWT })
+import { IPFS_GATEWAY } from "@/lib/config"
+import { PINATA_JWT } from "@/lib/config-server"
 
-export async function ipfsUpload(
+const pinata = new PinataSDK({
+  pinataJwt: PINATA_JWT,
+  pinataGateway: IPFS_GATEWAY
+})
+
+export async function ipfsUploadDir(
   sources: SolcOutput["sources"],
   abi: Abi,
   bytecode: string,
   standardJsonInput: string
-): Promise<string> {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "web3gpt-"))
+): Promise<string | null> {
+  try {
+    const files: FileObject[] = []
 
-  for (const [fileName, { content }] of Object.entries(sources)) {
-    const filePath = path.join(tempDir, fileName)
-    fs.writeFileSync(filePath, content)
-  }
-
-  fs.writeFileSync(path.join(tempDir, "abi.json"), JSON.stringify(abi, null, 2))
-  fs.writeFileSync(path.join(tempDir, "bytecode.txt"), bytecode)
-  fs.writeFileSync(path.join(tempDir, "standardJsonInput.json"), standardJsonInput)
-
-  const { IpfsHash } = await pinata.pinFromFS(tempDir, {
-    pinataOptions: {
-      cidVersion: 1
+    for (const [fileName, { content }] of Object.entries(sources)) {
+      files.push(new File([content], fileName))
     }
-  })
+    files.push(new File([JSON.stringify(abi, null, 2)], "abi.json"))
+    files.push(new File([bytecode], "bytecode.txt"))
+    files.push(new File([standardJsonInput], "standardJsonInput.json"))
 
-  fs.rmSync(tempDir, { recursive: true, force: true })
+    const { IpfsHash } = await pinata.upload.fileArray(files, {
+      cidVersion: 1,
+      metadata: {
+        name: "contract"
+      }
+    })
 
-  return IpfsHash
+    return IpfsHash
+  } catch (error) {
+    console.error("Error writing to temporary file:", error)
+    return null
+  }
+}
+
+export async function ipfsUploadFile(fileName: string, fileContent: string | Buffer): Promise<string | null> {
+  try {
+    const file = new File([fileContent], fileName)
+    const { IpfsHash } = await pinata.upload.file(file, {
+      cidVersion: 1,
+      metadata: {
+        name: fileName
+      }
+    })
+
+    return IpfsHash
+  } catch (error) {
+    console.error("Error writing to temporary file:", error)
+    return null
+  }
 }
