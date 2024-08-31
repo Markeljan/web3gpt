@@ -1,3 +1,4 @@
+import { privateKeyToAccount } from "viem/accounts"
 import { z } from "zod"
 
 const envSchema = z.object({
@@ -15,3 +16,5 @@ const env = envSchema.parse({
 })
 
 export const { WEB3GPT_API_SECRET, CRON_SECRET, INFURA_API_KEY, PINATA_JWT } = env
+
+export const DEPLOYER_ACCOUNT = privateKeyToAccount(`0x${process.env.DEPLOYER_PRIVATE_KEY}`)

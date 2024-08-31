@@ -33,7 +33,7 @@
     "next": "^14.2.5",
     "next-auth": "5.0.0-beta.3",
     "next-themes": "^0.3.0",
-    "openai": "^4.53.2",
+    "openai": "^4.57.0",
     "pinata": "^0.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

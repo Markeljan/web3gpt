@@ -6,11 +6,13 @@ export const runtime = "nodejs"
 
 export async function POST(req: NextRequest) {
   const data = await req.json()
-  const { deployHash, standardJsonInput, encodedConstructorArgs, fileName, contractName, viemChain } = data
+  const { deployHash, contractAddress, standardJsonInput, encodedConstructorArgs, fileName, contractName, viemChain } =
+    data
 
   try {
     const deployResult = await verifyContract({
       deployHash,
+      contractAddress,
       standardJsonInput,
       encodedConstructorArgs,
       fileName,

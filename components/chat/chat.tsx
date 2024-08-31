@@ -6,27 +6,29 @@ import { useEffect, useRef } from "react"
 import { type Message, useAssistant } from "@ai-sdk/react"
 import type { Session } from "next-auth"
 
+import { useGlobalStore } from "@/app/state/global-store"
 import { AgentCard } from "@/components/agent-card"
 import { ChatList } from "@/components/chat/chat-list"
 import { ChatPanel } from "@/components/chat/chat-panel"
 import { ChatScrollAnchor } from "@/components/chat/chat-scroll-anchor"
 import { Landing } from "@/components/landing"
 import { DEFAULT_AGENT } from "@/lib/config"
+import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
-import { useGlobalStore } from "@/app/state/global-store"
 
 type ChatProps = {
   className?: string
   agent?: Agent | null
-  threadId?: string
+  initialThreadId?: string
   initialMessages?: Message[]
   session?: Session
 }
 
-export const Chat = ({ threadId, initialMessages = [], agent, className, session }: ChatProps) => {
+export const Chat = ({ initialThreadId, initialMessages = [], agent, className, session }: ChatProps) => {
   const avatarUrl = session?.user?.image
   const userId = session?.user?.id
+  const isSmartToken = agent?.name.includes("Smart Token")
   const router = useRouter()
   const {
     tokenScriptViewerUrl,
@@ -35,58 +37,54 @@ export const Chat = ({ threadId, initialMessages = [], agent, className, session
     setCompletedDeploymentReport,
     setTokenScriptViewerUrl
   } = useGlobalStore()
-  const {
-    messages,
-    status,
-    stop,
-    append,
-    setMessages,
-    threadId: threadIdFromAi
-  } = useAssistant({
-    threadId,
+  const { messages, status, stop, append, setMessages, threadId } = useAssistant({
+    threadId: initialThreadId,
     api: "/api/assistants/threads/messages",
     body: {
       assistantId: agent?.id || DEFAULT_AGENT.id
     }
   })
+  const chatRef = useRef<HTMLDivElement>(null)
+  const { scrollToBottom } = useScrollToBottom(chatRef)
 
-  const isSmartToken = agent?.name.includes("Smart Token")
-
-  // Ref for chat container
-  const chatContainerRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (messages.length === 2 && !initialThreadId && threadId && status !== "in_progress") {
+      router.push(`/chat/${threadId}`, {
+        scroll: true
+      })
+    }
+  }, [messages, router, initialThreadId, status, threadId])
 
   useEffect(() => {
     if (messages.length === 0 && initialMessages?.length > 0) {
       setMessages(initialMessages)
+      setTimeout(() => {
+        scrollToBottom()
+      }, 500)
     }
-  }, [initialMessages, messages, setMessages])
-
-  useEffect(() => {
-    if (userId && threadIdFromAi && threadIdFromAi !== threadId && status !== "in_progress") {
-      router.replace(`/chat/${threadIdFromAi}`, { scroll: false })
-    }
-  }, [threadIdFromAi, threadId, router, status, userId])
+  }, [initialMessages, messages, setMessages, scrollToBottom])
 
   useEffect(() => {
     if (isSmartToken && lastDeploymentData && !completedDeploymentReport && status !== "in_progress") {
-      const contractAddress = lastDeploymentData.address
+      const contractAddress = lastDeploymentData.contractAddress
       const chainId = lastDeploymentData.chainId
-      console.log("new deployment detected ", lastDeploymentData)
       append({
         id: threadId,
         role: "system",
         content: `The user has successfully deployed a contract manually here are the details: \n\n Address: ${contractAddress} ChainId: ${chainId}`
       })
       setCompletedDeploymentReport(true)
+      scrollToBottom()
     }
   }, [
     threadId,
     status,
     append,
     setCompletedDeploymentReport,
+    scrollToBottom,
     lastDeploymentData,
     lastDeploymentData?.chainId,
-    lastDeploymentData?.address,
+    lastDeploymentData?.contractAddress,
     isSmartToken,
     completedDeploymentReport
   ])
@@ -106,16 +104,9 @@ export const Chat = ({ threadId, initialMessages = [], agent, className, session
     }
   }, [threadId, status, append, tokenScriptViewerUrl, completedDeploymentReport, setTokenScriptViewerUrl])
 
-  // Scroll to bottom when deployment completes
-  useEffect(() => {
-    if (completedDeploymentReport && chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
-    }
-  }, [completedDeploymentReport])
-
   return (
     <>
-      <div ref={chatContainerRef} className={cn("px-4 pb-[200px] pt-4 md:pt-10", className)}>
+      <div ref={chatRef} className={cn("px-4 pb-[200px] pt-4 md:pt-10", className)}>
         {agent ? <AgentCard agent={agent} /> : <Landing userId={userId} />}
         <ChatList messages={messages} avatarUrl={avatarUrl} status={status} />
         <ChatScrollAnchor trackVisibility={status === "in_progress"} />
