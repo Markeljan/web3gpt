@@ -119,7 +119,6 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
       setIpfsUrl(ipfsUrl)
 
       setIsDeploying(false)
-      setIsDialogOpen(false); // Close the dialog
     } catch (e) {
       console.error(e)
       setIsErrorDeploying(true)
