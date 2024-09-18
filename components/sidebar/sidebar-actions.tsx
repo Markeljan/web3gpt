@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useCallback, useState, useTransition } from "react"
 
 import { toast } from "sonner"
@@ -43,7 +42,6 @@ export function SidebarActions({ chat, deleteChat, shareChat }: SidebarActionsPr
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [isRemovePending, startRemoveTransition] = useTransition()
   const [isSharePending, startShareTransition] = useTransition()
-  const router = useRouter()
   const fullShareUrl = `${APP_URL}/share/${chat.id}`
 
   const copyShareLink = useCallback(() => {
@@ -159,18 +157,14 @@ export function SidebarActions({ chat, deleteChat, shareChat }: SidebarActionsPr
                 startRemoveTransition(async () => {
                   const result = await deleteChat({
                     id: chat.id,
-                    path: `chat/${chat.id}`
+                    path: `/chat/${chat.id}`
                   })
 
                   if (result && "error" in result) {
                     toast.error(result.error)
                     return
                   }
-
                   setDeleteDialogOpen(false)
-                  router.refresh()
-                  router.push("/")
-                  toast.success("Chat deleted")
                 })
               }}
             >

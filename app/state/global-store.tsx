@@ -14,6 +14,15 @@ interface GlobalState {
   deployContractConfig?: Partial<DeployContractParams>
   setDeployContractConfig: (deployContractConfig: Partial<DeployContractParams>) => void
 
+  tokenScriptViewerUrl?: string | null
+  setTokenScriptViewerUrl: (tokenScriptViewerUrl: string | null) => void
+
+  completedDeploymentReport: boolean
+  setCompletedDeploymentReport: (completed: boolean) => void
+
+  readyForTokenScript: boolean
+  setReadyForTokenScript: (ready: boolean) => void
+
   // loading states
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
@@ -39,6 +48,9 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   deployContractConfig: undefined,
   setDeployContractConfig: (deployContractConfig: Partial<DeployContractParams>) => set({ deployContractConfig }),
 
+  tokenScriptViewerUrl: undefined,
+  setTokenScriptViewerUrl: (tokenScriptViewerUrl: string | null) => set({ tokenScriptViewerUrl }),
+
   // loading states
   isLoading: false,
   setIsLoading: (isLoading: boolean) => set({ isLoading }),
@@ -51,5 +63,11 @@ export const useGlobalStore = create<GlobalState>((set) => ({
 
   // last deployment data
   lastDeploymentData: undefined,
-  setLastDeploymentData: (lastDeploymentData: LastDeploymentData) => set({ lastDeploymentData })
+  setLastDeploymentData: (lastDeploymentData: LastDeploymentData) => set({ lastDeploymentData }),
+
+  completedDeploymentReport: false,
+  setCompletedDeploymentReport: (completedDeploymentReport: boolean) => set({ completedDeploymentReport }),
+
+  readyForTokenScript: false,
+  setReadyForTokenScript: (readyForTokenScript: boolean) => set({ readyForTokenScript }),
 }))

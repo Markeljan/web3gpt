@@ -44,6 +44,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
   const { isDeploying, setIsDeploying } = useGlobalStore()
   const supportedChains = useChains()
   const { chain } = useAccount()
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const isSupportedChain = useMemo(
     () => !!chain && supportedChains.find((c) => c.id === chain.id),
@@ -128,7 +129,9 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
   return (
     <div className="ml-4 flex w-full justify-end">
       <Dialog
+        open={isDialogOpen}
         onOpenChange={(isOpen) => {
+          setIsDialogOpen(isOpen);
           if (!isOpen && !isDeploying) {
             setIsErrorDeploying(false)
           }
@@ -138,6 +141,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
           <Button
             onClick={() => {
               setSourceCode(getSourceCode())
+              setIsDialogOpen(true);
             }}
             className="mr-2 text-primary-foreground"
             variant="default"

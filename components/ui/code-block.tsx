@@ -7,6 +7,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { coldarkCold, coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism"
 
 import { DeployContractButton } from "@/components/deploy-contract-button"
+import { DeployTokenScriptButton } from "@/components/deploy-tokenscript-button"
 import { Button } from "@/components/ui/button"
 import { IconCheck, IconCopy, IconDownload } from "@/components/ui/icons"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
@@ -38,7 +39,9 @@ export const PROGRAMMING_LANGUAGES: Record<string, string> = {
   html: ".html",
   css: ".css",
   solidity: ".sol",
-  clarity: ".clar"
+  clarity: ".clar",
+  tokenscript: ".xml",
+  tokenscripttsml: ".tsml"
 }
 
 type CodeBlockProps = {
@@ -82,7 +85,7 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
     }
     const fileExtension = PROGRAMMING_LANGUAGES[language] || ".file"
     const suggestedFileName = `web3gpt-${nanoid(6)}${fileExtension}`
-    const fileName = window.prompt("Enter file name" || "", suggestedFileName)
+    const fileName = window.prompt("Enter file name", suggestedFileName)
 
     if (!fileName) {
       // User pressed cancel on prompt.
@@ -101,6 +104,15 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
     URL.revokeObjectURL(url)
   }, [value, language])
 
+  const renderDeployButton = () => {
+    if (language === "solidity") {
+      return <DeployContractButton getSourceCode={() => value} />
+    }
+    if (["tokenscript", "tokenscripttsml", "xml"].includes(language)) {
+      return <DeployTokenScriptButton getSourceCode={() => value} />
+    }
+    return null
+  }
   return (
     <div className="relative w-full font-sans dark:bg-zinc-950 bg-gray-200">
       <div
@@ -111,7 +123,7 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
       >
         <span className="text-xs lowercase">{language}</span>
         <div className="flex items-center space-x-1">
-          {language === "solidity" ? <DeployContractButton getSourceCode={() => value} /> : null}
+          {renderDeployButton()}
           <Button
             variant="ghost"
             className="focus-visible:ring-1 focus-visible:ring-gray-700 focus-visible:ring-offset-0"

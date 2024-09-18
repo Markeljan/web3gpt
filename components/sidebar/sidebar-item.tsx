@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 
 import { buttonVariants } from "@/components/ui/button"
 import { IconMessage, IconUsers } from "@/components/ui/icons"
@@ -11,13 +10,11 @@ import { cn } from "@/lib/utils"
 
 interface SidebarItemProps {
   chat: DbChatListItem
+  isActive: boolean
   children: React.ReactNode
 }
 
-export function SidebarItem({ chat, children }: SidebarItemProps) {
-  const pathname = usePathname()
-  const isActive = pathname === `/chat/${chat.id}`
-
+export function SidebarItem({ chat, isActive, children }: SidebarItemProps) {
   if (!chat?.id) return null
 
   return (
