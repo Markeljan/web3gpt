@@ -85,7 +85,7 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
     }
     const fileExtension = PROGRAMMING_LANGUAGES[language] || ".file"
     const suggestedFileName = `web3gpt-${nanoid(6)}${fileExtension}`
-    const fileName = window.prompt("Enter file name" || "", suggestedFileName)
+    const fileName = window.prompt("Enter file name", suggestedFileName)
 
     if (!fileName) {
       // User pressed cancel on prompt.
