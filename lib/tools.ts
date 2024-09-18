@@ -4,7 +4,8 @@ export enum ToolName {
   ResolveAddress = "resolveAddress",
   ResolveDomain = "resolveDomain",
   DeployContract = "deployContract",
-  CreateAgent = "createAgent"
+  CreateAgent = "createAgent",
+  DeployTokenScript = "deployTokenScript"
 }
 
 export const DEFAULT_TOOLS = [ToolName.ResolveAddress, ToolName.ResolveDomain, ToolName.DeployContract]
@@ -15,6 +16,7 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
     function: {
       name: "resolveAddress",
       description: "Resolve a cryptocurrency address to a domain",
+      strict: false,
       parameters: {
         type: "object",
         description:
@@ -34,6 +36,7 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
     function: {
       name: "resolveDomain",
       description: "Resolve a domain to a cryptocurrency address",
+      strict: false,
       parameters: {
         type: "object",
         description:
@@ -57,6 +60,7 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
     function: {
       name: "deployContract",
       description: "Deploy a smart contract",
+      strict: false,
       parameters: {
         type: "object",
         description:
@@ -102,6 +106,7 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
       description: `Create and publish an AI agent (assistant) to the Web3GPT Agents repository.  Agents are generally for Solidity smart contract development but can also be created for anything else.  All agents have these tools available: ${DEFAULT_TOOLS.map(
         (tool) => tool
       ).join(", ")}`,
+      strict: false,
       parameters: {
         type: "object",
         properties: {
@@ -129,6 +134,53 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
           }
         },
         required: ["name", "description", "instructions", "creator"]
+      }
+    }
+  },
+  [ToolName.DeployTokenScript]: {
+    type: "function",
+    function: {
+      name: "deployTokenScript",
+      description: "Deploy a TokenScript and update the token contract",
+      strict: false,
+      parameters: {
+        type: "object",
+        description:
+          "This function deploys a TokenScript to IPFS and updates the scriptURI of an ERC721 or ERC20 token contract on an EVM compatible chain. It returns the transaction hash, explorer URL, IPFS URL, and a viewer URL for the deployed TokenScript.",
+        strict: false,
+        properties: {
+          chainId: {
+            type: "string",
+            description:
+              "Supported chainIds: 17000: holesky, 84532: base sepolia, 80002: polygon amoy, 11155111: sepolia, 5003: mantle sepolia, 421614: arbitrum sepolia, 31: Rootstock Testnet",
+            default: "421614"
+          },
+          tokenAddress: {
+            type: "string",
+            description: "The address of the token contract to update with the new TokenScript"
+          },
+          tokenName: {
+            type: "string",
+            description: "The name of the token, used in the TokenScript"
+          },
+          tokenScriptSource: {
+            type: "string",
+            description:
+              "Source code of the TokenScript in XML format. Use the TokenScript template provided in the agent instructions, replacing placeholders as necessary."
+          },
+          ensDomain: {
+            type: "string",
+            description:
+              "Optional. The ENS domain to use if the TokenScript includes ENS naming feature. Should be one of: xnft.eth, smartlayer.eth, thesmartcats.eth, esp32.eth, cryptopunks.eth, 61cygni.eth",
+            optional: true
+          },
+          includeBurnFunction: {
+            type: "boolean",
+            description: "Optional. Whether to include a burn function in the TokenScript",
+            default: false
+          }
+        },
+        required: ["chainId", "tokenAddress", "tokenName", "tokenScriptSource"]
       }
     }
   }

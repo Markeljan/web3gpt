@@ -10,15 +10,17 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { IconArrowElbow, IconHome } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useEnterSubmit } from "@/lib/hooks/use-enter-submit"
+import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 import { cn } from "@/lib/utils"
 
 type PromptProps = Pick<UseAssistantHelpers, "append" | "status">
 
 export const PromptForm = ({ append, status }: PromptProps) => {
-  const router = useRouter()
-  const { formRef, onKeyDown } = useEnterSubmit()
   const [input, setInput] = useState<string>("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const router = useRouter()
+  const { formRef, onKeyDown } = useEnterSubmit()
+  const { scrollToBottom } = useScrollToBottom()
 
   useEffect(() => {
     if (inputRef.current) {
@@ -42,6 +44,7 @@ export const PromptForm = ({ append, status }: PromptProps) => {
         }
 
         setInput("")
+        scrollToBottom()
         await append({ role: "user", content: value })
       }}
     >

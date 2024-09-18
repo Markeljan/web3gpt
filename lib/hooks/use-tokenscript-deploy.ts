@@ -1,15 +1,10 @@
-
-import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/types"
-//import handleImports from "@/lib/functions/deploy-contract/handle-imports"
-//import { getExplorerUrl } from "@/lib/viem-utils"
-import { encodeFunctionData } from "viem"
-import { useAccount, usePublicClient, useWalletClient } from "wagmi"
 import { toast } from "sonner"
+import { encodeFunctionData, parseAbiItem } from "viem"
+import { useAccount, usePublicClient, useWalletClient } from "wagmi"
+
 import { useGlobalStore } from "@/app/state/global-store"
-import { track } from "@vercel/analytics"
-import { parseAbiItem } from "viem";
-import ipfsStoreFilePin from "./ipfs-ts-upload-pin"
-//import ipfsStoreFile from "./ipfs-ts-upload"
+import { storeTokenScriptDeployment } from "@/lib/actions/db"
+import { ipfsUploadFile } from "@/lib/actions/ipfs"
 
 export function useWriteToIPFS() {
   const { chain: viemChain } = useAccount()
@@ -17,6 +12,7 @@ export function useWriteToIPFS() {
   const publicClient = usePublicClient({
     chainId: viemChain?.id || 5003
   })
+
   const { lastDeploymentData } = useGlobalStore()
 
   async function deploy({
@@ -24,78 +20,72 @@ export function useWriteToIPFS() {
   }: {
     tokenScriptSource: string
   }) {
-    if (!viemChain || !walletClient) {
-      throw new Error("Wallet not available")
+    if (!viemChain || !walletClient || !publicClient) {
+      throw new Error("Provider or wallet not available")
+    }
+    if (!lastDeploymentData) {
+      throw new Error("No token deployment data found")
     }
 
-    let deployToast = toast.loading("Deploying TokenScript to IPFS...");
+    const deployToast = toast.loading("Deploying TokenScript to IPFS...")
 
-    const tokenAddress = lastDeploymentData?.address;
-    const ipfsCid = await ipfsStoreFilePin(tokenScriptSource);
-    //const ipfsCid = await ipfsStoreFile(tokenScriptSource);
+    const tokenAddress = lastDeploymentData.contractAddress
+    if (walletClient.account.address !== lastDeploymentData.walletAddress) {
+      toast.error("No deployed token found for the connected wallet")
+      return
+    }
+    const ipfsCid = await ipfsUploadFile("tokenscript.tsml", tokenScriptSource)
 
-    toast.dismiss(deployToast);
+    toast.dismiss(deployToast)
 
     if (ipfsCid === null) {
-      toast.error("Error uploading to IPFS");
-      return;
-    } else {
-      toast.success("TokenScript uploaded: now update scriptURI on token contract")
+      toast.error("Error uploading to IPFS")
+      return
     }
 
-    const ipfsRoute = [`ipfs://${ipfsCid}`];
+    toast.success("TokenScript uploaded!  Updating contract scriptURI...")
 
-    console.log(`ipfsRoute: ${JSON.stringify(ipfsRoute)}`);
+    const ipfsRoute = [`ipfs://${ipfsCid}`]
 
-    //now set the IPFS route
-    const setScriptURIAbi = parseAbiItem('function setScriptURI(string[] memory newScriptURI)');
-    let txHash;
+    const setScriptURIAbi = parseAbiItem("function setScriptURI(string[] memory newScriptURI)")
     try {
-      // Encode the transaction data
       const data = encodeFunctionData({
         abi: [setScriptURIAbi],
-        functionName: 'setScriptURI',
+        functionName: "setScriptURI",
         args: [ipfsRoute]
-      });
+      })
 
-      // Send the transaction
-    txHash = await walletClient.sendTransaction({
-      to: tokenAddress,
-      data,
-      /*gas: '2000000', // Adjust the gas limit as needed
-      gasPrice: '50000000000' // Adjust the gas price as needed*/
-    });
-  } catch (error) {
-    console.log(error)
-    return error
-  }
+      const txHash = await walletClient.sendTransaction({
+        to: tokenAddress,
+        data
+      })
 
+      const transactionReceipt = await publicClient.waitForTransactionReceipt({
+        hash: txHash
+      })
 
-    try {
-      const transactionReceipt =
-        publicClient &&
-        (await toast.promise(
-          publicClient.waitForTransactionReceipt({
-            hash: txHash
-          }),
-          {
-            loading: "Waiting for confirmations...",
-            success: "Transaction confirmed!",
-            error: "Failed to receive enough confirmations"
-          }
-        ))
+      if (!transactionReceipt) {
+        toast.error("Failed to receive enough confirmations")
+        return
+      }
+      toast.success("Transaction confirmed!")
 
-        //now we can generate the viewer URL
+      const chainId = await walletClient.getChainId()
 
-        const chainId = await walletClient.getChainId();
-        
-      return `https://viewer.tokenscript.org/?chain=${chainId}&contract=${tokenAddress}`;
+      await storeTokenScriptDeployment({
+        chainId: chainId.toString(),
+        deployHash: txHash,
+        cid: ipfsCid,
+        tokenAddress
+      })
+
+      return `https://viewer.tokenscript.org/?chain=${chainId}&contract=${tokenAddress}`
     } catch (error) {
-      console.log(error)
-    
-      return "unable to generate viewer url";
+      console.error(error)
+      toast.error("Failed to deploy TokenScript")
+      return "unable to generate viewer url"
+    }
   }
-}
 
   return { deploy }
 }

@@ -26,5 +26,5 @@ export default async function ChatPage({ params, searchParams }: ChatPageProps) 
   const agentId = chat.agentId || (searchParams?.a as string)
   const [agent, messages] = await Promise.all([agentId ? getAgent(agentId) : undefined, getAiThreadMessages(params.id)])
 
-  return <Chat agent={agent} threadId={chat.id} initialMessages={messages} session={session} />
+  return <Chat agent={agent} initialThreadId={chat.id} initialMessages={messages} session={session} />
 }

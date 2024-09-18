@@ -20,13 +20,13 @@ export const GET = async (req: NextRequest) => {
   for (const verificationData of verifications) {
     const { result: guid } = await verifyContract(verificationData)
     if (guid === ALLREADY_VERIFIED_MESSAGE) {
-      console.log(`${verificationData.viemChain.name} ${verificationData.deployHash}`)
+      console.log(`${verificationData.viemChain.name} ${verificationData.contractAddress}`)
       await deleteVerification(verificationData.deployHash)
       continue
     }
     const verificationStatus = await checkVerifyStatus(guid, verificationData.viemChain)
     if (verificationStatus.result === PASS_MESSAGE) {
-      console.log(`${verificationData.viemChain.name} ${verificationData.deployHash}`)
+      console.log(`${verificationData.viemChain.name} ${verificationData.contractAddress}`)
       await deleteVerification(verificationData.deployHash)
     }
   }

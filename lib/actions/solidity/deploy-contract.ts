@@ -1,17 +1,15 @@
 "use server"
 
 import { track } from "@vercel/analytics/server"
-import { http, type Chain, type Hex, createWalletClient, encodeDeployData } from "viem"
-import { privateKeyToAccount } from "viem/accounts"
+import { http, type Chain, createWalletClient, encodeDeployData, getCreateAddress, createPublicClient } from "viem"
 
 import { storeDeployment, storeVerification } from "@/lib/actions/db"
-import { ipfsUpload } from "@/lib/actions/ipfs"
+import { ipfsUploadDir } from "@/lib/actions/ipfs"
 import { compileContract } from "@/lib/actions/solidity/compile-contract"
 import { getContractFileName, getExplorerUrl, getIpfsUrl } from "@/lib/contracts/contract-utils"
 import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/types"
 import { getChainById } from "@/lib/viem"
-
-const deployAccount = privateKeyToAccount(`0x${process.env.DEPLOYER_PRIVATE_KEY}`)
+import { DEPLOYER_ACCOUNT } from "@/lib/config-server"
 
 export const deployContract = async ({
   chainId,
@@ -28,7 +26,12 @@ export const deployContract = async ({
     : undefined
 
   const walletClient = createWalletClient({
-    account: deployAccount,
+    account: DEPLOYER_ACCOUNT,
+    chain: viemChain,
+    transport: http(alchemyHttpUrl)
+  })
+
+  const publicClient = createPublicClient({
     chain: viemChain,
     transport: http(alchemyHttpUrl)
   })
@@ -36,7 +39,16 @@ export const deployContract = async ({
   if (!(await walletClient.getAddresses())) {
     const error = new Error(`Wallet for chain ${viemChain.name} not available`)
     console.error(error)
+    throw error
   }
+
+  const deployerAddress = DEPLOYER_ACCOUNT.address
+  const nonce = await publicClient.getTransactionCount({ address: deployerAddress })
+
+  const contractAddress = getCreateAddress({
+    from: deployerAddress,
+    nonce: BigInt(nonce)
+  })
 
   const deployData = encodeDeployData({
     abi,
@@ -47,13 +59,20 @@ export const deployContract = async ({
   const deployHash = await walletClient.deployContract({
     abi,
     bytecode,
-    account: deployAccount,
+    account: DEPLOYER_ACCOUNT,
     args: constructorArgs
   })
 
-  const explorerUrl = getExplorerUrl(viemChain, deployHash)
+  const explorerUrl = getExplorerUrl({
+    viemChain,
+    hash: contractAddress,
+    type: "address"
+  })
 
-  const cid = await ipfsUpload(sources, abi, bytecode, standardJsonInput)
+  const cid = await ipfsUploadDir(sources, abi, bytecode, standardJsonInput)
+  if (!cid) {
+    throw new Error("Error uploading to IPFS")
+  }
 
   const ipfsUrl = getIpfsUrl(cid)
 
@@ -62,6 +81,7 @@ export const deployContract = async ({
 
   const verifyContractConfig: VerifyContractParams = {
     deployHash,
+    contractAddress,
     standardJsonInput,
     encodedConstructorArgs,
     fileName,
@@ -70,6 +90,7 @@ export const deployContract = async ({
   }
 
   const deploymentData: DeployContractResult = {
+    contractAddress,
     sourceCode,
     explorerUrl,
     ipfsUrl,
@@ -82,12 +103,14 @@ export const deployContract = async ({
     storeDeployment({
       chainId,
       deployHash,
+      contractAddress,
       cid
     }),
     storeVerification(verifyContractConfig),
     track("deployed_contract", {
       contractName,
-      explorerUrl
+      explorerUrl,
+      contractAddress
     })
   ])
 

@@ -2,7 +2,7 @@
 
 import { track } from "@vercel/analytics"
 import { toast } from "sonner"
-import { encodeDeployData } from "viem"
+import { encodeDeployData, getCreateAddress } from "viem"
 import { useAccount, usePublicClient, useWalletClient } from "wagmi"
 
 import { useGlobalStore } from "@/app/state/global-store"
@@ -10,6 +10,7 @@ import { storeDeployment, storeVerification } from "@/lib/actions/db"
 import { compileContract } from "@/lib/actions/solidity/compile-contract"
 import { getContractFileName, getExplorerUrl, getIpfsUrl } from "@/lib/contracts/contract-utils"
 import type { LastDeploymentData, VerifyContractParams } from "@/lib/types"
+import { ipfsUploadDir } from "../actions/ipfs"
 
 export function useWalletDeploy() {
   const { chain: viemChain, address } = useAccount()
@@ -29,7 +30,7 @@ export function useWalletDeploy() {
     sourceCode: string
     constructorArgs: Array<string>
   }) {
-    if (!viemChain || !walletClient) {
+    if (!viemChain || !walletClient || !publicClient || !address) {
       throw new Error("Wallet not available")
     }
 
@@ -47,6 +48,13 @@ export function useWalletDeploy() {
       } catch {
         return arg
       }
+    })
+
+    const nonce = await publicClient?.getTransactionCount({ address })
+
+    const contractAddress = getCreateAddress({
+      from: address,
+      nonce: BigInt(nonce)
     })
 
     const deployData = encodeDeployData({
@@ -71,20 +79,13 @@ export function useWalletDeploy() {
     }
 
     const ipfsLoadingToast = toast.loading("Uploading to IPFS...")
-    const ipfsUploadResponse = await fetch("/api/ipfs-upload", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        sources,
-        abi,
-        bytecode,
-        standardJsonInput
-      })
-    })
+    const cid = await ipfsUploadDir(sources, abi, bytecode, standardJsonInput)
 
-    const cid = await ipfsUploadResponse.json()
+    if (!cid) {
+      toast.dismiss(deployLoadingToast)
+      toast.error("Failed to upload to IPFS")
+      return
+    }
 
     toast.dismiss(ipfsLoadingToast)
     if (!cid) {
@@ -100,6 +101,7 @@ export function useWalletDeploy() {
 
     const verifyContractConfig: VerifyContractParams = {
       deployHash,
+      contractAddress,
       standardJsonInput,
       encodedConstructorArgs,
       fileName,
@@ -109,12 +111,17 @@ export function useWalletDeploy() {
 
     setVerifyContractConfig(verifyContractConfig)
 
-    const explorerUrl = getExplorerUrl(viemChain, deployHash)
+    const explorerUrl = getExplorerUrl({
+      viemChain,
+      hash: contractAddress,
+      type: "address"
+    })
 
     await Promise.all([
       storeDeployment({
         chainId: chainId.toString(),
         deployHash,
+        contractAddress,
         cid
       }),
       storeVerification(verifyContractConfig),
@@ -126,19 +133,18 @@ export function useWalletDeploy() {
 
     try {
       const transactionReceipt = await publicClient?.waitForTransactionReceipt({
-        hash: verifyContractConfig.deployHash
+        hash: deployHash
       })
 
-      const address = transactionReceipt?.contractAddress
-
-      if (!address) {
+      if (transactionReceipt.status !== "success") {
         toast.dismiss(deployLoadingToast)
-        toast.error("Contract deployment failed")
+        toast.error("Failed to receive enough confirmations")
         return
       }
 
       const deploymentData: LastDeploymentData = {
-        address,
+        walletAddress: address,
+        contractAddress,
         chainId,
         transactionHash: deployHash,
         ipfsUrl,
@@ -159,6 +165,8 @@ export function useWalletDeploy() {
       toast.dismiss(deployLoadingToast)
       toast.error("Contract deployment failed")
       const deploymentData: LastDeploymentData = {
+        contractAddress,
+        walletAddress: address,
         transactionHash: deployHash,
         chainId,
         explorerUrl,

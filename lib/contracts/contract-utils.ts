@@ -37,9 +37,21 @@ export async function prepareContractSources(contractName: string, sourceCode: s
   return sources
 }
 
-export function getExplorerUrl(viemChain: Chain, deployHash: Hash) {
+export function getExplorerUrl({
+  viemChain,
+  hash,
+  type
+}: {
+  viemChain: Chain
+  hash: Hash
+  type: "tx" | "address"
+}) {
   const { url } = getExplorerDetails(viemChain)
-  return `${url}/tx/${deployHash}`
+  if (type === "tx") {
+    return `${url}/tx/${hash}`
+  }
+
+  return `${url}/address/${hash}`
 }
 
 export function getIpfsUrl(cid: string) {

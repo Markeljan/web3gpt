@@ -1,37 +1,19 @@
 "use server"
 
-import { http, type Chain, createPublicClient } from "viem"
+import type { Chain } from "viem"
 
 import { DEFAULT_GLOBAL_CONFIG } from "@/lib/config"
 import type { VerifyContractParams } from "@/lib/types"
 import { getExplorerDetails } from "@/lib/viem"
 
 export const verifyContract = async ({
-  deployHash,
+  contractAddress,
   standardJsonInput,
   encodedConstructorArgs,
   fileName,
   contractName,
   viemChain
 }: VerifyContractParams) => {
-  const publicClient = createPublicClient({
-    chain: viemChain,
-    transport: http()
-  })
-
-  if (!(await publicClient.getChainId())) {
-    throw new Error(`Provider for chain ${viemChain.name} not available`)
-  }
-
-  const deployReceipt = await publicClient.getTransactionReceipt({ hash: deployHash }).catch((error) => {
-    throw new Error(`Error getting transaction receipt: ${error.message}`)
-  })
-
-  const contractAddress = deployReceipt.contractAddress
-  if (!contractAddress) {
-    throw new Error(`Contract address not found in transaction receipt for ${deployHash}`)
-  }
-
   const { apiUrl, apiKey } = getExplorerDetails(viemChain)
 
   const params = new URLSearchParams()

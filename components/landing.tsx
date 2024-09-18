@@ -53,13 +53,13 @@ export function Landing({ userId, disableAnimations }: LandingProps) {
 
   return (
     <>
-      <div className="mx-auto mb-8 max-w-2xl bg-background rounded-2xl border-gray-600/25 p-4 text-center dark:border-gray-600/50 md:mb-12 md:border">
-        <div className="relative my-8 flex h-8 w-full md:my-12">
-          <Image src={web3GPTLogo} alt="web3gpt logo" priority={true} fill />
+      <div className="flex flex-col mx-auto max-w-2xl h-96 bg-background border-gray-600/25 text-center dark:border-gray-600/50 md:border rounded-2xl mb-8 md:mb-12 px-4 pt-8 pb-4">
+        <div className="flex w-full justify-center pb-4">
+          <Image src={web3GPTLogo} alt="web3gpt logo" priority={true} height={256} width={256} />
         </div>
         <p className="text-lg font-bold tracking-tight lg:text-2xl lg:font-normal">Deploy smart contracts with AI</p>
 
-        <div className="grid-row-3 my-5 mb-8 grid grid-flow-row gap-1 md:grid-flow-col md:gap-4">
+        <div className="grid-row-3 py-4 grid grid-flow-row gap-1 md:grid-flow-col md:gap-4">
           <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
             <Player
               play={!disableAnimations}

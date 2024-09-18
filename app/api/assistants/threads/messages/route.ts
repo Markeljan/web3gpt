@@ -7,6 +7,7 @@ import { auth } from "@/auth"
 import { createAgent } from "@/lib/actions/ai"
 import { storeChat } from "@/lib/actions/db"
 import { deployContract } from "@/lib/actions/solidity/deploy-contract"
+import { deployTokenScript } from "@/lib/actions/solidity/deploy-tokenscript"
 import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
 import { APP_URL } from "@/lib/config"
 import { openai } from "@/lib/openai"
@@ -145,6 +146,37 @@ export async function POST(request: NextRequest) {
                 const domain = await resolveAddress(address)
                 return {
                   output: `Resolved domain for address ${address}: ${domain}`,
+                  tool_call_id: toolCall.id
+                }
+              }
+              case ToolName.DeployTokenScript: {
+                const { chainId, tokenAddress, tokenName, tokenScriptSource, ensDomain, includeBurnFunction } =
+                  parameters
+
+                const deployResult = await deployTokenScript({
+                  chainId,
+                  tokenAddress,
+                  tokenName,
+                  tokenScriptSource,
+                  ensDomain,
+                  includeBurnFunction: includeBurnFunction || false
+                })
+
+                let output = "TokenScript deployed:\n"
+                output += `Explorer URL: ${deployResult.explorerUrl}\n`
+                output += `IPFS URL: ${deployResult.ipfsUrl}\n`
+                output += `Viewer URL: ${deployResult.viewerUrl}`
+
+                if (ensDomain) {
+                  output += `\nENS Domain: ${ensDomain}`
+                }
+
+                if (includeBurnFunction) {
+                  output += "\nBurn function included in TokenScript"
+                }
+
+                return {
+                  output,
                   tool_call_id: toolCall.id
                 }
               }

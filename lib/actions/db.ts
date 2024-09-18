@@ -31,11 +31,11 @@ export async function storeEmail(email: string) {
   }
 }
 
-export async function getChatList() {
+export async function getChatList(): Promise<DbChatListItem[] | null> {
   const session = await auth()
 
   if (!session?.user?.id) {
-    return []
+    return null
   }
 
   try {
@@ -52,36 +52,7 @@ export async function getChatList() {
 
     return results
   } catch {
-    return []
-  }
-}
-
-export async function getChats() {
-  const session = await auth()
-
-  if (!session?.user?.id) {
     return null
-  }
-  const userId = session.user.id
-
-  if (!userId) {
-    return []
-  }
-
-  try {
-    const pipeline = kv.pipeline()
-    const chats: string[] = await kv.zrange(`user:chat:${userId}`, 0, -1, {
-      rev: true
-    })
-
-    for (const chat of chats) {
-      pipeline.hgetall<DbChat>(chat)
-    }
-
-    const results = await pipeline?.exec<DbChat[]>()
-    return results
-  } catch {
-    return []
   }
 }
 
@@ -171,7 +142,6 @@ export async function clearChats() {
   await pipeline.exec()
 
   revalidatePath("/")
-  return redirect("/")
 }
 
 export async function getPublishedChat(id: string) {
@@ -300,6 +270,7 @@ export const storeVerification = async (data: VerifyContractParams) => {
 export const storeDeployment = async (deployData: {
   chainId: string
   deployHash: string
+  contractAddress: string
   cid: string
 }) => {
   const session = await auth()
@@ -317,6 +288,30 @@ export const storeDeployment = async (deployData: {
   await kv.zadd(`user:deployments:${session.user.id}`, {
     score: Date.now(),
     member: `deployment:${deployData.cid}`
+  })
+}
+
+export const storeTokenScriptDeployment = async (deployData: {
+  chainId: string
+  deployHash: string
+  cid: string
+  tokenAddress: string
+}) => {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return {
+      error: "Unauthorized"
+    }
+  }
+
+  // save to unverified contracts list
+  await kv.hmset(`tokenscript:${deployData.cid}`, deployData)
+
+  // add to user's list of deployments
+  await kv.zadd(`user:tokenscripts:${session.user.id}`, {
+    score: Date.now(),
+    member: `tokenscript:${deployData.cid}`
   })
 }
 
