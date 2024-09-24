@@ -1,15 +1,14 @@
 "use server"
 
 import { track } from "@vercel/analytics/server"
-import { http, type Chain, createPublicClient, createWalletClient, encodeFunctionData } from "viem"
-import { parseAbiItem } from "viem"
+import { createPublicClient, createWalletClient, encodeFunctionData, http, parseAbiItem, type Chain } from "viem"
 
 import { storeTokenScriptDeployment } from "@/lib/actions/db"
 import { ipfsUploadFile } from "@/lib/actions/ipfs"
-import { getExplorerUrl, getIpfsUrl } from "@/lib/contracts/contract-utils"
+import { DEPLOYER_ACCOUNT } from "@/lib/data"
 import type { DeployTokenScriptParams, DeployTokenScriptResult } from "@/lib/types"
+import { getExplorerUrl, getIpfsUrl } from "@/lib/utils"
 import { getChainById } from "@/lib/viem"
-import { DEPLOYER_ACCOUNT } from "@/lib/config-server"
 
 export const deployTokenScript = async ({
   chainId,

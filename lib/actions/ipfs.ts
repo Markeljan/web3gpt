@@ -5,7 +5,7 @@ import type { SolcOutput } from "solc"
 import type { Abi } from "viem"
 
 import { IPFS_GATEWAY } from "@/lib/config"
-import { PINATA_JWT } from "@/lib/config-server"
+import { PINATA_JWT } from "@/lib/data"
 
 const pinata = new PinataSDK({
   pinataJwt: PINATA_JWT,

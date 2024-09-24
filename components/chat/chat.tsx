@@ -1,10 +1,8 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useEffect, useRef } from "react"
 
 import { type Message, useAssistant } from "@ai-sdk/react"
-import type { Session } from "next-auth"
 
 import { useGlobalStore } from "@/app/state/global-store"
 import { AgentCard } from "@/components/agent-card"
@@ -18,18 +16,23 @@ import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 type ChatProps = {
+  agent?: Agent
   className?: string
-  agent?: Agent | null
   initialThreadId?: string
   initialMessages?: Message[]
-  session?: Session
+  userId?: string
+  avatarUrl?: string | null
 }
 
-export const Chat = ({ initialThreadId, initialMessages = [], agent, className, session }: ChatProps) => {
-  const avatarUrl = session?.user?.image
-  const userId = session?.user?.id
-  const isSmartToken = agent?.name.includes("Smart Token")
-  const router = useRouter()
+export const Chat = ({
+  initialThreadId,
+  initialMessages = [],
+  agent = DEFAULT_AGENT,
+  className,
+  userId,
+  avatarUrl
+}: ChatProps) => {
+  const isSmartToken = agent.name.includes("Smart Token")
   const {
     tokenScriptViewerUrl,
     lastDeploymentData,
@@ -37,11 +40,11 @@ export const Chat = ({ initialThreadId, initialMessages = [], agent, className, 
     setCompletedDeploymentReport,
     setTokenScriptViewerUrl
   } = useGlobalStore()
-  const { messages, status, stop, append, setMessages, threadId } = useAssistant({
+  const { messages, status, setThreadId, stop, append, setMessages, threadId } = useAssistant({
     threadId: initialThreadId,
     api: "/api/assistants/threads/messages",
     body: {
-      assistantId: agent?.id || DEFAULT_AGENT.id
+      assistantId: agent.id
     }
   })
   const chatRef = useRef<HTMLDivElement>(null)
@@ -49,11 +52,9 @@ export const Chat = ({ initialThreadId, initialMessages = [], agent, className, 
 
   useEffect(() => {
     if (messages.length === 2 && !initialThreadId && threadId && status !== "in_progress") {
-      router.push(`/chat/${threadId}`, {
-        scroll: true
-      })
+      history.pushState(null, "", `/chat/${threadId}`)
     }
-  }, [messages, router, initialThreadId, status, threadId])
+  }, [messages, initialThreadId, status, threadId])
 
   useEffect(() => {
     if (messages.length === 0 && initialMessages?.length > 0) {
@@ -111,7 +112,7 @@ export const Chat = ({ initialThreadId, initialMessages = [], agent, className, 
         <ChatList messages={messages} avatarUrl={avatarUrl} status={status} />
         <ChatScrollAnchor trackVisibility={status === "in_progress"} />
       </div>
-      <ChatPanel stop={stop} append={append} status={status} />
+      <ChatPanel setThreadId={setThreadId} stop={stop} append={append} status={status} />
     </>
   )
 }

@@ -8,12 +8,6 @@ interface GlobalState {
   globalConfig: GlobalConfig
   setGlobalConfig: (globalConfig: GlobalConfig) => void
 
-  verifyContractConfig?: Partial<VerifyContractParams>
-  setVerifyContractConfig: (verifyContractConfig: Partial<VerifyContractParams>) => void
-
-  deployContractConfig?: Partial<DeployContractParams>
-  setDeployContractConfig: (deployContractConfig: Partial<DeployContractParams>) => void
-
   tokenScriptViewerUrl?: string | null
   setTokenScriptViewerUrl: (tokenScriptViewerUrl: string | null) => void
 
@@ -23,15 +17,8 @@ interface GlobalState {
   readyForTokenScript: boolean
   setReadyForTokenScript: (ready: boolean) => void
 
-  // loading states
-  isLoading: boolean
-  setIsLoading: (isLoading: boolean) => void
-  isGenerating: boolean
-  setIsGenerating: (isGenerating: boolean) => void
   isDeploying: boolean
   setIsDeploying: (isDeploying: boolean) => void
-  isVerifying: boolean
-  setIsVerifying: (isPolling: boolean) => void
 
   // last deployment data
   lastDeploymentData?: LastDeploymentData
@@ -42,24 +29,12 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   // configs
   globalConfig: DEFAULT_GLOBAL_CONFIG,
   setGlobalConfig: (globalConfig: GlobalConfig) => set({ globalConfig }),
-  verifyContractConfig: undefined,
-  setVerifyContractConfig: (verifyContractConfig: Partial<VerifyContractParams>) => set({ verifyContractConfig }),
-
-  deployContractConfig: undefined,
-  setDeployContractConfig: (deployContractConfig: Partial<DeployContractParams>) => set({ deployContractConfig }),
 
   tokenScriptViewerUrl: undefined,
   setTokenScriptViewerUrl: (tokenScriptViewerUrl: string | null) => set({ tokenScriptViewerUrl }),
 
-  // loading states
-  isLoading: false,
-  setIsLoading: (isLoading: boolean) => set({ isLoading }),
-  isGenerating: false,
-  setIsGenerating: (isGenerating: boolean) => set({ isGenerating }),
   isDeploying: false,
   setIsDeploying: (isDeploying: boolean) => set({ isDeploying }),
-  isVerifying: false,
-  setIsVerifying: (isVerifying: boolean) => set({ isVerifying }),
 
   // last deployment data
   lastDeploymentData: undefined,
@@ -69,5 +44,5 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   setCompletedDeploymentReport: (completedDeploymentReport: boolean) => set({ completedDeploymentReport }),
 
   readyForTokenScript: false,
-  setReadyForTokenScript: (readyForTokenScript: boolean) => set({ readyForTokenScript }),
+  setReadyForTokenScript: (readyForTokenScript: boolean) => set({ readyForTokenScript })
 }))

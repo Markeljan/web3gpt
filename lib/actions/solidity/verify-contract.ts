@@ -13,7 +13,7 @@ export const verifyContract = async ({
   fileName,
   contractName,
   viemChain
-}: VerifyContractParams) => {
+}: VerifyContractParams): Promise<{ status: string; result: string }> => {
   const { apiUrl, apiKey } = getExplorerDetails(viemChain)
 
   const params = new URLSearchParams()
@@ -25,10 +25,11 @@ export const verifyContract = async ({
   params.append("contractname", `${fileName}:${contractName}`)
   params.append("compilerversion", DEFAULT_GLOBAL_CONFIG.compilerVersion)
   if (encodedConstructorArgs) {
-    params.append("constructorArguments", encodedConstructorArgs)
+    params.append("constructorArguements", encodedConstructorArgs)
   }
-  params.append("optimization", "1")
-  params.append("optimizationRuns", "200")
+  params.append("optimizationUsed", "1")
+  params.append("runs", "200")
+  params.append("licenseType", "mit")
   params.append("apikey", apiKey)
 
   const response = await fetch(apiUrl, {
@@ -36,18 +37,20 @@ export const verifyContract = async ({
     headers: {
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
     },
-    body: new URLSearchParams(params).toString()
+    body: params.toString()
   })
+
   if (!response.ok) {
     throw new Error(`Explorer API request failed with status ${response.status}`)
   }
 
-  const verifyResult = (await response.json()) as { status: string; result: string }
-
-  return verifyResult
+  return await response.json()
 }
 
-export const checkVerifyStatus = async (guid: string, viemChain: Chain) => {
+export const checkVerifyStatus = async (
+  guid: string,
+  viemChain: Chain
+): Promise<{ status: string; result: string }> => {
   const { apiUrl, apiKey } = getExplorerDetails(viemChain)
 
   const params = new URLSearchParams()
@@ -61,14 +64,12 @@ export const checkVerifyStatus = async (guid: string, viemChain: Chain) => {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
     },
-    body: new URLSearchParams(params).toString()
+    body: params.toString()
   })
 
   if (!response.ok) {
     throw new Error(`Explorer API request failed with status ${response.status}`)
   }
 
-  const verificationStatus = (await response.json()) as { status: string; result: string }
-
-  return verificationStatus
+  return await response.json()
 }

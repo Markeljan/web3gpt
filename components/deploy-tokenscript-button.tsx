@@ -17,14 +17,14 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog"
 import { IconSpinner } from "@/components/ui/icons"
-import { useWriteToIPFS } from "@/lib/hooks/use-tokenscript-deploy"
+import { useTokenScriptDeploy } from "@/lib/hooks/use-tokenscript-deploy"
 
 type DeployContractButtonProps = {
   getSourceCode: () => string
 }
 
 export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonProps) => {
-  const { deploy: deployIPFS } = useWriteToIPFS()
+  const { deploy: deployIPFS } = useTokenScriptDeploy()
   const [explorerUrl, setExplorerUrl] = useState<string>("")
   const [isErrorDeploying, setIsErrorDeploying] = useState<boolean>(false)
   const [sourceCode, setSourceCode] = useState<string>("")

@@ -72,12 +72,12 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
           chainId: {
             type: "string",
             description:
-              "Supported chainIds: 17000: holesky, 84532: base sepolia, 80002: polygon amoy, 11155111: sepolia, 5003: mantle sepolia, 421614: arbitrum sepolia, 31: Rootstock Testnet",
+              "The chainId to deploy to.  A list of available chains will be made available to you at runtime.",
             default: "421614"
           },
           sourceCode: {
             type: "string",
-            description: `Source code of the smart contract. Format as a single-line string, with all line breaks and quotes escaped to be valid stringified JSON.  Do not use any local imports or dependencies.  Example import: import "@openzeppelin/contracts/token/ERC20/ERC20.sol"  By default use SPDX License Identifier MIT and Solidity version 0.8.26 unless otherwise specified.`
+            description: `Source code of the smart contract. Format as a single-line string, with all line breaks and quotes escaped to be valid stringified JSON.  Do not use any local imports or dependencies.  Example import: import "@openzeppelin/contracts/token/ERC20/ERC20.sol"  By default use SPDX License Identifier MIT and the latest available fixed Solidity version.`
           },
           constructorArgs: {
             type: "array",
@@ -152,7 +152,7 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
           chainId: {
             type: "string",
             description:
-              "Supported chainIds: 17000: holesky, 84532: base sepolia, 80002: polygon amoy, 11155111: sepolia, 5003: mantle sepolia, 421614: arbitrum sepolia, 31: Rootstock Testnet",
+              "Supported chainIds: 84532: base sepolia, 80002: polygon amoy, 11155111: sepolia, 5003: mantle sepolia, 421614: arbitrum sepolia",
             default: "421614"
           },
           tokenAddress: {

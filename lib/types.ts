@@ -1,7 +1,7 @@
 import type { Message } from "ai"
 import type { Abi, Chain, Hash } from "viem"
 
-export type ChatPageProps = {
+export type NextPageProps = {
   params: { id: string }
   searchParams?: { [key: string]: string | string[] | undefined }
 }
@@ -81,7 +81,7 @@ export type VerifyContractParams = {
   encodedConstructorArgs: string
   fileName: string
   contractName: string
-  viemChain: Chain
+  viemChain: Omit<Chain, "contracts" | "ensRegistry" | "ensUniversalResolver" | "multicall3" | "formatters">
 }
 
 export type LastDeploymentData = DeployContractResult & {

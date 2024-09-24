@@ -1,5 +1,3 @@
-import { cache } from "react"
-
 import { auth } from "@/auth"
 import { ConnectButton } from "@/components/connect-button"
 import { ClearHistory } from "@/components/header/clear-history"
@@ -17,15 +15,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { clearChats, getChatList } from "@/lib/actions/db"
 import { cn } from "@/lib/utils"
 
-const loadChatList = cache(async () => {
-  "use cache"
-  return await getChatList()
-})
-
 export const Header = async () => {
   const session = await auth()
   const user = session?.user
-  const chatList = await loadChatList()
+  const chatList = await getChatList()
 
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-background px-4">
@@ -63,9 +56,9 @@ export const Header = async () => {
         <div className="flex items-center justify-center space-x-4 translate-x-1/2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge className={cn("text-xs text-slate-800 bg-yellow-300")}>gpt-4o-mini</Badge>
+              <Badge className={cn("text-xs text-slate-800 bg-yellow-300")}>gpt-4o</Badge>
             </TooltipTrigger>
-            <TooltipContent>Using the latest GPT-4o mini</TooltipContent>
+            <TooltipContent>Using the latest GPT-4o</TooltipContent>
           </Tooltip>
         </div>
       </div>

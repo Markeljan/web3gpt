@@ -1,26 +1,22 @@
 import { toast } from "sonner"
-import { encodeFunctionData, parseAbiItem } from "viem"
-import { useAccount, usePublicClient, useWalletClient } from "wagmi"
+import { encodeFunctionData, parseAbiItem, publicActions } from "viem"
+import { useAccount, useWalletClient } from "wagmi"
 
 import { useGlobalStore } from "@/app/state/global-store"
 import { storeTokenScriptDeployment } from "@/lib/actions/db"
 import { ipfsUploadFile } from "@/lib/actions/ipfs"
 
-export function useWriteToIPFS() {
-  const { chain: viemChain } = useAccount()
-  const { data: walletClient } = useWalletClient()
-  const publicClient = usePublicClient({
-    chainId: viemChain?.id || 5003
+export function useTokenScriptDeploy() {
+  const { chain: viemChain, chainId, address } = useAccount()
+  const { data } = useWalletClient({
+    chainId
   })
+  const walletClient = data?.extend(publicActions)
 
   const { lastDeploymentData } = useGlobalStore()
 
-  async function deploy({
-    tokenScriptSource
-  }: {
-    tokenScriptSource: string
-  }) {
-    if (!viemChain || !walletClient || !publicClient) {
+  async function deploy({ tokenScriptSource }: { tokenScriptSource: string }) {
+    if (!viemChain || !walletClient) {
       throw new Error("Provider or wallet not available")
     }
     if (!lastDeploymentData) {
@@ -30,8 +26,8 @@ export function useWriteToIPFS() {
     const deployToast = toast.loading("Deploying TokenScript to IPFS...")
 
     const tokenAddress = lastDeploymentData.contractAddress
-    if (walletClient.account.address !== lastDeploymentData.walletAddress) {
-      toast.error("No deployed token found for the connected wallet")
+    if (address !== lastDeploymentData.walletAddress) {
+      toast.error("Last deployment must be from the connected wallet")
       return
     }
     const ipfsCid = await ipfsUploadFile("tokenscript.tsml", tokenScriptSource)
@@ -60,7 +56,7 @@ export function useWriteToIPFS() {
         data
       })
 
-      const transactionReceipt = await publicClient.waitForTransactionReceipt({
+      const transactionReceipt = await walletClient.waitForTransactionReceipt({
         hash: txHash
       })
 

@@ -1,15 +1,15 @@
 "use server"
 
 import { track } from "@vercel/analytics/server"
-import { http, type Chain, createWalletClient, encodeDeployData, getCreateAddress, createPublicClient } from "viem"
+import { createPublicClient, createWalletClient, encodeDeployData, getCreateAddress, http, type Chain } from "viem"
 
 import { storeDeployment, storeVerification } from "@/lib/actions/db"
 import { ipfsUploadDir } from "@/lib/actions/ipfs"
 import { compileContract } from "@/lib/actions/solidity/compile-contract"
-import { getContractFileName, getExplorerUrl, getIpfsUrl } from "@/lib/contracts/contract-utils"
+import { DEPLOYER_ACCOUNT } from "@/lib/data"
 import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/types"
+import { getContractFileName, getExplorerUrl, getIpfsUrl } from "@/lib/utils"
 import { getChainById } from "@/lib/viem"
-import { DEPLOYER_ACCOUNT } from "@/lib/config-server"
 
 export const deployContract = async ({
   chainId,
