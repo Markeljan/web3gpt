@@ -1,90 +1,32 @@
 "use client"
 
-import { RainbowKitProvider, darkTheme, getDefaultConfig, lightTheme } from "@rainbow-me/rainbowkit"
+import { useState } from "react"
+
+import { darkTheme, lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import "@rainbow-me/rainbowkit/styles.css"
-import {
-  coinbaseWallet,
-  injectedWallet,
-  metaMaskWallet,
-  rainbowWallet,
-  safeWallet,
-  walletConnectWallet
-} from "@rainbow-me/rainbowkit/wallets"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useTheme } from "next-themes"
-import { http, WagmiProvider } from "wagmi"
-import {
-  arbitrumSepolia,
-  baseSepolia,
-  holesky,
-  mantleSepoliaTestnet,
-  polygonAmoy,
-  rootstockTestnet,
-  sepolia
-} from "wagmi/chains"
+import { WagmiProvider, type State } from "wagmi"
 
-import { APP_URL } from "@/lib/config"
-import { FULL_RPC_URLS } from "@/lib/viem"
+import { getConfig } from "@/lib/config"
+import { connectors } from "@/lib/rainbowkit"
 
-const mantleSepoliaWithLogo = {
-  ...mantleSepoliaTestnet,
-  iconUrl: "/mantle-logo.jpeg"
-}
-
-const amoyWithLogo = {
-  ...polygonAmoy,
-  iconUrl: "/polygon-logo.png"
-}
-
-const rootstockWithLogo = {
-  ...rootstockTestnet,
-  iconUrl: "/assets/rootstock.png"
-}
-
-const chains = [
-  arbitrumSepolia,
-  baseSepolia,
-  mantleSepoliaWithLogo,
-  holesky,
-  amoyWithLogo,
-  sepolia,
-  rootstockWithLogo
-] as const
-
-const queryClient = new QueryClient()
-
-const config = getDefaultConfig({
-  appName: "Web3GPT",
-  appDescription: "Write and deploy Solidity smart contracts with AI",
-  appUrl: APP_URL,
-  appIcon: "/assets/web3gpt.png",
-  projectId: `${process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID}`,
-  chains: chains,
-  transports: {
-    [arbitrumSepolia.id]: http(FULL_RPC_URLS[arbitrumSepolia.id]),
-    [sepolia.id]: http(FULL_RPC_URLS[sepolia.id]),
-    [polygonAmoy.id]: http(FULL_RPC_URLS[amoyWithLogo.id]),
-    [baseSepolia.id]: http(FULL_RPC_URLS[baseSepolia.id]),
-    [mantleSepoliaTestnet.id]: http(),
-    [holesky.id]: http(),
-    [rootstockTestnet.id]: http()
-  },
-  wallets: [
-    {
-      groupName: "Supported",
-      wallets: [safeWallet, metaMaskWallet, rainbowWallet, coinbaseWallet, walletConnectWallet, injectedWallet]
-    }
-  ],
-  ssr: true
-})
-
-export function Web3Provider({ children }: { children: React.ReactNode }) {
+export function Web3Provider({
+  children,
+  initialState
+}: {
+  children: React.ReactNode
+  initialState: State | undefined
+}) {
   const { resolvedTheme } = useTheme()
+  const [config] = useState(() => getConfig(connectors))
+  const [queryClient] = useState(() => new QueryClient())
 
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
+          key="wagmi"
           appInfo={{
             appName: "Web3GPT",
             disclaimer: ({ Text, Link }) => (

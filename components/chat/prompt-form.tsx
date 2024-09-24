@@ -13,14 +13,16 @@ import { useEnterSubmit } from "@/lib/hooks/use-enter-submit"
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 import { cn } from "@/lib/utils"
 
-type PromptProps = Pick<UseAssistantHelpers, "append" | "status">
+type PromptProps = Pick<UseAssistantHelpers, "append" | "status" | "setThreadId">
 
-export const PromptForm = ({ append, status }: PromptProps) => {
+export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
   const [input, setInput] = useState<string>("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const { scrollToBottom } = useScrollToBottom()
+
+  const isInProgress = status === "in_progress"
 
   useEffect(() => {
     if (inputRef.current) {
@@ -34,7 +36,7 @@ export const PromptForm = ({ append, status }: PromptProps) => {
       onSubmit={async (e) => {
         e.preventDefault()
 
-        if (status === "in_progress") {
+        if (isInProgress) {
           return
         }
 
@@ -52,9 +54,11 @@ export const PromptForm = ({ append, status }: PromptProps) => {
         <Tooltip delayDuration={200}>
           <TooltipTrigger asChild>
             <Button
-              type="button"
+              type="submit"
+              disabled={isInProgress}
               onClick={() => {
-                router.push("/")
+                setThreadId(undefined)
+                router.replace("/")
               }}
               className={cn(
                 buttonVariants({ size: "sm", variant: "secondary" }),
@@ -87,7 +91,7 @@ export const PromptForm = ({ append, status }: PromptProps) => {
         <div className="absolute right-0 top-4 sm:right-4">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button type="submit" size="icon" disabled={input === "" || status === "in_progress"}>
+              <Button type="submit" size="icon" disabled={input === "" || isInProgress}>
                 <IconArrowElbow className="fill-white" />
                 <span className="sr-only">Send message</span>
               </Button>

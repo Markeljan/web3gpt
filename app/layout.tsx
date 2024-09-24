@@ -1,14 +1,17 @@
 import type { Metadata, Viewport } from "next"
 import { JetBrains_Mono as FontMono, Inter as FontSans } from "next/font/google"
+import { headers } from "next/headers"
+import type { ReactNode } from "react"
 
-import { Toaster } from "@/components/ui/sonner"
 import { Analytics } from "@vercel/analytics/react"
+import { cookieToInitialState } from "wagmi"
 
 import "@/app/globals.css"
 import { Header } from "@/components/header/header"
 import { Providers } from "@/components/providers/ui-providers"
 import { Web3Provider } from "@/components/providers/web3-provider"
-import { APP_URL } from "@/lib/config"
+import { Toaster } from "@/components/ui/sonner"
+import { APP_URL, getConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
 const fontSans = FontSans({
@@ -42,18 +45,16 @@ export const viewport: Viewport = {
   ]
 }
 
-interface RootLayoutProps {
-  children: React.ReactNode
-}
+export default function Layout({ children }: { children: ReactNode }) {
+  const initialState = cookieToInitialState(getConfig(), headers().get("cookie"))
 
-export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("font-sans antialiased", fontSans.variable, fontMono.variable)}>
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <div className="flex min-h-screen flex-col">
             <main className="flex flex-1 flex-col bg-muted/50">
-              <Web3Provider>
+              <Web3Provider initialState={initialState}>
                 <Header />
                 {children}
                 <Toaster />

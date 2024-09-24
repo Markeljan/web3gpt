@@ -9,7 +9,7 @@ import { storeChat } from "@/lib/actions/db"
 import { deployContract } from "@/lib/actions/solidity/deploy-contract"
 import { deployTokenScript } from "@/lib/actions/solidity/deploy-tokenscript"
 import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
-import { APP_URL } from "@/lib/config"
+import { APP_URL, chains, DEFAULT_GLOBAL_CONFIG } from "@/lib/config"
 import { openai } from "@/lib/openai"
 import { ToolName } from "@/lib/tools"
 import type { DbChat } from "@/lib/types"
@@ -76,7 +76,18 @@ export async function POST(request: NextRequest) {
     const runStream = openai.beta.threads.runs.stream(threadId, {
       assistant_id: assistantId,
       stream: true,
-      model: "gpt-4o-mini"
+      model: "gpt-4o",
+      additional_instructions: JSON.stringify({
+        latestSettings: {
+          compilerVersion: DEFAULT_GLOBAL_CONFIG.compilerVersion,
+          availableChains: chains.map((chain) => {
+            return {
+              name: chain.name,
+              id: chain.id
+            }
+          })
+        }
+      })
     })
 
     // forward run status would stream message deltas

@@ -1,12 +1,12 @@
 "use server"
 
-import { kv } from "@vercel/kv"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
 import { auth } from "@/auth"
-import type { Agent, DbChat, DbChatListItem } from "@/lib/types"
-import type { VerifyContractParams } from "@/lib/types"
+import { kv } from "@vercel/kv"
+
+import type { Agent, DbChat, DbChatListItem, VerifyContractParams } from "@/lib/types"
 
 // Store a new user's details
 export async function storeUser(user: { id: string }) {
@@ -33,32 +33,35 @@ export async function storeEmail(email: string) {
 
 export async function getChatList(): Promise<DbChatListItem[] | null> {
   const session = await auth()
-
   if (!session?.user?.id) {
     return null
   }
 
-  try {
-    const pipeline = kv.pipeline()
-    const chats: string[] = await kv.zrange(`user:chat:${session.user.id}`, 0, -1, {
-      rev: true
-    })
+  const pipeline = kv.pipeline()
+  const chats: string[] = await kv.zrange(`user:chat:${session.user.id}`, 0, -1, {
+    rev: true
+  })
 
-    for (const chat of chats) {
-      pipeline?.hmget<DbChatListItem>(chat, "id", "title", "published", "createdAt", "avatarUrl", "userId")
-    }
+  for (const chat of chats) {
+    pipeline?.hmget<DbChatListItem>(chat, "id", "title", "published", "createdAt", "avatarUrl", "userId")
+  }
 
-    const results = await pipeline?.exec<DbChatListItem[]>()
+  const results = await pipeline?.exec<DbChatListItem[]>()
 
-    return results
-  } catch {
+  return results
+}
+
+export async function getChat(id: string) {
+  const session = await auth()
+  if (!session?.user?.id) {
     return null
   }
+
+  return await kv.hgetall<DbChat>(`chat:${id}`)
 }
 
 export async function storeChat(chat: DbChat) {
   const session = await auth()
-
   const userId = session?.user?.id
 
   if (!userId) {
@@ -77,22 +80,8 @@ export async function storeChat(chat: DbChat) {
     score: chat.createdAt,
     member: `chat:${chat.id}`
   })
-}
 
-export async function getChat(id: string) {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    return null
-  }
-  const userId = session.user.id
-
-  if (!userId) {
-    return null
-  }
-
-  const chat = await kv.hgetall<DbChat>(`chat:${id}`)
-  return chat
+  revalidatePath("/")
 }
 
 export async function deleteChat({ id, path }: { id: string; path: string }) {
@@ -166,9 +155,7 @@ export async function shareChat(chat: DbChatListItem) {
   const userId = session?.user?.id
 
   if (userId !== String(chat.userId)) {
-    return {
-      error: "Unauthorized"
-    }
+    return
   }
 
   const payload = {
@@ -178,7 +165,8 @@ export async function shareChat(chat: DbChatListItem) {
 
   await kv.hmset(`chat:${chat.id}`, payload)
 
-  return payload
+  revalidatePath("/")
+  return revalidatePath(`/share/${chat.id}`)
 }
 
 export async function getUserField(fieldName: string) {
@@ -210,60 +198,8 @@ export const storeAgent = async (agent: Agent) => {
   await kv.sadd("agents:list", agent.id)
 }
 
-export const deleteAgent = async (id: string) => {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    return {
-      error: "Unauthorized"
-    }
-  }
-
-  // get the id make sure the creator is the user
-  const agent = await kv.hgetall<Agent>(`agent:${id}`)
-  if (!agent) {
-    return {
-      error: "Agent not found"
-    }
-  }
-
-  if (agent.userId !== session.user.id) {
-    return {
-      error: "Not authorized"
-    }
-  }
-
-  await kv.del(`agent:${id}`)
-  await kv.srem("agents:list", id)
-}
-
 export const getAgent = async (id: string) => {
-  const agent = await kv.hgetall<Agent>(`agent:${id}`)
-  return agent
-}
-
-export const getAgents = async () => {
-  const agents = await kv.smembers("agents:list")
-  const pipeline = kv.pipeline()
-
-  for (const agentId of agents) {
-    pipeline.hgetall<Agent>(`agent:${agentId}`)
-  }
-
-  const results = await pipeline.exec<Agent[]>()
-  return results
-}
-
-export const storeVerification = async (data: VerifyContractParams) => {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    return {
-      error: "Unauthorized"
-    }
-  }
-
-  await kv.hmset(`verification:${data.deployHash}`, data)
+  return await kv.hgetall<Agent>(`agent:${id}`)
 }
 
 // store contract deployment.  Saves the ipfs hash of the source files
@@ -315,7 +251,17 @@ export const storeTokenScriptDeployment = async (deployData: {
   })
 }
 
-// get all verifications
+export const storeVerification = async (data: Partial<VerifyContractParams>) => {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return {
+      error: "Unauthorized"
+    }
+  }
+
+  await kv.hmset(`verification:${data.deployHash}`, data)
+}
+
 export const getVerifications = async () => {
   const verifications = await kv.keys("verification:*")
   if (!verifications || verifications.length === 0) {
@@ -330,8 +276,7 @@ export const getVerifications = async () => {
   if (!pipeline) {
     return []
   }
-  const results = await pipeline.exec<VerifyContractParams[]>()
-  return results
+  return await pipeline.exec<VerifyContractParams[]>()
 }
 
 // delete a verification

@@ -41,7 +41,7 @@ export const AgentCard = ({ agent, className }: AgentCardProps) => {
               <Button
                 type="button"
                 onClick={() => {
-                  router.push("/")
+                  router.replace("/")
                 }}
                 className={cn(
                   buttonVariants({ size: "sm", variant: "secondary" }),

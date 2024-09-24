@@ -1,45 +1,42 @@
 import type { Chain } from "viem"
-import * as allViemChains from "viem/chains"
 
 import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
+import { chains } from "@/lib/config"
 
-export function getChainById(chainId: number) {
-  for (const chain of Object.values(allViemChains)) {
-    if (chain.id === chainId) {
-      return chain
-    }
-  }
+const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || ""
+const etherscanApiKey = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY || ""
+const polygonscanApiKey = process.env.NEXT_PUBLIC_POLYGONSCAN_API_KEY || ""
+const basescanApiKey = process.env.NEXT_PUBLIC_BASESCAN_API_KEY || ""
+const mantleApiKey = process.env.NEXT_PUBLIC_MANTLE_API_KEY || ""
+const arbitrumApiKey = process.env.NEXT_PUBLIC_ARBITRUM_API_KEY || ""
+const optimismApiKey = process.env.NEXT_PUBLIC_OPTIMISM_API_KEY || ""
+const blockscoutApiKey = process.env.NEXT_PUBLIC_BLOCKSCOUT_API_KEY || ""
 
-  throw new Error(`Chain with id ${chainId} not found`)
-}
-
-export const FULL_RPC_URLS: Record<Chain["id"], string> = {
-  11155111: `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-  80002: `https://polygon-amoy.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-  84532: `https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-  421614: `https://arb-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
-}
-
-export const EXPLORER_API_URLS: Record<Chain["id"], string> = {
+export const EXPLORER_API_URLS: Record<number, string> = {
+  11155420: "https://api-sepolia-optimistic.etherscan.io/api",
   11155111: "https://api-sepolia.etherscan.io/api",
   80002: "https://api-amoy.polygonscan.com/api",
   84532: "https://api-sepolia.basescan.org/api",
-  1: "https://api.etherscan.io/api",
-  17000: "https://api-holesky.etherscan.io/api",
-  420: "https://api-goerli.optimistic.etherscan.io/api",
   5003: "https://explorer.sepolia.mantle.xyz/api",
   421614: "https://api-sepolia.arbiscan.io/api"
 }
 
-export const EXPLORER_API_KEYS: Record<Chain["id"], string> = {
-  11155111: `${process.env.ETHEREUM_EXPLORER_API_KEY}`,
-  80002: `${process.env.POLYGON_EXPLORER_API_KEY}`,
-  84532: `${process.env.BASE_EXPLORER_API_KEY}`,
-  1: `${process.env.ETHEREUM_EXPLORER_API_KEY}`,
-  17000: `${process.env.ETHEREUM_EXPLORER_API_KEY}`,
-  420: `${process.env.OPTIMISM_EXPLORER_API_KEY}`,
-  5003: `${process.env.MANTLE_EXPLORER_API_KEY}`,
-  421614: `${process.env.ARBITRUM_EXPLORER_API_KEY}`
+export const EXPLORER_API_KEYS: Record<number, string> = {
+  11155420: optimismApiKey,
+  11155111: etherscanApiKey,
+  80002: polygonscanApiKey,
+  84532: basescanApiKey,
+  5003: mantleApiKey,
+  421614: arbitrumApiKey
+}
+
+export const FULL_RPC_URLS: Record<number, string> = {
+  11155420: `https://opt-sepolia.g.alchemy.com/v2/${alchemyApiKey}`,
+  11155111: `https://eth-sepolia.g.alchemy.com/v2/${alchemyApiKey}`,
+  80002: `https://polygon-amoy.g.alchemy.com/v2/${alchemyApiKey}`,
+  84532: `https://base-sepolia.g.alchemy.com/v2/${alchemyApiKey}`,
+  5003: `https://mantle-sepolia.g.alchemy.com/v2/${alchemyApiKey}`,
+  421614: `https://arb-sepolia.g.alchemy.com/v2/${alchemyApiKey}`
 }
 
 type ExplorerDetails = {
@@ -50,24 +47,30 @@ type ExplorerDetails = {
 
 export const getExplorerDetails = (viemChain: Chain): ExplorerDetails => {
   const blockscoutUrl = BLOCKSCOUT_URLS[viemChain.id]
+
   if (blockscoutUrl) {
     return {
-      url: `${blockscoutUrl}`,
+      url: blockscoutUrl,
       apiUrl: `${blockscoutUrl}/api`,
-      apiKey: `${process.env.BLOCKSCOUT_API_KEY}`
+      apiKey: blockscoutApiKey
     }
   }
 
   const viemExplorerUrl = viemChain.blockExplorers?.default.url
-  const viemApiUrl = EXPLORER_API_URLS[viemChain.id]
-  const viemApiKey = EXPLORER_API_KEYS[viemChain.id]
-  if (viemExplorerUrl && viemApiUrl && viemApiKey) {
-    return {
-      url: viemExplorerUrl,
-      apiUrl: viemApiUrl,
-      apiKey: viemApiKey
-    }
+  const viemApiUrl = EXPLORER_API_URLS?.[viemChain.id]
+  const viemApiKey = EXPLORER_API_KEYS?.[viemChain.id]
+
+  if (!viemExplorerUrl || !viemApiUrl || !viemApiKey) {
+    throw new Error("No explorer details found for chain")
   }
 
-  throw new Error(`Unsupported chain or explorer api.  Network: ${viemChain.name} ChainId: ${viemChain.id}`)
+  return {
+    url: viemExplorerUrl,
+    apiUrl: viemApiUrl,
+    apiKey: viemApiKey
+  }
+}
+
+export function getChainById(chainId: number) {
+  return chains.find((chain) => chain.id === chainId)
 }

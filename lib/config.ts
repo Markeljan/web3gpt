@@ -1,17 +1,46 @@
-import { arbitrumSepolia } from "viem/chains"
+import { cookieStorage, createConfig, createStorage, http, type CreateConnectorFn } from "wagmi"
+import {
+  arbitrumSepolia,
+  baseSepolia,
+  holesky,
+  mantleSepoliaTestnet,
+  optimismSepolia,
+  polygonAmoy,
+  sepolia
+} from "wagmi/chains"
 
 import type { Agent, GlobalConfig } from "@/lib/types"
+import { FULL_RPC_URLS } from "@/lib/viem"
 
 export const IS_PRODUCTION = process.env.NODE_ENV === "production"
-
-export const APP_URL = IS_PRODUCTION ? (process.env.NEXT_PUBLIC_APP_URL as string) : "http://localhost:3000"
+export const APP_URL = (IS_PRODUCTION && process.env.NEXT_PUBLIC_APP_URL) || "http://localhost:3000"
 export const IPFS_GATEWAY = process.env.NEXT_PUBLIC_IPFS_GATEWAY || "https://gateway.pinata.cloud"
 
 export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {
   viemChain: arbitrumSepolia,
-  compilerVersion: "v0.8.26+commit.8a97fa7a",
+  compilerVersion: "v0.8.27+commit.40a35a09",
   useWallet: false
 }
+
+const mantleSepoliaWithLogo = {
+  ...mantleSepoliaTestnet,
+  iconUrl: "/mantle-logo.jpeg"
+}
+
+const amoyWithLogo = {
+  ...polygonAmoy,
+  iconUrl: "/polygon-logo.png"
+}
+
+export const chains = [
+  arbitrumSepolia,
+  optimismSepolia,
+  baseSepolia,
+  mantleSepoliaWithLogo,
+  holesky,
+  amoyWithLogo,
+  sepolia
+] as const
 
 export const DEFAULT_AGENT: Agent = {
   id: "asst_Tgzrzv0VaSgTRMn8ufAULlZG",
@@ -75,3 +104,15 @@ export const AGENTS_ARRAY: Agent[] = [
     imageUrl: "/assets/tokenscript.png"
   }
 ]
+
+export function getConfig(connectors?: CreateConnectorFn[]) {
+  return createConfig({
+    chains,
+    transports: Object.fromEntries(chains.map((chain) => [[chain.id], http(FULL_RPC_URLS[chain.id])])),
+    ssr: true,
+    storage: createStorage({
+      storage: cookieStorage
+    }),
+    connectors
+  })
+}

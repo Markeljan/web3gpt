@@ -17,7 +17,6 @@ export interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, avatarUrl, status }: ChatMessageProps) {
-
   return (
     <div className="group relative flex w-full mb-4 items-start md:-ml-12">
       <div className="relative flex size-8 shrink-0 select-none items-center justify-center overflow-hidden rounded-md border shadow ">

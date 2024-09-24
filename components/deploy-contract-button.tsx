@@ -44,7 +44,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
   const { isDeploying, setIsDeploying } = useGlobalStore()
   const supportedChains = useChains()
   const { chain } = useAccount()
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const isSupportedChain = useMemo(
     () => !!chain && supportedChains.find((c) => c.id === chain.id),
@@ -131,7 +131,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
       <Dialog
         open={isDialogOpen}
         onOpenChange={(isOpen) => {
-          setIsDialogOpen(isOpen);
+          setIsDialogOpen(isOpen)
           if (!isOpen && !isDeploying) {
             setIsErrorDeploying(false)
           }
@@ -141,7 +141,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
           <Button
             onClick={() => {
               setSourceCode(getSourceCode())
-              setIsDialogOpen(true);
+              setIsDialogOpen(true)
             }}
             className="mr-2 text-primary-foreground"
             variant="default"

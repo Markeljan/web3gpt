@@ -30,14 +30,16 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { APP_URL } from "@/lib/config"
 import type { DbChatListItem, ServerActionResult } from "@/lib/types"
 import { cn, formatDate } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
 interface SidebarActionsProps {
   chat: DbChatListItem
   deleteChat: (args: { id: string; path: string }) => ServerActionResult<void>
-  shareChat: (chat: DbChatListItem) => ServerActionResult<DbChatListItem>
+  shareChat: (chat: DbChatListItem) => Promise<void>
 }
 
 export function SidebarActions({ chat, deleteChat, shareChat }: SidebarActionsProps) {
+  const router = useRouter()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [isRemovePending, startRemoveTransition] = useTransition()
@@ -117,14 +119,10 @@ export function SidebarActions({ chat, deleteChat, shareChat }: SidebarActionsPr
                     return
                   }
 
-                  const result = await shareChat(chat)
-
-                  if ("error" in result) {
-                    toast.error(result.error)
-                    return
-                  }
+                  await shareChat(chat)
 
                   copyShareLink()
+                  router.push(`/share/${chat.id}`)
                 })
               }}
             >
@@ -165,6 +163,7 @@ export function SidebarActions({ chat, deleteChat, shareChat }: SidebarActionsPr
                     return
                   }
                   setDeleteDialogOpen(false)
+                  router.push("/")
                 })
               }}
             >

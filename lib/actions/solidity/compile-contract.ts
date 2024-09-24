@@ -2,16 +2,10 @@
 
 import solc, { type SolcInput, type SolcOutput } from "solc"
 
-import { getContractFileName, prepareContractSources } from "@/lib/contracts/contract-utils"
+import { getContractFileName, prepareContractSources } from "@/lib/utils"
 import { ensureHashPrefix } from "@/lib/utils"
 
-export async function compileContract({
-  contractName,
-  sourceCode
-}: {
-  contractName: string
-  sourceCode: string
-}) {
+export async function compileContract({ contractName, sourceCode }: { contractName: string; sourceCode: string }) {
   const sources = await prepareContractSources(contractName, sourceCode)
   const standardJsonInputString = JSON.stringify({
     language: "Solidity",

@@ -5,9 +5,9 @@ import { PromptForm } from "@/components/chat/prompt-form"
 import { Button } from "@/components/ui/button"
 import { IconSpinner } from "@/components/ui/icons"
 
-export type ChatPanelProps = Pick<UseAssistantHelpers, "status" | "append" | "stop">
+export type ChatPanelProps = Pick<UseAssistantHelpers, "status" | "append" | "stop" | "setThreadId">
 
-export function ChatPanel({ status, append, stop }: ChatPanelProps) {
+export function ChatPanel({ status, append, stop, setThreadId }: ChatPanelProps) {
   return (
     <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/0 from-0% to-muted/30 to-50%">
       <ButtonScrollToBottom />
@@ -21,7 +21,7 @@ export function ChatPanel({ status, append, stop }: ChatPanelProps) {
           ) : null}
         </div>
         <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
-          <PromptForm append={append} status={status} />
+          <PromptForm setThreadId={setThreadId} append={append} status={status} />
         </div>
       </div>
     </div>

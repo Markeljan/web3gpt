@@ -18,7 +18,7 @@ export const createAgent = async ({
   try {
     const { id } = await openai.beta.assistants.create({
       name: name,
-      model: "gpt-4o-mini",
+      model: "gpt-4o",
       description: description,
       instructions: instructions,
       tools: [

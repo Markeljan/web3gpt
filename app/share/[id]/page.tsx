@@ -8,10 +8,10 @@ import { Landing } from "@/components/landing"
 import { getAiThreadMessages } from "@/lib/actions/ai"
 import { getAgent, getPublishedChat } from "@/lib/actions/db"
 import { APP_URL } from "@/lib/config"
-import type { ChatPageProps } from "@/lib/types"
+import type { NextPageProps } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
 
-export async function generateMetadata({ params }: ChatPageProps) {
+export async function generateMetadata({ params }: NextPageProps) {
   const metadata: Metadata = {
     title: "Shared Chat",
     description: "Write and deploy smart contracts with AI",
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: ChatPageProps) {
   return metadata
 }
 
-export default async function SharePage({ params, searchParams }: ChatPageProps) {
+export default async function SharePage({ params, searchParams }: NextPageProps) {
   const [session, chat] = await Promise.all([auth(), getPublishedChat(params.id)])
   const userId = session?.user?.id
 
