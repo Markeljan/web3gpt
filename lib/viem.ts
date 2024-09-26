@@ -10,7 +10,7 @@ const basescanApiKey = process.env.NEXT_PUBLIC_BASESCAN_API_KEY || ""
 const mantleApiKey = process.env.NEXT_PUBLIC_MANTLE_API_KEY || ""
 const arbitrumApiKey = process.env.NEXT_PUBLIC_ARBITRUM_API_KEY || ""
 const optimismApiKey = process.env.NEXT_PUBLIC_OPTIMISM_API_KEY || ""
-const blockscoutApiKey = process.env.NEXT_PUBLIC_BLOCKSCOUT_API_KEY || ""
+const blockscoutApiKey = process.env.BLOCKSCOUT_API_KEY || ""
 
 export const EXPLORER_API_URLS: Record<number, string> = {
   11155420: "https://api-sepolia-optimistic.etherscan.io/api",

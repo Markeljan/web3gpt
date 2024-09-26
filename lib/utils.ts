@@ -4,7 +4,6 @@ import { twMerge } from "tailwind-merge"
 import type { Chain, Hash } from "viem"
 
 import { IPFS_GATEWAY } from "@/lib/config"
-import { resolveImports } from "@/lib/contracts/resolve-imports"
 import { getExplorerDetails } from "@/lib/viem"
 
 export const cn = (...inputs: ClassValue[]): string => twMerge(clsx(inputs))
@@ -61,41 +60,4 @@ export function getExplorerUrl({
   }
 
   return `${url}/address/${hash}`
-}
-
-export const getContractFileName = (contractName: string): string => {
-  return `${contractName.replace(/[\/\\:*?"<>|.\s]+$/g, "_")}.sol`
-}
-
-export async function prepareContractSources(contractName: string, sourceCode: string) {
-  const fileName = getContractFileName(contractName)
-
-  const handleImportsResult = await resolveImports(sourceCode)
-
-  const sources = {
-    [fileName]: {
-      content: handleImportsResult?.sourceCode
-    },
-    ...handleImportsResult?.sources
-  }
-
-  const sourcesKeys = Object.keys(sources)
-
-  for (const sourceKey of sourcesKeys) {
-    let sourceCode = sources[sourceKey].content
-    const importStatements = sourceCode.match(/import\s+["'][^"']+["'];/g) || []
-
-    for (const importStatement of importStatements) {
-      const importPathMatch = importStatement.match(/["']([^"']+)["']/)
-      if (!importPathMatch) continue
-
-      const importPath = importPathMatch[1]
-      const fileName = importPath.split("/").pop() || importPath
-      sourceCode = sourceCode.replace(importStatement, `import "${fileName}";`)
-    }
-
-    sources[sourceKey].content = sourceCode
-  }
-
-  return sources
 }

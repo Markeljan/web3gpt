@@ -2,8 +2,6 @@
 
 import { useState, useTransition } from "react"
 
-import { toast } from "sonner"
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,13 +15,9 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { IconClear, IconSpinner } from "@/components/ui/icons"
-import type { ServerActionResult } from "@/lib/types"
+import { clearChatsAction } from "@/lib/actions"
 
-interface ClearHistoryProps {
-  clearChats: () => ServerActionResult<void>
-}
-
-export function ClearHistory({ clearChats }: ClearHistoryProps) {
+export function ClearHistory() {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -50,13 +44,7 @@ export function ClearHistory({ clearChats }: ClearHistoryProps) {
             onClick={(event) => {
               event.preventDefault()
               startTransition(async () => {
-                const result = await clearChats()
-
-                if (result && "error" in result) {
-                  toast.error(result.error)
-                  return
-                }
-
+                await clearChatsAction()
                 setOpen(false)
               })
             }}

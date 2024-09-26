@@ -8,7 +8,7 @@ import { cookieToInitialState } from "wagmi"
 
 import "@/app/globals.css"
 import { Header } from "@/components/header/header"
-import { Providers } from "@/components/providers/ui-providers"
+import { UiProviders } from "@/components/providers/ui-providers"
 import { Web3Provider } from "@/components/providers/web3-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { APP_URL, getConfig } from "@/lib/config"
@@ -45,24 +45,30 @@ export const viewport: Viewport = {
   ]
 }
 
+export const revalidate = 60
+
 export default function Layout({ children }: { children: ReactNode }) {
   const initialState = cookieToInitialState(getConfig(), headers().get("cookie"))
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("font-sans antialiased", fontSans.variable, fontMono.variable)}>
-        <Providers attribute="class" defaultTheme="system" enableSystem>
-          <div className="flex min-h-screen flex-col">
-            <main className="flex flex-1 flex-col bg-muted/50">
+        <div className="flex min-h-screen flex-col">
+          <main className="flex flex-1 flex-col bg-muted/50">
+            <UiProviders attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
               <Web3Provider initialState={initialState}>
                 <Header />
                 {children}
-                <Toaster />
+                <Toaster
+                  toastOptions={{
+                    duration: 2000
+                  }}
+                />
               </Web3Provider>
-            </main>
-          </div>
-          <Analytics />
-        </Providers>
+            </UiProviders>
+          </main>
+        </div>
+        <Analytics />
       </body>
     </html>
   )

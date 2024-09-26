@@ -50,9 +50,10 @@ type CodeBlockProps = {
 }
 
 export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
-  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
   const isClient = useIsClient()
   const { resolvedTheme } = useTheme()
+  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
+
   const isDarkMode = !isClient ? true : resolvedTheme === "dark"
 
   const memoizedHighlighter = useMemo(() => {
@@ -87,10 +88,7 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
     const suggestedFileName = `web3gpt-${nanoid(6)}${fileExtension}`
     const fileName = window.prompt("Enter file name", suggestedFileName)
 
-    if (!fileName) {
-      // User pressed cancel on prompt.
-      return
-    }
+    if (!fileName) return
 
     const blob = new Blob([value], { type: "text/plain" })
     const url = URL.createObjectURL(blob)
@@ -104,7 +102,7 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
     URL.revokeObjectURL(url)
   }, [value, language])
 
-  const renderDeployButton = () => {
+  const renderDeployButton = useCallback(() => {
     if (language === "solidity") {
       return <DeployContractButton getSourceCode={() => value} />
     }
@@ -112,7 +110,8 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
       return <DeployTokenScriptButton getSourceCode={() => value} />
     }
     return null
-  }
+  }, [language, value])
+
   return (
     <div className="relative w-full font-sans dark:bg-zinc-950 bg-gray-200">
       <div

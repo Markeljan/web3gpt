@@ -2,22 +2,24 @@ import { notFound, redirect } from "next/navigation"
 
 import { auth } from "@/auth"
 import { Chat } from "@/components/chat/chat"
-import { getAiThreadMessages } from "@/lib/actions/ai"
-import { getAgent, getChat } from "@/lib/actions/db"
+import { getAgent, getChat } from "@/lib/data/kv"
+import { getAiThreadMessages } from "@/lib/data/openai"
 import type { NextPageProps } from "@/lib/types"
 
 export default async function ChatPage({ params, searchParams }: NextPageProps) {
   const session = await auth()
 
-  if (!session?.user?.id) {
+  if (!session?.user.id) {
     redirect(`/sign-in?next=/chat/${params.id}`)
   }
+
   const chat = await getChat(params.id)
 
   if (!chat) {
     redirect("/")
   }
-  if (String(chat?.userId) !== session?.user?.id) {
+
+  if (String(chat?.userId) !== session?.user.id) {
     notFound()
   }
 

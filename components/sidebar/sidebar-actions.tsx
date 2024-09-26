@@ -27,23 +27,21 @@ import {
 } from "@/components/ui/dialog"
 import { IconShare, IconSpinner, IconTrash, IconUsers } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { deleteChatAction, shareChatAction } from "@/lib/actions"
 import { APP_URL } from "@/lib/config"
-import type { DbChatListItem, ServerActionResult } from "@/lib/types"
+import type { DbChatListItem } from "@/lib/types"
 import { cn, formatDate } from "@/lib/utils"
-import { useRouter } from "next/navigation"
 
 interface SidebarActionsProps {
   chat: DbChatListItem
-  deleteChat: (args: { id: string; path: string }) => ServerActionResult<void>
-  shareChat: (chat: DbChatListItem) => Promise<void>
 }
 
-export function SidebarActions({ chat, deleteChat, shareChat }: SidebarActionsProps) {
-  const router = useRouter()
+export function SidebarActions({ chat }: SidebarActionsProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
-  const [isRemovePending, startRemoveTransition] = useTransition()
+  const [isDeletePending, startDeleteTransition] = useTransition()
   const [isSharePending, startShareTransition] = useTransition()
+
   const fullShareUrl = `${APP_URL}/share/${chat.id}`
 
   const copyShareLink = useCallback(() => {
@@ -77,7 +75,7 @@ export function SidebarActions({ chat, deleteChat, shareChat }: SidebarActionsPr
             <Button
               variant="ghost"
               className="size-6 p-0 hover:bg-background"
-              disabled={isRemovePending}
+              disabled={isDeletePending}
               onClick={() => setDeleteDialogOpen(true)}
             >
               <IconTrash />
@@ -119,10 +117,9 @@ export function SidebarActions({ chat, deleteChat, shareChat }: SidebarActionsPr
                     return
                   }
 
-                  await shareChat(chat)
+                  await shareChatAction(chat)
 
                   copyShareLink()
-                  router.push(`/share/${chat.id}`)
                 })
               }}
             >
@@ -147,27 +144,18 @@ export function SidebarActions({ chat, deleteChat, shareChat }: SidebarActionsPr
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isRemovePending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeletePending}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              disabled={isRemovePending}
+              disabled={isDeletePending}
               onClick={(event) => {
                 event.preventDefault()
-                startRemoveTransition(async () => {
-                  const result = await deleteChat({
-                    id: chat.id,
-                    path: `/chat/${chat.id}`
-                  })
-
-                  if (result && "error" in result) {
-                    toast.error(result.error)
-                    return
-                  }
+                startDeleteTransition(async () => {
+                  await deleteChatAction(chat.id)
                   setDeleteDialogOpen(false)
-                  router.push("/")
                 })
               }}
             >
-              {isRemovePending && <IconSpinner className="mr-2 animate-spin" />}
+              {isDeletePending && <IconSpinner className="mr-2 animate-spin" />}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

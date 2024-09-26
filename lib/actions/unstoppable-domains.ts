@@ -1,6 +1,6 @@
 "use server"
 
-import { INFURA_API_KEY } from "@/lib/data"
+import { INFURA_API_KEY } from "@/lib/data/secrets"
 import { Resolution } from "@unstoppabledomains/resolution"
 
 const resolution = new Resolution({

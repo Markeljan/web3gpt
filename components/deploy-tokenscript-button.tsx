@@ -1,8 +1,6 @@
-"use client"
+import { useState } from "react"
 
-import { useMemo, useState } from "react"
-
-import { useAccount, useChains } from "wagmi"
+import { useAccount } from "wagmi"
 
 import { useGlobalStore } from "@/app/state/global-store"
 import { Badge } from "@/components/ui/badge"
@@ -17,6 +15,7 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog"
 import { IconSpinner } from "@/components/ui/icons"
+import { storeTokenScriptDeploymentAction } from "@/lib/actions"
 import { useTokenScriptDeploy } from "@/lib/hooks/use-tokenscript-deploy"
 
 type DeployContractButtonProps = {
@@ -24,35 +23,37 @@ type DeployContractButtonProps = {
 }
 
 export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonProps) => {
-  const { deploy: deployIPFS } = useTokenScriptDeploy()
-  const [explorerUrl, setExplorerUrl] = useState<string>("")
+  const { deploy: deployTokenScript } = useTokenScriptDeploy()
+  const [explorerUrl, setExplorerUrl] = useState()
   const [isErrorDeploying, setIsErrorDeploying] = useState<boolean>(false)
-  const [sourceCode, setSourceCode] = useState<string>("")
+  const [sourceCode, setSourceCode] = useState(getSourceCode())
   const { isDeploying, setIsDeploying, setTokenScriptViewerUrl } = useGlobalStore()
-  const supportedChains = useChains()
-  const { chain } = useAccount()
+  const { chainId } = useAccount()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  const isSupportedChain = useMemo(
-    () => !!chain && supportedChains.find((c) => c.id === chain.id),
-    [chain, supportedChains]
-  )
-
   const handleDeployToIPFS = async () => {
+    if (!chainId || !sourceCode) return
+
     setIsDeploying(true)
     setIsErrorDeploying(false)
-    try {
-      const tokenscriptViewerUrl = await deployIPFS({
-        tokenScriptSource: sourceCode
-      })
-      if (!tokenscriptViewerUrl) {
-        setIsErrorDeploying(true)
-        setIsDeploying(false)
-        return
-      }
 
-      explorerUrl && setExplorerUrl(explorerUrl)
-      setTokenScriptViewerUrl(tokenscriptViewerUrl as string)
+    try {
+      const deploymentData = await deployTokenScript({ tokenScriptSource: sourceCode })
+
+      if (!deploymentData) throw new Error("Error deploying TokenScript")
+
+      const { cid, txHash, tokenAddress } = deploymentData
+      const tokenscriptViewerUrl = `https://viewer.tokenscript.org/?chain=${chainId}&contract=${tokenAddress}`
+
+      await storeTokenScriptDeploymentAction({
+        chainId: chainId.toString(),
+        deployHash: txHash,
+        cid,
+        tokenAddress
+      })
+
+      setExplorerUrl(explorerUrl)
+      setTokenScriptViewerUrl(tokenscriptViewerUrl)
 
       setIsDeploying(false)
       setIsDialogOpen(false) // Close the dialog
@@ -82,7 +83,6 @@ export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonP
             }}
             className="mr-2 text-primary-foreground"
             variant="default"
-            disabled={!isSupportedChain}
             size="sm"
           >
             <p className="hidden sm:flex">Deploy TokenScript</p>

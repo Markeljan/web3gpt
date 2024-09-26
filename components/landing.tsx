@@ -8,7 +8,7 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { getUserField, storeEmail } from "@/lib/actions/db"
+import { getUserFieldAction, storeEmailAction } from "@/lib/actions"
 import { useIsClient } from "@/lib/hooks/use-is-client"
 import { useLocalStorage } from "@/lib/hooks/use-local-storage"
 import { isValidEmail } from "@/lib/utils"
@@ -21,14 +21,14 @@ type LandingProps = {
 
 export function Landing({ userId, disableAnimations }: LandingProps) {
   const [validationError, setValidationError] = useState<string | null>(null)
-  const [email, setEmail] = useState<string>("")
+  const [email, setEmail] = useState("")
   const [localIsSubscribed, setLocalIsSubscribed] = useLocalStorage("email_subscribed", false)
   const isClient = useIsClient()
 
   useEffect(() => {
     const fetchIsEmailSubscribed = async () => {
-      const backendIsSubscribed = await getUserField("email_subscribed")
-      if (backendIsSubscribed === true) {
+      const backendIsSubscribed = await getUserFieldAction("email_subscribed")
+      if (!!backendIsSubscribed === true) {
         setLocalIsSubscribed(true)
       }
     }
@@ -45,7 +45,7 @@ export function Landing({ userId, disableAnimations }: LandingProps) {
       return
     }
     setValidationError(null)
-    await storeEmail(email)
+    await storeEmailAction(email)
     setLocalIsSubscribed(true)
     setEmail("")
     toast.success("Thanks for subscribing!")
@@ -53,13 +53,22 @@ export function Landing({ userId, disableAnimations }: LandingProps) {
 
   return (
     <>
-      <div className="flex flex-col mx-auto max-w-2xl h-96 bg-background border-gray-600/25 text-center dark:border-gray-600/50 md:border rounded-2xl mb-8 md:mb-12 px-4 pt-8 pb-4">
-        <div className="flex w-full justify-center pb-4">
-          <Image src={web3GPTLogo} alt="web3gpt logo" priority={true} height={256} width={256} />
+      <div className="flex flex-col mx-auto max-w-2xl h-full md:h-96 bg-background border-gray-600/25 text-center dark:border-gray-600/50 border rounded-2xl md:mb-12 px-4 md:pt-8 md:pb-4">
+        <div className="relative mx-auto size-48 md:mb-4 h-24">
+          <Image
+            src={web3GPTLogo}
+            className="object-contain"
+            alt="web3gpt logo"
+            priority={true}
+            fill
+            sizes="(max-width: 768px) 70vw, 50vw"
+          />
         </div>
-        <p className="text-lg font-bold tracking-tight lg:text-2xl lg:font-normal">Deploy smart contracts with AI</p>
+        <p className="max-sm:hidden text-lg font-bold tracking-tight lg:text-2xl lg:font-normal">
+          Deploy smart contracts with AI
+        </p>
 
-        <div className="grid-row-3 py-4 grid grid-flow-row gap-1 md:grid-flow-col md:gap-4">
+        <div className="grid-row-3 grid grid-flow-row gap-1 md:grid-flow-col pb-4 md:pt-4 md:gap-4">
           <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
             <Player
               play={!disableAnimations}
@@ -67,26 +76,26 @@ export function Landing({ userId, disableAnimations }: LandingProps) {
               speed={0.5}
               direction={-1}
               path="/lotties/puzzle.json"
-              className="size-24 md:h-32 md:w-full"
+              className="size-24  w-full"
             />
             <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
               <h3 className="font-bold md:mb-2">Generate</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Generate custom smart contracts using prompts.</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Generate smart contracts using prompts.</p>
             </div>
           </div>
 
-          <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
+          <div className="mx-3 grid grid-cols-3 content-center md:grid-cols-1 gap-4">
             <Player
               play={!disableAnimations}
               loop={false}
               speed={0.5}
               direction={1}
               path="/lotties/globe.json"
-              className="size-24 md:h-32 md:w-full"
+              className="size-24  w-full"
             />
             <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">
               <h3 className="font-bold md:mb-2">Deploy</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Deploy smart contracts directly from the chat.</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Deploy from chat with Agent deploy or wallet.</p>
             </div>
           </div>
           <div className="mx-3 grid grid-cols-3 content-center gap-1 md:grid-cols-1 md:gap-4">
@@ -95,7 +104,7 @@ export function Landing({ userId, disableAnimations }: LandingProps) {
               loop={false}
               speed={0.5}
               path="/lotties/clock.json"
-              className="size-24 md:h-32 md:w-full"
+              className="size-24  w-full"
             />
 
             <div className="col-span-2 mt-4 text-left md:col-span-1 md:mt-0 md:text-center">

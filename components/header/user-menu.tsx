@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 function getUserInitials(name: string) {
   const [firstName, lastName] = name.split(" ")
+
   return lastName ? `${firstName[0]}${lastName[0]}` : firstName.slice(0, 2)
 }
 
@@ -30,7 +31,7 @@ export const UserMenu = ({ user }: { user: Session["user"] }) => {
                 {user?.name ? getUserInitials(user?.name) : null}
               </div>
             )}
-            <span className="ml-2 hidden lg:flex">{user?.name && getUserInitials(user?.name)}</span>
+            <span className="ml-2 hidden lg:flex">{user?.name && user?.name}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent sideOffset={8} align="start" className="w-[180px]">

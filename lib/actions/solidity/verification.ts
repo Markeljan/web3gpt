@@ -1,5 +1,3 @@
-"use server"
-
 import type { Chain } from "viem"
 
 import { DEFAULT_GLOBAL_CONFIG } from "@/lib/config"

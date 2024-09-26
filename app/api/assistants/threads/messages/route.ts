@@ -1,16 +1,16 @@
-import type { NextRequest } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 
 import { AssistantResponse } from "ai"
 import type { BadRequestError } from "openai/error"
 
 import { auth } from "@/auth"
-import { createAgent } from "@/lib/actions/ai"
-import { storeChat } from "@/lib/actions/db"
+import { createAgentAction } from "@/lib/actions/ai"
+import { storeChatAction } from "@/lib/actions"
 import { deployContract } from "@/lib/actions/solidity/deploy-contract"
-import { deployTokenScript } from "@/lib/actions/solidity/deploy-tokenscript"
+import { deployTokenScript } from "@/lib/actions/solidity/tokenscript"
 import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
-import { APP_URL, chains, DEFAULT_GLOBAL_CONFIG } from "@/lib/config"
-import { openai } from "@/lib/openai"
+import { APP_URL, DEFAULT_GLOBAL_CONFIG, chains } from "@/lib/config"
+import { openai } from "@/lib/data/openai"
 import { ToolName } from "@/lib/tools"
 import type { DbChat } from "@/lib/types"
 
@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
   }
 
   if (!assistantId) {
-    throw new Error("Assistant ID is required")
+    console.error("Assistant ID is required")
+    return NextResponse.json({ error: "Assistant ID is required" }, { status: 400 })
   }
 
   const threadId = threadIdFromClient || (await openai.beta.threads.create()).id
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
       messages: [{ id: messageId, role: "user", content: message }]
     }
 
-    await storeChat(newChat)
+    await storeChatAction({ data: newChat, userId })
   }
 
   return AssistantResponse({ threadId, messageId }, async ({ forwardStream }) => {
@@ -90,7 +91,6 @@ export async function POST(request: NextRequest) {
       })
     })
 
-    // forward run status would stream message deltas
     let runResult = await forwardStream(runStream)
 
     while (runResult?.status === "requires_action" && runResult.required_action?.type === "submit_tool_outputs") {
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
                   }
                 }
                 const { name, description, instructions, creator, imageUrl } = parameters
-                const assistantId = await createAgent({
+                const assistantId = await createAgentAction({
                   name,
                   userId,
                   description,

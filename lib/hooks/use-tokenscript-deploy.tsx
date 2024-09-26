@@ -3,7 +3,6 @@ import { encodeFunctionData, parseAbiItem, publicActions } from "viem"
 import { useAccount, useWalletClient } from "wagmi"
 
 import { useGlobalStore } from "@/app/state/global-store"
-import { storeTokenScriptDeployment } from "@/lib/actions/db"
 import { ipfsUploadFile } from "@/lib/actions/ipfs"
 
 export function useTokenScriptDeploy() {
@@ -15,7 +14,14 @@ export function useTokenScriptDeploy() {
 
   const { lastDeploymentData } = useGlobalStore()
 
-  async function deploy({ tokenScriptSource }: { tokenScriptSource: string }) {
+  async function deploy({ tokenScriptSource }: { tokenScriptSource: string }): Promise<
+    | {
+        txHash: string
+        cid: string
+        tokenAddress: string
+      }
+    | undefined
+  > {
     if (!viemChain || !walletClient) {
       throw new Error("Provider or wallet not available")
     }
@@ -30,18 +36,18 @@ export function useTokenScriptDeploy() {
       toast.error("Last deployment must be from the connected wallet")
       return
     }
-    const ipfsCid = await ipfsUploadFile("tokenscript.tsml", tokenScriptSource)
+    const cid = await ipfsUploadFile("tokenscript.tsml", tokenScriptSource)
 
     toast.dismiss(deployToast)
 
-    if (ipfsCid === null) {
+    if (!cid) {
       toast.error("Error uploading to IPFS")
       return
     }
 
     toast.success("TokenScript uploaded!  Updating contract scriptURI...")
 
-    const ipfsRoute = [`ipfs://${ipfsCid}`]
+    const ipfsRoute = [`ipfs://${cid}`]
 
     const setScriptURIAbi = parseAbiItem("function setScriptURI(string[] memory newScriptURI)")
     try {
@@ -66,20 +72,15 @@ export function useTokenScriptDeploy() {
       }
       toast.success("Transaction confirmed!")
 
-      const chainId = await walletClient.getChainId()
-
-      await storeTokenScriptDeployment({
-        chainId: chainId.toString(),
-        deployHash: txHash,
-        cid: ipfsCid,
+      return {
+        txHash,
+        cid,
         tokenAddress
-      })
-
-      return `https://viewer.tokenscript.org/?chain=${chainId}&contract=${tokenAddress}`
+      }
     } catch (error) {
       console.error(error)
       toast.error("Failed to deploy TokenScript")
-      return "unable to generate viewer url"
+      return
     }
   }
 

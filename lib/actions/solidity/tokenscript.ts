@@ -1,14 +1,14 @@
 "use server"
 
 import { track } from "@vercel/analytics/server"
-import { createPublicClient, createWalletClient, encodeFunctionData, http, parseAbiItem, type Chain } from "viem"
+import { http, type Chain, createWalletClient, encodeFunctionData, parseAbiItem, publicActions } from "viem"
 
-import { storeTokenScriptDeployment } from "@/lib/actions/db"
+import { storeTokenScriptDeploymentAction } from "@/lib/actions"
 import { ipfsUploadFile } from "@/lib/actions/ipfs"
-import { DEPLOYER_ACCOUNT } from "@/lib/data"
+import { DEPLOYER_ACCOUNT } from "@/lib/data/secrets"
 import type { DeployTokenScriptParams, DeployTokenScriptResult } from "@/lib/types"
 import { getExplorerUrl, getIpfsUrl } from "@/lib/utils"
-import { getChainById } from "@/lib/viem"
+import { FULL_RPC_URLS, getChainById } from "@/lib/viem"
 
 export const deployTokenScript = async ({
   chainId,
@@ -20,20 +20,11 @@ export const deployTokenScript = async ({
 }: DeployTokenScriptParams): Promise<DeployTokenScriptResult> => {
   const viemChain = getChainById(Number(chainId)) as Chain
 
-  const alchemyHttpUrl = viemChain?.rpcUrls?.alchemy?.http[0]
-    ? `${viemChain.rpcUrls.alchemy.http[0]}/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
-    : undefined
-
   const walletClient = createWalletClient({
     account: DEPLOYER_ACCOUNT,
     chain: viemChain,
-    transport: http(alchemyHttpUrl)
-  })
-
-  const publicClient = createPublicClient({
-    chain: viemChain,
-    transport: http(alchemyHttpUrl)
-  })
+    transport: http(FULL_RPC_URLS[viemChain.id])
+  }).extend(publicActions)
 
   if (!(await walletClient.getAddresses())) {
     const error = new Error(`Wallet for chain ${viemChain.name} not available`)
@@ -89,7 +80,7 @@ export const deployTokenScript = async ({
   })
 
   // Wait for transaction confirmation
-  const transactionReceipt = await publicClient.waitForTransactionReceipt({
+  const transactionReceipt = await walletClient.waitForTransactionReceipt({
     hash: txHash
   })
 
@@ -111,7 +102,7 @@ export const deployTokenScript = async ({
   }
 
   await Promise.all([
-    storeTokenScriptDeployment({
+    storeTokenScriptDeploymentAction({
       chainId,
       deployHash: txHash,
       cid,

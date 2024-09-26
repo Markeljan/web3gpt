@@ -26,13 +26,6 @@ export type DbChatListItem = {
   published: boolean
 }
 
-export type ServerActionResult<Result> = Promise<
-  | Result
-  | {
-      error: string
-    }
->
-
 export type Agent = {
   id: string
   userId: string

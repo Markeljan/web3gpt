@@ -1,15 +1,16 @@
 "use server"
 
 import { track } from "@vercel/analytics/server"
-import { createPublicClient, createWalletClient, encodeDeployData, getCreateAddress, http, type Chain } from "viem"
+import solc, { type SolcInput, type SolcOutput } from "solc"
+import { http, type Chain, createWalletClient, encodeDeployData, getCreateAddress, publicActions } from "viem"
 
-import { storeDeployment, storeVerification } from "@/lib/actions/db"
+import { storeDeploymentAction, storeVerificationAction } from "@/lib/actions"
 import { ipfsUploadDir } from "@/lib/actions/ipfs"
-import { compileContract } from "@/lib/actions/solidity/compile-contract"
-import { DEPLOYER_ACCOUNT } from "@/lib/data"
+import { getContractFileName, prepareContractSources } from "@/lib/actions/solidity/utils"
+import { DEPLOYER_ACCOUNT } from "@/lib/data/secrets"
 import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/types"
-import { getContractFileName, getExplorerUrl, getIpfsUrl } from "@/lib/utils"
-import { getChainById } from "@/lib/viem"
+import { ensureHashPrefix, getExplorerUrl, getIpfsUrl } from "@/lib/utils"
+import { FULL_RPC_URLS, getChainById } from "@/lib/viem"
 
 export const deployContract = async ({
   chainId,
@@ -21,20 +22,11 @@ export const deployContract = async ({
 
   const { abi, bytecode, standardJsonInput, sources } = await compileContract({ contractName, sourceCode })
 
-  const alchemyHttpUrl = viemChain?.rpcUrls?.alchemy?.http[0]
-    ? `${viemChain.rpcUrls.alchemy.http[0]}/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
-    : undefined
-
   const walletClient = createWalletClient({
     account: DEPLOYER_ACCOUNT,
     chain: viemChain,
-    transport: http(alchemyHttpUrl)
-  })
-
-  const publicClient = createPublicClient({
-    chain: viemChain,
-    transport: http(alchemyHttpUrl)
-  })
+    transport: http(FULL_RPC_URLS[viemChain.id])
+  }).extend(publicActions)
 
   if (!(await walletClient.getAddresses())) {
     const error = new Error(`Wallet for chain ${viemChain.name} not available`)
@@ -43,7 +35,7 @@ export const deployContract = async ({
   }
 
   const deployerAddress = DEPLOYER_ACCOUNT.address
-  const nonce = await publicClient.getTransactionCount({ address: deployerAddress })
+  const nonce = await walletClient.getTransactionCount({ address: deployerAddress })
 
   const contractAddress = getCreateAddress({
     from: deployerAddress,
@@ -100,13 +92,13 @@ export const deployContract = async ({
   }
 
   await Promise.all([
-    storeDeployment({
+    storeDeploymentAction({
       chainId,
       deployHash,
       contractAddress,
       cid
     }),
-    storeVerification(verifyContractConfig),
+    storeVerificationAction(verifyContractConfig),
     track("deployed_contract", {
       contractName,
       explorerUrl,
@@ -115,4 +107,45 @@ export const deployContract = async ({
   ])
 
   return deploymentData
+}
+
+export async function compileContract({ contractName, sourceCode }: { contractName: string; sourceCode: string }) {
+  const sources = await prepareContractSources(contractName, sourceCode)
+  const standardJsonInputString = JSON.stringify({
+    language: "Solidity",
+    sources,
+    settings: {
+      outputSelection: {
+        "*": {
+          "*": ["*"]
+        }
+      },
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  } satisfies SolcInput)
+
+  const fileName = getContractFileName(contractName)
+
+  const compileOutput: SolcOutput = JSON.parse(solc.compile(standardJsonInputString))
+
+  if (compileOutput.errors) {
+    const errors = compileOutput.errors.filter((error) => error.severity === "error")
+    if (errors.length > 0) {
+      throw new Error(errors[0].formattedMessage)
+    }
+  }
+
+  const contract = compileOutput.contracts[fileName][contractName]
+  const abi = contract.abi
+  const bytecode = ensureHashPrefix(contract.evm.bytecode.object)
+
+  return {
+    abi,
+    bytecode,
+    standardJsonInput: standardJsonInputString,
+    sources
+  }
 }

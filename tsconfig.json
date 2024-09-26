@@ -48,7 +48,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "components/ui/.d.ts",
-    "lib/solc.d.ts"
+    "lib/solc.d.ts",
+    "next.config.js"
   ],
   "exclude": ["node_modules", ".next"]
 }

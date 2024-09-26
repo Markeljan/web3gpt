@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 
-import { darkTheme, lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit"
+import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit"
 import "@rainbow-me/rainbowkit/styles.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useTheme } from "next-themes"
-import { WagmiProvider, type State } from "wagmi"
+import { type State, WagmiProvider } from "wagmi"
 
 import { getConfig } from "@/lib/config"
 import { connectors } from "@/lib/rainbowkit"

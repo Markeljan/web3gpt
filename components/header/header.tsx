@@ -12,13 +12,14 @@ import { Badge } from "@/components/ui/badge"
 import { IconSeparator } from "@/components/ui/icons"
 import { SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { clearChats, getChatList } from "@/lib/actions/db"
+import { getChatList } from "@/lib/data/kv"
 import { cn } from "@/lib/utils"
 
 export const Header = async () => {
-  const session = await auth()
-  const user = session?.user
   const chatList = await getChatList()
+  const session = await auth()
+
+  const user = session?.user
 
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-background px-4">
@@ -38,7 +39,7 @@ export const Header = async () => {
             <>
               <SidebarList chatList={chatList} />
               <SidebarFooter className="justify-end">
-                <ClearHistory clearChats={clearChats} />
+                <ClearHistory />
               </SidebarFooter>
             </>
           ) : null}

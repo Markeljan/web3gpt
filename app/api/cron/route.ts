@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 
-import { deleteVerification, getVerifications } from "@/lib/actions/db"
-import { checkVerifyStatus, verifyContract } from "@/lib/actions/solidity/verify-contract"
-import { CRON_SECRET } from "@/lib/data"
+import { deleteVerification, getVerifications } from "@/lib/data/kv"
+import { checkVerifyStatus, verifyContract } from "@/lib/actions/solidity/verification"
+import { CRON_SECRET } from "@/lib/data/secrets"
 
 const PASS_MESSAGE = "Pass - Verified"
 const ALREADY_VERIFIED_MESSAGE = "Smart-contract already verified."

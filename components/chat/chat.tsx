@@ -16,7 +16,7 @@ import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 type ChatProps = {
-  agent?: Agent
+  agent?: Agent | null
   className?: string
   initialThreadId?: string
   initialMessages?: Message[]
@@ -24,15 +24,7 @@ type ChatProps = {
   avatarUrl?: string | null
 }
 
-export const Chat = ({
-  initialThreadId,
-  initialMessages = [],
-  agent = DEFAULT_AGENT,
-  className,
-  userId,
-  avatarUrl
-}: ChatProps) => {
-  const isSmartToken = agent.name.includes("Smart Token")
+export const Chat = ({ initialThreadId, initialMessages = [], agent, className, userId, avatarUrl }: ChatProps) => {
   const {
     tokenScriptViewerUrl,
     lastDeploymentData,
@@ -44,17 +36,19 @@ export const Chat = ({
     threadId: initialThreadId,
     api: "/api/assistants/threads/messages",
     body: {
-      assistantId: agent.id
+      assistantId: agent?.id || DEFAULT_AGENT.id
     }
   })
   const chatRef = useRef<HTMLDivElement>(null)
   const { scrollToBottom } = useScrollToBottom(chatRef)
+  const isInProgress = status === "in_progress"
+  const isSmartToken = !!agent?.name.includes("Smart Token")
 
   useEffect(() => {
-    if (messages.length === 2 && !initialThreadId && threadId && status !== "in_progress") {
+    if (threadId && !isInProgress && initialThreadId !== threadId) {
       history.pushState(null, "", `/chat/${threadId}`)
     }
-  }, [messages, initialThreadId, status, threadId])
+  }, [initialThreadId, isInProgress, threadId])
 
   useEffect(() => {
     if (messages.length === 0 && initialMessages?.length > 0) {
@@ -66,28 +60,26 @@ export const Chat = ({
   }, [initialMessages, messages, setMessages, scrollToBottom])
 
   useEffect(() => {
-    if (isSmartToken && lastDeploymentData && !completedDeploymentReport && status !== "in_progress") {
-      const contractAddress = lastDeploymentData.contractAddress
-      const chainId = lastDeploymentData.chainId
+    if (isSmartToken && lastDeploymentData && !completedDeploymentReport && !isInProgress) {
       append({
         id: threadId,
         role: "system",
-        content: `The user has successfully deployed a contract manually here are the details: \n\n Address: ${contractAddress} ChainId: ${chainId}`
+        content: `The user has set the scriptURI and deployed the TokenScript here are the details for you to share with the user: \n\n${JSON.stringify(
+          lastDeploymentData
+        )}`
       })
       setCompletedDeploymentReport(true)
       scrollToBottom()
     }
   }, [
     threadId,
-    status,
     append,
     setCompletedDeploymentReport,
     scrollToBottom,
     lastDeploymentData,
-    lastDeploymentData?.chainId,
-    lastDeploymentData?.contractAddress,
     isSmartToken,
-    completedDeploymentReport
+    completedDeploymentReport,
+    isInProgress
   ])
 
   useEffect(() => {
@@ -96,9 +88,7 @@ export const Chat = ({
         id: threadId,
         role: "system",
         content: `The user has set the scriptURI and deployed the TokenScript here are the details for you to share with the user: \n\n${JSON.stringify(
-          tokenScriptViewerUrl,
-          null,
-          2
+          tokenScriptViewerUrl
         )}`
       })
       setTokenScriptViewerUrl(null)
@@ -108,7 +98,7 @@ export const Chat = ({
   return (
     <>
       <div ref={chatRef} className={cn("px-4 pb-[200px] pt-4 md:pt-10", className)}>
-        {agent ? <AgentCard agent={agent} /> : <Landing userId={userId} />}
+        {agent ? <AgentCard setThreadId={setThreadId} agent={agent} /> : <Landing userId={userId} />}
         <ChatList messages={messages} avatarUrl={avatarUrl} status={status} />
         <ChatScrollAnchor trackVisibility={status === "in_progress"} />
       </div>

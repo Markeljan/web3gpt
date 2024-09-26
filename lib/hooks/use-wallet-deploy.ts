@@ -6,11 +6,12 @@ import { encodeDeployData, getCreateAddress, publicActions } from "viem"
 import { useAccount, useWalletClient } from "wagmi"
 
 import { useGlobalStore } from "@/app/state/global-store"
-import { storeDeployment, storeVerification } from "@/lib/actions/db"
+import { storeDeploymentAction, storeVerificationAction } from "@/lib/actions"
 import { ipfsUploadDir } from "@/lib/actions/ipfs"
-import { compileContract } from "@/lib/actions/solidity/compile-contract"
+import { compileContract } from "@/lib/actions/solidity/deploy-contract"
+import { getContractFileName } from "@/lib/actions/solidity/utils"
 import type { LastDeploymentData, VerifyContractParams } from "@/lib/types"
-import { getContractFileName, getExplorerUrl, getIpfsUrl } from "@/lib/utils"
+import { getExplorerUrl, getIpfsUrl } from "@/lib/utils"
 
 export function useWalletDeploy() {
   const { chain: viemChain, address, chainId } = useAccount()
@@ -106,11 +107,6 @@ export function useWalletDeploy() {
           encodedConstructorArgs,
           fileName,
           contractName,
-          viemChain
-        }
-
-        const partialVerifyContractConfig: VerifyContractParams = {
-          ...verifyContractConfig,
           viemChain: {
             id: viemChain.id,
             name: viemChain.name,
@@ -127,13 +123,13 @@ export function useWalletDeploy() {
         })
 
         await Promise.all([
-          storeDeployment({
+          storeDeploymentAction({
             chainId: String(chainId),
             deployHash,
             contractAddress,
             cid
           }),
-          storeVerification(partialVerifyContractConfig),
+          storeVerificationAction(verifyContractConfig),
           track("deployed_contract", {
             contractName,
             explorerUrl

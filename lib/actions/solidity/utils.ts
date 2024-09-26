@@ -83,3 +83,40 @@ function resolveImportPath(importPath: string, sourcePath: string) {
   // Reconstruct the final path
   return sourceSegments.concat(importSegments).join("/")
 }
+
+export const getContractFileName = (contractName: string): string => {
+  return `${contractName.replace(/[\/\\:*?"<>|.\s]+$/g, "_")}.sol`
+}
+
+export async function prepareContractSources(contractName: string, sourceCode: string) {
+  const fileName = getContractFileName(contractName)
+
+  const handleImportsResult = await resolveImports(sourceCode)
+
+  const sources = {
+    [fileName]: {
+      content: handleImportsResult?.sourceCode
+    },
+    ...handleImportsResult?.sources
+  }
+
+  const sourcesKeys = Object.keys(sources)
+
+  for (const sourceKey of sourcesKeys) {
+    let sourceCode = sources[sourceKey].content
+    const importStatements = sourceCode.match(/import\s+["'][^"']+["'];/g) || []
+
+    for (const importStatement of importStatements) {
+      const importPathMatch = importStatement.match(/["']([^"']+)["']/)
+      if (!importPathMatch) continue
+
+      const importPath = importPathMatch[1]
+      const fileName = importPath.split("/").pop() || importPath
+      sourceCode = sourceCode.replace(importStatement, `import "${fileName}";`)
+    }
+
+    sources[sourceKey].content = sourceCode
+  }
+
+  return sources
+}
