@@ -3,14 +3,14 @@ import type { Chain } from "viem"
 import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
 import { chains } from "@/lib/config"
 
-const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || ""
-const etherscanApiKey = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY || ""
-const polygonscanApiKey = process.env.NEXT_PUBLIC_POLYGONSCAN_API_KEY || ""
-const basescanApiKey = process.env.NEXT_PUBLIC_BASESCAN_API_KEY || ""
-const mantleApiKey = process.env.NEXT_PUBLIC_MANTLE_API_KEY || ""
-const arbitrumApiKey = process.env.NEXT_PUBLIC_ARBITRUM_API_KEY || ""
-const optimismApiKey = process.env.NEXT_PUBLIC_OPTIMISM_API_KEY || ""
-const blockscoutApiKey = process.env.BLOCKSCOUT_API_KEY || ""
+const alchemyApiKey = `${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
+const etherscanApiKey = `${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`
+const polygonscanApiKey = `${process.env.NEXT_PUBLIC_POLYGONSCAN_API_KEY}`
+const basescanApiKey = `${process.env.NEXT_PUBLIC_BASESCAN_API_KEY}`
+const mantleApiKey = `${process.env.NEXT_PUBLIC_MANTLE_API_KEY}`
+const arbitrumApiKey = `${process.env.NEXT_PUBLIC_ARBITRUM_API_KEY}`
+const optimismApiKey = `${process.env.NEXT_PUBLIC_OPTIMISM_API_KEY}`
+const blockscoutApiKey = `${process.env.BLOCKSCOUT_API_KEY}`
 
 export const EXPLORER_API_URLS: Record<number, string> = {
   11155420: "https://api-sepolia-optimistic.etherscan.io/api",
@@ -18,7 +18,8 @@ export const EXPLORER_API_URLS: Record<number, string> = {
   80002: "https://api-amoy.polygonscan.com/api",
   84532: "https://api-sepolia.basescan.org/api",
   5003: "https://explorer.sepolia.mantle.xyz/api",
-  421614: "https://api-sepolia.arbiscan.io/api"
+  421614: "https://api-sepolia.arbiscan.io/api",
+  59902: "https://sepolia-explorer-api.metisdevops.link/api"
 }
 
 export const EXPLORER_API_KEYS: Record<number, string> = {
@@ -27,7 +28,8 @@ export const EXPLORER_API_KEYS: Record<number, string> = {
   80002: polygonscanApiKey,
   84532: basescanApiKey,
   5003: mantleApiKey,
-  421614: arbitrumApiKey
+  421614: arbitrumApiKey,
+  59902: blockscoutApiKey
 }
 
 export const FULL_RPC_URLS: Record<number, string> = {
@@ -49,9 +51,13 @@ export const getExplorerDetails = (viemChain: Chain): ExplorerDetails => {
   const blockscoutUrl = BLOCKSCOUT_URLS[viemChain.id]
 
   if (blockscoutUrl) {
+    const defaultExplorer = viemChain.blockExplorers?.default
     return {
       url: blockscoutUrl,
-      apiUrl: `${blockscoutUrl}/api`,
+      apiUrl:
+        defaultExplorer?.url === blockscoutUrl && defaultExplorer.apiUrl
+          ? defaultExplorer.apiUrl
+          : `${blockscoutUrl}/api`,
       apiKey: blockscoutApiKey
     }
   }

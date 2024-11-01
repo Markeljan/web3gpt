@@ -1,4 +1,4 @@
-import { cookieStorage, createConfig, createStorage, http, type CreateConnectorFn } from "wagmi"
+import { http, type CreateConnectorFn, cookieStorage, createConfig, createStorage } from "wagmi"
 import {
   arbitrumSepolia,
   baseSepolia,
@@ -11,19 +11,46 @@ import {
 
 import type { Agent, GlobalConfig } from "@/lib/types"
 import { FULL_RPC_URLS } from "@/lib/viem"
+import { defineChain } from "viem"
+
+const metisSepolia = /*#__PURE__*/ {
+  ...defineChain({
+    id: 59902,
+    name: "Metis Sepolia",
+    nativeCurrency: {
+      name: "Testnet Metis",
+      symbol: "sMETIS",
+      decimals: 18
+    },
+    rpcUrls: {
+      default: { http: ["https://sepolia.metisdevops.link"], webSocket: ["wss://sepolia-ws.rpc.metisdevops.link"] }
+    },
+    blockExplorers: {
+      default: {
+        name: "Metis Sepolia Blockscout",
+        url: "https://sepolia-explorer.metisdevops.link",
+        apiUrl: "https://sepolia-explorer-api.metisdevops.link/api"
+      }
+    },
+    testnet: true,
+    sourceId: 11155111
+  }),
+  iconUrl: "/assets/metis-logo.png"
+}
 
 export const IS_PRODUCTION = process.env.NODE_ENV === "production"
 export const APP_URL = (IS_PRODUCTION && process.env.NEXT_PUBLIC_APP_URL) || "http://localhost:3000"
 export const IPFS_GATEWAY = process.env.NEXT_PUBLIC_IPFS_GATEWAY || "https://gateway.pinata.cloud"
 
 export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {
-  viemChain: arbitrumSepolia,
-  compilerVersion: "v0.8.27+commit.40a35a09",
+  viemChain: metisSepolia,
+  compilerVersion: "v0.8.28+commit.7893614a",
   useWallet: false
 }
 
 const mantleSepoliaWithLogo = {
   ...mantleSepoliaTestnet,
+  name: "Mantle Sepolia",
   iconUrl: "/mantle-logo.jpeg"
 }
 
@@ -36,9 +63,10 @@ export const chains = [
   arbitrumSepolia,
   optimismSepolia,
   baseSepolia,
+  metisSepolia,
   mantleSepoliaWithLogo,
-  holesky,
   amoyWithLogo,
+  holesky,
   sepolia
 ] as const
 
