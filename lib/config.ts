@@ -12,6 +12,7 @@ import {
 
 import type { Agent, GlobalConfig } from "@/lib/types"
 import { FULL_RPC_URLS } from "@/lib/viem"
+import { DEPLOYMENT_URL } from "vercel-url"
 
 const metisSepolia = {
   ...defineChain({
@@ -38,8 +39,7 @@ const metisSepolia = {
   iconUrl: "/assets/metis-logo.png"
 }
 
-export const IS_PRODUCTION = process.env.NODE_ENV === "production"
-export const APP_URL = (IS_PRODUCTION && process.env.NEXT_PUBLIC_APP_URL) || "http://localhost:3000"
+export const APP_URL = DEPLOYMENT_URL
 export const IPFS_GATEWAY = process.env.NEXT_PUBLIC_IPFS_GATEWAY || "https://gateway.pinata.cloud"
 
 export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {

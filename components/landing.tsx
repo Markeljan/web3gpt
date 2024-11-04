@@ -143,7 +143,7 @@ export function Landing({ userId, disableAnimations }: LandingProps) {
             {validationError ? (
               <p className="text-xs text-red-500">{validationError}</p>
             ) : (
-              <p className="mb-8 text-xs text-gray-400">{"No spam, we promise :)"}</p>
+              <p className="mb-8 text-xs text-gray-400">{"No spam, promise :)"}</p>
             )}
           </div>
         </div>

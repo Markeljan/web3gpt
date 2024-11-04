@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 import { auth } from "@/auth"
 import { ConnectButton } from "@/components/connect-button"
 import { ClearHistory } from "@/components/header/clear-history"
@@ -9,6 +11,7 @@ import { SidebarAgents } from "@/components/sidebar/sidebar-agents"
 import { SidebarFooter } from "@/components/sidebar/sidebar-footer"
 import { SidebarList } from "@/components/sidebar/sidebar-list"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { IconSeparator } from "@/components/ui/icons"
 import { SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -44,13 +47,18 @@ export const Header = async () => {
             </>
           ) : null}
         </Sidebar>
-        <div className="flex items-center">
+        <div className="flex items-center ">
           <IconSeparator className="size-6 text-muted-foreground/50" />
           {user ? (
             <UserMenu user={user} />
           ) : (
             <LoginButton variant="link" showGithubIcon={true} text="Login" className="-ml-2" />
           )}
+          <Button variant="link" asChild>
+            <Link href="https://docs.w3gpt.ai" target="_blank">
+              Docs
+            </Link>
+          </Button>
         </div>
       </div>
       <div className="invisible absolute inset-0 -z-10 flex items-center justify-center md:visible">
