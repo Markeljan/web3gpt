@@ -52,7 +52,7 @@ export const BLOCKSCOUT_URLS: Record<number, string> = {
   1024: "https://explorer.parallel.fi",
   1073: "https://explorer.evm.testnet.shimmer.network",
   1075: "https://explorer.evm.testnet.iotaledger.net",
-  1088:"https://andromeda-explorer.metis.io",
+  1088: "https://andromeda-explorer.metis.io",
   1101: "https://zkevm.blockscout.com",
   1135: "https://blockscout.lisk.com",
   1291: "https://explorer-evm.testnet.swisstronik.com",

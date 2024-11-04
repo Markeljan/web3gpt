@@ -1,3 +1,4 @@
+import { defineChain } from "viem"
 import { http, type CreateConnectorFn, cookieStorage, createConfig, createStorage } from "wagmi"
 import {
   arbitrumSepolia,
@@ -11,9 +12,8 @@ import {
 
 import type { Agent, GlobalConfig } from "@/lib/types"
 import { FULL_RPC_URLS } from "@/lib/viem"
-import { defineChain } from "viem"
 
-const metisSepolia = /*#__PURE__*/ {
+const metisSepolia = {
   ...defineChain({
     id: 59902,
     name: "Metis Sepolia",

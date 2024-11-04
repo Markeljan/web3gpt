@@ -1,45 +1,43 @@
 # Web3GPT 🚀
 
-You can test this app live at [https://web3gpt.app](https://web3gpt.app) and let us know what you think! Any feedback is greatly appreciated, whether it's a bug report, a feature request, or a general comment!
-
-Web3GPT is a chat tool that combines the power of Large Language Models (LLMs) and AI Agents to revolutionize the smart contract development process. Whether you're a seasoned blockchain developer or just stepping into the world of Web3, Web3GPT is designed to streamline your development and deployment processes.
+Web3GPT is an AI-powered smart contract development platform that combines Large Language Models (LLMs) with specialized AI agents to streamline blockchain development. Try it live at [w3gpt.ai](https://w3gpt.ai) or check out our [documentation](https://docs.w3gpt.ai).
 
 ![image](https://github.com/Markeljan/Web3GPT/assets/12901349/c84ec7ed-3657-4d19-a739-2285e25c29a1)
 
-## Features 🌟
+## Key Features 🌟
 
-- **Deploy Smart Contracts:** Seamlessly deploy contracts on any EVM-compatible blockchain directly from a chat interface.
-- **Wallet-less Interaction:** Enable Web2/3 users to interact with blockchains without a dedicated web3 wallet using account abstraction and a gas master account.
-- **Chat Integration:** Leverage Chat-GPT to interact with and control Web3GPT functionalities.
+- **Multi-Chain Smart Contract Development:** Deploy contracts across multiple EVM-compatible testnets including:
+  - Arbitrum Sepolia
+  - Optimism Sepolia  
+  - Base Sepolia
+  - Metis Sepolia
+  - Mantle Sepolia
+  - Polygon Amoy
+  - Holesky
+  - Sepolia
 
-### WIP:
+- **Specialized AI Agents:**
+  - Web3GPT - Core smart contract development agent
+  - Unstoppable Domains - Domain resolution specialist
+  - OpenZeppelin 5.0 - Security-focused development using latest OZ libraries
+  - CTF Agent - Interactive Capture The Flag challenges
+  - Creator - Custom AI agent creation
+  - Smart Token - TokenScript-powered token deployment
 
-- **Automated Testing:** Generate tests for your contracts and ensure their integrity post-deployment.
+- **GitHub Authentication:** Secure login and persistence of your development sessions
 
-## Getting Started 🚀
+- **Share & Collaborate:** Share your smart contract development conversations with unique shareable URLs
 
-- fill in ENV variables,
-- install pnpm
-- run pnpm install
-- run pnpm dev
+## Getting Started 🛠️
 
-LIVE DEMO:
-Visit [https://web3gpt.app](https://web3gpt.app)
+1. Clone the repository
+2. Configure environment variables (see `.env.example`)
+3. Install dependencies and run the development server
 
-## Usage:
+```bash
+bun install
+```
 
-Access the chat interface, and start deploying and testing your smart contracts!
-
-## Why Web3GPT? 🤔
-
-Web3GPT is born out of the passion for combining the capabilities of AI with the limitless potential of blockchain technology. As the barriers to smart contract development are high, this tool aims to democratize access, ensuring a safer and more efficient Web3 development experience for all.
-
-## Contributing 🤝
-
-Want to contribute to Web3GPT? We'd love to have you onboard!
-
-## Connect 🌍
-
-🐦 [Twitter](https://x.com/0xmarkeljan)
-📘 [LinkedIn](https://linkedin.com/in/markeljan)
-Spread the word, star our repo, and contribute to the next wave of Web3 innovation!
+```bash
+bun dev
+```
