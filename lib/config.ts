@@ -3,7 +3,6 @@ import { http, type CreateConnectorFn, cookieStorage, createConfig, createStorag
 import {
   arbitrumSepolia,
   baseSepolia,
-  holesky,
   mantleSepoliaTestnet,
   optimismSepolia,
   polygonAmoy,
@@ -66,7 +65,6 @@ export const chains = [
   metisSepolia,
   mantleSepoliaWithLogo,
   amoyWithLogo,
-  holesky,
   sepolia
 ] as const
 

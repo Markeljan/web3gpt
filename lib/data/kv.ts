@@ -1,4 +1,4 @@
-import "server-only"
+// import "server-only"
 
 import { kv } from "@vercel/kv"
 import { unstable_cache as cache } from "next/cache"
@@ -76,3 +76,24 @@ export const getVerifications = async () => {
 export const deleteVerification = async (deployHash: string) => {
   await kv.del(`verification:${deployHash}`)
 }
+
+// get all users
+export const getUsers = async () => {
+  return await kv.smembers("users:list")
+}
+
+// import chats from ".data/nov/chats.json"
+
+// const oneMonthAgoInMs = 1728203505
+
+// const maxUsers = new Set(
+//   (chats as DbChat[])
+//     .map((chat) => (chat.createdAt > oneMonthAgoInMs ? chat.userId : null))
+//     .filter((userId) => userId !== null)
+// )
+
+// console.log(maxUsers.size)
+
+import agents from ".data/nov/agents.json"
+
+console.log(agents.length)
