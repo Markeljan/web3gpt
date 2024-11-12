@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: NextPageProps) {
     },
     twitter: {
       card: "summary_large_image",
-      site: "@web3gpt_app",
+      site: "@w3gptai",
       images: [`${APP_URL}/api/og?id=${params.id}&h=675`]
     }
   }

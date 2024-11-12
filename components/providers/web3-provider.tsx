@@ -36,7 +36,7 @@ export function Web3Provider({
                 associated with deploying smart contracts.
               </Text>
             ),
-            learnMoreUrl: "https://x.com/web3gpt_app"
+            learnMoreUrl: "https://x.com/w3gptai"
           }}
           theme={
             resolvedTheme === "dark"
