@@ -1,14 +1,10 @@
 import { type ClassValue, clsx } from "clsx"
-import { customAlphabet } from "nanoid"
 import { twMerge } from "tailwind-merge"
 import type { Chain, Hash } from "viem"
 
-import { IPFS_GATEWAY } from "@/lib/config"
-import { getExplorerDetails } from "@/lib/viem"
+import { getChainDetails } from "@/lib/config"
 
 export const cn = (...inputs: ClassValue[]): string => twMerge(clsx(inputs))
-
-export const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 7)
 
 export const formatDate = (input: string | number | Date): string => {
   let date: Date
@@ -29,7 +25,7 @@ export const formatDate = (input: string | number | Date): string => {
   return date.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
-    year: "numeric"
+    year: "numeric",
   })
 }
 
@@ -38,7 +34,7 @@ export const isValidEmail = (email: string): boolean => {
   return regex.test(email)
 }
 
-export const getIpfsUrl = (cid: string): string => `${IPFS_GATEWAY}/ipfs/${cid}`
+export const getIpfsUrl = (cid: string): string => `${process.env.NEXT_PUBLIC_IPFS_GATEWAY}/ipfs/${cid}`
 
 export function ensureHashPrefix(bytecode: string | Hash): Hash {
   return `0x${bytecode.replace(/^0x/, "")}`
@@ -47,17 +43,18 @@ export function ensureHashPrefix(bytecode: string | Hash): Hash {
 export function getExplorerUrl({
   viemChain,
   hash,
-  type
+  type,
 }: {
   viemChain: Chain
   hash: Hash
   type: "tx" | "address"
 }): string {
-  const { url } = getExplorerDetails(viemChain) || {}
-  if (!url) return ""
-  if (type === "tx") {
-    return `${url}/tx/${hash}`
+  const { explorerUrl } = getChainDetails(viemChain)
+  if (!explorerUrl) {
+    console.error(`No explorer URL found for chainId ${viemChain.id}`)
+    return ""
   }
+  if (type === "tx") return `${explorerUrl}/tx/${hash}`
 
-  return `${url}/address/${hash}`
+  return `${explorerUrl}/address/${hash}`
 }

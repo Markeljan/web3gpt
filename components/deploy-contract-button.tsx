@@ -13,7 +13,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { IconExternalLink, IconSpinner } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
@@ -46,7 +46,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
 
   const isSupportedChain = useMemo(
     () => !!chain && supportedChains.find((c) => c.id === chain.id),
-    [chain, supportedChains]
+    [chain, supportedChains],
   )
 
   const generateConstructorArgs = useCallback(() => {
@@ -99,7 +99,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
       const deploymentData = await deployWithWallet({
         contractName,
         sourceCode,
-        constructorArgs: constructorArgValues
+        constructorArgs: constructorArgValues,
       })
       if (!deploymentData) {
         setIsErrorDeploying(true)

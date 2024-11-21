@@ -1,11 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 import { deleteVerification, getVerifications } from "@/lib/data/kv"
-import { checkVerifyStatus, verifyContract } from "@/lib/actions/solidity/verification"
-import { CRON_SECRET } from "@/lib/data/secrets"
+import { checkVerifyStatus, verifyContract } from "@/lib/solidity/verification"
 
 const PASS_MESSAGE = "Pass - Verified"
 const ALREADY_VERIFIED_MESSAGE = "Smart-contract already verified."
+
+const CRON_SECRET = process.env.CRON_SECRET
 
 export const GET = async (req: NextRequest) => {
   const token = req.headers.get("Authorization")

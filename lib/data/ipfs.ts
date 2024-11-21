@@ -1,22 +1,19 @@
-"use server"
+"server-only"
 
 import { type FileObject, PinataSDK } from "pinata"
 import type { SolcOutput } from "solc"
 import type { Abi } from "viem"
 
-import { IPFS_GATEWAY } from "@/lib/config"
-import { PINATA_JWT } from "@/lib/data/secrets"
-
 const pinata = new PinataSDK({
-  pinataJwt: PINATA_JWT,
-  pinataGateway: IPFS_GATEWAY
+  pinataJwt: process.env.PINATA_JWT,
+  pinataGateway: process.env.NEXT_PUBLIC_IPFS_GATEWAY,
 })
 
 export async function ipfsUploadDir(
   sources: SolcOutput["sources"],
   abi: Abi,
   bytecode: string,
-  standardJsonInput: string
+  standardJsonInput: string,
 ): Promise<string | null> {
   try {
     const files: FileObject[] = []
@@ -31,8 +28,8 @@ export async function ipfsUploadDir(
     const { IpfsHash } = await pinata.upload.fileArray(files, {
       cidVersion: 1,
       metadata: {
-        name: "contract"
-      }
+        name: "contract",
+      },
     })
 
     return IpfsHash
@@ -48,8 +45,8 @@ export async function ipfsUploadFile(fileName: string, fileContent: string | Buf
     const { IpfsHash } = await pinata.upload.file(file, {
       cidVersion: 1,
       metadata: {
-        name: fileName
-      }
+        name: fileName,
+      },
     })
 
     return IpfsHash

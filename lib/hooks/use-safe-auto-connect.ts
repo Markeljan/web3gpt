@@ -1,5 +1,5 @@
-import { useConnect } from "wagmi"
 import { useEffect } from "react"
+import { useConnect } from "wagmi"
 
 const AUTOCONNECTED_CONNECTOR_IDS = ["safe"]
 

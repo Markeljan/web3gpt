@@ -17,13 +17,13 @@ export async function generateMetadata({ params }: NextPageProps) {
     description: "Write and deploy smart contracts with AI",
     openGraph: {
       images: [`${APP_URL}/api/og?id=${params.id}&h=630`],
-      url: `${APP_URL}/share/${params.id}`
+      url: `${APP_URL}/share/${params.id}`,
     },
     twitter: {
       card: "summary_large_image",
       site: "@w3gptai",
-      images: [`${APP_URL}/api/og?id=${params.id}&h=675`]
-    }
+      images: [`${APP_URL}/api/og?id=${params.id}&h=675`],
+    },
   }
   return metadata
 }
@@ -39,7 +39,7 @@ export default async function SharePage({ params, searchParams }: NextPageProps)
 
   const [agent, messages] = await Promise.all([
     typeof agentId === "string" ? getAgent(agentId) : undefined,
-    getAiThreadMessages(chatId)
+    getAiThreadMessages(chatId),
   ])
 
   return (

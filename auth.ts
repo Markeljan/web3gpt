@@ -15,7 +15,7 @@ export const {
   handlers: { GET, POST },
   auth,
   signIn,
-  signOut
+  signOut,
 } = NextAuth({
   providers: [GitHub],
   callbacks: {
@@ -26,7 +26,7 @@ export const {
         const user = {
           ...token,
           ...profile,
-          id: profileId
+          id: profileId,
         }
         await storeUser(user)
       }
@@ -41,12 +41,12 @@ export const {
         ...session,
         user: {
           ...session.user,
-          id: String(token.id)
-        }
+          id: String(token.id),
+        },
       }
-    }
+    },
   },
   pages: {
-    signIn: "/sign-in"
-  }
+    signIn: "/sign-in",
+  },
 })

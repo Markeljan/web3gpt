@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation"
 
 import { auth } from "@/auth"
 import { Chat } from "@/components/chat/chat"
+import { DEFAULT_AGENT } from "@/lib/constants"
 import { getAgent, getChat } from "@/lib/data/kv"
 import { getAiThreadMessages } from "@/lib/data/openai"
 import type { NextPageProps } from "@/lib/types"
@@ -23,12 +24,16 @@ export default async function ChatPage({ params, searchParams }: NextPageProps) 
     notFound()
   }
 
-  const agentId = chat.agentId || (searchParams?.a as string)
-  const [agent, messages] = await Promise.all([agentId ? getAgent(agentId) : undefined, getAiThreadMessages(params.id)])
+  const agentId = chat.agentId || searchParams?.a
+  if (typeof agentId !== "string") {
+    notFound()
+  }
+
+  const [agent, messages] = await Promise.all([getAgent(agentId), getAiThreadMessages(params.id)])
 
   return (
     <Chat
-      agent={agent || undefined}
+      agent={agent || DEFAULT_AGENT}
       initialThreadId={chat.id}
       initialMessages={messages}
       userId={session.user.id}

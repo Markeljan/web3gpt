@@ -12,10 +12,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { IconSpinner } from "@/components/ui/icons"
-import { storeTokenScriptDeploymentAction } from "@/lib/actions"
+import { storeTokenScriptDeploymentAction } from "@/lib/actions/deploy-contract"
 import { useTokenScriptDeploy } from "@/lib/hooks/use-tokenscript-deploy"
 
 type DeployContractButtonProps = {
@@ -49,17 +49,17 @@ export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonP
         chainId: chainId.toString(),
         deployHash: txHash,
         cid,
-        tokenAddress
+        tokenAddress,
       })
 
       setExplorerUrl(explorerUrl)
       setTokenScriptViewerUrl(tokenscriptViewerUrl)
 
-      setIsDeploying(false)
-      setIsDialogOpen(false) // Close the dialog
+      setIsDialogOpen(false)
     } catch (e) {
       console.error(e)
       setIsErrorDeploying(true)
+    } finally {
       setIsDeploying(false)
     }
   }

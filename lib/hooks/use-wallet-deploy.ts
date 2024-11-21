@@ -6,10 +6,9 @@ import { encodeDeployData, getCreateAddress, publicActions } from "viem"
 import { useAccount, useWalletClient } from "wagmi"
 
 import { useGlobalStore } from "@/app/state/global-store"
-import { storeDeploymentAction, storeVerificationAction } from "@/lib/actions"
-import { ipfsUploadDir } from "@/lib/actions/ipfs"
-import { compileContract } from "@/lib/actions/solidity/deploy-contract"
-import { getContractFileName } from "@/lib/actions/solidity/utils"
+import { compileContract, ipfsUploadDirAction } from "@/lib/actions/deploy-contract"
+import { storeDeploymentAction, storeVerificationAction } from "@/lib/actions/verification"
+import { getContractFileName } from "@/lib/solidity/utils"
 import type { LastDeploymentData, VerifyContractParams } from "@/lib/types"
 import { getExplorerUrl, getIpfsUrl } from "@/lib/utils"
 
@@ -17,7 +16,7 @@ export function useWalletDeploy() {
   const { chain: viemChain, address, chainId } = useAccount()
   const { setLastDeploymentData } = useGlobalStore()
   const { data } = useWalletClient({
-    chainId
+    chainId,
   })
   const walletClient = data?.extend(publicActions)
 
@@ -25,7 +24,7 @@ export function useWalletDeploy() {
     async ({
       contractName,
       sourceCode,
-      constructorArgs
+      constructorArgs,
     }: {
       contractName: string
       sourceCode: string
@@ -57,13 +56,13 @@ export function useWalletDeploy() {
 
         const contractAddress = getCreateAddress({
           from: address,
-          nonce: BigInt(nonce)
+          nonce: BigInt(nonce),
         })
 
         const deployData = encodeDeployData({
           abi,
           bytecode,
-          args: parsedConstructorArgs
+          args: parsedConstructorArgs,
         })
 
         const deployHash = await walletClient.deployContract({
@@ -71,7 +70,7 @@ export function useWalletDeploy() {
           bytecode,
           account: address,
           args: parsedConstructorArgs,
-          value: 0n
+          value: 0n,
         })
 
         if (!deployHash) {
@@ -80,7 +79,7 @@ export function useWalletDeploy() {
         }
 
         const ipfsLoadingToast = toast.loading("Uploading to IPFS...")
-        const cid = await ipfsUploadDir(sources, abi, bytecode, standardJsonInput)
+        const cid = await ipfsUploadDirAction(sources, abi, bytecode, standardJsonInput)
 
         if (!cid) {
           toast.dismiss(ipfsLoadingToast)
@@ -97,7 +96,7 @@ export function useWalletDeploy() {
 
         const ipfsUrl = getIpfsUrl(cid)
 
-        const encodedConstructorArgs = deployData.slice(bytecode.length) as `0x${string}`
+        const encodedConstructorArgs = deployData.slice(bytecode.length)
         const fileName = getContractFileName(contractName)
 
         const verifyContractConfig: VerifyContractParams = {
@@ -112,14 +111,14 @@ export function useWalletDeploy() {
             name: viemChain.name,
             nativeCurrency: viemChain.nativeCurrency,
             rpcUrls: viemChain.rpcUrls,
-            blockExplorers: viemChain.blockExplorers
-          }
+            blockExplorers: viemChain.blockExplorers,
+          },
         }
 
         const explorerUrl = getExplorerUrl({
           viemChain,
           hash: contractAddress,
-          type: "address"
+          type: "address",
         })
 
         await Promise.all([
@@ -127,17 +126,17 @@ export function useWalletDeploy() {
             chainId: String(chainId),
             deployHash,
             contractAddress,
-            cid
+            cid,
           }),
           storeVerificationAction(verifyContractConfig),
           track("deployed_contract", {
             contractName,
-            explorerUrl
-          })
+            explorerUrl,
+          }),
         ])
 
         const transactionReceipt = await walletClient.waitForTransactionReceipt({
-          hash: deployHash
+          hash: deployHash,
         })
 
         if (transactionReceipt.status !== "success") {
@@ -153,10 +152,9 @@ export function useWalletDeploy() {
           ipfsUrl,
           explorerUrl,
           verifyContractConfig,
-          verificationStatus: "pending",
           standardJsonInput,
           abi,
-          sourceCode
+          sourceCode,
         }
 
         setLastDeploymentData(deploymentData)
@@ -169,7 +167,7 @@ export function useWalletDeploy() {
         toast.dismiss(deployLoadingToast)
       }
     },
-    [viemChain, walletClient, address, setLastDeploymentData, chainId]
+    [viemChain, walletClient, address, setLastDeploymentData, chainId],
   )
 
   return { deploy }

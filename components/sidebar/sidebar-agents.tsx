@@ -3,7 +3,7 @@ import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { AGENTS_ARRAY } from "@/lib/config"
+import { AGENTS_ARRAY } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
 export const SidebarAgents = () => {
@@ -16,7 +16,7 @@ export const SidebarAgents = () => {
               asChild
               variant="link"
               className={cn(
-                "flex w-full items-center justify-start border hover:bg-accent hover:text-accent-foreground rounded-full h-11 hover:no-underline px-0 overflow-clip"
+                "flex w-full items-center justify-start border hover:bg-accent hover:text-accent-foreground rounded-full h-11 hover:no-underline px-0 overflow-clip",
               )}
             >
               <Link className="flex w-full space-x-2" href={`/?a=${assistant.id}`}>
