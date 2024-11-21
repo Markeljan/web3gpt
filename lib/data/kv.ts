@@ -3,8 +3,8 @@ import "server-only"
 import { kv } from "@vercel/kv"
 import { unstable_cache as cache, revalidateTag } from "next/cache"
 
-import type { Agent, DbChat, DbChatListItem, VerifyContractParams } from "@/lib/types"
 import { auth } from "@/auth"
+import type { Agent, DbChat, DbChatListItem, VerifyContractParams } from "@/lib/types"
 
 type ActionWithUser<T, R> = (data: T, userId: string) => Promise<R>
 
