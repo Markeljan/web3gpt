@@ -23,8 +23,12 @@ export default async function ChatPage({ params, searchParams }: NextPageProps) 
     notFound()
   }
 
-  const agentId = chat.agentId || (searchParams?.a as string)
-  const [agent, messages] = await Promise.all([agentId ? getAgent(agentId) : undefined, getAiThreadMessages(params.id)])
+  const agentId = chat.agentId || searchParams?.a
+  if (typeof agentId !== "string") {
+    notFound()
+  }
+
+  const [agent, messages] = await Promise.all([getAgent(agentId), getAiThreadMessages(params.id)])
 
   return (
     <Chat

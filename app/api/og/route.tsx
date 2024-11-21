@@ -1,8 +1,8 @@
 import { ImageResponse } from "next/og"
 import type { NextRequest } from "next/server"
 
-import { getPublishedChat } from "@/lib/data/kv"
 import { APP_URL } from "@/lib/config"
+import { getPublishedChat } from "@/lib/data/kv"
 
 export const runtime = "edge"
 
@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
     </div>,
     {
       width: 1200,
-      height: height ? Number.parseInt(height) : 630
-    }
+      height: height ? Number.parseInt(height) : 630,
+    },
   )
 }

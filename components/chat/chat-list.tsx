@@ -9,15 +9,14 @@ export type ChatList = {
   status?: AssistantStatus
 }
 
-export function ChatList({ messages, avatarUrl, status }: ChatList) {
+export const ChatList = ({ messages, avatarUrl, status }: ChatList) => {
   if (!messages || messages.length === 0) {
     return null
   }
-
   return (
     <div className="relative flex flex-col mx-auto max-md:max-w-2xl max-w-3xl w-full p-2 md:translate-x-[10%]">
       {messages
-        .filter((message) => message.role !== "system")
+        .filter((unfilteredMessage) => unfilteredMessage.role !== "system")
         .map((message, index) => (
           <div className="flex flex-col w-full" key={`${message.id}`}>
             <ChatMessage message={message} avatarUrl={avatarUrl} status={status} />

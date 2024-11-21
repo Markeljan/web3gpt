@@ -1,16 +1,15 @@
-import { NextResponse, type NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 import { AssistantResponse } from "ai"
 import type { BadRequestError } from "openai/error"
 
 import { auth } from "@/auth"
-import { createAgentAction } from "@/lib/actions/ai"
-import { storeChatAction } from "@/lib/actions"
-import { deployContract } from "@/lib/actions/solidity/deploy-contract"
-import { deployTokenScript } from "@/lib/actions/solidity/tokenscript"
 import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
-import { APP_URL, DEFAULT_GLOBAL_CONFIG, chains } from "@/lib/config"
+import { APP_URL, DEFAULT_COMPILER_VERSION, supportedChains } from "@/lib/config"
+import { storeChat } from "@/lib/data/kv"
+import { createAgent } from "@/lib/data/openai"
 import { openai } from "@/lib/data/openai"
+import { deployContract, deployTokenScript } from "@/lib/solidity/deploy"
 import { ToolName } from "@/lib/tools"
 import type { DbChat } from "@/lib/types"
 
@@ -23,7 +22,7 @@ export async function POST(request: NextRequest) {
   const {
     message,
     threadId: threadIdFromClient,
-    assistantId
+    assistantId,
   } = (await request.json()) as {
     message: string
     threadId: string
@@ -40,7 +39,7 @@ export async function POST(request: NextRequest) {
   const { created_at: createdAt, id: messageId } = await openai.beta.threads.messages
     .create(threadId, {
       role: "user",
-      content: message
+      content: message,
     })
     .catch(async (reqError: BadRequestError & { error: Error }) => {
       const { error } = reqError
@@ -50,7 +49,7 @@ export async function POST(request: NextRequest) {
         await openai.beta.threads.runs.cancel(threadId, runId)
         return await openai.beta.threads.messages.create(threadId, {
           role: "user",
-          content: message
+          content: message,
         })
       }
       throw error
@@ -67,10 +66,10 @@ export async function POST(request: NextRequest) {
       createdAt: createdAt,
       avatarUrl: avatarUrl,
       published: false,
-      messages: [{ id: messageId, role: "user", content: message }]
+      messages: [{ id: messageId, role: "user", content: message }],
     }
 
-    await storeChatAction({ data: newChat, userId })
+    await storeChat({ data: newChat, userId })
   }
 
   return AssistantResponse({ threadId, messageId }, async ({ forwardStream }) => {
@@ -80,15 +79,15 @@ export async function POST(request: NextRequest) {
       model: "gpt-4o",
       additional_instructions: JSON.stringify({
         latestSettings: {
-          compilerVersion: DEFAULT_GLOBAL_CONFIG.compilerVersion,
-          availableChains: chains.map((chain) => {
+          compilerVersion: DEFAULT_COMPILER_VERSION,
+          availableChains: supportedChains.map((chain) => {
             return {
               name: chain.name,
-              id: chain.id
+              id: chain.id,
             }
-          })
-        }
-      })
+          }),
+        },
+      }),
     })
 
     let runResult = await forwardStream(runStream)
@@ -105,35 +104,35 @@ export async function POST(request: NextRequest) {
                   chainId,
                   contractName,
                   sourceCode,
-                  constructorArgs
+                  constructorArgs,
                 })
 
                 return {
                   output: `Contract Deployed: ${deployResult.explorerUrl} IPFS Repository: ${deployResult.ipfsUrl}`,
-                  tool_call_id: toolCall.id
+                  tool_call_id: toolCall.id,
                 }
               }
               case ToolName.CreateAgent: {
                 if (!userId) {
                   return {
                     output: JSON.stringify({ error: "Unauthorized, user not signed in." }),
-                    tool_call_id: toolCall.id
+                    tool_call_id: toolCall.id,
                   }
                 }
                 const { name, description, instructions, creator, imageUrl } = parameters
-                const assistantId = await createAgentAction({
+                const assistantId = await createAgent({
                   name,
                   userId,
                   description,
                   instructions,
                   creator: creator,
-                  imageUrl: imageUrl || "/assets/agent-factory.png"
+                  imageUrl: imageUrl || "/assets/agent-factory.png",
                 })
 
                 if (!assistantId) {
                   return {
                     output: JSON.stringify({ error: "Error creating agent" }),
-                    tool_call_id: toolCall.id
+                    tool_call_id: toolCall.id,
                   }
                 }
 
@@ -141,7 +140,7 @@ export async function POST(request: NextRequest) {
 
                 return {
                   output: `Agent created: successfully, agent chat url: ${agentChatUrl}`,
-                  tool_call_id: toolCall.id
+                  tool_call_id: toolCall.id,
                 }
               }
               case ToolName.ResolveDomain: {
@@ -149,7 +148,7 @@ export async function POST(request: NextRequest) {
                 const address = await resolveDomain(domain, ticker)
                 return {
                   output: `Resolved address for domain ${domain}: ${address}`,
-                  tool_call_id: toolCall.id
+                  tool_call_id: toolCall.id,
                 }
               }
               case ToolName.ResolveAddress: {
@@ -157,7 +156,7 @@ export async function POST(request: NextRequest) {
                 const domain = await resolveAddress(address)
                 return {
                   output: `Resolved domain for address ${address}: ${domain}`,
-                  tool_call_id: toolCall.id
+                  tool_call_id: toolCall.id,
                 }
               }
               case ToolName.DeployTokenScript: {
@@ -170,7 +169,7 @@ export async function POST(request: NextRequest) {
                   tokenName,
                   tokenScriptSource,
                   ensDomain,
-                  includeBurnFunction: includeBurnFunction || false
+                  includeBurnFunction: includeBurnFunction || false,
                 })
 
                 let output = "TokenScript deployed:\n"
@@ -188,7 +187,7 @@ export async function POST(request: NextRequest) {
 
                 return {
                   output,
-                  tool_call_id: toolCall.id
+                  tool_call_id: toolCall.id,
                 }
               }
 
@@ -196,18 +195,26 @@ export async function POST(request: NextRequest) {
                 throw new Error(`Unknown tool call function: ${toolCall.function.name}`)
             }
           } catch (error) {
-            const err = error as Error
-            console.error(`Error in tool call: ${err.message}`)
+            const stringifiedError = `Error in tool call: ${JSON.stringify(
+              error instanceof Error
+                ? {
+                    message: error.message,
+                    stack: error.stack,
+                  }
+                : { error },
+            )}`
+
+            console.error(stringifiedError)
             return {
-              output: JSON.stringify({ error: `Error in tool call: ${err.message}` }),
-              tool_call_id: toolCall.id
+              output: stringifiedError,
+              tool_call_id: toolCall.id,
             }
           }
-        })
+        }),
       )
 
       runResult = await forwardStream(
-        openai.beta.threads.runs.submitToolOutputsStream(threadId, runResult.id, { tool_outputs, stream: true })
+        openai.beta.threads.runs.submitToolOutputsStream(threadId, runResult.id, { tool_outputs, stream: true }),
       )
     }
   })

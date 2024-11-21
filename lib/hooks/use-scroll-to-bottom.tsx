@@ -11,7 +11,7 @@ export function useScrollToBottom(ref?: RefObject<HTMLElement>, offset = 200) {
   const scrollToBottom = useCallback(() => {
     window.scrollTo({
       top: document.body.offsetHeight,
-      behavior: "smooth"
+      behavior: "smooth",
     })
   }, [])
 

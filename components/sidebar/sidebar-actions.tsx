@@ -13,7 +13,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { badgeVariants } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -23,12 +23,13 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { IconShare, IconSpinner, IconTrash, IconUsers } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { deleteChatAction, shareChatAction } from "@/lib/actions"
+import { deleteChatAction, shareChatAction } from "@/lib/actions/chat"
 import { APP_URL } from "@/lib/config"
+import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import type { DbChatListItem } from "@/lib/types"
 import { cn, formatDate } from "@/lib/utils"
 
@@ -41,22 +42,21 @@ export function SidebarActions({ chat }: SidebarActionsProps) {
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [isDeletePending, startDeleteTransition] = useTransition()
   const [isSharePending, startShareTransition] = useTransition()
-
-  const fullShareUrl = `${APP_URL}/share/${chat.id}`
+  const { copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
   const copyShareLink = useCallback(() => {
-    navigator.clipboard.writeText(fullShareUrl)
+    copyToClipboard(`${APP_URL}/share/${chat.id}`)
     setShareDialogOpen(false)
     toast.success("Share link copied to clipboard", {
       style: {
         borderRadius: "10px",
         background: "#333",
         color: "#fff",
-        fontSize: "14px"
+        fontSize: "14px",
       },
-      icon: "📋"
+      icon: "📋",
     })
-  }, [fullShareUrl])
+  }, [chat.id, copyToClipboard])
 
   return (
     <>
@@ -118,7 +118,6 @@ export function SidebarActions({ chat }: SidebarActionsProps) {
                   }
 
                   await shareChatAction(chat)
-
                   copyShareLink()
                 })
               }}

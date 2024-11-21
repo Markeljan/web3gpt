@@ -1,10 +1,22 @@
 import "server-only"
 
 import { kv } from "@vercel/kv"
-import { unstable_cache as cache } from "next/cache"
+import { unstable_cache as cache, revalidateTag } from "next/cache"
 
-import { withUser } from "@/lib/data/auth"
 import type { Agent, DbChat, DbChatListItem, VerifyContractParams } from "@/lib/types"
+import { auth } from "@/auth"
+
+type ActionWithUser<T, R> = (data: T, userId: string) => Promise<R>
+
+export const withUser = <T, R>(action: ActionWithUser<T, R>) => {
+  return async (data: T): Promise<R | undefined> => {
+    const session = await auth()
+    const userId = session?.user?.id
+    if (!userId) return
+
+    return action(data, userId)
+  }
+}
 
 export async function storeUser(user: { id: string }) {
   const userKey = `user:details:${user.id}`
@@ -29,8 +41,8 @@ export const getChatList = withUser<void, DbChatListItem[]>(
       return await pipeline.exec<DbChatListItem[]>()
     },
     ["chat-list"],
-    { revalidate: 3600, tags: ["chat-list"] }
-  )
+    { revalidate: 3600, tags: ["chat-list"] },
+  ),
 )
 
 export const getChat = withUser<string, DbChat | null>(async (id) => {
@@ -43,7 +55,7 @@ export async function getPublishedChat(id: string) {
   if (!chat?.published) {
     return {
       ...chat,
-      messages: []
+      messages: [],
     }
   }
 
@@ -76,3 +88,37 @@ export const getVerifications = async () => {
 export const deleteVerification = async (deployHash: string) => {
   await kv.del(`verification:${deployHash}`)
 }
+
+export const storeAgent = withUser<Agent, void>(async (agent, userId) => {
+  if (userId !== agent.userId) {
+    return
+  }
+  await Promise.all([kv.hmset(`agent:${agent.id}`, agent), kv.sadd("agents:list", agent.id)])
+})
+
+export const storeChat = withUser<
+  {
+    data: DbChat
+    userId: string
+  },
+  void
+>(async ({ data, userId }) => {
+  if (userId !== data.userId) {
+    return
+  }
+
+  const payload: DbChat = {
+    ...data,
+    userId,
+  }
+
+  await Promise.all([
+    kv.hmset(`chat:${data.id}`, payload),
+    kv.zadd(`user:chat:${userId}`, {
+      score: data.createdAt,
+      member: `chat:${data.id}`,
+    }),
+  ])
+
+  return revalidateTag("chat-list")
+})

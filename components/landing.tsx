@@ -8,7 +8,7 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { getUserFieldAction, storeEmailAction } from "@/lib/actions"
+import { getUserFieldAction, storeEmailAction } from "@/lib/actions/chat"
 import { useIsClient } from "@/lib/hooks/use-is-client"
 import { useLocalStorage } from "@/lib/hooks/use-local-storage"
 import { isValidEmail } from "@/lib/utils"

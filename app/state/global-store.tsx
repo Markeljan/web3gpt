@@ -1,13 +1,8 @@
 import { create } from "zustand"
 
-import { DEFAULT_GLOBAL_CONFIG } from "@/lib/config"
-import type { DeployContractParams, GlobalConfig, LastDeploymentData, VerifyContractParams } from "@/lib/types"
+import type { LastDeploymentData } from "@/lib/types"
 
 interface GlobalState {
-  // configs
-  globalConfig: GlobalConfig
-  setGlobalConfig: (globalConfig: GlobalConfig) => void
-
   tokenScriptViewerUrl?: string | null
   setTokenScriptViewerUrl: (tokenScriptViewerUrl: string | null) => void
 
@@ -26,10 +21,6 @@ interface GlobalState {
 }
 
 export const useGlobalStore = create<GlobalState>((set) => ({
-  // configs
-  globalConfig: DEFAULT_GLOBAL_CONFIG,
-  setGlobalConfig: (globalConfig: GlobalConfig) => set({ globalConfig }),
-
   tokenScriptViewerUrl: undefined,
   setTokenScriptViewerUrl: (tokenScriptViewerUrl: string | null) => set({ tokenScriptViewerUrl }),
 
@@ -44,5 +35,5 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   setCompletedDeploymentReport: (completedDeploymentReport: boolean) => set({ completedDeploymentReport }),
 
   readyForTokenScript: false,
-  setReadyForTokenScript: (readyForTokenScript: boolean) => set({ readyForTokenScript })
+  setReadyForTokenScript: (readyForTokenScript: boolean) => set({ readyForTokenScript }),
 }))

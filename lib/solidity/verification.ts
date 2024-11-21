@@ -1,8 +1,9 @@
+"server-only"
+
 import type { Chain } from "viem"
 
-import { DEFAULT_GLOBAL_CONFIG } from "@/lib/config"
+import { DEFAULT_COMPILER_VERSION, getChainDetails } from "@/lib/config"
 import type { VerifyContractParams } from "@/lib/types"
-import { getExplorerDetails } from "@/lib/viem"
 
 export const verifyContract = async ({
   contractAddress,
@@ -10,9 +11,9 @@ export const verifyContract = async ({
   encodedConstructorArgs,
   fileName,
   contractName,
-  viemChain
+  viemChain,
 }: VerifyContractParams): Promise<{ status: string; result: string }> => {
-  const { apiUrl, apiKey } = getExplorerDetails(viemChain)
+  const { explorerApiUrl, explorerApiKey } = getChainDetails(viemChain)
 
   const params = new URLSearchParams()
   params.append("module", "contract")
@@ -21,21 +22,21 @@ export const verifyContract = async ({
   params.append("sourceCode", JSON.stringify(standardJsonInput))
   params.append("codeformat", "solidity-standard-json-input")
   params.append("contractname", `${fileName}:${contractName}`)
-  params.append("compilerversion", DEFAULT_GLOBAL_CONFIG.compilerVersion)
+  params.append("compilerversion", DEFAULT_COMPILER_VERSION)
   if (encodedConstructorArgs) {
     params.append("constructorArguements", encodedConstructorArgs)
   }
   params.append("optimizationUsed", "1")
   params.append("runs", "200")
   params.append("licenseType", "mit")
-  params.append("apikey", apiKey)
+  params.append("apikey", explorerApiKey)
 
-  const response = await fetch(apiUrl, {
+  const response = await fetch(explorerApiUrl, {
     method: "POST",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
     },
-    body: params.toString()
+    body: params.toString(),
   })
 
   if (!response.ok) {
@@ -47,22 +48,22 @@ export const verifyContract = async ({
 
 export const checkVerifyStatus = async (
   guid: string,
-  viemChain: Chain
+  viemChain: Chain,
 ): Promise<{ status: string; result: string }> => {
-  const { apiUrl, apiKey } = getExplorerDetails(viemChain)
+  const { explorerApiUrl, explorerApiKey } = getChainDetails(viemChain)
 
   const params = new URLSearchParams()
-  params.append("apikey", apiKey)
+  params.append("apikey", explorerApiKey)
   params.append("module", "contract")
   params.append("action", "checkverifystatus")
   params.append("guid", guid)
 
-  const response = await fetch(apiUrl, {
+  const response = await fetch(explorerApiUrl, {
     method: "POST",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
     },
-    body: params.toString()
+    body: params.toString(),
   })
 
   if (!response.ok) {

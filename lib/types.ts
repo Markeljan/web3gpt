@@ -44,12 +44,6 @@ export type CreateAgentParams = {
   imageUrl: string
 }
 
-export type GlobalConfig = {
-  viemChain: Chain
-  compilerVersion: string
-  useWallet: boolean
-}
-
 export type DeployContractParams = {
   chainId: string
   contractName: string
@@ -80,7 +74,6 @@ export type VerifyContractParams = {
 export type LastDeploymentData = DeployContractResult & {
   walletAddress: Hash
   chainId: number
-  verificationStatus: string
   transactionHash: Hash
 }
 
@@ -101,4 +94,11 @@ export type DeployTokenScriptResult = {
   tokenName: string
   ensDomain: string
   includeBurnFunction: boolean
+}
+
+export type ChainDetails = {
+  rpcUrl: string
+  explorerUrl: string
+  explorerApiUrl: string
+  explorerApiKey: string
 }

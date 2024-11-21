@@ -1,6 +1,6 @@
 import Image from "next/image"
 
-import type { AssistantStatus, Message } from "ai"
+import { type AssistantStatus, type Message, generateId } from "ai"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 
@@ -8,7 +8,6 @@ import { ChatMessageActions } from "@/components/chat/chat-message-actions"
 import { MemoizedReactMarkdown } from "@/components/markdown"
 import { CodeBlock } from "@/components/ui/code-block"
 import { IconUser, IconWeb3GPT } from "@/components/ui/icons"
-import { nanoid } from "@/lib/utils"
 
 export interface ChatMessageProps {
   message: Message
@@ -40,12 +39,12 @@ export function ChatMessage({ message, avatarUrl, status }: ChatMessageProps) {
               return <p className="mb-2 last:mb-0">{children}</p>
             },
             code({ inline, className, children }) {
-              if (children.length) {
+              if (typeof children?.[0] === "string") {
                 if (children[0] === "▍") {
                   return <span className="mt-1 animate-pulse cursor-default">▍</span>
                 }
 
-                children[0] = (children[0] as string).replace("`▍`", "▍")
+                children[0] = children[0].replace("`▍`", "▍")
               }
 
               if (inline) {
@@ -55,9 +54,9 @@ export function ChatMessage({ message, avatarUrl, status }: ChatMessageProps) {
               const match = /language-(\w+)/.exec(className || "")
 
               return (
-                <CodeBlock key={nanoid()} language={match?.[1] || ""} value={String(children).replace(/\n$/, "")} />
+                <CodeBlock key={generateId()} language={match?.[1] || ""} value={String(children).replace(/\n$/, "")} />
               )
-            }
+            },
           }}
         >
           {message.content}

@@ -11,11 +11,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { IconClear, IconSpinner } from "@/components/ui/icons"
-import { clearChatsAction } from "@/lib/actions"
+import { clearChatsAction } from "@/lib/actions/chat"
 
 export function ClearHistory() {
   const [open, setOpen] = useState(false)

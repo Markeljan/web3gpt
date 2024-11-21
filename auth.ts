@@ -11,12 +11,7 @@ declare module "next-auth" {
   }
 }
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut
-} = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [GitHub],
   callbacks: {
     async jwt({ token, profile }) {
@@ -26,7 +21,7 @@ export const {
         const user = {
           ...token,
           ...profile,
-          id: profileId
+          id: profileId,
         }
         await storeUser(user)
       }
@@ -41,12 +36,12 @@ export const {
         ...session,
         user: {
           ...session.user,
-          id: String(token.id)
-        }
+          id: String(token.id),
+        },
       }
-    }
+    },
   },
   pages: {
-    signIn: "/sign-in"
-  }
+    signIn: "/sign-in",
+  },
 })

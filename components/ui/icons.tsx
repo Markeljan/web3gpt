@@ -165,7 +165,6 @@ function IconSeparator({ className, ...props }: React.ComponentProps<"svg">) {
       strokeLinejoin="round"
       strokeWidth="1"
       viewBox="0 0 24 24"
-      aria-hidden="true"
       className={cn("size-4", className)}
       {...props}
     >
@@ -573,5 +572,5 @@ export {
   IconUser,
   IconUsers,
   IconVercel,
-  IconWeb3GPT
+  IconWeb3GPT,
 }

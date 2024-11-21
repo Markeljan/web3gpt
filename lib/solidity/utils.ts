@@ -19,7 +19,7 @@ export async function resolveImports(sourceCode: string, sourcePath?: string) {
     }
 
     sources[sourceFileName] = {
-      content: mainSourceCode
+      content: mainSourceCode,
     }
     sourceCodeWithImports = sourceCode.replace(match[0], `import "${sourceFileName}";`)
   }
@@ -95,9 +95,9 @@ export async function prepareContractSources(contractName: string, sourceCode: s
 
   const sources = {
     [fileName]: {
-      content: handleImportsResult?.sourceCode
+      content: handleImportsResult?.sourceCode,
     },
-    ...handleImportsResult?.sources
+    ...handleImportsResult?.sources,
   }
 
   const sourcesKeys = Object.keys(sources)

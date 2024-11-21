@@ -8,18 +8,18 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useTheme } from "next-themes"
 import { type State, WagmiProvider } from "wagmi"
 
-import { getConfig } from "@/lib/config"
+import { getWagmiConfig } from "@/lib/config"
 import { connectors } from "@/lib/rainbowkit"
 
 export function Web3Provider({
   children,
-  initialState
+  initialState,
 }: {
   children: React.ReactNode
   initialState: State | undefined
 }) {
   const { resolvedTheme } = useTheme()
-  const [config] = useState(() => getConfig(connectors))
+  const [config] = useState(() => getWagmiConfig(connectors))
   const [queryClient] = useState(() => new QueryClient())
 
   return (
@@ -36,17 +36,17 @@ export function Web3Provider({
                 associated with deploying smart contracts.
               </Text>
             ),
-            learnMoreUrl: "https://x.com/w3gptai"
+            learnMoreUrl: "https://x.com/w3gptai",
           }}
           theme={
             resolvedTheme === "dark"
               ? darkTheme({
                   accentColor: "#21C55E",
-                  accentColorForeground: "black"
+                  accentColorForeground: "black",
                 })
               : lightTheme({
                   accentColor: "#21C55E",
-                  accentColorForeground: "white"
+                  accentColorForeground: "white",
                 })
           }
         >

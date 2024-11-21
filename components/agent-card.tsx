@@ -22,14 +22,13 @@ export const AgentCard = ({ agent, setThreadId, className }: AgentCardProps) => 
   const router = useRouter()
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
   const [isPending, startTransition] = useTransition()
-  const agentUrl = `${APP_URL}?a=${agent.id}`
 
   return (
     <>
       <div
         className={cn(
           "flex flex-col mx-auto max-w-2xl h-96 text-center items-center justify-center bg-background border-gray-600/25 dark:border-gray-600/50 md:border rounded-2xl mb-8 md:mb-12 px-4 pt-8 pb-4",
-          className
+          className,
         )}
       >
         <div className="relative size-48">
@@ -73,7 +72,12 @@ export const AgentCard = ({ agent, setThreadId, className }: AgentCardProps) => 
             ) : null}
             <Tooltip delayDuration={500}>
               <TooltipTrigger asChild>
-                <Button type="button" variant="ghost" size="icon" onClick={() => copyToClipboard(agentUrl)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => copyToClipboard(`${APP_URL}?a=${agent.id}`)}
+                >
                   {isCopied ? <IconCheck /> : <IconCopy />}
                   <span className="sr-only">Agent URL</span>
                 </Button>

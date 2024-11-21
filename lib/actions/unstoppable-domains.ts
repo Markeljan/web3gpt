@@ -1,7 +1,8 @@
-"use server"
+"server-only"
 
-import { INFURA_API_KEY } from "@/lib/data/secrets"
 import { Resolution } from "@unstoppabledomains/resolution"
+
+const INFURA_API_KEY = process.env.NEXT_PUBLIC_INFURA_API_KEY
 
 const resolution = new Resolution({
   sourceConfig: {
@@ -9,23 +10,23 @@ const resolution = new Resolution({
       locations: {
         Layer1: {
           url: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
-          network: "mainnet"
+          network: "mainnet",
         },
         Layer2: {
           url: `https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}`,
-          network: "polygon-mainnet"
-        }
-      }
+          network: "polygon-mainnet",
+        },
+      },
     },
     ens: {
       url: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
-      network: "mainnet"
+      network: "mainnet",
     },
     zns: {
       url: "https://api.zilliqa.com",
-      network: "mainnet"
-    }
-  }
+      network: "mainnet",
+    },
+  },
 })
 
 export const resolveDomain = async (domain: string, ticker = "ETH") => {

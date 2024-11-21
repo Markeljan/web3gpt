@@ -3,12 +3,12 @@ import { encodeFunctionData, parseAbiItem, publicActions } from "viem"
 import { useAccount, useWalletClient } from "wagmi"
 
 import { useGlobalStore } from "@/app/state/global-store"
-import { ipfsUploadFile } from "@/lib/actions/ipfs"
+import { ipfsUploadFileAction } from "@/lib/actions/deploy-contract"
 
 export function useTokenScriptDeploy() {
   const { chain: viemChain, chainId, address } = useAccount()
   const { data } = useWalletClient({
-    chainId
+    chainId,
   })
   const walletClient = data?.extend(publicActions)
 
@@ -36,7 +36,7 @@ export function useTokenScriptDeploy() {
       toast.error("Last deployment must be from the connected wallet")
       return
     }
-    const cid = await ipfsUploadFile("tokenscript.tsml", tokenScriptSource)
+    const cid = await ipfsUploadFileAction("tokenscript.tsml", tokenScriptSource)
 
     toast.dismiss(deployToast)
 
@@ -54,16 +54,16 @@ export function useTokenScriptDeploy() {
       const data = encodeFunctionData({
         abi: [setScriptURIAbi],
         functionName: "setScriptURI",
-        args: [ipfsRoute]
+        args: [ipfsRoute],
       })
 
       const txHash = await walletClient.sendTransaction({
         to: tokenAddress,
-        data
+        data,
       })
 
       const transactionReceipt = await walletClient.waitForTransactionReceipt({
-        hash: txHash
+        hash: txHash,
       })
 
       if (!transactionReceipt) {
@@ -75,7 +75,7 @@ export function useTokenScriptDeploy() {
       return {
         txHash,
         cid,
-        tokenAddress
+        tokenAddress,
       }
     } catch (error) {
       console.error(error)

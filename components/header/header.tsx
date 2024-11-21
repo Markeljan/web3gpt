@@ -67,7 +67,7 @@ export const Header = async () => {
             <TooltipTrigger asChild>
               <Badge className={cn("text-xs text-slate-800 bg-yellow-300")}>gpt-4o</Badge>
             </TooltipTrigger>
-            <TooltipContent>Using the latest GPT-4o</TooltipContent>
+            <TooltipContent>Using GPT-4o</TooltipContent>
           </Tooltip>
         </div>
       </div>

@@ -7,7 +7,7 @@ export const SignOutButton = () => {
     <button
       onClick={() => {
         signOut({
-          callbackUrl: "/"
+          callbackUrl: "/",
         })
       }}
       type="button"
