@@ -7,11 +7,11 @@ import { auth } from "@/auth"
 import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
 import { APP_URL, DEFAULT_COMPILER_VERSION, supportedChains } from "@/lib/config"
 import { storeChat } from "@/lib/data/kv"
-import { createAgent } from "@/lib/data/openai"
-import { openai } from "@/lib/data/openai"
+import { createAgent, openai } from "@/lib/data/openai"
 import { deployContract, deployTokenScript } from "@/lib/solidity/deploy"
 import { ToolName } from "@/lib/tools"
 import type { DbChat } from "@/lib/types"
+import type { FunctionToolCall } from "openai/resources/beta/threads/runs/index"
 
 export const runtime = "nodejs"
 
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
 
     while (runResult?.status === "requires_action" && runResult.required_action?.type === "submit_tool_outputs") {
       const tool_outputs = await Promise.all(
-        runResult.required_action.submit_tool_outputs.tool_calls.map(async (toolCall) => {
+        runResult.required_action.submit_tool_outputs.tool_calls.map(async (toolCall: FunctionToolCall) => {
           const parameters = JSON.parse(toolCall.function.arguments)
           try {
             switch (toolCall.function.name) {
