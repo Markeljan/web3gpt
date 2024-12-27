@@ -17,6 +17,7 @@ const envSchema = z.object({
   PINATA_JWT: z.string().min(1),
   AUTH_SECRET: z.string().min(1),
   DEPLOYER_PRIVATE_KEY: z.string().min(1),
+  UNKEY_COMPLETIONS_API_ID: z.string().min(1),
 })
 
 envSchema.parse(process.env)
