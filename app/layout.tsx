@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { JetBrains_Mono as FontMono, Inter as FontSans } from "next/font/google"
 import { headers } from "next/headers"
 import type { ReactNode } from "react"
+import Script from 'next/script'
 
 import { Analytics } from "@vercel/analytics/react"
 import { ThemeProvider } from "next-themes"
@@ -77,6 +78,12 @@ export default function Layout({ children }: { children: ReactNode }) {
           </TooltipProvider>
         </ThemeProvider>
         <Analytics />
+        <Script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="AmJJJnKB1tQpYEHULJiG1A"
+          defer
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   )
