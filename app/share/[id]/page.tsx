@@ -14,7 +14,7 @@ import { formatDate } from "@/lib/utils"
 export async function generateMetadata({ params }: NextPageProps) {
   const metadata: Metadata = {
     title: "Shared Chat",
-    description: "Write and deploy smart contracts with AI",
+    description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
     openGraph: {
       images: [`${APP_URL}/api/og?id=${params.id}&h=630`],
       url: `${APP_URL}/share/${params.id}`,
