@@ -105,6 +105,9 @@ export const CHAIN_DETAILS: Record<string, ChainDetails> = {
 }
 
 const buildApiUrl = (blockscoutUrl: string) => {
+  if (blockscoutUrl === "https://sepolia-explorer.metisdevops.link") {
+    return "https://sepolia-explorer-api.metisdevops.link/api"
+  }
   return `${blockscoutUrl}/api`
 }
 
