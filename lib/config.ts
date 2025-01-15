@@ -9,7 +9,7 @@ import type { ChainDetails } from "@/lib/types"
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
 const BLOCKSCOUT_API_KEY = process.env.NEXT_PUBLIC_BLOCKSCOUT_API_KEY
 
-const metisSepolia = {
+export const metisSepolia = {
   ...defineChain({
     id: 59902,
     name: "Metis Sepolia",

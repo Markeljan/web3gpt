@@ -17,6 +17,7 @@ import { SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { getChatList } from "@/lib/data/kv"
 import { cn } from "@/lib/utils"
+import { MetisTeaser } from "@/components/metis-teaser"
 
 export const Header = async () => {
   const chatList = await getChatList()
@@ -59,6 +60,7 @@ export const Header = async () => {
               Docs
             </Link>
           </Button>
+          <MetisTeaser />
         </div>
       </div>
       <div className="invisible absolute inset-0 -z-10 flex items-center justify-center md:visible">
