@@ -6,6 +6,7 @@ import { ClearHistory } from "@/components/header/clear-history"
 import { LoginButton } from "@/components/header/login-button"
 import { SettingsDropDown } from "@/components/header/settings-drop-down"
 import { UserMenu } from "@/components/header/user-menu"
+import { MetisTeaser } from "@/components/metis-teaser"
 import { Sidebar } from "@/components/sidebar/sidebar"
 import { SidebarAgents } from "@/components/sidebar/sidebar-agents"
 import { SidebarFooter } from "@/components/sidebar/sidebar-footer"
@@ -17,7 +18,6 @@ import { SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { getChatList } from "@/lib/data/kv"
 import { cn } from "@/lib/utils"
-import { MetisTeaser } from "@/components/metis-teaser"
 
 export const Header = async () => {
   const chatList = await getChatList()

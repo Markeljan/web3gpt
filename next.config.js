@@ -9,9 +9,9 @@ module.exports = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**"
-      }
-    ]
+        hostname: "**",
+      },
+    ],
   },
   async headers() {
     return [
@@ -20,24 +20,22 @@ module.exports = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "frame-ancestors 'self' https://app.safe.global https://*.blockscout.com;"
+            value: "frame-ancestors 'self' https://app.safe.global https://*.blockscout.com;",
           },
           {
             key: "Access-Control-Allow-Origin",
-            value: "*"
+            value: "*",
           },
           {
             key: "Access-Control-Allow-Methods",
-            value: "GET, OPTIONS"
+            value: "GET, OPTIONS",
           },
           {
             key: "Access-Control-Allow-Headers",
-            value: "X-Requested-With, content-type, Authorization"
-          }
-        ]
-      }
+            value: "X-Requested-With, content-type, Authorization",
+          },
+        ],
+      },
     ]
   },
 }
-
-
