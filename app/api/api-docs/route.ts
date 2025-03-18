@@ -4,10 +4,6 @@ const isProduction = process.env.NODE_ENV === "production"
 
 const UNKEY_CONTRACTS_API_KEY = process.env.UNKEY_CONTRACTS_API_KEY
 
-if (!UNKEY_CONTRACTS_API_KEY) {
-  throw new Error("UNKEY_CONTRACTS_API_KEY is not set")
-}
-
 const config = {
   theme: "saturn" as const,
   metaData: {
