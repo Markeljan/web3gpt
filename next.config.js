@@ -13,10 +13,18 @@ module.exports = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api-docs",
+        destination: "/api/api-docs",
+      },
+    ]
+  },
   async headers() {
     return [
       {
-        source: "/:path*",
+        source: "/api/:path*",
         headers: [
           {
             key: "Content-Security-Policy",

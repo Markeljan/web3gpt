@@ -1,0 +1,224 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Web3GPT API",
+    "description": "API for Web3GPT - AI-powered smart contract generation and text completions",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "API v1"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "CompletionsRequest": {
+        "type": "object",
+        "required": ["prompt"],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "The text prompt for completion"
+          },
+          "stream": {
+            "type": "boolean",
+            "description": "Whether to stream the response",
+            "default": false
+          }
+        }
+      },
+      "CompletionsResponse": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The generated completion text"
+          }
+        }
+      },
+      "ContractDeployRequest": {
+        "type": "object",
+        "required": ["prompt"],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "The prompt describing the smart contract to generate"
+          },
+          "contractName": {
+            "type": "string",
+            "description": "Name of the contract",
+            "default": "GeneratedContract"
+          },
+          "chainId": {
+            "type": "number",
+            "description": "Target chainId: 11155420, 421614, 84532, 59902, 5003, 80002, 11155111",
+            "default": 59902
+          }
+        }
+      },
+      "ContractDeployResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "ipfsUrl": {
+            "type": "string",
+            "description": "IPFS URL where the contract is stored"
+          },
+          "sourceCode": {
+            "type": "string",
+            "description": "Generated Solidity source code"
+          },
+          "abi": {
+            "type": "array",
+            "description": "Contract ABI"
+          },
+          "bytecode": {
+            "type": "string",
+            "description": "Contract bytecode"
+          },
+          "deployHash": {
+            "type": "string",
+            "description": "Unique deployment hash"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/completions": {
+      "post": {
+        "summary": "Generate text completions",
+        "description": "Generate AI text completions with optional streaming support",
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompletionsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful completion",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletionsResponse"
+                }
+              },
+              "text/event-stream": {
+                "description": "Stream of completion chunks when stream=true"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized - Invalid API key"
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contracts/deploy": {
+      "post": {
+        "summary": "Generate and deploy smart contract",
+        "description": "Generate a smart contract from a prompt and prepare it for deployment",
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractDeployRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful contract generation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractDeployResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request or compilation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized - Invalid API key"
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} 
