@@ -1,14 +1,14 @@
-import { NextResponse } from "next/server"
-
-import { compileContract } from "@/lib/actions/deploy-contract"
-import { metisSepolia } from "@/lib/config"
-import { deployContract } from "@/lib/solidity/deploy"
 import { openai } from "@ai-sdk/openai"
 import { type NextRequestWithUnkeyContext, withUnkey } from "@unkey/nextjs"
 import { track } from "@vercel/analytics/server"
 import { generateObject, generateText } from "ai"
+import { NextResponse } from "next/server"
 import type { Abi, Hex } from "viem"
 import { z } from "zod"
+
+import { compileContract } from "@/lib/actions/deploy-contract"
+import { metisSepolia } from "@/lib/config"
+import { deployContract } from "@/lib/solidity/deploy"
 
 const UNKEY_CONTRACTS_API_ID = process.env.UNKEY_CONTRACTS_API_ID
 
@@ -16,11 +16,10 @@ if (!UNKEY_CONTRACTS_API_ID) {
   throw new Error("UNKEY_CONTRACTS_API_ID is not set")
 }
 
-export const maxDuration = 300 // Increased to 5 minutes due to contract compilation
+export const maxDuration = 60
 
 interface ContractDeployRequest {
   prompt: string
-  contractName?: string
   chainId?: number
 }
 
@@ -119,7 +118,7 @@ export const POST = withUnkey(
 
       let compilationResult: CompilationResult | undefined
       let retryCount = 0
-      const maxRetries = 3
+      const maxRetries = 5
 
       // Attempt compilation with retries
       while (retryCount < maxRetries) {

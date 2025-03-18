@@ -51,11 +51,6 @@
             "type": "string",
             "description": "The prompt describing the smart contract to generate"
           },
-          "contractName": {
-            "type": "string",
-            "description": "Name of the contract",
-            "default": "GeneratedContract"
-          },
           "chainId": {
             "type": "number",
             "description": "Target chainId: 11155420, 421614, 84532, 59902, 5003, 80002, 11155111",

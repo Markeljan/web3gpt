@@ -1,5 +1,5 @@
-import { ApiReference } from "@scalar/nextjs-api-reference"
 import openApiSpec from "@/public/openapi.json"
+import { ApiReference } from "@scalar/nextjs-api-reference"
 const isProduction = process.env.NODE_ENV === "production"
 
 const UNKEY_CONTRACTS_API_KEY = process.env.UNKEY_CONTRACTS_API_KEY
@@ -7,8 +7,8 @@ const UNKEY_CONTRACTS_API_KEY = process.env.UNKEY_CONTRACTS_API_KEY
 const config = {
   theme: "saturn" as const,
   metaData: {
-    title: "Web3GPT AI API",
-    description: "Web3GPT AI API Reference",
+    title: "Web3GPT API",
+    description: "Web3GPT API Reference",
   },
   authentication: {
     http: {
