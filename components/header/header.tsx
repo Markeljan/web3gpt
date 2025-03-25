@@ -1,29 +1,33 @@
-import Link from "next/link"
+import Link from "next/link";
 
-import { auth } from "@/auth"
-import { ConnectButton } from "@/components/connect-button"
-import { ClearHistory } from "@/components/header/clear-history"
-import { LoginButton } from "@/components/header/login-button"
-import { SettingsDropDown } from "@/components/header/settings-drop-down"
-import { UserMenu } from "@/components/header/user-menu"
-import { MetisTeaser } from "@/components/metis-teaser"
-import { Sidebar } from "@/components/sidebar/sidebar"
-import { SidebarAgents } from "@/components/sidebar/sidebar-agents"
-import { SidebarFooter } from "@/components/sidebar/sidebar-footer"
-import { SidebarList } from "@/components/sidebar/sidebar-list"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { IconSeparator } from "@/components/ui/icons"
-import { SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { getChatList } from "@/lib/data/kv"
-import { cn } from "@/lib/utils"
+import { auth } from "@/auth";
+import { ConnectButton } from "@/components/connect-button";
+import { ClearHistory } from "@/components/header/clear-history";
+import { LoginButton } from "@/components/header/login-button";
+import { SettingsDropDown } from "@/components/header/settings-drop-down";
+import { UserMenu } from "@/components/header/user-menu";
+import { MetisTeaser } from "@/components/metis-teaser";
+import { Sidebar } from "@/components/sidebar/sidebar";
+import { SidebarAgents } from "@/components/sidebar/sidebar-agents";
+import { SidebarFooter } from "@/components/sidebar/sidebar-footer";
+import { SidebarList } from "@/components/sidebar/sidebar-list";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { IconSeparator } from "@/components/ui/icons";
+import { SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { getChatList } from "@/lib/data/kv";
+import { cn } from "@/lib/utils";
 
 export const Header = async () => {
-  const chatList = await getChatList()
-  const session = await auth()
+  const chatList = await getChatList();
+  const session = await auth();
 
-  const user = session?.user
+  const user = session?.user;
 
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-background px-4">
@@ -53,7 +57,12 @@ export const Header = async () => {
           {user ? (
             <UserMenu user={user} />
           ) : (
-            <LoginButton variant="link" showGithubIcon={true} text="Login" className="-ml-2" />
+            <LoginButton
+              variant="link"
+              showGithubIcon={true}
+              text="Login"
+              className="-ml-2"
+            />
           )}
           <Button variant="link" asChild>
             <Link href="https://docs.w3gpt.ai" target="_blank">
@@ -67,7 +76,9 @@ export const Header = async () => {
         <div className="flex items-center justify-center space-x-4 translate-x-1/2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge className={cn("text-xs text-slate-800 bg-yellow-300")}>gpt-4o</Badge>
+              <Badge className={cn("text-xs text-slate-800 bg-primary")}>
+                gpt-4o
+              </Badge>
             </TooltipTrigger>
             <TooltipContent>Using GPT-4o</TooltipContent>
           </Tooltip>
@@ -78,5 +89,5 @@ export const Header = async () => {
         <SettingsDropDown />
       </div>
     </header>
-  )
-}
+  );
+};
