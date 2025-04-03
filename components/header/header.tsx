@@ -69,6 +69,14 @@ export const Header = async () => {
               Docs
             </Link>
           </Button>
+          <Button variant="link" asChild>
+            <Link
+              href="https://explorer.gitcoin.co/#/round/42161/863/1"
+              target="_blank"
+            >
+              Support us on GitCoin
+            </Link>
+          </Button>
           <MetisTeaser />
         </div>
       </div>

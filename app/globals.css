@@ -58,3 +58,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+button[data-testid="rk-connect-button"] {
+  background-color: hsl(var(--primary)) !important;
+  color: black !important;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+}
+
+button[data-testid="rk-connect-button"]:hover {
+  filter: brightness(1.1);
+}
