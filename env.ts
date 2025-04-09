@@ -12,6 +12,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_ARBISCAN_API_KEY: z.string(),
   NEXT_PUBLIC_OPSCAN_API_KEY: z.string(),
   NEXT_PUBLIC_MANTLESCAN_API_KEY: z.string(),
+  NEXT_PUBLIC_CELOSCAN_API_KEY: z.string(),
   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string(),
   CRON_SECRET: z.string().min(1),
   PINATA_JWT: z.string().min(1),

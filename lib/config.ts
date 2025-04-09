@@ -1,6 +1,6 @@
 import { DEPLOYMENT_URL } from "vercel-url"
 import { type Chain, defineChain } from "viem"
-import { arbitrumSepolia, baseSepolia, mantleSepoliaTestnet, optimismSepolia, polygonAmoy, sepolia } from "viem/chains"
+import { arbitrumSepolia, baseSepolia, celoAlfajores, mantleSepoliaTestnet, optimismSepolia, polygonAmoy, sepolia } from "viem/chains"
 import { http, type CreateConnectorFn, cookieStorage, createConfig, createStorage } from "wagmi"
 
 import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
@@ -55,6 +55,7 @@ export const supportedChains: [Chain, ...Chain[]] = [
   baseSepolia,
   metisSepolia,
   mantleSepolia,
+  celoAlfajores,
   amoy,
   sepolia,
 ]
@@ -101,6 +102,12 @@ export const CHAIN_DETAILS: Record<string, ChainDetails> = {
     explorerUrl: "https://sepolia-explorer.metisdevops.link",
     explorerApiUrl: "https://sepolia-explorer-api.metisdevops.link/api",
     explorerApiKey: BLOCKSCOUT_API_KEY,
+  },
+  [celoAlfajores.id]: {
+    rpcUrl: "https://alfajores-forno.celo-testnet.org",
+    explorerUrl: "https://alfajores.celoscan.io",
+    explorerApiUrl: "https://api-alfajores.celoscan.io/api",
+    explorerApiKey: process.env.NEXT_PUBLIC_CELOSCAN_API_KEY,
   },
 }
 

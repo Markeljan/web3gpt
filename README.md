@@ -8,10 +8,11 @@ Web3GPT is an AI-powered smart contract development platform that combines Large
 
 - **Multi-Chain Smart Contract Development:** Deploy contracts across multiple EVM-compatible testnets including:
   - Arbitrum Sepolia
-  - Optimism Sepolia  
+  - Optimism Sepolia
   - Base Sepolia
   - Metis Sepolia
   - Mantle Sepolia
+  - Celo Alfajores
   - Polygon Amoy
   - Sepolia
 
