@@ -1,11 +1,10 @@
-"use client"
+"use client";
 
-import { ConnectButton as RainbowkitConnectButton } from "@rainbow-me/rainbowkit"
-
-import { useSafeAutoConnect } from "@/lib/hooks/use-safe-auto-connect"
+import { ConnectButton as RainbowkitConnectButton } from "@rainbow-me/rainbowkit";
+import { useSafeAutoConnect } from "@/lib/hooks/use-safe-auto-connect";
 
 export function ConnectButton() {
-  useSafeAutoConnect()
+  useSafeAutoConnect();
 
-  return <RainbowkitConnectButton />
+  return <RainbowkitConnectButton />;
 }
