@@ -123,6 +123,7 @@ export const BLOCKSCOUT_URLS: Record<number, string> = {
   42220: "https://explorer.celo.orgmainnet/",
   42355: "https://explorer.goldxchain.io",
   42793: "https://explorer.etherlink.com",
+  44787: "https://celo-alfajores.blockscout.com",
   47805: "https://scan.rei.network",
   54211: "https://explorer.testedge2.haqq.network",
   58008: "https://explorer.sepolia.publicgoods.network",
@@ -171,4 +172,4 @@ export const BLOCKSCOUT_URLS: Record<number, string> = {
   999999999: "https://sepolia.explorer.zora.energy",
   2863311531: "https://testnet.a8scan.io",
   37714555429: "https://testnet-explorer-v2.xai-chain.net",
-}
+};

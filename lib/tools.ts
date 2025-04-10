@@ -152,7 +152,7 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
           chainId: {
             type: "string",
             description:
-              "Supported chainIds: 84532: base sepolia, 80002: polygon amoy, 11155111: sepolia, 5003: mantle sepolia, 421614: arbitrum sepolia, 59902: metis sepolia",
+              "Supported chainIds: 84532: base sepolia, 80002: polygon amoy, 11155111: sepolia, 5003: mantle sepolia, 421614: arbitrum sepolia, 59902: metis sepolia, 44787: celo alfajores",
             default: "59902",
           },
           tokenAddress: {
