@@ -4,7 +4,7 @@ import { deleteVerification, getVerifications } from "@/lib/data/kv"
 import { checkVerifyStatus, verifyContract } from "@/lib/solidity/verification"
 
 const PASS_MESSAGE = "Pass - Verified"
-const ALREADY_VERIFIED_MESSAGE = "Smart-contract already verified."
+const ALREADY_VERIFIED_MESSAGES = ["Smart-contract already verified.", "Contract source code already verified"]
 
 const CRON_SECRET = process.env.CRON_SECRET
 
@@ -21,8 +21,7 @@ export const GET = async (req: NextRequest) => {
   for (const verificationData of verifications) {
     try {
       const { result: guid } = await verifyContract(verificationData)
-
-      if (guid === ALREADY_VERIFIED_MESSAGE) {
+      if (ALREADY_VERIFIED_MESSAGES.includes(guid)) {
         console.log(`${verificationData.viemChain.name} ${verificationData.contractAddress}`)
         await deleteVerification(verificationData.deployHash)
         continue

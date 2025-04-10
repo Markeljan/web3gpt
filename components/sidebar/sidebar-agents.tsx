@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 
 export const SidebarAgents = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mx-auto px-2">
+    <div className="grid grid-cols-2 gap-2 mx-auto px-2">
       {AGENTS_ARRAY.map((assistant) => (
         <Tooltip key={assistant.id} delayDuration={700}>
           <TooltipTrigger className="focus:bg-muted focus:ring-1 focus:ring-ring">

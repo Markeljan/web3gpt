@@ -172,4 +172,4 @@ export const BLOCKSCOUT_URLS: Record<number, string> = {
   999999999: "https://sepolia.explorer.zora.energy",
   2863311531: "https://testnet.a8scan.io",
   37714555429: "https://testnet-explorer-v2.xai-chain.net",
-};
+}

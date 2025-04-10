@@ -1,7 +1,7 @@
 import openApiSpec from "@/public/openapi.json"
 import { ApiReference } from "@scalar/nextjs-api-reference"
-const isProduction = process.env.NODE_ENV === "production"
 
+const isProduction = process.env.NODE_ENV === "production"
 const UNKEY_CONTRACTS_API_KEY = process.env.UNKEY_CONTRACTS_API_KEY
 
 const config = {
@@ -13,7 +13,7 @@ const config = {
   authentication: {
     http: {
       bearer: {
-        token: (!isProduction && UNKEY_CONTRACTS_API_KEY) || "",
+        token: isProduction ? undefined : UNKEY_CONTRACTS_API_KEY,
       },
       basic: {
         username: "",

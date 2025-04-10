@@ -13,7 +13,7 @@ import { SidebarFooter } from "@/components/sidebar/sidebar-footer"
 import { SidebarList } from "@/components/sidebar/sidebar-list"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { IconSeparator } from "@/components/ui/icons"
+import { IconExternalLink, IconSeparator } from "@/components/ui/icons"
 import { SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { getChatList } from "@/lib/data/kv"
@@ -29,9 +29,27 @@ export const Header = async () => {
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-background px-4">
       <div className="flex items-center">
         <Sidebar>
-          <div className="flex flex-col space-y-4">
-            <SheetHeader className="p-4 pt-8">
+          <div className="flex flex-col">
+            <SheetHeader className="flex flex-row space-x-4 items-baseline p-4">
               <SheetTitle className="text-md">Agents</SheetTitle>
+              {/* Mobile-only links section */}
+
+              <Link
+                href="https://docs.w3gpt.ai"
+                target="_blank"
+                className="md:hidden flex items-center gap-1 text-foreground hover:underline"
+              >
+                Docs
+                <IconExternalLink className="size-3.5" />
+              </Link>
+              <Link
+                href="https://d.w3gpt.ai/gg23"
+                target="_blank"
+                className="md:hidden flex items-center gap-1 text-foreground hover:underline"
+              >
+                GG23
+                <IconExternalLink className="size-3.5" />
+              </Link>
             </SheetHeader>
             <SidebarAgents />
           </div>
@@ -55,11 +73,20 @@ export const Header = async () => {
           ) : (
             <LoginButton variant="link" showGithubIcon={true} text="Login" className="-ml-2" />
           )}
-          <Button variant="link" asChild>
-            <Link href="https://docs.w3gpt.ai" target="_blank">
-              Docs
-            </Link>
-          </Button>
+          <div className="hidden md:block ml-32">
+            <Button variant="link" asChild>
+              <Link href="https://docs.w3gpt.ai" target="_blank" className="flex items-center gap-1">
+                Docs
+                <IconExternalLink className="size-3.5" />
+              </Link>
+            </Button>
+            <Button variant="link" asChild>
+              <Link href="https://d.w3gpt.ai/gg23" target="_blank" className="flex items-center gap-1">
+                <span>Support us on Gitcoin 23</span>
+                <IconExternalLink className="size-3.5" />
+              </Link>
+            </Button>
+          </div>
           <MetisTeaser />
         </div>
       </div>

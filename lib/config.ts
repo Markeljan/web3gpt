@@ -10,30 +10,28 @@ import {
   polygonAmoy,
   sepolia,
 } from "viem/chains"
-import { cookieStorage, createConfig, createStorage, http, type CreateConnectorFn } from "wagmi"
+import { http, type CreateConnectorFn, cookieStorage, createConfig, createStorage } from "wagmi"
 
 import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
 import type { ChainDetails } from "@/lib/types"
 
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
 const BLOCKSCOUT_API_KEY = process.env.NEXT_PUBLIC_BLOCKSCOUT_API_KEY
-
-export const metisSepoliaWithIcon = {
-  ...metisSepolia,
-  iconUrl: "/assets/metis-logo.png",
-}
+const TENDERLY_API_KEY = process.env.NEXT_PUBLIC_TENDERLY_API_KEY
 
 export const APP_URL = DEPLOYMENT_URL
 export const DEFAULT_COMPILER_VERSION = "v0.8.29+commit.ab55807c"
-export const DEFAULT_CHAIN = metisSepoliaWithIcon
 
-const mantleSepolia = {
+const metisSepoliaWithIcon = {
+  ...metisSepolia,
+  iconUrl: "/assets/metis-logo.png",
+}
+const mantleSepoliaWithIcon = {
   ...mantleSepoliaTestnet,
   name: "Mantle Sepolia",
   iconUrl: "/mantle-logo.jpeg",
 }
-
-const amoy = {
+const polygonAmoyWithIcon = {
   ...polygonAmoy,
   iconUrl: "/polygon-logo.png",
 }
@@ -42,11 +40,11 @@ export const supportedChains: [Chain, ...Chain[]] = [
   arbitrumSepolia,
   optimismSepolia,
   baseSepolia,
-  metisSepolia,
-  mantleSepolia,
   celoAlfajores,
-  amoy,
   sepolia,
+  metisSepoliaWithIcon,
+  mantleSepoliaWithIcon,
+  polygonAmoyWithIcon,
 ]
 
 export const CHAIN_DETAILS: Record<string, ChainDetails> = {
@@ -68,12 +66,6 @@ export const CHAIN_DETAILS: Record<string, ChainDetails> = {
     explorerApiUrl: "https://api-sepolia.basescan.org/api",
     explorerApiKey: process.env.NEXT_PUBLIC_BASESCAN_API_KEY,
   },
-  [mantleSepolia.id]: {
-    rpcUrl: `https://green-few-wish.mantle-sepolia.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_API_KEY}`,
-    explorerUrl: "https://sepolia.mantlescan.xyz/",
-    explorerApiUrl: "https://api-sepolia.mantlescan.xyz/api",
-    explorerApiKey: process.env.NEXT_PUBLIC_MANTLESCAN_API_KEY,
-  },
   [arbitrumSepolia.id]: {
     rpcUrl: `https://arb-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
     explorerUrl: "https://sepolia.arbiscan.io",
@@ -86,17 +78,23 @@ export const CHAIN_DETAILS: Record<string, ChainDetails> = {
     explorerApiUrl: "https://api-sepolia-optimistic.etherscan.io/api",
     explorerApiKey: process.env.NEXT_PUBLIC_OPSCAN_API_KEY,
   },
-  [metisSepolia.id]: {
-    rpcUrl: "https://sepolia.metisdevops.link",
-    explorerUrl: "https://sepolia-explorer.metisdevops.link",
-    explorerApiUrl: "https://sepolia-explorer-api.metisdevops.link/api",
-    explorerApiKey: BLOCKSCOUT_API_KEY,
-  },
   [celoAlfajores.id]: {
-    rpcUrl: "https://alfajores-forno.celo-testnet.org",
+    rpcUrl: `https://celo-alfajores.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
     explorerUrl: "https://alfajores.celoscan.io",
     explorerApiUrl: "https://api-alfajores.celoscan.io/api",
     explorerApiKey: process.env.NEXT_PUBLIC_CELOSCAN_API_KEY,
+  },
+  [mantleSepoliaTestnet.id]: {
+    rpcUrl: `https://mantle-sepolia.gateway.tenderly.co/${TENDERLY_API_KEY}`,
+    explorerUrl: "https://sepolia.mantlescan.xyz/",
+    explorerApiUrl: "https://api-sepolia.mantlescan.xyz/api",
+    explorerApiKey: process.env.NEXT_PUBLIC_MANTLESCAN_API_KEY,
+  },
+  [metisSepolia.id]: {
+    rpcUrl: `https://metis-sepolia.gateway.tenderly.co/${TENDERLY_API_KEY}`,
+    explorerUrl: "https://sepolia-explorer.metisdevops.link",
+    explorerApiUrl: "https://sepolia-explorer-api.metisdevops.link/api",
+    explorerApiKey: BLOCKSCOUT_API_KEY,
   },
 }
 
