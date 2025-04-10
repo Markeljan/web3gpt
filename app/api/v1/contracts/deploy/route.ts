@@ -7,8 +7,8 @@ import type { Abi, Hex } from "viem"
 import { z } from "zod"
 
 import { compileContract } from "@/lib/actions/deploy-contract"
-import { metisSepolia } from "@/lib/config"
 import { deployContract } from "@/lib/solidity/deploy"
+import { metisSepolia } from "viem/chains"
 
 const UNKEY_CONTRACTS_API_ID = process.env.UNKEY_CONTRACTS_API_ID
 
@@ -87,7 +87,7 @@ export const POST = withUnkey(
             
             Do not use local imports (e.g., './' or '../') in the generated code.
 
-            By default use SPDX License Identifier MIT and the latest available fixed Solidity version.`,
+            By default use SPDX License Identifier MIT and the latest available fixed Solidity version.  Current version is 0.8.29.`,
           prompt,
           model: openai.responses("gpt-4o"),
           schema: z.object({
@@ -145,7 +145,7 @@ export const POST = withUnkey(
 
           const { text: fixedCode, providerMetadata } = await generateText({
             system:
-              "You are an expert Solidity smart contract developer. Fix the contract and return only the fixed code without any explanations. DO NOT include markdown code blocks or code fence markers (```) in your response. The output must be pure, valid Solidity code only.",
+              "You are an expert Solidity smart contract developer. Fix the contract and return only the fixed code without any explanations. DO NOT include markdown code blocks or code fence markers (```) in your response. The output must be pure, valid Solidity code only. Current version is 0.8.29.",
             prompt: fixPrompt,
             model: openai.responses("gpt-4o"),
             providerOptions: {

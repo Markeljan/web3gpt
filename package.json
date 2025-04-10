@@ -46,11 +46,11 @@
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
     "server-only": "^0.0.1",
-    "solc": "0.8.28",
+    "solc": "0.8.29",
     "sonner": "^1.7.0",
     "vercel-url": "^0.2.4",
-    "viem": "^2.23.12",
-    "wagmi": "^2.14.14",
+    "viem": "^2.26.2",
+    "wagmi": "^2.14.16",
     "zustand": "^5.0.1"
   },
   "devDependencies": {

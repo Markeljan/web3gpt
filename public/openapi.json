@@ -53,8 +53,7 @@
           },
           "chainId": {
             "type": "number",
-            "description": "Target chainId: 11155420, 421614, 84532, 59902, 5003, 80002, 11155111",
-            "default": 59902
+            "description": "Target chainId: 11155420, 421614, 84532, 59902, 5003, 80002, 1115511, 44787"
           }
         }
       },

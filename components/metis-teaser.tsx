@@ -1,8 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { metisSepolia } from "@/lib/config"
 import Link from "next/link"
+import { metisSepolia } from "viem/chains"
 import { useAccount } from "wagmi"
 
 export const MetisTeaser = () => {

@@ -1,7 +1,16 @@
 import { DEPLOYMENT_URL } from "vercel-url"
-import { type Chain, defineChain } from "viem"
-import { arbitrumSepolia, baseSepolia, celoAlfajores, mantleSepoliaTestnet, optimismSepolia, polygonAmoy, sepolia } from "viem/chains"
-import { http, type CreateConnectorFn, cookieStorage, createConfig, createStorage } from "wagmi"
+import type { Chain } from "viem"
+import {
+  arbitrumSepolia,
+  baseSepolia,
+  celoAlfajores,
+  mantleSepoliaTestnet,
+  metisSepolia,
+  optimismSepolia,
+  polygonAmoy,
+  sepolia,
+} from "viem/chains"
+import { cookieStorage, createConfig, createStorage, http, type CreateConnectorFn } from "wagmi"
 
 import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
 import type { ChainDetails } from "@/lib/types"
@@ -9,34 +18,14 @@ import type { ChainDetails } from "@/lib/types"
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
 const BLOCKSCOUT_API_KEY = process.env.NEXT_PUBLIC_BLOCKSCOUT_API_KEY
 
-export const metisSepolia = {
-  ...defineChain({
-    id: 59902,
-    name: "Metis Sepolia",
-    nativeCurrency: {
-      name: "Testnet Metis",
-      symbol: "sMETIS",
-      decimals: 18,
-    },
-    rpcUrls: {
-      default: { http: ["https://sepolia.metisdevops.link"], webSocket: ["wss://sepolia-ws.rpc.metisdevops.link"] },
-    },
-    blockExplorers: {
-      default: {
-        name: "Metis Sepolia Blockscout",
-        url: "https://sepolia-explorer.metisdevops.link",
-        apiUrl: "https://sepolia-explorer-api.metisdevops.link/api",
-      },
-    },
-    testnet: true,
-    sourceId: 11155111,
-  }),
+export const metisSepoliaWithIcon = {
+  ...metisSepolia,
   iconUrl: "/assets/metis-logo.png",
 }
 
 export const APP_URL = DEPLOYMENT_URL
-export const DEFAULT_COMPILER_VERSION = "v0.8.28+commit.7893614a"
-export const DEFAULT_CHAIN = metisSepolia
+export const DEFAULT_COMPILER_VERSION = "v0.8.29+commit.ab55807c"
+export const DEFAULT_CHAIN = metisSepoliaWithIcon
 
 const mantleSepolia = {
   ...mantleSepoliaTestnet,
