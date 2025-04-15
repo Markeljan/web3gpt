@@ -73,7 +73,6 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
             type: "string",
             description:
               "The chainId to deploy to.  A list of available chains will be made available to you at runtime.",
-            default: "59902",
           },
           sourceCode: {
             type: "string",

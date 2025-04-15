@@ -5,7 +5,7 @@ import type { BadRequestError } from "openai/error"
 
 import { auth } from "@/auth"
 import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
-import { APP_URL, DEFAULT_COMPILER_VERSION, supportedChains } from "@/lib/config"
+import { DEFAULT_COMPILER_VERSION, DEPLOYMENT_URL, supportedChains } from "@/lib/config"
 import { storeChat } from "@/lib/data/kv"
 import { createAgent, openai } from "@/lib/data/openai"
 import { deployContract, deployTokenScript } from "@/lib/solidity/deploy"
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
                   }
                 }
 
-                const agentChatUrl = `${APP_URL}/?a=${assistantId}`
+                const agentChatUrl = `${DEPLOYMENT_URL}/?a=${assistantId}`
 
                 return {
                   output: `Agent created: successfully, agent chat url: ${agentChatUrl}`,

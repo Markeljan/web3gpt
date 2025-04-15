@@ -72,7 +72,7 @@ export function SettingsDropDown() {
             <TooltipTrigger asChild>
               <Link
                 className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
-                href="https://t.me/+Lt21CyCEO0k0Nzcx"
+                href="https://t.me/w3gptai"
                 target="_blank"
                 rel="noopener noreferrer"
               >

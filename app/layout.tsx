@@ -13,7 +13,7 @@ import { Header } from "@/components/header/header"
 import { Web3Provider } from "@/components/providers/web3-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { APP_URL, getWagmiConfig } from "@/lib/config"
+import { DEPLOYMENT_URL, getWagmiConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
 const fontSans = FontSans({
@@ -49,17 +49,17 @@ export const metadata: Metadata = {
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
-  metadataBase: new URL(APP_URL),
+  metadataBase: new URL(DEPLOYMENT_URL),
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: APP_URL,
+    url: DEPLOYMENT_URL,
     title: "Web3GPT",
     description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
     siteName: "Web3GPT",
     images: [
       {
-        url: `${APP_URL}/og-image.png`,
+        url: `${DEPLOYMENT_URL}/og-image.png`,
         width: 1200,
         height: 630,
         alt: "Web3GPT",
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
     site: "@w3gptai",
     creator: "@0xSoko",
-    images: [`${APP_URL}/twitter-image.png`],
+    images: [`${DEPLOYMENT_URL}/twitter-image.png`],
   },
 }
 

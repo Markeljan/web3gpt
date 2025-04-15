@@ -1,4 +1,3 @@
-import { DEPLOYMENT_URL } from "vercel-url"
 import type { Chain } from "viem"
 import {
   arbitrumSepolia,
@@ -14,16 +13,25 @@ import { http, type CreateConnectorFn, cookieStorage, createConfig, createStorag
 
 import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
 import type { ChainDetails } from "@/lib/types"
+export { DEPLOYMENT_URL } from "vercel-url"
 
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
 const BLOCKSCOUT_API_KEY = process.env.NEXT_PUBLIC_BLOCKSCOUT_API_KEY
 const TENDERLY_API_KEY = process.env.NEXT_PUBLIC_TENDERLY_API_KEY
-
-export const APP_URL = DEPLOYMENT_URL
 export const DEFAULT_COMPILER_VERSION = "v0.8.29+commit.ab55807c"
 
 const metisSepoliaWithIcon = {
   ...metisSepolia,
+  rpcUrls: {
+    default: {
+      http: [
+        "wss://metis-sepolia-rpc.publicnode.com",
+        "https://sepolia.metisdevops.link",
+        "https://metis-sepolia-rpc.publicnode.com",
+        "https://metis-sepolia.gateway.tenderly.co",
+      ],
+    },
+  },
   iconUrl: "/assets/metis-logo.png",
 }
 const mantleSepoliaWithIcon = {

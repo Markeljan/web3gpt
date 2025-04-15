@@ -5,7 +5,7 @@ import { auth } from "@/auth"
 import { AgentCard } from "@/components/agent-card"
 import { ChatList } from "@/components/chat/chat-list"
 import { Landing } from "@/components/landing"
-import { APP_URL } from "@/lib/config"
+import { DEPLOYMENT_URL } from "@/lib/config"
 import { getAgent, getPublishedChat } from "@/lib/data/kv"
 import { getAiThreadMessages } from "@/lib/data/openai"
 import type { NextPageProps } from "@/lib/types"
@@ -16,13 +16,13 @@ export async function generateMetadata({ params }: NextPageProps) {
     title: "Shared Chat",
     description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
     openGraph: {
-      images: [`${APP_URL}/api/og?id=${params.id}&h=630`],
-      url: `${APP_URL}/share/${params.id}`,
+      images: [`${DEPLOYMENT_URL}/api/og?id=${params.id}&h=630`],
+      url: `${DEPLOYMENT_URL}/share/${params.id}`,
     },
     twitter: {
       card: "summary_large_image",
       site: "@w3gptai",
-      images: [`${APP_URL}/api/og?id=${params.id}&h=675`],
+      images: [`${DEPLOYMENT_URL}/api/og?id=${params.id}&h=675`],
     },
   }
   return metadata
