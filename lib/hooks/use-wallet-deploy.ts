@@ -11,6 +11,7 @@ import { storeDeploymentAction, storeVerificationAction } from "@/lib/actions/ve
 import { getContractFileName } from "@/lib/solidity/utils"
 import type { LastDeploymentData, VerifyContractParams } from "@/lib/types"
 import { getExplorerUrl, getIpfsUrl } from "@/lib/utils"
+import { getDataSuffix, submitReferral } from "@divvi/referral-sdk"
 
 export function useWalletDeploy() {
   const { chain: viemChain, address, chainId } = useAccount()
@@ -52,55 +53,74 @@ export function useWalletDeploy() {
           }
         })
 
-        const nonce = await walletClient.getTransactionCount({ address })
-
-        const contractAddress = getCreateAddress({
-          from: address,
-          nonce: BigInt(nonce),
-        })
-
+        // Generate deployment calldata
         const deployData = encodeDeployData({
           abi,
           bytecode,
           args: parsedConstructorArgs,
         })
 
-        const deployHash = await walletClient.deployContract({
-          abi,
-          bytecode,
+        // Get Divvi data suffix
+        const dataSuffix = getDataSuffix({
+          consumer: "0x42e9c498135431a48796B5fFe2CBC3d7A1811927",
+          providers: ["0x5f0a55FaD9424ac99429f635dfb9bF20c3360Ab8", "0x6226ddE08402642964f9A6de844ea3116F0dFc7e"],
+        })
+
+        // Concatenate deployData and dataSuffix as hex strings
+        const deployDataNo0x = deployData.startsWith("0x") ? deployData.slice(2) : deployData
+        const dataSuffixNo0x = dataSuffix.startsWith("0x") ? dataSuffix.slice(2) : dataSuffix
+        const fullCalldata = `0x${deployDataNo0x}${dataSuffixNo0x}` as `0x${string}`
+
+        // Send the deployment transaction
+        const txHash = await walletClient.sendTransaction({
           account: address,
-          args: parsedConstructorArgs,
+          to: undefined, // contract creation
+          data: fullCalldata,
           value: 0n,
         })
 
-        if (!deployHash) {
-          toast.error("Failed to deploy contract")
+        // Get chain ID
+        const sentChainId = await walletClient.getChainId()
+
+        // Report to Divvi
+        await submitReferral({
+          txHash,
+          chainId: sentChainId,
+        })
+
+        // Wait for transaction receipt
+        const transactionReceipt = await walletClient.waitForTransactionReceipt({
+          hash: txHash,
+        })
+
+        if (transactionReceipt.status !== "success") {
+          toast.error("Failed to receive enough confirmations")
           return
         }
 
+        // Derive contract address
+        const nonce = await walletClient.getTransactionCount({ address })
+        const contractAddress = getCreateAddress({
+          from: address,
+          nonce: BigInt(nonce - 1), // minus 1 because nonce was incremented after sending
+        })
+
+        // Upload to IPFS
         const ipfsLoadingToast = toast.loading("Uploading to IPFS...")
         const cid = await ipfsUploadDirAction(sources, abi, bytecode, standardJsonInput)
-
-        if (!cid) {
-          toast.dismiss(ipfsLoadingToast)
-          toast.error("Failed to upload to IPFS")
-          return
-        }
-
         toast.dismiss(ipfsLoadingToast)
         if (!cid) {
           toast.error("Failed to upload to IPFS")
-        } else {
-          toast.success("Uploaded to IPFS successfully!")
+          return
         }
+        toast.success("Uploaded to IPFS successfully!")
 
         const ipfsUrl = getIpfsUrl(cid)
-
         const encodedConstructorArgs = deployData.slice(bytecode.length)
         const fileName = getContractFileName(contractName)
 
         const verifyContractConfig: VerifyContractParams = {
-          deployHash,
+          deployHash: txHash,
           contractAddress,
           standardJsonInput,
           encodedConstructorArgs,
@@ -123,8 +143,8 @@ export function useWalletDeploy() {
 
         await Promise.all([
           storeDeploymentAction({
-            chainId: String(chainId),
-            deployHash,
+            chainId: String(sentChainId),
+            deployHash: txHash,
             contractAddress,
             cid,
           }),
@@ -135,20 +155,11 @@ export function useWalletDeploy() {
           }),
         ])
 
-        const transactionReceipt = await walletClient.waitForTransactionReceipt({
-          hash: deployHash,
-        })
-
-        if (transactionReceipt.status !== "success") {
-          toast.error("Failed to receive enough confirmations")
-          return
-        }
-
         const deploymentData: LastDeploymentData = {
           walletAddress: address,
           contractAddress,
-          chainId,
-          transactionHash: deployHash,
+          chainId: sentChainId,
+          transactionHash: txHash,
           ipfsUrl,
           explorerUrl,
           verifyContractConfig,
