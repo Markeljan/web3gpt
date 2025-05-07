@@ -42,7 +42,7 @@
         "server-only": "^0.0.1",
         "solc": "0.8.29",
         "sonner": "^1.7.0",
-        "vercel-url": "^0.2.6",
+        "vercel-url": "^0.2.8",
         "viem": "^2.26.2",
         "wagmi": "^2.14.16",
         "zustand": "^5.0.1",
@@ -1475,7 +1475,7 @@
 
     "varint": ["varint@5.0.2", "", {}, "sha512-lKxKYG6H03yCZUpAGOPOsMcGxd1RHCu1iKvEHYDPmTyq2HueGhD73ssNBqqQWfvYs04G9iUFRvmAVLW20Jw6ow=="],
 
-    "vercel-url": ["vercel-url@0.2.6", "", {}, "sha512-2D6bksVmOouZLGhFeW9PN9g9rgG04aGNKyYJSeL+T92EdDgUTX6N2wzkoJuArpztq2Rg8t3fTJ7db2bCs5/4jw=="],
+    "vercel-url": ["vercel-url@0.2.8", "", {}, "sha512-0sa1u3QzWI/xmbtF2BC2DyXPwnAHOsz+gtFBzCut9ywr9LplWhspjp4vT5luFjQaakXp9M+966CjDPzA53cMug=="],
 
     "vfile": ["vfile@5.3.7", "", { "dependencies": { "@types/unist": "^2.0.0", "is-buffer": "^2.0.0", "unist-util-stringify-position": "^3.0.0", "vfile-message": "^3.0.0" } }, "sha512-r7qlzkgErKjobAmyNIkkSpizsFPYiUPuJb5pNW1RB4JcYVZhs4lIbVqk8XPk033CV/1z8ss5pkax8SuhGpcG8g=="],
 

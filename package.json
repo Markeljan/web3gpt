@@ -48,7 +48,7 @@
     "server-only": "^0.0.1",
     "solc": "0.8.29",
     "sonner": "^1.7.0",
-    "vercel-url": "^0.2.6",
+    "vercel-url": "^0.2.8",
     "viem": "^2.26.2",
     "wagmi": "^2.14.16",
     "zustand": "^5.0.1"
