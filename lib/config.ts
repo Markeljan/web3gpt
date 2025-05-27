@@ -48,14 +48,14 @@ const polygonAmoyWithIcon = {
 }
 
 export const supportedChains: [Chain, ...Chain[]] = [
-  arbitrumSepolia,
-  optimismSepolia,
-  baseSepolia,
-  celoAlfajores,
-  sepolia,
+  polygonAmoyWithIcon,
   metisSepoliaWithIcon,
   mantleSepoliaWithIcon,
-  polygonAmoyWithIcon,
+  baseSepolia,
+  arbitrumSepolia,
+  optimismSepolia,
+  celoAlfajores,
+  sepolia,
 ]
 
 export const CHAIN_DETAILS: Record<string, ChainDetails> = {
