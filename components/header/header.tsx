@@ -80,12 +80,12 @@ export const Header = async () => {
                 <IconExternalLink className="size-3.5" />
               </Link>
             </Button>
-            <Button variant="link" asChild>
+            {/* <Button variant="link" asChild>
               <Link href="https://d.w3gpt.ai/gg23" target="_blank" className="flex items-center gap-1">
                 <span>Support us on Gitcoin 23</span>
                 <IconExternalLink className="size-3.5" />
               </Link>
-            </Button>
+            </Button> */}
           </div>
           <MetisTeaser />
         </div>
