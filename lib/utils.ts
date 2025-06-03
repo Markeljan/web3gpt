@@ -8,15 +8,18 @@ export const cn = (...inputs: ClassValue[]): string => twMerge(clsx(inputs))
 
 export const formatDate = (input: string | number | Date): string => {
   let date: Date
+
   if (typeof input === "number") {
+    // treat 10 digit numbers as unix timestamps (seconds)
     if (input.toString().length === 10) {
       date = new Date(input * 1000)
+    } else {
+      // assume milliseconds
+      date = new Date(input)
     }
-  }
-  if (typeof input === "string") {
+  } else if (typeof input === "string") {
     date = new Date(input)
-  }
-  if (input instanceof Date) {
+  } else if (input instanceof Date) {
     date = input
   } else {
     date = new Date()
