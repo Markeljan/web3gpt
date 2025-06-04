@@ -127,6 +127,9 @@ export function useWalletDeploy() {
             deployHash,
             contractAddress,
             cid,
+            ipfsUrl,
+            contractName,
+            deployerAddress: address,
           }),
           storeVerificationAction(verifyContractConfig),
           track("deployed_contract", {

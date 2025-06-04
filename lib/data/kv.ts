@@ -4,7 +4,7 @@ import { kv } from "@vercel/kv"
 import { unstable_cache as cache, revalidateTag } from "next/cache"
 
 import { auth } from "@/auth"
-import type { Agent, DbChat, DbChatListItem, VerifyContractParams } from "@/lib/types"
+import type { Agent, DbChat, DbChatListItem, DeploymentRecord, VerifyContractParams } from "@/lib/types"
 
 type ActionWithUser<T, R> = (data: T, userId: string) => Promise<R>
 
@@ -88,6 +88,18 @@ export const getVerifications = async () => {
 export const deleteVerification = async (deployHash: string) => {
   await kv.del(`verification:${deployHash}`)
 }
+
+export const getUserDeployments = withUser<void, DeploymentRecord[]>(async (_, userId) => {
+  const deployments = await kv.zrange(`user:deployments:${userId}`, 0, -1, { rev: true })
+  if (!deployments.length) {
+    return []
+  }
+  const pipeline = kv.pipeline()
+  for (const deployment of deployments) {
+    pipeline.hgetall<DeploymentRecord>(deployment)
+  }
+  return await pipeline.exec<DeploymentRecord[]>()
+})
 
 export const storeAgent = withUser<Agent, void>(async (agent, userId) => {
   if (userId !== agent.userId) {

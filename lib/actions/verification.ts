@@ -3,18 +3,13 @@
 import { kv } from "@vercel/kv"
 
 import { auth } from "@/auth"
-import type { VerifyContractParams } from "@/lib/types"
+import type { DeploymentRecord, VerifyContractParams } from "@/lib/types"
 
 export const storeVerificationAction = async (data: VerifyContractParams) => {
   await kv.hmset(`verification:${data.deployHash}`, data)
 }
 
-export const storeDeploymentAction = async (data: {
-  chainId: string
-  deployHash: string
-  contractAddress: string
-  cid: string
-}) => {
+export const storeDeploymentAction = async (data: DeploymentRecord) => {
   const session = await auth()
   const userId = session?.user?.id || "anon"
 
