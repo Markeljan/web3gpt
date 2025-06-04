@@ -96,6 +96,16 @@ export type DeployTokenScriptResult = {
   includeBurnFunction: boolean
 }
 
+export type DeploymentRecord = {
+  chainId: string
+  deployHash: string
+  contractAddress: Hash
+  cid: string
+  ipfsUrl: string
+  contractName: string
+  deployerAddress: Hash
+}
+
 export type ChainDetails = {
   rpcUrl: string
   explorerUrl: string
