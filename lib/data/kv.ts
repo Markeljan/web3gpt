@@ -90,7 +90,7 @@ export const deleteVerification = async (deployHash: string) => {
 }
 
 export const getUserDeployments = withUser<void, DeploymentRecord[]>(async (_, userId) => {
-  const deployments = await kv.zrange(`user:deployments:${userId}`, 0, -1, { rev: true })
+  const deployments = await kv.zrange<string[]>(`user:deployments:${userId}`, 0, -1, { rev: true })
   if (!deployments.length) {
     return []
   }
