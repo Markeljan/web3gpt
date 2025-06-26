@@ -39,10 +39,7 @@ export const POST = withUnkey(
       }
 
       const { keyId = "unknown_key", remaining = 0, ownerId = "unknown_owner" } = req.unkey
-      console.log("keyId", keyId)
-      console.log("remaining", remaining)
-      console.log("ownerId", ownerId)
-      // Track analytics
+
       track("completions_request", {
         apiId: UNKEY_COMPLETIONS_API_ID,
         keyId,
@@ -82,8 +79,7 @@ export const POST = withUnkey(
     }
   },
   {
-    handleInvalidKey(req, result) {
-      console.log("handleInvalidKey", req, result)
+    handleInvalidKey(_req, _result) {
       return new NextResponse("Unauthorized get api key at https://t.me/w3gptai", {
         status: 403,
       })

@@ -4,11 +4,11 @@ import { track } from "@vercel/analytics/server"
 import { generateObject, generateText } from "ai"
 import { NextResponse } from "next/server"
 import type { Abi, Hex } from "viem"
+import { metisSepolia } from "viem/chains"
 import { z } from "zod"
 
 import { compileContract } from "@/lib/actions/deploy-contract"
 import { deployContract } from "@/lib/solidity/deploy"
-import { metisSepolia } from "viem/chains"
 
 const UNKEY_CONTRACTS_API_ID = process.env.UNKEY_CONTRACTS_API_ID
 
@@ -143,7 +143,7 @@ export const POST = withUnkey(
           const errorMessage = error instanceof Error ? error.message : "Unknown error"
           const fixPrompt = `Fix this Solidity contract that has the following error: ${errorMessage}`
 
-          const { text: fixedCode, providerMetadata } = await generateText({
+          const { text: fixedCode } = await generateText({
             system:
               "You are an expert Solidity smart contract developer. Fix the contract and return only the fixed code without any explanations. DO NOT include markdown code blocks or code fence markers (```) in your response. The output must be pure, valid Solidity code only. Current version is 0.8.29.",
             prompt: fixPrompt,
@@ -159,8 +159,6 @@ export const POST = withUnkey(
               },
             },
           })
-
-          console.log(`Fix attempt ${retryCount + 1} - OpenAI response ID: ${providerMetadata?.openai?.responseId}`)
 
           // Clean the fixed code to ensure no markdown or code fence markers remain
           let cleanedFixedCode = fixedCode.trim()
@@ -189,7 +187,7 @@ export const POST = withUnkey(
       }
 
       const { explorerUrl, ipfsUrl } = await deployContract({
-        chainId: chainId.toString(),
+        chainId,
         contractName,
         sourceCode,
         constructorArgs: [],
@@ -214,8 +212,7 @@ export const POST = withUnkey(
     }
   },
   {
-    handleInvalidKey(req, result) {
-      console.log("handleInvalidKey", req, result)
+    handleInvalidKey() {
       return new NextResponse("Unauthorized get api key at https://t.me/w3gptai", {
         status: 403,
       })

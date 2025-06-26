@@ -117,7 +117,6 @@ export const deployContract = async ({
       deployHash,
       contractAddress,
       cid,
-      ipfsUrl,
       contractName,
       deployerAddress,
     }),

@@ -12,7 +12,7 @@ import {
 import { http, type CreateConnectorFn, cookieStorage, createConfig, createStorage } from "wagmi"
 
 import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
-import type { ChainDetails } from "@/lib/types"
+import type { ChainDetails, ChainWithIcon } from "@/lib/types"
 import { DEPLOYMENT_URL as VERCEL_DEPLOYMENT_URL } from "vercel-url"
 
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
@@ -35,26 +35,60 @@ const metisSepoliaWithIcon = {
     },
   },
   iconUrl: "/assets/metis-logo.png",
+  iconBackground: "#0099FF",
 }
+
 const mantleSepoliaWithIcon = {
   ...mantleSepoliaTestnet,
   name: "Mantle Sepolia",
-  iconUrl: "/mantle-logo.jpeg",
+  iconUrl: "/assets/chains/mantle-logo.png",
+  iconBackground: "#000000",
 }
 const polygonAmoyWithIcon = {
   ...polygonAmoy,
-  iconUrl: "/polygon-logo.png",
+  iconUrl: "/assets/chains/polygon-logo.png",
+  iconBackground: "#8247E5",
 }
 
-export const supportedChains: [Chain, ...Chain[]] = [
+const baseSepoliaWithIcon = {
+  ...baseSepolia,
+  iconUrl: "/assets/chains/base-logo.png",
+  iconBackground: "#0052FF",
+}
+
+const arbitrumSepoliaWithIcon = {
+  ...arbitrumSepolia,
+  iconUrl: "/assets/chains/arbitrum-logo.png",
+  iconBackground: "#2D374B",
+}
+
+const optimismSepoliaWithIcon = {
+  ...optimismSepolia,
+  iconUrl: "/assets/chains/optimism-logo.png",
+  iconBackground: "#FF0420",
+}
+
+const celoAlfajoresWithIcon = {
+  ...celoAlfajores,
+  iconUrl: "/assets/chains/celo-logo.png",
+  iconBackground: "#35D07F",
+}
+
+const sepoliaWithIcon = {
+  ...sepolia,
+  iconUrl: "/assets/chains/ethereum-logo.png",
+  iconBackground: "#FFFFFF10",
+}
+
+export const SUPPORTED_CHAINS: [ChainWithIcon, ...ChainWithIcon[]] = [
   polygonAmoyWithIcon,
   metisSepoliaWithIcon,
   mantleSepoliaWithIcon,
-  baseSepolia,
-  arbitrumSepolia,
-  optimismSepolia,
-  celoAlfajores,
-  sepolia,
+  baseSepoliaWithIcon,
+  arbitrumSepoliaWithIcon,
+  optimismSepoliaWithIcon,
+  celoAlfajoresWithIcon,
+  sepoliaWithIcon,
 ]
 
 export const CHAIN_DETAILS: Record<string, ChainDetails> = {
@@ -130,14 +164,14 @@ export const getChainDetails = (viemChain: Chain): ChainDetails => {
   }
 }
 
-export function getChainById(chainId: number): Chain | null {
-  return supportedChains.find((chain) => chain.id === chainId) || null
+export function getChainById(chainId: number): ChainWithIcon | null {
+  return SUPPORTED_CHAINS.find((chain) => chain.id === chainId) || null
 }
 
 export function getWagmiConfig(connectors?: CreateConnectorFn[]) {
   return createConfig({
-    chains: supportedChains,
-    transports: Object.fromEntries(supportedChains.map((chain) => [[chain.id], http(CHAIN_DETAILS[chain.id].rpcUrl)])),
+    chains: SUPPORTED_CHAINS,
+    transports: Object.fromEntries(SUPPORTED_CHAINS.map((chain) => [[chain.id], http(CHAIN_DETAILS[chain.id].rpcUrl)])),
     ssr: true,
     storage: createStorage({
       storage: cookieStorage,

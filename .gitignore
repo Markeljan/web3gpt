@@ -24,12 +24,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 .env.*
-
 !.env.example
 
 # turbo
@@ -39,7 +34,7 @@ yarn-error.log*
 .env
 .vercel
 .vscode
-.env*.local
+.cursor
 
 # tsc
 tsconfig.tsbuildinfo
