@@ -14,7 +14,7 @@ export const ChatList = ({ messages, avatarUrl, status }: ChatList) => {
     return null
   }
   return (
-    <div className="relative flex flex-col mx-auto max-md:max-w-2xl max-w-3xl w-full p-2 md:translate-x-[10%]">
+    <div className="relative flex flex-col mx-auto max-md:max-w-2xl max-w-4xl w-full p-2 md:translate-x-[8%]">
       {messages
         .filter((unfilteredMessage) => unfilteredMessage.role !== "system")
         .map((message, index) => (

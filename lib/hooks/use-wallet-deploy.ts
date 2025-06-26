@@ -123,11 +123,10 @@ export function useWalletDeploy() {
 
         await Promise.all([
           storeDeploymentAction({
-            chainId: String(chainId),
+            chainId,
             deployHash,
             contractAddress,
             cid,
-            ipfsUrl,
             contractName,
             deployerAddress: address,
           }),

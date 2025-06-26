@@ -1,5 +1,6 @@
 "server-only"
 
+import { IPFS_W3GPT_GROUP_ID } from "@/lib/constants"
 import { type FileObject, PinataSDK } from "pinata"
 import type { SolcOutput } from "solc"
 import type { Abi } from "viem"
@@ -27,6 +28,7 @@ export async function ipfsUploadDir(
 
     const { IpfsHash } = await pinata.upload.fileArray(files, {
       cidVersion: 1,
+      groupId: IPFS_W3GPT_GROUP_ID,
       metadata: {
         name: "contract",
       },
@@ -44,6 +46,7 @@ export async function ipfsUploadFile(fileName: string, fileContent: string | Buf
     const file = new File([fileContent], fileName)
     const { IpfsHash } = await pinata.upload.file(file, {
       cidVersion: 1,
+      groupId: IPFS_W3GPT_GROUP_ID,
       metadata: {
         name: fileName,
       },

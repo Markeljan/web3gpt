@@ -5,15 +5,13 @@ import type { BadRequestError } from "openai/error"
 
 import { auth } from "@/auth"
 import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
-import { DEFAULT_COMPILER_VERSION, DEPLOYMENT_URL, supportedChains } from "@/lib/config"
+import { DEFAULT_COMPILER_VERSION, DEPLOYMENT_URL, SUPPORTED_CHAINS } from "@/lib/config"
 import { storeChat } from "@/lib/data/kv"
 import { createAgent, openai } from "@/lib/data/openai"
 import { deployContract, deployTokenScript } from "@/lib/solidity/deploy"
 import { ToolName } from "@/lib/tools"
 import type { DbChat } from "@/lib/types"
 import type { FunctionToolCall } from "openai/resources/beta/threads/runs/index"
-
-export const runtime = "nodejs"
 
 export async function POST(request: NextRequest) {
   const session = await auth()
@@ -80,7 +78,7 @@ export async function POST(request: NextRequest) {
       additional_instructions: JSON.stringify({
         latestSettings: {
           compilerVersion: DEFAULT_COMPILER_VERSION,
-          availableChains: supportedChains.map((chain) => {
+          availableChains: SUPPORTED_CHAINS.map((chain) => {
             return {
               name: chain.name,
               id: chain.id,
