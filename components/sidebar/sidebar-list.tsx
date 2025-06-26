@@ -14,9 +14,9 @@ export function SidebarList({ chatList }: SidebarListProps) {
   const activeChatId = pathname.split("/chat/")[1]
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
       {chatList?.length ? (
-        <div className="space-y-2 px-2">
+        <div className="space-y-1 px-2 pb-2">
           {chatList?.map((chat) => (
             <SidebarItem key={chat.id} chat={chat} isActive={chat.id === activeChatId}>
               <SidebarActions chat={chat} />

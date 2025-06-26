@@ -58,3 +58,5 @@ export const AGENTS_ARRAY: Agent[] = [
     imageUrl: "/assets/tokenscript.png",
   },
 ]
+
+export const IPFS_W3GPT_GROUP_ID = "ded75ff6-65b1-43a2-bf95-6adc538828f9"

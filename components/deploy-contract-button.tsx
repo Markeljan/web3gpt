@@ -141,7 +141,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
               setSourceCode(getSourceCode())
               setIsDialogOpen(true)
             }}
-            className="mr-2 text-primary-foreground"
+            className="mr-2 text-primary-foreground bg-primary/80 hover:bg-primary"
             variant="default"
             disabled={!isSupportedChain}
             size="sm"

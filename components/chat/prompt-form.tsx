@@ -5,11 +5,12 @@ import type { UseAssistantHelpers } from "@ai-sdk/react"
 import Textarea from "react-textarea-autosize"
 
 import { Button, buttonVariants } from "@/components/ui/button"
-import { IconArrowElbow, IconHome, IconSpinner } from "@/components/ui/icons"
+import { IconPlus, IconSpinner } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useEnterSubmit } from "@/lib/hooks/use-enter-submit"
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 import { cn } from "@/lib/utils"
+import { ArrowUp } from "lucide-react"
 
 type PromptProps = Pick<UseAssistantHelpers, "append" | "status" | "setThreadId">
 
@@ -48,7 +49,7 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
         await append({ role: "user", content: value })
       }}
     >
-      <div className="relative flex w-full grow flex-col overflow-hidden px-8 sm:rounded-md sm:border sm:px-12">
+      <div className="relative flex w-full grow flex-col overflow-hidden px-4 sm:px-6">
         <Tooltip delayDuration={500}>
           <TooltipTrigger asChild>
             <Button
@@ -62,10 +63,10 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
               }}
               className={cn(
                 buttonVariants({ size: "sm", variant: "secondary" }),
-                "absolute left-0 top-4 size-8 rounded-full border p-0 sm:left-4",
+                "absolute left-0 top-4 size-8 rounded-full border p-0 sm:left-2 hover:bg-secondary/80",
               )}
             >
-              {isPendingTransition ? <IconSpinner /> : <IconHome />}
+              {isPendingTransition ? <IconSpinner /> : <IconPlus />}
               <span className="sr-only">New Chat</span>
             </Button>
           </TooltipTrigger>
@@ -86,13 +87,13 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
           spellCheck={false}
           autoComplete="off"
           autoCorrect="off"
-          className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
+          className="min-h-[60px] md:min-h-[72px] max-h-[200px] w-full resize-none bg-transparent px-8 py-[1.3rem] md:py-[1.5rem] focus-within:outline-none sm:text-sm overflow-y-auto"
         />
-        <div className="absolute right-0 top-4 sm:right-4">
+        <div className="absolute right-0 top-4 sm:right-2">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button type="submit" size="icon" disabled={input === "" || isInProgress}>
-                <IconArrowElbow className="fill-white" />
+                <ArrowUp className="size-5" />
                 <span className="sr-only">Send message</span>
               </Button>
             </TooltipTrigger>

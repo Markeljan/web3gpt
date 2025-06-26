@@ -22,13 +22,11 @@ export const GET = async (req: NextRequest) => {
     try {
       const { result: guid } = await verifyContract(verificationData)
       if (ALREADY_VERIFIED_MESSAGES.includes(guid)) {
-        console.log(`${verificationData.viemChain.name} ${verificationData.contractAddress}`)
         await deleteVerification(verificationData.deployHash)
         continue
       }
       const verificationStatus = await checkVerifyStatus(guid, verificationData.viemChain)
       if (verificationStatus.result === PASS_MESSAGE) {
-        console.log(`${verificationData.viemChain.name} ${verificationData.contractAddress}`)
         await deleteVerification(verificationData.deployHash)
       }
     } catch (error) {

@@ -1,16 +1,18 @@
+import { Analytics } from "@vercel/analytics/react"
 import type { Metadata, Viewport } from "next"
+import { ThemeProvider } from "next-themes"
 import { JetBrains_Mono as FontMono, Inter as FontSans } from "next/font/google"
 import { headers } from "next/headers"
 import Script from "next/script"
 import type { ReactNode } from "react"
-
-import { Analytics } from "@vercel/analytics/react"
-import { ThemeProvider } from "next-themes"
 import { cookieToInitialState } from "wagmi"
 
 import "@/app/globals.css"
+import { auth } from "@/auth"
 import { Header } from "@/components/header/header"
 import { Web3Provider } from "@/components/providers/web3-provider"
+import { PermanentSidebar } from "@/components/sidebar/permanent-sidebar"
+import { SidebarContent } from "@/components/sidebar/sidebar-content"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { DEPLOYMENT_URL, getWagmiConfig } from "@/lib/config"
@@ -45,7 +47,7 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/logo.svg",
+    icon: "/assets/web3gpt.png",
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
@@ -59,7 +61,7 @@ export const metadata: Metadata = {
     siteName: "Web3GPT",
     images: [
       {
-        url: `${DEPLOYMENT_URL}/og-image.png`,
+        url: `${DEPLOYMENT_URL}/opengraph-image.png`,
         width: 1200,
         height: 630,
         alt: "Web3GPT",
@@ -83,15 +85,16 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default async function Layout({ children }: { children: ReactNode }) {
   const initialState = cookieToInitialState(getWagmiConfig(), headers().get("cookie"))
+  const session = await auth()
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("font-sans antialiased", fontSans.variable, fontMono.variable)}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
           enableColorScheme
@@ -99,11 +102,14 @@ export default function Layout({ children }: { children: ReactNode }) {
         >
           <TooltipProvider>
             <Web3Provider initialState={initialState}>
-              <div className="flex min-h-screen flex-col">
-                <main className="flex flex-1 flex-col bg-muted/50">
+              <div className="flex h-screen overflow-hidden">
+                <PermanentSidebar user={session?.user}>
+                  <SidebarContent />
+                </PermanentSidebar>
+                <div className="flex flex-1 flex-col min-w-0">
                   <Header />
-                  {children}
-                </main>
+                  <main className="flex-1 bg-muted/50 overflow-auto">{children}</main>
+                </div>
               </div>
               <Toaster
                 toastOptions={{

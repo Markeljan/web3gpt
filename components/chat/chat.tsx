@@ -117,7 +117,7 @@ export const Chat = ({ initialThreadId, initialMessages = [], agent, className, 
 
   return (
     <>
-      <div ref={chatRef} className={cn("px-4 pb-[200px] pt-4 md:pt-10", className)}>
+      <div ref={chatRef} className={cn("px-3 pb-32 pt-4 sm:px-4 md:pt-10", className)}>
         {showLanding ? <Landing userId={userId} /> : <AgentCard setThreadId={setThreadId} agent={agent} />}
         <ChatList messages={messages} avatarUrl={avatarUrl} status={status} />
         <ChatScrollAnchor trackVisibility={isInProgress} />

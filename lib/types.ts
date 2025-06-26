@@ -45,7 +45,7 @@ export type CreateAgentParams = {
 }
 
 export type DeployContractParams = {
-  chainId: string
+  chainId: number
   contractName: string
   sourceCode: string
   constructorArgs: Array<string | string[]>
@@ -96,15 +96,19 @@ export type DeployTokenScriptResult = {
   includeBurnFunction: boolean
 }
 
-export type DeploymentRecord = {
-  chainId: string
-  deployHash: string
-  contractAddress: Hash
+export type DeploymentRecordBase = {
   cid: string
-  ipfsUrl: string
+  chainId: number
+  contractAddress: Hash
+  deployHash: Hash
+}
+
+export type DeploymentRecord = DeploymentRecordBase & {
   contractName: string
   deployerAddress: Hash
 }
+
+export type ChainWithIcon = Chain & { iconUrl: string; iconBackground: string }
 
 export type ChainDetails = {
   rpcUrl: string

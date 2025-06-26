@@ -89,18 +89,6 @@ export const deleteVerification = async (deployHash: string) => {
   await kv.del(`verification:${deployHash}`)
 }
 
-export const getUserDeployments = withUser<void, DeploymentRecord[]>(async (_, userId) => {
-  const deployments = await kv.zrange<string[]>(`user:deployments:${userId}`, 0, -1, { rev: true })
-  if (!deployments.length) {
-    return []
-  }
-  const pipeline = kv.pipeline()
-  for (const deployment of deployments) {
-    pipeline.hgetall<DeploymentRecord>(deployment)
-  }
-  return await pipeline.exec<DeploymentRecord[]>()
-})
-
 export const storeAgent = withUser<Agent, void>(async (agent, userId) => {
   if (userId !== agent.userId) {
     return
@@ -134,3 +122,34 @@ export const storeChat = withUser<
 
   return revalidateTag("chat-list")
 })
+
+export const getUserDeployments = withUser<void, DeploymentRecord[]>(async (_, userId) => {
+  const deploymentKeys = await kv.zrange<string[]>(`user:deployments:${userId}`, 0, -1, { rev: true })
+
+  if (!deploymentKeys.length) {
+    return []
+  }
+
+  const pipeline = kv.pipeline()
+  for (const deploymentKey of deploymentKeys) {
+    const fullKey = deploymentKey.startsWith("deployment:") ? deploymentKey : `deployment:${deploymentKey}`
+    pipeline.hgetall<DeploymentRecord>(fullKey)
+  }
+
+  const results = await pipeline.exec<DeploymentRecord[]>()
+
+  return results.filter(Boolean)
+})
+
+export const getAllDeployments = async () => {
+  const deploymentKeys = await kv.keys("deployment:*")
+  if (!deploymentKeys || deploymentKeys.length === 0) {
+    return []
+  }
+  const pipeline = kv.pipeline()
+  for (const deploymentKey of deploymentKeys) {
+    pipeline.hgetall<DeploymentRecord>(deploymentKey)
+  }
+  const results = await pipeline.exec<DeploymentRecord[]>()
+  return results.filter(Boolean)
+}

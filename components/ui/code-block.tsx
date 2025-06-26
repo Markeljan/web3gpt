@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button"
 import { IconCheck, IconCopy, IconDownload } from "@/components/ui/icons"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import { useIsClient } from "@/lib/hooks/use-is-client"
-import { cn } from "@/lib/utils"
 
 const PROGRAMMING_LANGUAGES: Record<string, string> = {
   javascript: ".js",
@@ -114,19 +113,14 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
   }, [language, value])
 
   return (
-    <div className="relative w-full font-sans dark:bg-zinc-950 bg-gray-200">
-      <div
-        className={cn(
-          "flex w-full items-center justify-between px-6 py-3 pr-4",
-          isDarkMode ? "bg-zinc-800 text-zinc-100" : "bg-gray-300 text-gray-950",
-        )}
-      >
-        <span className="text-xs lowercase">{language}</span>
+    <div className="relative w-full font-sans bg-muted/95 dark:bg-muted/50">
+      <div className="flex w-full items-center justify-between px-6 py-3 pr-4 bg-secondary-foreground/40 dark:bg-secondary-foreground/10 border-b">
+        <span className="text-xs lowercase dark:text-secondary-foreground">{language}</span>
         <div className="flex items-center space-x-1">
           {renderDeployButton()}
           <Button
             variant="ghost"
-            className="focus-visible:ring-1 focus-visible:ring-gray-700 focus-visible:ring-offset-0"
+            className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0"
             onClick={downloadAsFile}
             size="icon"
           >
@@ -136,7 +130,7 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="text-xs focus-visible:ring-1 focus-visible:ring-gray-700 focus-visible:ring-offset-0"
+            className="text-xs focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0"
             onClick={() => copyToClipboard(value)}
           >
             {isCopied ? <IconCheck /> : <IconCopy />}
