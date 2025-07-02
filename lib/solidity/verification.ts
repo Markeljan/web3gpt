@@ -12,7 +12,7 @@ export const verifyContract = async ({
   fileName,
   contractName,
   viemChain,
-}: VerifyContractParams): Promise<{ status: string; result: string }> => {
+}: VerifyContractParams): Promise<{ status: string; result: string; message?: string }> => {
   const { explorerApiUrl, explorerApiKey } = getChainDetails(viemChain)
 
   const params = new URLSearchParams()
