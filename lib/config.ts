@@ -18,6 +18,7 @@ import { DEPLOYMENT_URL as VERCEL_DEPLOYMENT_URL } from "vercel-url"
 
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
 const BLOCKSCOUT_API_KEY = process.env.NEXT_PUBLIC_BLOCKSCOUT_API_KEY
+const ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY
 const TENDERLY_API_KEY = process.env.NEXT_PUBLIC_TENDERLY_API_KEY
 
 export const DEPLOYMENT_URL = VERCEL_DEPLOYMENT_URL || "https://w3gpt.ai"
@@ -92,31 +93,15 @@ export const SUPPORTED_CHAINS: [ChainWithIcon, ...ChainWithIcon[]] = [
   sepoliaWithIcon,
 ]
 
-export const CHAIN_DETAILS: Record<number, { rpcUrl: string }> = {
-  [sepolia.id]: {
-    rpcUrl: `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
-  },
-  [polygonAmoy.id]: {
-    rpcUrl: `https://polygon-amoy.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
-  },
-  [baseSepolia.id]: {
-    rpcUrl: `https://base-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
-  },
-  [arbitrumSepolia.id]: {
-    rpcUrl: `https://arb-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
-  },
-  [optimismSepolia.id]: {
-    rpcUrl: `https://opt-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
-  },
-  [celoAlfajores.id]: {
-    rpcUrl: `https://celo-alfajores.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
-  },
-  [mantleSepoliaTestnet.id]: {
-    rpcUrl: `https://mantle-sepolia.gateway.tenderly.co/${TENDERLY_API_KEY}`,
-  },
-  [metisSepolia.id]: {
-    rpcUrl: `https://metis-sepolia.gateway.tenderly.co/${TENDERLY_API_KEY}`,
-  },
+export const RPC_URLS: Record<number, string> = {
+  [sepolia.id]: `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+  [polygonAmoy.id]: `https://polygon-amoy.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+  [baseSepolia.id]: `https://base-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+  [arbitrumSepolia.id]: `https://arb-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+  [optimismSepolia.id]: `https://opt-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+  [celoAlfajores.id]: `https://celo-alfajores.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+  [mantleSepoliaTestnet.id]: `https://mantle-sepolia.gateway.tenderly.co/${TENDERLY_API_KEY}`,
+  [metisSepolia.id]: `https://metis-sepolia.gateway.tenderly.co/${TENDERLY_API_KEY}`,
 }
 
 const buildApiUrl = (blockscoutUrl: string) => {
@@ -128,17 +113,16 @@ const buildApiUrl = (blockscoutUrl: string) => {
 
 export const getChainDetails = (viemChain: Chain): ChainDetails => {
   const chainId = viemChain.id
-  const chainDetails = CHAIN_DETAILS[chainId]
   const blockscoutUrl = BLOCKSCOUT_URLS[chainId]
   const etherscan = ETHERSCAN_V2_URLS[chainId]
 
   return {
-    rpcUrl: chainDetails.rpcUrl,
+    rpcUrl: RPC_URLS[chainId] || viemChain.rpcUrls.default.http[0],
     explorerUrl: blockscoutUrl || etherscan?.explorerUrl || viemChain.blockExplorers?.default.url || "",
     explorerApiUrl: blockscoutUrl
       ? buildApiUrl(blockscoutUrl)
       : etherscan?.apiUrl || viemChain.blockExplorers?.default.apiUrl || "",
-    explorerApiKey: blockscoutUrl ? BLOCKSCOUT_API_KEY : process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY,
+    explorerApiKey: blockscoutUrl ? BLOCKSCOUT_API_KEY : ETHERSCAN_API_KEY,
   }
 }
 
@@ -149,7 +133,7 @@ export function getChainById(chainId: number): ChainWithIcon | null {
 export function getWagmiConfig(connectors?: CreateConnectorFn[]) {
   return createConfig({
     chains: SUPPORTED_CHAINS,
-    transports: Object.fromEntries(SUPPORTED_CHAINS.map((chain) => [[chain.id], http(CHAIN_DETAILS[chain.id].rpcUrl)])),
+    transports: Object.fromEntries(SUPPORTED_CHAINS.map((chain) => [[chain.id], http(RPC_URLS[chain.id])])),
     ssr: true,
     storage: createStorage({
       storage: cookieStorage,

@@ -9,8 +9,8 @@ export async function processVerifications() {
 
   for (const verificationData of verifications) {
     try {
-      const { result: guid } = await verifyContract(verificationData)
-      if (ALREADY_VERIFIED_MESSAGES.includes(guid)) {
+      const { result: guid, message, status } = await verifyContract(verificationData)
+      if (ALREADY_VERIFIED_MESSAGES.includes(guid) || (status === "1" && message === "OK")) {
         await deleteVerification(verificationData.deployHash)
         continue
       }
