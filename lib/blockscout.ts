@@ -135,7 +135,7 @@ export const BLOCKSCOUT_URLS: Record<number, string> = {
   78225: "https://explorer.stack.so",
   78281: "https://blockscout.dragonfly.hexapod.network",
   81457: "https://blast.blockscout.com",
-  84532: "https://base-sepolia.blockscout.com",
+  // 84532: "https://base-sepolia.blockscout.com",
   96970: "https://blockscout.mantis.hexapod.network",
   101010: "https://stability.blockscout.com",
   102031: "https://creditcoin-testnet.blockscout.com",
