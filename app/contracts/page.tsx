@@ -11,5 +11,7 @@ export default async function ContractsPage() {
     getAllDeployments(),
   ])
 
-  return <ContractsDashboard userDeployments={userDeployments || []} allDeployments={allDeployments || []} />
+  const combinedDeployments = [...(allDeployments || []), ...(userDeployments || [])]
+
+  return <ContractsDashboard userDeployments={userDeployments || []} allDeployments={combinedDeployments} />
 }
