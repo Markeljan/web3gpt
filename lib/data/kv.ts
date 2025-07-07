@@ -70,29 +70,31 @@ export const getAgent = async (id: string) => {
 
 export const getVerifications = async () => {
   const verifications: VerifyContractParams[] = []
-  const BATCH_SIZE = 100 // Process 100 keys at a time
-  let cursor = 0
-  
-  do {
-    // Use SCAN instead of KEYS to avoid blocking
-    const [nextCursor, keys] = await kv.scan(cursor, {
-      match: "verification:*",
-      count: BATCH_SIZE
-    })
-    
-    cursor = Number.parseInt(nextCursor)
-    
-    if (keys && keys.length > 0) {
-      // Process in batches to avoid "too many keys" error
+  const BATCH_SIZE = 100
+  let batch: string[] = []
+
+  for await (const key of kv.scanIterator({ match: "verification:*" })) {
+    batch.push(key)
+    if (batch.length >= BATCH_SIZE) {
       const pipeline = kv.pipeline()
-      for (const key of keys) {
-        pipeline.hgetall<VerifyContractParams>(key)
+      for (const b of batch) {
+        pipeline.hgetall<VerifyContractParams>(b)
       }
-      const batchResults = await pipeline.exec<VerifyContractParams[]>()
-      verifications.push(...batchResults.filter(Boolean))
+      const results = await pipeline.exec<VerifyContractParams[]>()
+      verifications.push(...results.filter(Boolean))
+      batch = []
     }
-  } while (cursor !== 0)
-  
+  }
+
+  if (batch.length > 0) {
+    const pipeline = kv.pipeline()
+    for (const b of batch) {
+      pipeline.hgetall<VerifyContractParams>(b)
+    }
+    const results = await pipeline.exec<VerifyContractParams[]>()
+    verifications.push(...results.filter(Boolean))
+  }
+
   return verifications
 }
 
@@ -154,28 +156,30 @@ export const getUserDeployments = withUser<void, DeploymentRecord[]>(async (_, u
 
 export const getAllDeployments = async () => {
   const deployments: DeploymentRecord[] = []
-  const BATCH_SIZE = 100 // Process 100 keys at a time
-  let cursor = 0
-  
-  do {
-    // Use SCAN instead of KEYS to avoid blocking
-    const [nextCursor, keys] = await kv.scan(cursor, {
-      match: "deployment:*",
-      count: BATCH_SIZE
-    })
-    
-    cursor = Number.parseInt(nextCursor)
-    
-    if (keys && keys.length > 0) {
-      // Process in batches to avoid "too many keys" error
+  const BATCH_SIZE = 100
+  let batch: string[] = []
+
+  for await (const key of kv.scanIterator({ match: "deployment:*" })) {
+    batch.push(key)
+    if (batch.length >= BATCH_SIZE) {
       const pipeline = kv.pipeline()
-      for (const key of keys) {
-        pipeline.hgetall<DeploymentRecord>(key)
+      for (const b of batch) {
+        pipeline.hgetall<DeploymentRecord>(b)
       }
-      const batchResults = await pipeline.exec<DeploymentRecord[]>()
-      deployments.push(...batchResults.filter(Boolean))
+      const results = await pipeline.exec<DeploymentRecord[]>()
+      deployments.push(...results.filter(Boolean))
+      batch = []
     }
-  } while (cursor !== 0)
-  
+  }
+
+  if (batch.length > 0) {
+    const pipeline = kv.pipeline()
+    for (const b of batch) {
+      pipeline.hgetall<DeploymentRecord>(b)
+    }
+    const results = await pipeline.exec<DeploymentRecord[]>()
+    deployments.push(...results.filter(Boolean))
+  }
+
   return deployments
 }
