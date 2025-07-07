@@ -72,16 +72,16 @@ export const getVerifications = async () => {
   const verifications: VerifyContractParams[] = []
   const BATCH_SIZE = 100 // Process 100 keys at a time
   let cursor = 0
-  
+
   do {
     // Use SCAN instead of KEYS to avoid blocking
     const [nextCursor, keys] = await kv.scan(cursor, {
       match: "verification:*",
-      count: BATCH_SIZE
+      count: BATCH_SIZE,
     })
-    
+
     cursor = Number.parseInt(nextCursor)
-    
+
     if (keys && keys.length > 0) {
       // Process in batches to avoid "too many keys" error
       const pipeline = kv.pipeline()
@@ -92,7 +92,7 @@ export const getVerifications = async () => {
       verifications.push(...batchResults.filter(Boolean))
     }
   } while (cursor !== 0)
-  
+
   return verifications
 }
 
@@ -154,28 +154,23 @@ export const getUserDeployments = withUser<void, DeploymentRecord[]>(async (_, u
 
 export const getAllDeployments = async () => {
   const deployments: DeploymentRecord[] = []
-  const BATCH_SIZE = 100 // Process 100 keys at a time
-  let cursor = 0
-  
-  do {
-    // Use SCAN instead of KEYS to avoid blocking
-    const [nextCursor, keys] = await kv.scan(cursor, {
-      match: "deployment:*",
-      count: BATCH_SIZE
-    })
-    
-    cursor = Number.parseInt(nextCursor)
-    
-    if (keys && keys.length > 0) {
-      // Process in batches to avoid "too many keys" error
-      const pipeline = kv.pipeline()
-      for (const key of keys) {
-        pipeline.hgetall<DeploymentRecord>(key)
-      }
-      const batchResults = await pipeline.exec<DeploymentRecord[]>()
-      deployments.push(...batchResults.filter(Boolean))
+  const BATCH_SIZE = 10000 // Process up to 10000 keys at a time
+
+  // Use SCAN instead of KEYS to avoid blocking
+  const [_, keys] = await kv.scan(0, {
+    match: "deployment:*",
+    count: BATCH_SIZE,
+  })
+
+  if (keys && keys.length > 0) {
+    // Process in batches to avoid "too many keys" error
+    const pipeline = kv.pipeline()
+    for (const key of keys) {
+      pipeline.hgetall<DeploymentRecord>(key)
     }
-  } while (cursor !== 0)
-  
+    const batchResults = await pipeline.exec<DeploymentRecord[]>()
+    deployments.push(...batchResults.filter(Boolean))
+  }
+
   return deployments
 }
