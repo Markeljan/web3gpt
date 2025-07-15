@@ -1,3 +1,4 @@
+import { DEPLOYMENT_URL as VERCEL_DEPLOYMENT_URL } from "vercel-url"
 import type { Chain } from "viem"
 import {
   arbitrumSepolia,
@@ -9,12 +10,10 @@ import {
   polygonAmoy,
   sepolia,
 } from "viem/chains"
-import { http, type CreateConnectorFn, cookieStorage, createConfig, createStorage } from "wagmi"
-
+import { type CreateConnectorFn, cookieStorage, createConfig, createStorage, http } from "wagmi"
 import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
 import { ETHERSCAN_V2_URLS } from "@/lib/etherscan"
 import type { ChainDetails, ChainWithIcon } from "@/lib/types"
-import { DEPLOYMENT_URL as VERCEL_DEPLOYMENT_URL } from "vercel-url"
 
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
 const BLOCKSCOUT_API_KEY = process.env.NEXT_PUBLIC_BLOCKSCOUT_API_KEY

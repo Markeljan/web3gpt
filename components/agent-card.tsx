@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-
+import { useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { IconCheck, IconCopy, IconPlus, IconSpinner } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -10,7 +10,6 @@ import { DEPLOYMENT_URL } from "@/lib/config"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
-import { useTransition } from "react"
 
 type AgentCardProps = {
   agent: Agent

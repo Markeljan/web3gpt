@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server"
-
 import { openai } from "@ai-sdk/openai"
 import { type NextRequestWithUnkeyContext, withUnkey } from "@unkey/nextjs"
 import { track } from "@vercel/analytics/server"
 import { generateText, streamText } from "ai"
+import { NextResponse } from "next/server"
 
 const UNKEY_COMPLETIONS_API_ID = process.env.UNKEY_COMPLETIONS_API_ID
 

@@ -1,9 +1,8 @@
 "use client"
 
-import { useCallback, useEffect, useRef } from "react"
-
 import { type CreateMessage, type Message, useAssistant } from "@ai-sdk/react"
 import { generateId } from "ai"
+import { useCallback, useEffect, useRef } from "react"
 
 import { useGlobalStore } from "@/app/state/global-store"
 import { AgentCard } from "@/components/agent-card"

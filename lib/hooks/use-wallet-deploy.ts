@@ -1,6 +1,5 @@
-import { useCallback } from "react"
-
 import { track } from "@vercel/analytics"
+import { useCallback } from "react"
 import { toast } from "sonner"
 import { encodeDeployData, getCreateAddress, publicActions } from "viem"
 import { useAccount, useWalletClient } from "wagmi"

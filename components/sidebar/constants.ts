@@ -1,4 +1,4 @@
-import { BookText, Code, FolderGit, MessagesSquare } from "lucide-react"
+import { BookText, Code, MessagesSquare } from "lucide-react"
 
 interface NavigationItem {
   name: string

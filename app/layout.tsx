@@ -1,9 +1,9 @@
 import { Analytics } from "@vercel/analytics/react"
 import type { Metadata, Viewport } from "next"
-import { ThemeProvider } from "next-themes"
 import { JetBrains_Mono as FontMono, Inter as FontSans } from "next/font/google"
 import { headers } from "next/headers"
 import Script from "next/script"
+import { ThemeProvider } from "next-themes"
 import type { ReactNode } from "react"
 import { cookieToInitialState } from "wagmi"
 

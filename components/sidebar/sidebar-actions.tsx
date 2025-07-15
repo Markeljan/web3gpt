@@ -128,7 +128,7 @@ export function SidebarActions({ chat }: SidebarActionsProps) {
                   Copying...
                 </>
               ) : (
-                <>Copy link</>
+                "Copy link"
               )}
             </Button>
           </DialogFooter>

@@ -1,9 +1,9 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { metisSepolia } from "viem/chains"
 import { useAccount } from "wagmi"
+import { Button } from "@/components/ui/button"
 
 export const MetisTeaser = () => {
   const { chain } = useAccount()

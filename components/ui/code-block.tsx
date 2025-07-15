@@ -1,9 +1,8 @@
 "use client"
 
-import { memo, useCallback, useMemo } from "react"
-
 import { generateId } from "ai"
 import { useTheme } from "next-themes"
+import { memo, useCallback, useMemo } from "react"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { coldarkCold, coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism"
 

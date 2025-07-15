@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
         <div tw="flex w-full items-center">
           <div tw="flex h-[80px] w-[80px] items-center justify-center rounded-md border border-[#9b9ba4]">
             {chat?.avatarUrl ? (
+              // biome-ignore lint/performance/noImgElement: og generation
               <img
                 src={chat.avatarUrl}
                 alt={chat.title}
@@ -66,6 +67,7 @@ export async function GET(req: NextRequest) {
         </div>
         <div tw="flex w-full mt-14 items-start">
           <div tw="flex h-[80px] w-[80px] items-center justify-center rounded-md border border-[#9b9ba4]">
+            {/** biome-ignore lint/performance/noImgElement: og generation */}
             <img src={web3GPTLogoUrl} alt={"Web3GPT assistant logo"} tw="w-full h-full object-cover rounded-md" />
           </div>
           <div tw="flex text-white font-bold text-6xl leading-none ml-10">...</div>

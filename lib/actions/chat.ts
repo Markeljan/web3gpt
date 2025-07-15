@@ -1,11 +1,10 @@
 "use server"
 
+import { kv } from "@vercel/kv"
 import { revalidateTag } from "next/cache"
-
 import { auth } from "@/auth"
 import { withUser } from "@/lib/data/kv"
 import type { DbChatListItem } from "@/lib/types"
-import { kv } from "@vercel/kv"
 
 export const shareChatAction = withUser<DbChatListItem, void>(async (chat, userId) => {
   if (userId !== String(chat.userId)) {

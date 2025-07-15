@@ -1,5 +1,5 @@
-import openApiSpec from "@/public/openapi.json"
 import { ApiReference } from "@scalar/nextjs-api-reference"
+import openApiSpec from "@/public/openapi.json"
 
 const isProduction = process.env.NODE_ENV === "production"
 const UNKEY_CONTRACTS_API_KEY = process.env.UNKEY_CONTRACTS_API_KEY

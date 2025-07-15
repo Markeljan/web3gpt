@@ -22,14 +22,13 @@ import {
 import Image from "next/image"
 import Link from "next/link"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
-
+import { polygonAmoy } from "viem/chains"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SUPPORTED_CHAINS, getChainById } from "@/lib/config"
+import { getChainById, SUPPORTED_CHAINS } from "@/lib/config"
 import type { DeploymentRecordBase } from "@/lib/types"
 import { cn, getExplorerUrl, getIpfsUrl } from "@/lib/utils"
-import { polygonAmoy } from "viem/chains"
 
 type CategoryFilter = "my-contracts" | "all-contracts" | "leaderboard" | "rewards"
 

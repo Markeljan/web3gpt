@@ -1,11 +1,11 @@
 "use client"
 
-import { NAVIGATION_ITEMS } from "@/components/sidebar/constants"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
 import { ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { NAVIGATION_ITEMS } from "@/components/sidebar/constants"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 interface NavigationProps {
   className?: string

@@ -1,9 +1,9 @@
 "server-only"
 
-import { IPFS_W3GPT_GROUP_ID } from "@/lib/constants"
 import { type FileObject, PinataSDK } from "pinata"
 import type { SolcOutput } from "solc"
 import type { Abi } from "viem"
+import { IPFS_W3GPT_GROUP_ID } from "@/lib/constants"
 
 const pinata = new PinataSDK({
   pinataJwt: process.env.PINATA_JWT,

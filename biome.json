@@ -1,8 +1,19 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "node_modules/@biomejs//biome//configuration_schema.json",
+  "assist": {
+    "actions": {
+      "recommended": true,
+      "source": {
+        "recommended": true,
+        "organizeImports": {
+          "level": "on",
+          "options": {}
+        }
+      }
+    }
+  },
   "files": {
-    "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
-    "ignore": ["**/node_modules/**", "**/.next/**"],
+    "includes": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "!**/node_modules/**", "!**/.next/**"],
     "maxSize": 5242880
   },
   "vcs": {
@@ -23,7 +34,6 @@
       "semicolons": "asNeeded"
     }
   },
-  "organizeImports": { "enabled": true },
   "linter": {
     "enabled": true,
     "rules": {

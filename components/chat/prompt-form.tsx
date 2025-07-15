@@ -1,16 +1,14 @@
+import type { UseAssistantHelpers } from "@ai-sdk/react"
+import { ArrowUp } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState, useTransition } from "react"
-
-import type { UseAssistantHelpers } from "@ai-sdk/react"
 import Textarea from "react-textarea-autosize"
-
 import { Button, buttonVariants } from "@/components/ui/button"
 import { IconPlus, IconSpinner } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useEnterSubmit } from "@/lib/hooks/use-enter-submit"
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 import { cn } from "@/lib/utils"
-import { ArrowUp } from "lucide-react"
 
 type PromptProps = Pick<UseAssistantHelpers, "append" | "status" | "setThreadId">
 

@@ -1,9 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { useTransition } from "react"
-
 import { useTheme } from "next-themes"
+import { useTransition } from "react"
 
 import { Button, buttonVariants } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -19,10 +18,8 @@ export function SettingsDropDown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
-          <>
-            <IconCog />
-            <span className="sr-only">Toggle theme</span>
-          </>
+          <IconCog />
+          <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mr-2" sideOffset={8} align="start">

@@ -1,8 +1,7 @@
-import { type NextRequest, NextResponse } from "next/server"
-
 import { AssistantResponse } from "ai"
+import { type NextRequest, NextResponse } from "next/server"
 import type { BadRequestError } from "openai/error"
-
+import type { FunctionToolCall } from "openai/resources/beta/threads/runs/index"
 import { auth } from "@/auth"
 import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
 import { DEFAULT_COMPILER_VERSION, DEPLOYMENT_URL, SUPPORTED_CHAINS } from "@/lib/config"
@@ -11,7 +10,6 @@ import { createAgent, openai } from "@/lib/data/openai"
 import { deployContract, deployTokenScript } from "@/lib/solidity/deploy"
 import { ToolName } from "@/lib/tools"
 import type { DbChat } from "@/lib/types"
-import type { FunctionToolCall } from "openai/resources/beta/threads/runs/index"
 
 export async function POST(request: NextRequest) {
   const session = await auth()

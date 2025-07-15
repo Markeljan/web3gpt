@@ -1,6 +1,5 @@
+import { type AssistantStatus, generateId, type Message } from "ai"
 import Image from "next/image"
-
-import { type AssistantStatus, type Message, generateId } from "ai"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 

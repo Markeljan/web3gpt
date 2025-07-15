@@ -1,8 +1,7 @@
 "use client"
 
+import { darkTheme, lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import { useState } from "react"
-
-import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit"
 import "@rainbow-me/rainbowkit/styles.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useTheme } from "next-themes"

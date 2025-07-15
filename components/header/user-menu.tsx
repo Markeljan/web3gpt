@@ -2,10 +2,9 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState, useTransition } from "react"
-
 import type { Session } from "next-auth"
 import { useTheme } from "next-themes"
+import { useState, useTransition } from "react"
 
 import { SignOutButton } from "@/components/sign-out-button"
 import {

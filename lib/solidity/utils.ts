@@ -85,7 +85,7 @@ function resolveImportPath(importPath: string, sourcePath: string) {
 }
 
 export const getContractFileName = (contractName: string): string => {
-  return `${contractName.replace(/[\/\\:*?"<>|.\s]+$/g, "_")}.sol`
+  return `${contractName.replace(/[/\\:*?"<>|.\s]+$/g, "_")}.sol`
 }
 
 export async function prepareContractSources(contractName: string, sourceCode: string) {
