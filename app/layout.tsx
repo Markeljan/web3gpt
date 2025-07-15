@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { DEPLOYMENT_URL, getWagmiConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
+import { MiniAppInitializer } from "@/components/miniapp-initializer"
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -102,6 +103,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
         >
           <TooltipProvider>
             <Web3Provider initialState={initialState}>
+              <MiniAppInitializer />
               <div className="flex h-screen overflow-hidden">
                 <PermanentSidebar user={session?.user}>
                   <SidebarContent />
