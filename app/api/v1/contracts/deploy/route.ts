@@ -75,7 +75,10 @@ export const POST = withUnkey(
 
       // Generate contract source code
       let { contractName, sourceCode } = (
-        await generateObject({
+        await generateObject<{
+          contractName: string
+          sourceCode: string
+        }>({
           system: `You are an expert Solidity smart contract developer as an API. Given a prompt, generate fully working, raw, ready to compile Solidity code. 
             Source code of the smart contract. Format as a single-line string, with all line breaks and quotes escaped to be valid stringified JSON. 
             

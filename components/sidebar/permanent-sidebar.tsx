@@ -3,9 +3,10 @@
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { Session } from "next-auth"
 import { useEffect, useState } from "react"
+
+import { SidebarCollapsed } from "@/components/sidebar/sidebar-collapsed"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { SidebarCollapsed } from "./sidebar-collapsed"
 
 interface PermanentSidebarProps {
   children: React.ReactNode
