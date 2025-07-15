@@ -10,6 +10,7 @@ import { cookieToInitialState } from "wagmi"
 import "@/app/globals.css"
 import { auth } from "@/auth"
 import { Header } from "@/components/header/header"
+import { MiniAppInitializer } from "@/components/miniapp-initializer"
 import { Web3Provider } from "@/components/providers/web3-provider"
 import { PermanentSidebar } from "@/components/sidebar/permanent-sidebar"
 import { SidebarContent } from "@/components/sidebar/sidebar-content"
@@ -102,6 +103,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
         >
           <TooltipProvider>
             <Web3Provider initialState={initialState}>
+              <MiniAppInitializer />
               <div className="flex h-screen overflow-hidden">
                 <PermanentSidebar user={session?.user}>
                   <SidebarContent />

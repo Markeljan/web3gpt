@@ -19,6 +19,10 @@ module.exports = {
         source: "/api-docs",
         destination: "/api/api-docs",
       },
+      {
+        source: "/.well-known/farcaster.json",
+        destination: "/api/farcaster",
+      },
     ]
   },
   async headers() {
