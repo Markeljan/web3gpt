@@ -29,6 +29,21 @@ const fontMono = FontMono({
   variable: "--font-mono",
 })
 
+const STRINGIFIED_MINIAPP = JSON.stringify({
+  version: "1",
+  imageUrl: `${DEPLOYMENT_URL}/opengraph-image.png`,
+  button: {
+    title: "🚀 Launch Web3GPT",
+    action: {
+      type: "launch_frame",
+      name: "Web3GPT",
+      url: DEPLOYMENT_URL,
+      splashImageUrl: `${DEPLOYMENT_URL}/assets/web3gpt.png`,
+      splashBackgroundColor: "#262626",
+    },
+  },
+})
+
 export const metadata: Metadata = {
   title: {
     default: "Web3GPT",
@@ -76,6 +91,10 @@ export const metadata: Metadata = {
     site: "@w3gptai",
     creator: "@0xSoko",
     images: [`${DEPLOYMENT_URL}/twitter-image.png`],
+  },
+  other: {
+    "fc:miniapp": STRINGIFIED_MINIAPP,
+    "fc:frame": STRINGIFIED_MINIAPP,
   },
 }
 
