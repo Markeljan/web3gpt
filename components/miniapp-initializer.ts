@@ -1,17 +1,14 @@
 "use client"
 
+import { sdk } from "@farcaster/miniapp-sdk"
 import { useEffect } from "react"
 
 export const MiniAppInitializer = (): React.ReactNode => {
   useEffect(() => {
-    const url = new URL(window.location.href)
-    const isMini = url.pathname.startsWith("/mini") || url.searchParams.get("miniApp") === "true"
-
-    if (isMini) {
-      import("@farcaster/miniapp-sdk").then(({ sdk }) => {
-        sdk.actions.ready()
-      })
+    const initSdk = async () => {
+      await sdk.actions.ready()
     }
+    initSdk()
   }, [])
 
   return null
