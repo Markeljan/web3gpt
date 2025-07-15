@@ -52,7 +52,7 @@ export const POST = withUnkey(
         const result = streamText({
           system,
           prompt,
-          model: openai("gpt-4o"),
+          model: openai("gpt-4.1"),
         })
 
         const response = result.toDataStreamResponse()
@@ -65,7 +65,7 @@ export const POST = withUnkey(
       const { text } = await generateText({
         system,
         prompt,
-        model: openai("gpt-4o"),
+        model: openai("gpt-4.1"),
       })
 
       return NextResponse.json({ text }, { headers })

@@ -89,7 +89,7 @@ export const POST = withUnkey(
 
             By default use SPDX License Identifier MIT and the latest available fixed Solidity version.  Current version is 0.8.29.`,
           prompt,
-          model: openai.responses("gpt-4o"),
+          model: openai.responses("gpt-4.1"),
           schema: z.object({
             contractName: z.string().describe("The name of the contract"),
             sourceCode: z
@@ -147,7 +147,7 @@ export const POST = withUnkey(
             system:
               "You are an expert Solidity smart contract developer. Fix the contract and return only the fixed code without any explanations. DO NOT include markdown code blocks or code fence markers (```) in your response. The output must be pure, valid Solidity code only. Current version is 0.8.29.",
             prompt: fixPrompt,
-            model: openai.responses("gpt-4o"),
+            model: openai.responses("gpt-4.1"),
             providerOptions: {
               openai: {
                 prediction: {

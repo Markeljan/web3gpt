@@ -42,7 +42,9 @@ export async function POST(request: NextRequest) {
       if (error.message.includes("run_")) {
         console.error("Found pending run, cancelling run and retrying message")
         const runId = `run_${error.message.split("run_")[1].split(" ")[0]}`
-        await openai.beta.threads.runs.cancel(threadId, runId)
+        await openai.beta.threads.runs.cancel(runId, {
+          thread_id: threadId,
+        })
         return await openai.beta.threads.messages.create(threadId, {
           role: "user",
           content: message,
@@ -72,7 +74,7 @@ export async function POST(request: NextRequest) {
     const runStream = openai.beta.threads.runs.stream(threadId, {
       assistant_id: assistantId,
       stream: true,
-      model: "gpt-4o",
+      model: "gpt-4.1",
       additional_instructions: JSON.stringify({
         latestSettings: {
           compilerVersion: DEFAULT_COMPILER_VERSION,
@@ -210,7 +212,11 @@ export async function POST(request: NextRequest) {
       )
 
       runResult = await forwardStream(
-        openai.beta.threads.runs.submitToolOutputsStream(threadId, runResult.id, { tool_outputs, stream: true }),
+        openai.beta.threads.runs.submitToolOutputsStream(runResult.id, {
+          thread_id: threadId,
+          tool_outputs,
+          stream: true,
+        }),
       )
     }
   })

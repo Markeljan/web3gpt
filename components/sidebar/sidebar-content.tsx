@@ -38,9 +38,9 @@ export async function SidebarContent() {
           </h3>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge className={cn("text-xs text-slate-800 bg-yellow-300 pointer-events-auto")}>gpt-4o</Badge>
+              <Badge className={cn("text-xs text-slate-800 bg-yellow-300 pointer-events-auto")}>gpt-41</Badge>
             </TooltipTrigger>
-            <TooltipContent>Using GPT-4o</TooltipContent>
+            <TooltipContent>Using GPT-4.1</TooltipContent>
           </Tooltip>
         </div>
         <div className="max-sm:max-h-[108px] overflow-y-auto">
