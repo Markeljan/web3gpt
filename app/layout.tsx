@@ -10,6 +10,7 @@ import { cookieToInitialState } from "wagmi"
 import "@/app/globals.css"
 import { auth } from "@/auth"
 import { Header } from "@/components/header/header"
+import { MiniAppInitializer } from "@/components/miniapp-initializer"
 import { Web3Provider } from "@/components/providers/web3-provider"
 import { PermanentSidebar } from "@/components/sidebar/permanent-sidebar"
 import { SidebarContent } from "@/components/sidebar/sidebar-content"
@@ -17,7 +18,6 @@ import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { DEPLOYMENT_URL, getWagmiConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
-import { MiniAppInitializer } from "@/components/miniapp-initializer"
 
 const fontSans = FontSans({
   subsets: ["latin"],
