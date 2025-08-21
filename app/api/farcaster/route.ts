@@ -42,6 +42,9 @@ export async function GET() {
       canonicalDomain: new URL(DYNAMIC_URL).hostname,
     },
     accountAssociation: DYNAMIC_ACCOUNT_ASSOCIATION,
+    baseBuilder: {
+      allowedAddresses: ["0x5511341D9dD0A1891b4251bC8850B2ECF03628aF"],
+    },
   }
 
   return NextResponse.json(manifest, {
