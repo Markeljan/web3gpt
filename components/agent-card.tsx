@@ -6,7 +6,6 @@ import { useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { IconCheck, IconCopy, IconPlus, IconSpinner } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { DEPLOYMENT_URL } from "@/lib/config"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -74,7 +73,7 @@ export const AgentCard = ({ agent, setThreadId, className }: AgentCardProps) => 
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => copyToClipboard(`${DEPLOYMENT_URL}?a=${agent.id}`)}
+              onClick={() => copyToClipboard(`https://w3gpt.ai/?a=${agent.id}`)}
               className="h-8 w-8 p-0"
             >
               {isCopied ? <IconCheck className="size-4" /> : <IconCopy className="size-4" />}
