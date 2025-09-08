@@ -15,6 +15,14 @@ export const DEFAULT_AGENT: Agent = {
 export const AGENTS_ARRAY: Agent[] = [
   DEFAULT_AGENT,
   {
+    id: "asst_FiWv3gKSXZyKGnuJdSZvpf6V",
+    userId: "12901349",
+    name: "GENT",
+    description: "first token agent launched on W3GPT",
+    creator: "soko.eth",
+    imageUrl: "https://ipfs.w3gpt.ai/ipfs/bafkreidmmwgfagx34nj4oy34her2tmcgp5deybs72ymy4edi4ye3nyfulu",
+  },
+  {
     id: "asst_mv5KGoBLhXXQFiJHpgnopGQQ",
     userId: "12901349",
     name: "Unstoppable Domains",
@@ -48,14 +56,6 @@ export const AGENTS_ARRAY: Agent[] = [
     description: "Create your own AI agent",
     creator: "soko.eth",
     imageUrl: "/assets/agent-factory.png",
-  },
-  {
-    id: TOKENSCRIPT_AGENT_ID,
-    userId: "12689544",
-    name: "Smart Token",
-    description: "Create a Smart Token - create and self deploy a token, then power it with a TokenScript",
-    creator: "61cygni.eth",
-    imageUrl: "/assets/tokenscript.png",
   },
 ]
 
