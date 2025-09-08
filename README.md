@@ -18,11 +18,11 @@ Web3GPT is an AI-powered smart contract development platform that combines Large
 
 - **Specialized AI Agents:**
   - Web3GPT - Core smart contract development agent
+  - GENT - first token agent launched on W3GPT
   - Unstoppable Domains - Domain resolution specialist
   - OpenZeppelin 5.0 - Security-focused development using latest OZ libraries
   - CTF Agent - Interactive Capture The Flag challenges
   - Creator - Custom AI agent creation
-  - Smart Token - TokenScript-powered token deployment
 
 - **GitHub Authentication:** Secure login and persistence of your development sessions
 
