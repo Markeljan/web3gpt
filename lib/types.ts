@@ -49,6 +49,7 @@ export type DeployContractParams = {
   contractName: string
   sourceCode: string
   constructorArgs: Array<string | string[]>
+  imports?: Record<string, string>
 }
 
 export type DeployContractResult = {

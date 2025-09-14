@@ -33,6 +33,7 @@ export const deployContract = async ({
   contractName,
   sourceCode,
   constructorArgs,
+  imports,
 }: DeployContractParams): Promise<DeployContractResult> => {
   const viemChain = getChainById(Number(chainId))
 
@@ -40,7 +41,11 @@ export const deployContract = async ({
     throw new Error(`Chain ${chainId} not found`)
   }
 
-  const { abi, bytecode, standardJsonInput, sources } = await compileContract({ contractName, sourceCode })
+  const { abi, bytecode, standardJsonInput, sources } = await compileContract({
+    contractName,
+    sourceCode,
+    sources: imports,
+  })
 
   const walletClient = createWalletClient({
     account: DEPLOYER_ACCOUNT,
