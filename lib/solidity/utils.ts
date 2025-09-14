@@ -1,12 +1,16 @@
 // Recursive function to resolve imports in a source code.  Fetches the source code of the imports one by one and returns the final source code with all imports resolved and urls / aliases replaced with relative paths.
-export async function resolveImports(sourceCode: string, sourcePath?: string) {
+export async function resolveImports(sourceCode: string, sourcePath?: string, localSources?: Record<string, string>) {
   const sources: { [fileName: string]: { content: string } } = {}
   const importRegex = /import\s+(?:{[^}]+}\s+from\s+)?["']([^"']+)["'];/g
   const matches = Array.from(sourceCode.matchAll(importRegex))
   let sourceCodeWithImports = sourceCode
   for (const match of matches) {
     const importPath = match[1]
-    const { sources: importedSources, sourceCode: mainSourceCode } = await fetchImport(importPath, sourcePath)
+    const { sources: importedSources, sourceCode: mainSourceCode } = await fetchImport(
+      importPath,
+      sourcePath,
+      localSources,
+    )
 
     // Merge the imported sources into the main sources object
     Object.assign(sources, importedSources)
@@ -21,12 +25,26 @@ export async function resolveImports(sourceCode: string, sourcePath?: string) {
     sources[sourceFileName] = {
       content: mainSourceCode,
     }
-    sourceCodeWithImports = sourceCode.replace(match[0], `import "${sourceFileName}";`)
+    sourceCodeWithImports = sourceCodeWithImports.replace(match[0], `import "${sourceFileName}";`)
   }
   return { sources, sourceCode: sourceCodeWithImports }
 }
 
-async function fetchImport(importPath: string, sourcePath?: string) {
+async function fetchImport(importPath: string, sourcePath?: string, localSources?: Record<string, string>) {
+  // Check if the import exists in provided local sources
+  if (localSources) {
+    let localPath = importPath
+    if (importPath[0] === "." && sourcePath) {
+      localPath = resolveImportPath(importPath, sourcePath)
+    }
+    localPath = localPath.replace(/^\.\//, "")
+    if (localSources[localPath]) {
+      const importedSource = localSources[localPath]
+      const { sources, sourceCode } = await resolveImports(importedSource, localPath, localSources)
+      return { sources, sourceCode }
+    }
+  }
+
   // Determine the URL to fetch
   let urlToFetch: string
   if (importPath[0] === "." && sourcePath) {
@@ -55,7 +73,7 @@ async function fetchImport(importPath: string, sourcePath?: string) {
   const importedSource = await response.text()
 
   // Handle any imports within the fetched source code
-  const { sources, sourceCode } = await resolveImports(importedSource, urlToFetch)
+  const { sources, sourceCode } = await resolveImports(importedSource, urlToFetch, localSources)
 
   return { sources, sourceCode }
 }
@@ -88,10 +106,14 @@ export const getContractFileName = (contractName: string): string => {
   return `${contractName.replace(/[/\\:*?"<>|.\s]+$/g, "_")}.sol`
 }
 
-export async function prepareContractSources(contractName: string, sourceCode: string) {
+export async function prepareContractSources(
+  contractName: string,
+  sourceCode: string,
+  localSources?: Record<string, string>,
+) {
   const fileName = getContractFileName(contractName)
 
-  const handleImportsResult = await resolveImports(sourceCode)
+  const handleImportsResult = await resolveImports(sourceCode, fileName, localSources)
 
   const sources = {
     [fileName]: {

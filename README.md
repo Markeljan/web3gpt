@@ -41,3 +41,7 @@ bun install
 ```bash
 bun dev
 ```
+
+## Deploying Contracts with Local Imports
+
+Web3GPT now supports deploying factory contracts that rely on local Solidity imports. Provide additional source files alongside your main contract and reference them with relative paths (e.g., `import "./AddressBook.sol";`). The compiler will include these dependencies automatically, enabling factory patterns without flattening contracts.

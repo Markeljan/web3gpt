@@ -8,8 +8,16 @@ import { withUser } from "@/lib/data/kv"
 import { getContractFileName, prepareContractSources } from "@/lib/solidity/utils"
 import { ensureHashPrefix } from "@/lib/utils"
 
-export async function compileContract({ contractName, sourceCode }: { contractName: string; sourceCode: string }) {
-  const sources = await prepareContractSources(contractName, sourceCode)
+export async function compileContract({
+  contractName,
+  sourceCode,
+  sources: additionalSources,
+}: {
+  contractName: string
+  sourceCode: string
+  sources?: Record<string, string>
+}) {
+  const sources = await prepareContractSources(contractName, sourceCode, additionalSources)
   const standardJsonInputString = JSON.stringify({
     language: "Solidity",
     sources,

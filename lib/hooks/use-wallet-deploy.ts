@@ -24,10 +24,12 @@ export function useWalletDeploy() {
       contractName,
       sourceCode,
       constructorArgs,
+      imports,
     }: {
       contractName: string
       sourceCode: string
       constructorArgs: Array<string>
+      imports?: Record<string, string>
     }) => {
       if (!viemChain || !walletClient || !address || !chainId) {
         return
@@ -35,7 +37,11 @@ export function useWalletDeploy() {
       const deployLoadingToast = toast.loading("Deploying contract...")
 
       try {
-        const { abi, bytecode, standardJsonInput, sources } = await compileContract({ contractName, sourceCode })
+        const { abi, bytecode, standardJsonInput, sources } = await compileContract({
+          contractName,
+          sourceCode,
+          sources: imports,
+        })
 
         const parsedConstructorArgs = constructorArgs.map((arg) => {
           if (arg.startsWith("[") && arg.endsWith("]") && arg.match(/(?<=\[)(?=[^"'])(.*)(?<=[^"'])(?=\])/g)) {
