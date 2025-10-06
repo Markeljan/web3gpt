@@ -90,7 +90,7 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
     <>
       {isGuildPromptOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4">
-          <div className="relative w-full max-w-md rounded-lg border bg-background p-6 shadow-lg">
+          <div className="relative w-full max-w-md rounded-lg border bg-background p-6 shadow-lg max-sm:mb-8 mb-24">
             <button
               type="button"
               aria-label="Close join guild message"
