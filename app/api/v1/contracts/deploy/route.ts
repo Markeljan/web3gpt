@@ -10,10 +10,10 @@ import { z } from "zod"
 import { compileContract } from "@/lib/actions/deploy-contract"
 import { deployContract } from "@/lib/solidity/deploy"
 
-const UNKEY_CONTRACTS_API_ID = process.env.UNKEY_CONTRACTS_API_ID
+const UNKEY_ROOT_KEY = process.env.UNKEY_ROOT_KEY
 
-if (!UNKEY_CONTRACTS_API_ID) {
-  throw new Error("UNKEY_CONTRACTS_API_ID is not set")
+if (!UNKEY_ROOT_KEY) {
+  throw new Error("UNKEY_ROOT_KEY is not set")
 }
 
 export const maxDuration = 60
@@ -44,7 +44,7 @@ export const POST = withUnkey(
     }
 
     // Validate API key
-    if (!req.unkey?.valid) {
+    if (!req.unkey?.data?.valid) {
       return new NextResponse("unauthorized get api key at https://t.me/w3gptai", {
         status: 403,
         headers,
@@ -63,14 +63,13 @@ export const POST = withUnkey(
         })
       }
 
-      const { keyId = "unknown_key", remaining = 0, ownerId = "unknown_owner" } = req.unkey
+      const { keyId = "unknown_key", credits = 0, identity } = req.unkey.data
 
       // Track analytics
       track("contract_deploy_request", {
-        apiId: UNKEY_CONTRACTS_API_ID,
         keyId,
-        ownerId,
-        remaining,
+        externalId: identity?.externalId || "unknown_external_id",
+        credits,
       })
 
       // Generate contract source code
@@ -220,8 +219,7 @@ export const POST = withUnkey(
         status: 403,
       })
     },
-    disableTelemetry: true,
-    apiId: UNKEY_CONTRACTS_API_ID,
+    rootKey: UNKEY_ROOT_KEY,
   },
 )
 

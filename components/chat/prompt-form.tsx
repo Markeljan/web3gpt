@@ -3,12 +3,13 @@
 import type { UseAssistantHelpers } from "@ai-sdk/react"
 import { ArrowUp } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { type ChangeEvent, useEffect, useRef, useState, useTransition } from "react"
+import { type ChangeEvent, useCallback, useEffect, useRef, useState, useTransition } from "react"
 import Textarea from "react-textarea-autosize"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { IconClose, IconPlus, IconSpinner } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useEnterSubmit } from "@/lib/hooks/use-enter-submit"
+import { useLocalStorage } from "@/lib/hooks/use-local-storage"
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 import { cn } from "@/lib/utils"
 
@@ -24,23 +25,20 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
   const [isPendingTransition, startTransition] = useTransition()
   const router = useRouter()
   const isInProgress = status === "in_progress"
-  const [hasSeenGuildPrompt, setHasSeenGuildPrompt] = useState(false)
+  const [hasSeenGuildPrompt, setHasSeenGuildPrompt] = useLocalStorage(GUILD_PROMPT_STORAGE_KEY, false)
   const [isGuildPromptReady, setIsGuildPromptReady] = useState(false)
   const [shouldOpenGuildPrompt, setShouldOpenGuildPrompt] = useState(false)
   const [isGuildPromptOpen, setIsGuildPromptOpen] = useState(false)
 
-  const markGuildPromptAsSeen = () => {
+  const markGuildPromptAsSeen = useCallback(() => {
     setHasSeenGuildPrompt(true)
-    if (typeof window !== "undefined") {
-      localStorage.setItem(GUILD_PROMPT_STORAGE_KEY, "true")
-    }
-  }
+  }, [setHasSeenGuildPrompt])
 
-  const openGuildPrompt = () => {
+  const openGuildPrompt = useCallback(() => {
     setIsGuildPromptOpen(true)
     setShouldOpenGuildPrompt(false)
     markGuildPromptAsSeen()
-  }
+  }, [markGuildPromptAsSeen])
 
   const handleGuildPromptTrigger = () => {
     if (!isGuildPromptReady) {
@@ -68,13 +66,6 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
   }, [])
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return
-    }
-
-    const storedValue = localStorage.getItem(GUILD_PROMPT_STORAGE_KEY)
-    const hasSeen = storedValue === "true"
-    setHasSeenGuildPrompt(hasSeen)
     setIsGuildPromptReady(true)
   }, [])
 
@@ -93,7 +84,7 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
     }
 
     openGuildPrompt()
-  }, [hasSeenGuildPrompt, isGuildPromptReady, shouldOpenGuildPrompt])
+  }, [hasSeenGuildPrompt, isGuildPromptReady, shouldOpenGuildPrompt, openGuildPrompt])
 
   return (
     <>
@@ -117,7 +108,12 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
                 Maybe later
               </Button>
               <Button asChild>
-                <a href="https://guild.xyz/w3gpt" target="_blank" rel="noreferrer" onClick={() => setIsGuildPromptOpen(false)}>
+                <a
+                  href="https://guild.xyz/w3gpt"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setIsGuildPromptOpen(false)}
+                >
                   Join the Guild
                 </a>
               </Button>
