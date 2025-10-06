@@ -4,7 +4,11 @@ import { track } from "@vercel/analytics/server"
 import { generateText, streamText } from "ai"
 import { NextResponse } from "next/server"
 
-const UNKEY_COMPLETIONS_API_ID = process.env.UNKEY_COMPLETIONS_API_ID
+const UNKEY_ROOT_KEY = process.env.UNKEY_ROOT_KEY
+
+if (!UNKEY_ROOT_KEY) {
+  throw new Error("UNKEY_ROOT_KEY is not set")
+}
 
 export const maxDuration = 30
 
@@ -18,7 +22,7 @@ export const POST = withUnkey(
     }
 
     // Validate API key
-    if (!req.unkey?.valid) {
+    if (!req.unkey?.data?.valid) {
       return new NextResponse("unauthorized get api key at https://t.me/w3gptai", {
         status: 403,
         headers,
@@ -37,13 +41,12 @@ export const POST = withUnkey(
         })
       }
 
-      const { keyId = "unknown_key", remaining = 0, ownerId = "unknown_owner" } = req.unkey
+      const { keyId = "unknown_key", credits = 0, identity } = req.unkey.data
 
       track("completions_request", {
-        apiId: UNKEY_COMPLETIONS_API_ID,
         keyId,
-        ownerId,
-        remaining,
+        externalId: identity?.externalId || "unknown_external_id",
+        credits,
         stream,
       })
 
@@ -83,8 +86,7 @@ export const POST = withUnkey(
         status: 403,
       })
     },
-    disableTelemetry: true,
-    apiId: UNKEY_COMPLETIONS_API_ID,
+    rootKey: UNKEY_ROOT_KEY,
   },
 )
 
