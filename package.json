@@ -47,6 +47,7 @@
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
     "server-only": "^0.0.1",
+    "siwe": "^3.0.0",
     "solc": "0.8.29",
     "sonner": "^1.7.0",
     "vercel-url": "^0.2.8",

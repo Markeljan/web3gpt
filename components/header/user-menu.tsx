@@ -47,6 +47,11 @@ function getUserInitials(name: string) {
   return lastName ? `${firstName[0]}${lastName[0]}` : firstName.slice(0, 2)
 }
 
+function shortenAddress(address?: string | null) {
+  if (!address) return null
+  return `${address.slice(0, 6)}…${address.slice(-4)}`
+}
+
 interface UserMenuProps {
   user: Session["user"]
   variant?: "header" | "sidebar" | "collapsed"
@@ -58,6 +63,14 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
   const [_, startTransition] = useTransition()
   const [clearHistoryOpen, setClearHistoryOpen] = useState(false)
   const [isClearPending, startClearTransition] = useTransition()
+  const walletSummary = shortenAddress(user?.walletAddress)
+  const manageAccountItem = (
+    <DropdownMenuItem asChild>
+      <Link className="w-full text-xs text-primary hover:underline" href="/sign-in">
+        Manage linked accounts
+      </Link>
+    </DropdownMenuItem>
+  )
 
   const renderClearHistory = () => {
     if (!showClearHistory) return null
@@ -231,10 +244,21 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="right" sideOffset={8} align="end" className="w-[220px]">
-          <DropdownMenuItem className="flex-col items-start">
+          <DropdownMenuItem className="flex-col items-start gap-1">
             <div className="text-xs font-medium">{user?.name}</div>
-            <div className="text-xs text-zinc-500">{user?.email}</div>
+            {user?.email ? <div className="text-xs text-zinc-500">{user.email}</div> : null}
+            <div className="text-xs text-zinc-500">
+              Wallet:{" "}
+              {user?.walletAddress ? (
+                <span className="font-mono text-muted-foreground" title={user.walletAddress}>
+                  {walletSummary}
+                </span>
+              ) : (
+                <span className="text-muted-foreground">Not linked</span>
+              )}
+            </div>
           </DropdownMenuItem>
+          {manageAccountItem}
           <DropdownMenuItem>
             <SignOutButton />
           </DropdownMenuItem>
@@ -273,10 +297,21 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent sideOffset={8} align="start" className="w-[220px]">
-          <DropdownMenuItem className="flex-col items-start">
+          <DropdownMenuItem className="flex-col items-start gap-1">
             <div className="text-xs font-medium">{user?.name}</div>
-            <div className="text-xs text-zinc-500">{user?.email}</div>
+            {user?.email ? <div className="text-xs text-zinc-500">{user.email}</div> : null}
+            <div className="text-xs text-zinc-500">
+              Wallet:{" "}
+              {user?.walletAddress ? (
+                <span className="font-mono text-muted-foreground" title={user.walletAddress}>
+                  {walletSummary}
+                </span>
+              ) : (
+                <span className="text-muted-foreground">Not linked</span>
+              )}
+            </div>
           </DropdownMenuItem>
+          {manageAccountItem}
           <DropdownMenuItem>
             <SignOutButton />
           </DropdownMenuItem>
@@ -309,10 +344,21 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent sideOffset={8} align="start" className="w-[220px]">
-          <DropdownMenuItem className="flex-col items-start">
+          <DropdownMenuItem className="flex-col items-start gap-1">
             <div className="text-xs font-medium">{user?.name}</div>
-            <div className="text-xs text-zinc-500">{user?.email}</div>
+            {user?.email ? <div className="text-xs text-zinc-500">{user.email}</div> : null}
+            <div className="text-xs text-zinc-500">
+              Wallet:{" "}
+              {user?.walletAddress ? (
+                <span className="font-mono text-muted-foreground" title={user.walletAddress}>
+                  {walletSummary}
+                </span>
+              ) : (
+                <span className="text-muted-foreground">Not linked</span>
+              )}
+            </div>
           </DropdownMenuItem>
+          {manageAccountItem}
           <DropdownMenuItem>
             <SignOutButton />
           </DropdownMenuItem>
