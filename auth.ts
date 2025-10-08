@@ -1,28 +1,9 @@
-import NextAuth, { type DefaultSession } from "next-auth"
+import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import GitHub from "next-auth/providers/github"
 import { SiweMessage } from "siwe"
 
 import { getUserIdByWallet, storeUser } from "@/lib/data/kv"
-
-declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string
-      walletAddress?: string | null
-      githubId?: string | null
-    } & DefaultSession["user"]
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    id?: string
-    walletAddress?: string | null
-    githubId?: string | null
-  }
-}
-
 function getCsrfTokenFromRequest(request: Request) {
   const cookieHeader = request.headers.get("cookie")
   if (!cookieHeader) return undefined
@@ -146,11 +127,28 @@ export const {
 
       if (account?.provider === "github" && profile) {
         const profileId = String(profile.id)
+        const profileData = profile as {
+          name?: string | null
+          login?: string | null
+          email?: string | null
+          avatar_url?: string | null
+        }
+
         token.id = profileId
         token.githubId = profileId
-        token.name = profile.name ?? profile.login ?? token.name
-        token.email = profile.email ?? token.email
-        token.picture = (profile as { avatar_url?: string })?.avatar_url ?? token.picture
+
+        const profileName = profileData.name ?? profileData.login
+        if (profileName) {
+          token.name = profileName
+        }
+
+        if (profileData.email) {
+          token.email = profileData.email
+        }
+
+        if (profileData.avatar_url) {
+          token.picture = profileData.avatar_url
+        }
 
         await storeUser({
           id: profileId,
