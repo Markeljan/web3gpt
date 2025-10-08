@@ -18,12 +18,31 @@ export const withUser = <T, R>(action: ActionWithUser<T, R>) => {
   }
 }
 
-export async function storeUser(user: { id: string }) {
+export type StoredUser = {
+  id: string
+  name?: string | null
+  email?: string | null
+  image?: string | null
+  walletAddress?: string | null
+  githubId?: string | null
+}
+
+export async function storeUser(user: StoredUser) {
   const userKey = `user:details:${user.id}`
+  const sanitizedEntries = Object.entries(user).filter(([, value]) => value !== undefined)
 
-  await kv.hmset(userKey, user)
-
+  await kv.hmset(userKey, Object.fromEntries(sanitizedEntries))
   await kv.sadd("users:list", user.id)
+
+  const walletAddress = user.walletAddress
+  if (walletAddress) {
+    await kv.set(`wallet:user:${walletAddress.toLowerCase()}`, user.id)
+  }
+}
+
+export async function getUserIdByWallet(address: string | null | undefined) {
+  if (!address) return null
+  return await kv.get<string>(`wallet:user:${address.toLowerCase()}`)
 }
 
 export const getChatList = withUser<void, DbChatListItem[]>(
