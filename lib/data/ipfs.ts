@@ -41,7 +41,7 @@ export async function ipfsUploadDir(
   }
 }
 
-export async function ipfsUploadFile(fileName: string, fileContent: string | Buffer): Promise<string | null> {
+export async function ipfsUploadFile(fileName: string, fileContent: string): Promise<string | null> {
   try {
     const file = new File([fileContent], fileName)
     const { IpfsHash } = await pinata.upload.file(file, {

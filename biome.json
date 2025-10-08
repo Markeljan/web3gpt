@@ -13,7 +13,7 @@
     }
   },
   "files": {
-    "includes": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "!**/node_modules/**", "!**/.next/**"],
+    "includes": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "!**/node_modules", "!**/.next"],
     "maxSize": 5242880
   },
   "vcs": {

@@ -74,7 +74,7 @@ export const storeTokenScriptDeploymentAction = withUser<
   })
 })
 
-export async function ipfsUploadFileAction(fileName: string, fileContent: string | Buffer): Promise<string | null> {
+export async function ipfsUploadFileAction(fileName: string, fileContent: string): Promise<string | null> {
   return await ipfsUploadFile(fileName, fileContent)
 }
 

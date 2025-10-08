@@ -4,6 +4,7 @@ import GitHub from "next-auth/providers/github"
 import { SiweMessage } from "siwe"
 
 import { getUserIdByWallet, storeUser } from "@/lib/data/kv"
+
 function getCsrfTokenFromRequest(request: Request) {
   const cookieHeader = request.headers.get("cookie")
   if (!cookieHeader) return undefined
