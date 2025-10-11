@@ -58,9 +58,15 @@ export const {
       },
       async authorize(credentials, request) {
         try {
-          const message = credentials?.message
-          const signature = credentials?.signature
-          const csrfToken = credentials?.csrfToken
+          const typedCredentials = credentials as
+            | (Partial<Record<"message" | "signature", unknown>> & {
+                csrfToken?: unknown
+              })
+            | undefined
+
+          const message = typedCredentials?.message
+          const signature = typedCredentials?.signature
+          const csrfToken = typedCredentials?.csrfToken
 
           if (!message || typeof message !== "string") {
             return null
