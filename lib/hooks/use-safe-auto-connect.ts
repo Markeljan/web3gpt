@@ -1,18 +1,14 @@
 import { useEffect } from "react"
 import { useConnect } from "wagmi"
 
-const AUTOCONNECTED_CONNECTOR_IDS = ["safe"]
-
 export const useSafeAutoConnect = () => {
   const { connect, connectors } = useConnect()
 
   useEffect(() => {
-    for (const connector of AUTOCONNECTED_CONNECTOR_IDS) {
-      const connectorInstance = connectors.find((c) => c.id === connector && c.ready)
+    const safeConnector = connectors.find((c) => c.id === "safe")
 
-      if (connectorInstance) {
-        connect({ connector: connectorInstance })
-      }
+    if (safeConnector?.ready) {
+      connect({ connector: safeConnector })
     }
   }, [connect, connectors])
 }

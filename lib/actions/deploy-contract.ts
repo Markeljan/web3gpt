@@ -82,7 +82,7 @@ export async function ipfsUploadDirAction(
   sources: SolcOutput["sources"],
   abi: Abi,
   bytecode: string,
-  standardJsonInput: string,
+  standardJsonInput: string
 ) {
   return await ipfsUploadDir(sources, abi, bytecode, standardJsonInput)
 }

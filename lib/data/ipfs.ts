@@ -1,4 +1,4 @@
-"server-only"
+import "server-only"
 
 import { type FileObject, PinataSDK } from "pinata"
 import type { SolcOutput } from "solc"
@@ -14,7 +14,7 @@ export async function ipfsUploadDir(
   sources: SolcOutput["sources"],
   abi: Abi,
   bytecode: string,
-  standardJsonInput: string,
+  standardJsonInput: string
 ): Promise<string | null> {
   try {
     const files: FileObject[] = []
@@ -35,8 +35,7 @@ export async function ipfsUploadDir(
     })
 
     return IpfsHash
-  } catch (error) {
-    console.error("Error writing to temporary file:", error)
+  } catch (_error) {
     return null
   }
 }
@@ -53,8 +52,7 @@ export async function ipfsUploadFile(fileName: string, fileContent: string): Pro
     })
 
     return IpfsHash
-  } catch (error) {
-    console.error("Error writing to temporary file:", error)
+  } catch (_error) {
     return null
   }
 }

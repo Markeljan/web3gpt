@@ -1,5 +1,3 @@
-"use client"
-
 import type { UseAssistantHelpers } from "@ai-sdk/react"
 import { ArrowUp } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -89,30 +87,30 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
   return (
     <>
       {isGuildPromptOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4">
-          <div className="relative w-full max-w-md rounded-lg border bg-background p-6 shadow-lg max-sm:mb-8 mb-24">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 px-4 backdrop-blur-sm">
+          <div className="relative mb-24 w-full max-w-md rounded-lg border bg-background p-6 shadow-lg max-sm:mb-8">
             <button
-              type="button"
               aria-label="Close join guild message"
-              className="absolute right-4 top-4 rounded-full border bg-background/80 p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+              className="absolute top-4 right-4 rounded-full border bg-background/80 p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
               onClick={() => setIsGuildPromptOpen(false)}
+              type="button"
             >
               <IconClose className="size-4" />
             </button>
-            <h3 className="text-lg font-semibold">Join the w3gpt Guild</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <h3 className="font-semibold text-lg">Join the w3gpt Guild</h3>
+            <p className="mt-2 text-muted-foreground text-sm">
               Become part of the community to unlock special roles and stay eligible for upcoming rewards.
             </p>
             <div className="mt-6 flex justify-end gap-3">
-              <Button type="button" variant="ghost" onClick={() => setIsGuildPromptOpen(false)}>
+              <Button onClick={() => setIsGuildPromptOpen(false)} type="button" variant="ghost">
                 Maybe later
               </Button>
               <Button asChild>
                 <a
                   href="https://guild.xyz/w3gpt"
-                  target="_blank"
-                  rel="noreferrer"
                   onClick={() => setIsGuildPromptOpen(false)}
+                  rel="noreferrer"
+                  target="_blank"
                 >
                   Join the Guild
                 </a>
@@ -122,7 +120,6 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
         </div>
       ) : null}
       <form
-        ref={formRef}
         onSubmit={async (e) => {
           e.preventDefault()
 
@@ -139,12 +136,16 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
           scrollToBottom()
           await append({ role: "user", content: value })
         }}
+        ref={formRef}
       >
         <div className="relative flex w-full grow flex-col overflow-hidden px-4 sm:px-6">
           <Tooltip delayDuration={500}>
             <TooltipTrigger asChild>
               <Button
-                type="submit"
+                className={cn(
+                  buttonVariants({ size: "sm", variant: "secondary" }),
+                  "absolute top-4 left-0 size-8 rounded-full border p-0 hover:bg-secondary/80 sm:left-2"
+                )}
                 disabled={isPendingTransition || isInProgress}
                 onClick={() => {
                   startTransition(() => {
@@ -152,10 +153,7 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
                     router.push("/")
                   })
                 }}
-                className={cn(
-                  buttonVariants({ size: "sm", variant: "secondary" }),
-                  "absolute left-0 top-4 size-8 rounded-full border p-0 sm:left-2 hover:bg-secondary/80",
-                )}
+                type="submit"
               >
                 {isPendingTransition ? <IconSpinner /> : <IconPlus />}
                 <span className="sr-only">New Chat</span>
@@ -164,24 +162,24 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
             <TooltipContent>New Chat</TooltipContent>
           </Tooltip>
           <Textarea
-            ref={inputRef}
-            tabIndex={0}
-            onKeyDown={onKeyDown}
-            rows={1}
-            autoFocus
-            value={input}
-            onFocus={handleGuildPromptTrigger}
-            onChange={handleInputChange}
-            placeholder="send a message"
-            spellCheck={false}
             autoComplete="off"
             autoCorrect="off"
-            className="min-h-[60px] md:min-h-[72px] max-h-[200px] w-full resize-none bg-transparent px-8 py-[1.3rem] md:py-[1.5rem] focus-within:outline-none sm:text-sm overflow-y-auto"
+            autoFocus
+            className="max-h-[200px] min-h-[60px] w-full resize-none overflow-y-auto bg-transparent px-8 py-[1.3rem] focus-within:outline-none sm:text-sm md:min-h-[72px] md:py-[1.5rem]"
+            onChange={handleInputChange}
+            onFocus={handleGuildPromptTrigger}
+            onKeyDown={onKeyDown}
+            placeholder="send a message"
+            ref={inputRef}
+            rows={1}
+            spellCheck={false}
+            tabIndex={0}
+            value={input}
           />
-          <div className="absolute right-0 top-4 sm:right-2">
+          <div className="absolute top-4 right-0 sm:right-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button type="submit" size="icon" disabled={input === "" || isInProgress}>
+                <Button disabled={input === "" || isInProgress} size="icon" type="submit">
                   <ArrowUp className="size-5" />
                   <span className="sr-only">Send message</span>
                 </Button>

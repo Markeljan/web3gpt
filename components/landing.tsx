@@ -52,79 +52,79 @@ export function Landing({ userId, disableAnimations }: LandingProps) {
 
   return (
     <>
-      <div className="flex flex-col mx-auto max-w-2xl text-center  mb-4 p-4 py-8 pointer-events-none select-none">
-        <div className="max-sm:flex-col flex items-center justify-center gap-3 mb-6">
+      <div className="pointer-events-none mx-auto mb-4 flex max-w-2xl select-none flex-col p-4 py-8 text-center">
+        <div className="mb-6 flex items-center justify-center gap-3 max-sm:flex-col">
           <W3GPTLogo variant="xl" />
           <CustomLogoText variant="xl">Ready, Set, Deploy</CustomLogoText>
         </div>
 
-        <div className="max-sm:w-full max-sm:flex max-sm:mx-auto  max-sm:justify-center grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3 max-sm:mx-auto max-sm:flex max-sm:w-full max-sm:justify-center md:grid-cols-3">
           <div className="flex items-center gap-3">
             <Player
-              play={!disableAnimations}
-              loop={false}
-              speed={0.5}
-              direction={-1}
-              path="/lotties/puzzle.json"
               className="size-8 flex-shrink-0"
+              direction={-1}
+              loop={false}
+              path="/lotties/puzzle.json"
+              play={!disableAnimations}
+              speed={0.5}
             />
             <div className="text-left">
               <h3 className="font-medium text-sm">Generate</h3>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Prompt smart contracts</p>
+              <p className="text-gray-600 text-xs dark:text-gray-400">Prompt smart contracts</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <Player
-              play={!disableAnimations}
-              loop={false}
-              speed={0.5}
-              path="/lotties/clock.json"
               className="size-8 flex-shrink-0"
+              loop={false}
+              path="/lotties/clock.json"
+              play={!disableAnimations}
+              speed={0.5}
             />
             <div className="text-left">
               <h3 className="font-medium text-sm">Speed up</h3>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Skip the boilerplate</p>
+              <p className="text-gray-600 text-xs dark:text-gray-400">Skip the boilerplate</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <Player
-              play={!disableAnimations}
-              loop={false}
-              speed={0.5}
-              direction={1}
-              path="/lotties/globe.json"
               className="size-8 flex-shrink-0"
+              direction={1}
+              loop={false}
+              path="/lotties/globe.json"
+              play={!disableAnimations}
+              speed={0.5}
             />
             <div className="text-left">
               <h3 className="font-medium text-sm">Deploy</h3>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Directly from chat</p>
+              <p className="text-gray-600 text-xs dark:text-gray-400">Directly from chat</p>
             </div>
           </div>
         </div>
       </div>
 
       {isClient && localIsSubscribed === false ? (
-        <div className="mx-auto max-w-2xl rounded-lg border-gray-600/20 p-4 text-center dark:border-gray-600/30 border bg-background/50 mb-4">
-          <h3 className="font-medium mb-2">Early Access</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Get updates and early access to features</p>
-          <form className="flex gap-2 justify-center" onSubmit={handleSubscribe}>
+        <div className="mx-auto mb-4 max-w-2xl rounded-lg border border-gray-600/20 bg-background/50 p-4 text-center dark:border-gray-600/30">
+          <h3 className="mb-2 font-medium">Early Access</h3>
+          <p className="mb-3 text-gray-600 text-sm dark:text-gray-400">Get updates and early access to features</p>
+          <form className="flex justify-center gap-2" onSubmit={handleSubscribe}>
             <Input
               className="h-9 w-48 text-sm"
-              type="text"
-              placeholder="Your email"
-              value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="Your email"
+              type="text"
+              value={email}
             />
-            <Button type="submit" className="h-9" size="sm">
+            <Button className="h-9" size="sm" type="submit">
               Send
             </Button>
           </form>
           {validationError ? (
-            <p className="text-xs text-red-500 mt-2">{validationError}</p>
+            <p className="mt-2 text-red-500 text-xs">{validationError}</p>
           ) : (
-            <p className="text-xs text-gray-400 mt-2">No spam, promise :)</p>
+            <p className="mt-2 text-gray-400 text-xs">No spam, promise :)</p>
           )}
         </div>
       ) : null}

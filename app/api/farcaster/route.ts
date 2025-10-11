@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { DEPLOYMENT_URL } from "@/lib/config"
+import { DEPLOYMENT_URL } from "vercel-url"
 
 const DYNAMIC_URL = process.env.NODE_ENV === "production" ? DEPLOYMENT_URL : "https://markeljan.a.pinggy.link"
 
@@ -18,7 +18,7 @@ const DYNAMIC_ACCOUNT_ASSOCIATION =
         signature:
           "MHhhYzg1NDFiMWI3ZDM4OGY3OWU5NzA5MzY3MGIzNTAxYzUyZDVkYWVjMTIyYmYzNDYyMzU1ZmE2ODM2N2Q2YTgwMTVlNmI5ZmRiOGFjYmNmMDNiMmRjYmQyYzE1ZDE0ODc5MDc4MTA5YzAwYTg2OGJiOTBlZjhmZWNiODE5YmM3ZTFj",
       }
-export async function GET() {
+export function GET() {
   const manifest = {
     miniapp: {
       version: "1",

@@ -3,20 +3,20 @@ import { cn } from "@/lib/utils"
 function IconHome({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      width="15"
+      className={className}
+      fill="none"
       height="15"
       viewBox="0 0 15 15"
-      fill="none"
+      width="15"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
       {...props}
     >
       <title id="title">Home icon</title>
       <path
+        clipRule="evenodd"
         d="M7.07926 0.222253C7.31275 -0.007434 7.6873 -0.007434 7.92079 0.222253L14.6708 6.86227C14.907 7.09465 14.9101 7.47453 14.6778 7.71076C14.4454 7.947 14.0655 7.95012 13.8293 7.71773L13 6.90201V12.5C13 12.7761 12.7762 13 12.5 13H2.50002C2.22388 13 2.00002 12.7761 2.00002 12.5V6.90201L1.17079 7.71773C0.934558 7.95012 0.554672 7.947 0.32229 7.71076C0.0899079 7.47453 0.0930283 7.09465 0.32926 6.86227L7.07926 0.222253ZM7.50002 1.49163L12 5.91831V12H10V8.49999C10 8.22385 9.77617 7.99999 9.50002 7.99999H6.50002C6.22388 7.99999 6.00002 8.22385 6.00002 8.49999V12H3.00002V5.91831L7.50002 1.49163ZM7.00002 12H9.00002V8.99999H7.00002V12Z"
         fill="currentColor"
         fillRule="evenodd"
-        clipRule="evenodd"
       />
     </svg>
   )
@@ -25,20 +25,20 @@ function IconHome({ className, ...props }: React.ComponentProps<"svg">) {
 function IconClear({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      width="15"
+      className={className}
+      fill="none"
       height="15"
       viewBox="0 0 15 15"
-      fill="none"
+      width="15"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
       {...props}
     >
       <title id="title">Clear icon</title>
       <path
+        clipRule="evenodd"
         d="M5.5 1C5.22386 1 5 1.22386 5 1.5C5 1.77614 5.22386 2 5.5 2H9.5C9.77614 2 10 1.77614 10 1.5C10 1.22386 9.77614 1 9.5 1H5.5ZM3 3.5C3 3.22386 3.22386 3 3.5 3H5H10H11.5C11.7761 3 12 3.22386 12 3.5C12 3.77614 11.7761 4 11.5 4H11V12C11 12.5523 10.5523 13 10 13H5C4.44772 13 4 12.5523 4 12V4L3.5 4C3.22386 4 3 3.77614 3 3.5ZM5 4H10V12H5V4Z"
         fill="currentColor"
         fillRule="evenodd"
-        clipRule="evenodd"
       />
     </svg>
   )
@@ -47,10 +47,10 @@ function IconClear({ className, ...props }: React.ComponentProps<"svg">) {
 function IconOpenAI({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
+      className={cn("size-4", className)}
       fill="currentColor"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
-      className={cn("size-4", className)}
       {...props}
     >
       <title>OpenAI icon</title>
@@ -62,10 +62,10 @@ function IconOpenAI({ className, ...props }: React.ComponentProps<"svg">) {
 function IconF({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
+      className={cn("size-4", className)}
       fill="currentColor"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
-      className={cn("size-4", className)}
       {...props}
     >
       <title>F icon</title>
@@ -76,7 +76,7 @@ function IconF({ className, ...props }: React.ComponentProps<"svg">) {
 
 function IconVercel({ className, ...props }: React.ComponentProps<"svg">) {
   return (
-    <svg aria-label="Vercel logomark" viewBox="0 0 74 64" className={cn("size-4", className)} {...props}>
+    <svg aria-label="Vercel logomark" className={cn("size-4", className)} viewBox="0 0 74 64" {...props}>
       <title id="title">Vercel icon</title>
       <path d="M37.5896 0.25L74.5396 64.25H0.639648L37.5896 0.25Z" fill="currentColor" />
     </svg>
@@ -86,20 +86,20 @@ function IconVercel({ className, ...props }: React.ComponentProps<"svg">) {
 function IconTwitter({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      width="15"
+      className={className}
+      fill="none"
       height="15"
       viewBox="0 0 15 15"
-      fill="none"
+      width="15"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
       {...props}
     >
       <title id="title">Twitter icon</title>
       <path
+        clipRule="evenodd"
         d="M7.23336 4.69629C7.23336 2.96884 8.63335 1.56857 10.36 1.56857C11.3736 1.56857 12.183 2.04804 12.7254 2.74385C13.3079 2.62467 13.8557 2.40913 14.3513 2.11508C14.1559 2.72598 13.7424 3.2396 13.2033 3.56463C13.2038 3.56568 13.2042 3.56674 13.2047 3.56779C13.7334 3.50361 14.2364 3.36302 14.7048 3.15546L14.7037 3.15715C14.3667 3.66183 13.9431 4.10736 13.4561 4.47034C13.4823 4.64672 13.4956 4.82427 13.4956 5.00079C13.4956 8.6871 10.6873 12.9746 5.52122 12.9746C3.93906 12.9746 2.46544 12.511 1.22505 11.7152C0.992632 11.5661 0.925108 11.2568 1.07423 11.0244C1.0874 11.0038 1.10183 10.9846 1.11734 10.9666C1.20582 10.8202 1.37438 10.7309 1.5554 10.7522C2.47066 10.8601 3.38568 10.7485 4.19219 10.3962C3.39226 10.0434 2.77129 9.35975 2.50204 8.51974C2.45359 8.3686 2.48835 8.20311 2.59351 8.08422C2.59716 8.0801 2.60087 8.07606 2.60464 8.0721C1.96391 7.50819 1.55973 6.68208 1.55973 5.76143V5.72759C1.55973 5.56814 1.64411 5.42059 1.78155 5.33974C1.82671 5.31317 1.87537 5.29511 1.92532 5.28558C1.70549 4.86154 1.58116 4.37984 1.58116 3.86958C1.58116 3.40165 1.58384 2.81192 1.91332 2.28081C1.98718 2.16175 2.10758 2.08915 2.2364 2.07195C2.42588 2.01237 2.64087 2.06969 2.77406 2.23302C3.86536 3.57126 5.44066 4.49583 7.23366 4.73961L7.23336 4.69629ZM5.52122 11.9746C4.73387 11.9746 3.97781 11.8435 3.27248 11.6023C4.13012 11.4538 4.95307 11.1159 5.66218 10.5602C5.81211 10.4427 5.87182 10.2435 5.81126 10.0629C5.7507 9.88234 5.583 9.75943 5.39255 9.75607C4.68968 9.74366 4.06712 9.39716 3.67793 8.86845C3.86828 8.85306 4.05428 8.82039 4.23445 8.77167C4.43603 8.71716 4.57363 8.53114 4.56674 8.32243C4.55985 8.11372 4.41029 7.93718 4.20555 7.89607C3.42694 7.73977 2.79883 7.16764 2.56169 6.42174C2.76255 6.47025 2.97102 6.4991 3.18482 6.5061C3.38563 6.51267 3.56646 6.38533 3.62795 6.19405C3.68943 6.00277 3.61666 5.79391 3.44963 5.68224C2.86523 5.29155 2.48116 4.62464 2.48116 3.86958C2.48116 3.70213 2.48352 3.55268 2.49355 3.41719C3.85115 4.79913 5.70873 5.68931 7.77588 5.79338C7.93225 5.80126 8.08328 5.73543 8.18395 5.61553C8.28463 5.49562 8.32332 5.33548 8.28851 5.18284C8.25255 5.02517 8.23336 4.86284 8.23336 4.69629C8.23336 3.52085 9.18591 2.56857 10.36 2.56857C11.5943 2.56857 12.4956 3.71208 12.4956 5.00079C12.4956 8.25709 10.0202 11.9746 5.52122 11.9746Z"
         fill="currentColor"
         fillRule="evenodd"
-        clipRule="evenodd"
       />
     </svg>
   )
@@ -108,10 +108,10 @@ function IconTwitter({ className, ...props }: React.ComponentProps<"svg">) {
 function IconGitHub({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
+      className={cn("size-4", className)}
+      fill="currentColor"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
-      fill="currentColor"
-      className={cn("size-4", className)}
       {...props}
     >
       <title>GitHub</title>
@@ -124,11 +124,11 @@ function IconTelegram({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
       className={cn("size-4", className)}
-      xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"
-      version="1.1"
       id="Capa_1"
+      version="1.1"
       viewBox="0 0 189.473 189.473"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Telegram</title>
@@ -142,16 +142,16 @@ function IconTelegram({ className, ...props }: React.ComponentProps<"svg">) {
 function IconWeb3GPT({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
+      className={cn("size-8 bg-[#242424]", className)}
       viewBox="-10 0 104 32"
       xmlns="http://www.w3.org/2000/svg"
-      className={cn("size-8 bg-[#242424]", className)}
       {...props}
     >
       <title>Web3GPT</title>
-      <rect width="36" height="8" fill="#21DA03" />
-      <rect x="36" y="16.0001" width="32" height="8" fill="#21DA03" />
-      <rect x="19.9999" y="32" width="32" height="8" fill="#21DA03" />
-      <rect x="48" width="36" height="8" fill="#21DA03" />
+      <rect fill="#21DA03" height="8" width="36" />
+      <rect fill="#21DA03" height="8" width="32" x="36" y="16.0001" />
+      <rect fill="#21DA03" height="8" width="32" x="19.9999" y="32" />
+      <rect fill="#21DA03" height="8" width="36" x="48" />
     </svg>
   )
 }
@@ -159,6 +159,7 @@ function IconWeb3GPT({ className, ...props }: React.ComponentProps<"svg">) {
 function IconSeparator({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
+      className={cn("size-4", className)}
       fill="none"
       shapeRendering="geometricPrecision"
       stroke="currentColor"
@@ -166,7 +167,6 @@ function IconSeparator({ className, ...props }: React.ComponentProps<"svg">) {
       strokeLinejoin="round"
       strokeWidth="1"
       viewBox="0 0 24 24"
-      className={cn("size-4", className)}
       {...props}
     >
       <title>Separator</title>
@@ -178,10 +178,10 @@ function IconSeparator({ className, ...props }: React.ComponentProps<"svg">) {
 function IconArrowDown({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Arrow Down</title>
@@ -193,10 +193,10 @@ function IconArrowDown({ className, ...props }: React.ComponentProps<"svg">) {
 function IconArrowRight({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Arrow Right</title>
@@ -208,10 +208,10 @@ function IconArrowRight({ className, ...props }: React.ComponentProps<"svg">) {
 function IconUser({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">User</title>
@@ -223,10 +223,10 @@ function IconUser({ className, ...props }: React.ComponentProps<"svg">) {
 function IconPlus({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Plus</title>
@@ -238,10 +238,10 @@ function IconPlus({ className, ...props }: React.ComponentProps<"svg">) {
 function IconArrowElbow({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Arrow Elbow</title>
@@ -253,10 +253,10 @@ function IconArrowElbow({ className, ...props }: React.ComponentProps<"svg">) {
 function IconSpinner({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4 animate-spin", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Spinner</title>
@@ -268,10 +268,10 @@ function IconSpinner({ className, ...props }: React.ComponentProps<"svg">) {
 function IconMessage({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Message</title>
@@ -283,10 +283,10 @@ function IconMessage({ className, ...props }: React.ComponentProps<"svg">) {
 function IconTrash({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Trash</title>
@@ -298,20 +298,20 @@ function IconTrash({ className, ...props }: React.ComponentProps<"svg">) {
 function IconRefresh({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      width="15"
+      className={cn("size-4", className)}
+      fill="none"
       height="15"
       viewBox="0 0 15 15"
-      fill="none"
+      width="15"
       xmlns="http://www.w3.org/2000/svg"
-      className={cn("size-4", className)}
       {...props}
     >
       <title id="refresh">New Chat</title>
       <path
+        clipRule="evenodd"
         d="M1.90321 7.29677C1.90321 10.341 4.11041 12.4147 6.58893 12.8439C6.87255 12.893 7.06266 13.1627 7.01355 13.4464C6.96444 13.73 6.69471 13.9201 6.41109 13.871C3.49942 13.3668 0.86084 10.9127 0.86084 7.29677C0.860839 5.76009 1.55996 4.55245 2.37639 3.63377C2.96124 2.97568 3.63034 2.44135 4.16846 2.03202L2.53205 2.03202C2.25591 2.03202 2.03205 1.80816 2.03205 1.53202C2.03205 1.25588 2.25591 1.03202 2.53205 1.03202L5.53205 1.03202C5.80819 1.03202 6.03205 1.25588 6.03205 1.53202L6.03205 4.53202C6.03205 4.80816 5.80819 5.03202 5.53205 5.03202C5.25591 5.03202 5.03205 4.80816 5.03205 4.53202L5.03205 2.68645L5.03054 2.68759L5.03045 2.68766L5.03044 2.68767L5.03043 2.68767C4.45896 3.11868 3.76059 3.64538 3.15554 4.3262C2.44102 5.13021 1.90321 6.10154 1.90321 7.29677ZM13.0109 7.70321C13.0109 4.69115 10.8505 2.6296 8.40384 2.17029C8.12093 2.11718 7.93465 1.84479 7.98776 1.56188C8.04087 1.27898 8.31326 1.0927 8.59616 1.14581C11.4704 1.68541 14.0532 4.12605 14.0532 7.70321C14.0532 9.23988 13.3541 10.4475 12.5377 11.3662C11.9528 12.0243 11.2837 12.5586 10.7456 12.968L12.3821 12.968C12.6582 12.968 12.8821 13.1918 12.8821 13.468C12.8821 13.7441 12.6582 13.968 12.3821 13.968L9.38205 13.968C9.10591 13.968 8.88205 13.7441 8.88205 13.468L8.88205 10.468C8.88205 10.1918 9.10591 9.96796 9.38205 9.96796C9.65819 9.96796 9.88205 10.1918 9.88205 10.468L9.88205 12.3135L9.88362 12.3123C10.4551 11.8813 11.1535 11.3546 11.7585 10.6738C12.4731 9.86976 13.0109 8.89844 13.0109 7.70321Z"
         fill="currentColor"
         fillRule="evenodd"
-        clipRule="evenodd"
       />
     </svg>
   )
@@ -320,10 +320,10 @@ function IconRefresh({ className, ...props }: React.ComponentProps<"svg">) {
 function IconStop({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Stop</title>
@@ -335,16 +335,16 @@ function IconStop({ className, ...props }: React.ComponentProps<"svg">) {
 function IconCog({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
+      className={cn("size-4", className)}
       fill="none"
+      height="24"
       stroke="currentColor"
-      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={cn("size-4", className)}
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Cog</title>
@@ -357,10 +357,10 @@ function IconCog({ className, ...props }: React.ComponentProps<"svg">) {
 function IconSidebar({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Sidebar</title>
@@ -372,10 +372,10 @@ function IconSidebar({ className, ...props }: React.ComponentProps<"svg">) {
 function IconMoon({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Moon</title>
@@ -387,10 +387,10 @@ function IconMoon({ className, ...props }: React.ComponentProps<"svg">) {
 function IconSun({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Sun</title>
@@ -402,10 +402,10 @@ function IconSun({ className, ...props }: React.ComponentProps<"svg">) {
 function IconCopy({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Copy</title>
@@ -417,10 +417,10 @@ function IconCopy({ className, ...props }: React.ComponentProps<"svg">) {
 function IconCheck({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Check</title>
@@ -432,10 +432,10 @@ function IconCheck({ className, ...props }: React.ComponentProps<"svg">) {
 function IconDownload({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Download</title>
@@ -447,10 +447,10 @@ function IconDownload({ className, ...props }: React.ComponentProps<"svg">) {
 function IconClose({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Close</title>
@@ -462,19 +462,19 @@ function IconClose({ className, ...props }: React.ComponentProps<"svg">) {
 function IconEdit({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
       className={cn("size-4", className)}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Edit</title>
       <path
+        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
       />
     </svg>
   )
@@ -483,10 +483,10 @@ function IconEdit({ className, ...props }: React.ComponentProps<"svg">) {
 function IconShare({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
       viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Share</title>
@@ -498,10 +498,10 @@ function IconShare({ className, ...props }: React.ComponentProps<"svg">) {
 function IconUsers({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
       viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Users</title>
@@ -513,10 +513,10 @@ function IconUsers({ className, ...props }: React.ComponentProps<"svg">) {
 function IconExternalLink({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
       viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">External Link</title>
@@ -528,10 +528,10 @@ function IconExternalLink({ className, ...props }: React.ComponentProps<"svg">) 
 function IconChevronUpDown({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
       viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">Chevron Up Down</title>
@@ -543,10 +543,10 @@ function IconChevronUpDown({ className, ...props }: React.ComponentProps<"svg">)
 function IconPC({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 256 256"
-      fill="currentColor"
       className={cn("size-4", className)}
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <title id="title">PC</title>

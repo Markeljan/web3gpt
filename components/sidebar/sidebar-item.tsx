@@ -8,21 +8,23 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import type { DbChatListItem } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
-interface SidebarItemProps {
+type SidebarItemProps = {
   chat: DbChatListItem
   isActive: boolean
   children: React.ReactNode
 }
 
 export function SidebarItem({ chat, isActive, children }: SidebarItemProps) {
-  if (!chat?.id) return null
+  if (!chat?.id) {
+    return null
+  }
 
   return (
-    <div className="relative group">
-      <div className="absolute left-2 top-1 flex size-6 items-center justify-center">
+    <div className="group relative">
+      <div className="absolute top-1 left-2 flex size-6 items-center justify-center">
         {chat.published ? (
           <Tooltip delayDuration={1000}>
-            <TooltipTrigger tabIndex={-1} className="focus:bg-muted focus:ring-1 focus:ring-ring">
+            <TooltipTrigger className="focus:bg-muted focus:ring-1 focus:ring-ring" tabIndex={-1}>
               <IconUsers className="mr-2" />
             </TooltipTrigger>
             <TooltipContent>This is a published chat.</TooltipContent>
@@ -32,14 +34,14 @@ export function SidebarItem({ chat, isActive, children }: SidebarItemProps) {
         )}
       </div>
       <Link
+        className={cn(buttonVariants({ variant: "ghost" }), "w-full pr-4 pl-8", isActive && "bg-accent pr-16")}
         href={`/chat/${chat.id}`}
-        className={cn(buttonVariants({ variant: "ghost" }), "w-full pl-8 pr-4", isActive && "bg-accent pr-16")}
       >
         <div className="relative max-h-5 flex-1 select-none overflow-hidden text-ellipsis break-all" title={chat.title}>
           <span className="whitespace-nowrap">{chat.title}</span>
         </div>
       </Link>
-      <div className={cn("hidden absolute right-2 top-1", isActive && "block")}>{children}</div>
+      <div className={cn("absolute top-1 right-2 hidden", isActive && "block")}>{children}</div>
     </div>
   )
 }

@@ -1,13 +1,12 @@
+import "@/app/globals.css"
 import { Analytics } from "@vercel/analytics/react"
 import type { Metadata, Viewport } from "next"
 import { JetBrains_Mono as FontMono, Inter as FontSans } from "next/font/google"
-import { headers } from "next/headers"
-import Script from "next/script"
+import { cookies } from "next/headers"
 import { ThemeProvider } from "next-themes"
 import type { ReactNode } from "react"
+import { DEPLOYMENT_URL } from "vercel-url"
 import { cookieToInitialState } from "wagmi"
-
-import "@/app/globals.css"
 import { auth } from "@/auth"
 import { Header } from "@/components/header/header"
 import { MiniAppInitializer } from "@/components/miniapp-initializer"
@@ -16,7 +15,7 @@ import { PermanentSidebar } from "@/components/sidebar/permanent-sidebar"
 import { SidebarContent } from "@/components/sidebar/sidebar-content"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { DEPLOYMENT_URL, getWagmiConfig } from "@/lib/config"
+import { getWagmiConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
 const fontSans = FontSans({
@@ -89,7 +88,7 @@ export const metadata: Metadata = {
     title: "Web3GPT",
     description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
     site: "@w3gptai",
-    creator: "@0xSoko",
+    creator: "@soko_eth",
     images: [`${DEPLOYMENT_URL}/twitter-image.png`],
   },
   other: {
@@ -106,7 +105,7 @@ export const viewport: Viewport = {
 }
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const initialState = cookieToInitialState(getWagmiConfig(), headers().get("cookie"))
+  const initialState = cookieToInitialState(getWagmiConfig(), cookies().get("cookie")?.value)
   const session = await auth()
 
   return (
@@ -115,9 +114,9 @@ export default async function Layout({ children }: { children: ReactNode }) {
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          enableSystem
           disableTransitionOnChange
           enableColorScheme
+          enableSystem
           storageKey="preffered-theme"
         >
           <TooltipProvider>
@@ -127,9 +126,9 @@ export default async function Layout({ children }: { children: ReactNode }) {
                 <PermanentSidebar user={session?.user}>
                   <SidebarContent />
                 </PermanentSidebar>
-                <div className="flex flex-1 flex-col min-w-0">
+                <div className="flex min-w-0 flex-1 flex-col">
                   <Header />
-                  <main className="flex-1 bg-muted/50 overflow-auto">{children}</main>
+                  <main className="flex-1 overflow-auto bg-muted/50">{children}</main>
                 </div>
               </div>
               <Toaster
@@ -141,12 +140,6 @@ export default async function Layout({ children }: { children: ReactNode }) {
           </TooltipProvider>
         </ThemeProvider>
         <Analytics />
-        <Script
-          src="https://analytics.ahrefs.com/analytics.js"
-          data-key="AmJJJnKB1tQpYEHULJiG1A"
-          defer
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   )

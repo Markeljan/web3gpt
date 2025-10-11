@@ -1,15 +1,16 @@
-// Recursive function to resolve imports in a source code.  Fetches the source code of the imports one by one and returns the final source code with all imports resolved and urls / aliases replaced with relative paths.
+const IMPORT_REGEX = /import\s+(?:{[^}]+}\s+from\s+)?["']([^"']+)["'];/g
+const LOCAL_IMPORT_REGEX = /^\.\//
+
 export async function resolveImports(sourceCode: string, sourcePath?: string, localSources?: Record<string, string>) {
   const sources: { [fileName: string]: { content: string } } = {}
-  const importRegex = /import\s+(?:{[^}]+}\s+from\s+)?["']([^"']+)["'];/g
-  const matches = Array.from(sourceCode.matchAll(importRegex))
+  const matches = Array.from(sourceCode.matchAll(IMPORT_REGEX))
   let sourceCodeWithImports = sourceCode
   for (const match of matches) {
     const importPath = match[1]
     const { sources: importedSources, sourceCode: mainSourceCode } = await fetchImport(
       importPath,
       sourcePath,
-      localSources,
+      localSources
     )
 
     // Merge the imported sources into the main sources object
@@ -37,11 +38,15 @@ async function fetchImport(importPath: string, sourcePath?: string, localSources
     if (importPath[0] === "." && sourcePath) {
       localPath = resolveImportPath(importPath, sourcePath)
     }
-    localPath = localPath.replace(/^\.\//, "")
+    localPath = localPath.replace(LOCAL_IMPORT_REGEX, "")
     if (localSources[localPath]) {
       const importedSource = localSources[localPath]
-      const { sources, sourceCode } = await resolveImports(importedSource, localPath, localSources)
-      return { sources, sourceCode }
+      const { sources: importedSources, sourceCode: importedSourceCode } = await resolveImports(
+        importedSource,
+        localPath,
+        localSources
+      )
+      return { sources: importedSources, sourceCode: importedSourceCode }
     }
   }
 
@@ -102,14 +107,17 @@ function resolveImportPath(importPath: string, sourcePath: string) {
   return sourceSegments.concat(importSegments).join("/")
 }
 
-export const getContractFileName = (contractName: string): string => {
-  return `${contractName.replace(/[/\\:*?"<>|.\s]+$/g, "_")}.sol`
-}
+const CONTRACT_NAME_REGEX = /[/\\:*?"<>|.\s]+$/g
+const IMPORT_STATEMENT_REGEX = /import\s+["'][^"']+["'];/g
+const IMPORT_PATH_REGEX = /["']([^"']+)["']/
+
+export const getContractFileName = (contractName: string): string =>
+  `${contractName.replace(CONTRACT_NAME_REGEX, "_")}.sol`
 
 export async function prepareContractSources(
   contractName: string,
   sourceCode: string,
-  localSources?: Record<string, string>,
+  localSources?: Record<string, string>
 ) {
   const fileName = getContractFileName(contractName)
 
@@ -125,19 +133,21 @@ export async function prepareContractSources(
   const sourcesKeys = Object.keys(sources)
 
   for (const sourceKey of sourcesKeys) {
-    let sourceCode = sources[sourceKey].content
-    const importStatements = sourceCode.match(/import\s+["'][^"']+["'];/g) || []
+    let itemSourceCode = sources[sourceKey].content
+    const importStatements = itemSourceCode.match(IMPORT_STATEMENT_REGEX) || []
 
     for (const importStatement of importStatements) {
-      const importPathMatch = importStatement.match(/["']([^"']+)["']/)
-      if (!importPathMatch) continue
+      const importPathMatch = importStatement.match(IMPORT_PATH_REGEX)
+      if (!importPathMatch) {
+        continue
+      }
 
       const importPath = importPathMatch[1]
-      const fileName = importPath.split("/").pop() || importPath
-      sourceCode = sourceCode.replace(importStatement, `import "${fileName}";`)
+      const itemFileName = importPath.split("/").pop() || importPath
+      itemSourceCode = itemSourceCode.replace(importStatement, `import "${itemFileName}";`)
     }
 
-    sources[sourceKey].content = sourceCode
+    sources[sourceKey].content = itemSourceCode
   }
 
   return sources

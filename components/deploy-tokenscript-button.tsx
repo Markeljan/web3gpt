@@ -18,21 +18,18 @@ import { IconSpinner } from "@/components/ui/icons"
 import { storeTokenScriptDeploymentAction } from "@/lib/actions/deploy-contract"
 import { useTokenScriptDeploy } from "@/lib/hooks/use-tokenscript-deploy"
 
-type DeployContractButtonProps = {
-  getSourceCode: () => string
-}
-
-export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonProps) => {
+export const DeployTokenScriptButton = ({ sourceCode }: { sourceCode: string }) => {
   const { deploy: deployTokenScript } = useTokenScriptDeploy()
   const [explorerUrl, setExplorerUrl] = useState()
   const [isErrorDeploying, setIsErrorDeploying] = useState<boolean>(false)
-  const [sourceCode, setSourceCode] = useState(getSourceCode())
   const { isDeploying, setIsDeploying, setTokenScriptViewerUrl } = useGlobalStore()
   const { chainId } = useAccount()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const handleDeployToIPFS = async () => {
-    if (!chainId || !sourceCode) return
+    if (!(chainId && sourceCode)) {
+      return
+    }
 
     setIsDeploying(true)
     setIsErrorDeploying(false)
@@ -40,7 +37,9 @@ export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonP
     try {
       const deploymentData = await deployTokenScript({ tokenScriptSource: sourceCode })
 
-      if (!deploymentData) throw new Error("Error deploying TokenScript")
+      if (!deploymentData) {
+        throw new Error("Error deploying TokenScript")
+      }
 
       const { cid, txHash, tokenAddress } = deploymentData
       const tokenscriptViewerUrl = `https://viewer.tokenscript.org/?chain=${chainId}&contract=${tokenAddress}`
@@ -56,8 +55,7 @@ export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonP
       setTokenScriptViewerUrl(tokenscriptViewerUrl)
 
       setIsDialogOpen(false)
-    } catch (e) {
-      console.error(e)
+    } catch (_e) {
       setIsErrorDeploying(true)
     } finally {
       setIsDeploying(false)
@@ -67,23 +65,22 @@ export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonP
   return (
     <div className="ml-4 flex w-full justify-end">
       <Dialog
-        open={isDialogOpen}
         onOpenChange={(isOpen) => {
           setIsDialogOpen(isOpen)
-          if (!isOpen && !isDeploying) {
+          if (!(isOpen || isDeploying)) {
             setIsErrorDeploying(false)
           }
         }}
+        open={isDialogOpen}
       >
         <DialogTrigger asChild>
           <Button
+            className="mr-2 text-primary-foreground"
             onClick={() => {
-              setSourceCode(getSourceCode())
               setIsDialogOpen(true)
             }}
-            className="mr-2 text-primary-foreground"
-            variant="default"
             size="sm"
+            variant="default"
           >
             <p className="hidden sm:flex">Deploy TokenScript</p>
             <p className="flex sm:hidden">Deploy</p>
@@ -97,19 +94,19 @@ export const DeployTokenScriptButton = ({ getSourceCode }: DeployContractButtonP
           <div className="flex flex-col gap-4 py-4">
             <div className="flex flex-col gap-2">
               <div className="flex">
-                <p className="text-sm font-medium">Deploy using IPFS</p>
-                <Badge variant="destructive" className="ml-2 rounded">
+                <p className="font-medium text-sm">Deploy using IPFS</p>
+                <Badge className="ml-2 rounded" variant="destructive">
                   Standard
                 </Badge>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-gray-500 text-sm">
                 We will deploy the TokenScript to IPFS Then update the ScriptURI on the contract to point to the
                 TokenScript
               </p>
             </div>
           </div>
           <div className="flex flex-col items-center gap-4">
-            {isErrorDeploying && <p className="text-sm text-destructive">Error deploying TokenScript.</p>}
+            {isErrorDeploying && <p className="text-destructive text-sm">Error deploying TokenScript.</p>}
             {isDeploying && <IconSpinner className="size-8 animate-spin text-gray-500" />}
           </div>
 

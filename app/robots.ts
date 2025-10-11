@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-import { DEPLOYMENT_URL } from "@/lib/config"
+import { DEPLOYMENT_URL } from "vercel-url"
 
 export default function robots(): MetadataRoute.Robots {
   return {

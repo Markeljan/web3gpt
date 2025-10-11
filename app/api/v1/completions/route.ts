@@ -72,8 +72,7 @@ export const POST = withUnkey(
       })
 
       return NextResponse.json({ text }, { headers })
-    } catch (error) {
-      console.error("Completion error:", error)
+    } catch (_error) {
       return new NextResponse("An error occurred while generating the completion", {
         status: 500,
         headers,
@@ -87,11 +86,11 @@ export const POST = withUnkey(
       })
     },
     rootKey: UNKEY_ROOT_KEY,
-  },
+  }
 )
 
 // Handle CORS preflight requests
-export async function OPTIONS() {
+export function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {

@@ -1,4 +1,4 @@
-import { type AssistantStatus, generateId, type Message } from "ai"
+import type { AssistantStatus, Message } from "ai"
 import Image from "next/image"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
@@ -8,19 +8,22 @@ import { MemoizedReactMarkdown } from "@/components/markdown"
 import { CodeBlock } from "@/components/ui/code-block"
 import { IconUser, IconWeb3GPT } from "@/components/ui/icons"
 
-export interface ChatMessageProps {
+export type ChatMessageProps = {
   message: Message
   status?: AssistantStatus
   avatarUrl?: string | null
 }
 
+const LANGUAGE_REGEX = /language-(\w+)/
+const NEWLINE_REGEX = /\n$/
+
 export function ChatMessage({ message, avatarUrl, status }: ChatMessageProps) {
   return (
-    <div className="group relative flex w-full mb-4 items-start md:-ml-12">
-      <div className="relative flex size-8 shrink-0 select-none items-center justify-center overflow-hidden rounded-md border shadow ">
+    <div className="group md:-ml-12 relative mb-4 flex w-full items-start">
+      <div className="relative flex size-8 shrink-0 select-none items-center justify-center overflow-hidden rounded-md border shadow">
         {message.role === "user" ? (
           avatarUrl ? (
-            <Image className="rounded-md" src={avatarUrl} alt={"user avatar"} fill={true} sizes="32px" />
+            <Image alt={"user avatar"} className="rounded-md" fill={true} sizes="32px" src={avatarUrl} />
           ) : (
             <IconUser />
           )
@@ -28,11 +31,9 @@ export function ChatMessage({ message, avatarUrl, status }: ChatMessageProps) {
           <IconWeb3GPT />
         )}
       </div>
-      <div className="ml-1 md:ml-4 flex-1 space-y-2 overflow-x-auto">
+      <div className="ml-1 flex-1 space-y-2 overflow-x-auto md:ml-4">
         <MemoizedReactMarkdown
-          className="flex flex-col prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 max-w-full"
-          remarkPlugins={[remarkGfm, remarkMath]}
-          linkTarget="_blank"
+          className="prose dark:prose-invert flex max-w-full flex-col break-words prose-pre:p-0 prose-p:leading-relaxed"
           components={{
             p({ children }) {
               return <p className="mb-2 last:mb-0">{children}</p>
@@ -50,13 +51,19 @@ export function ChatMessage({ message, avatarUrl, status }: ChatMessageProps) {
                 return <code className={className}>{children}</code>
               }
 
-              const match = /language-(\w+)/.exec(className || "")
+              const match = LANGUAGE_REGEX.exec(className || "")
 
               return (
-                <CodeBlock key={generateId()} language={match?.[1] || ""} value={String(children).replace(/\n$/, "")} />
+                <CodeBlock
+                  key={message.id}
+                  language={match?.[1] || ""}
+                  value={String(children).replace(NEWLINE_REGEX, "")}
+                />
               )
             },
           }}
+          linkTarget="_blank"
+          remarkPlugins={[remarkGfm, remarkMath]}
         >
           {message.content}
         </MemoizedReactMarkdown>

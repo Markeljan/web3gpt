@@ -22,7 +22,7 @@ export function useTokenScriptDeploy() {
       }
     | undefined
   > {
-    if (!viemChain || !walletClient) {
+    if (!(viemChain && walletClient)) {
       throw new Error("Provider or wallet not available")
     }
     if (!lastDeploymentData) {
@@ -51,7 +51,7 @@ export function useTokenScriptDeploy() {
 
     const setScriptURIAbi = parseAbiItem("function setScriptURI(string[] memory newScriptURI)")
     try {
-      const data = encodeFunctionData({
+      const encodedData = encodeFunctionData({
         abi: [setScriptURIAbi],
         functionName: "setScriptURI",
         args: [ipfsRoute],
@@ -59,7 +59,7 @@ export function useTokenScriptDeploy() {
 
       const txHash = await walletClient.sendTransaction({
         to: tokenAddress,
-        data,
+        data: encodedData,
       })
 
       const transactionReceipt = await walletClient.waitForTransactionReceipt({
@@ -77,8 +77,7 @@ export function useTokenScriptDeploy() {
         cid,
         tokenAddress,
       }
-    } catch (error) {
-      console.error(error)
+    } catch (_error) {
       toast.error("Failed to deploy TokenScript")
       return
     }

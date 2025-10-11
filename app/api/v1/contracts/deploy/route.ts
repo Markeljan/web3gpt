@@ -12,18 +12,20 @@ import { deployContract } from "@/lib/solidity/deploy"
 
 const UNKEY_ROOT_KEY = process.env.UNKEY_ROOT_KEY
 
+const CODE_FENCE_MARKER_LENGTH = 3
+
 if (!UNKEY_ROOT_KEY) {
   throw new Error("UNKEY_ROOT_KEY is not set")
 }
 
 export const maxDuration = 60
 
-interface ContractDeployRequest {
+type ContractDeployRequest = {
   prompt: string
   chainId?: number
 }
 
-interface CompilationResult {
+type CompilationResult = {
   abi: Abi
   bytecode: Hex
   standardJsonInput: string
@@ -108,7 +110,7 @@ export const POST = withUnkey(
 
                 // Remove code fence markers at end
                 if (cleanedCode.endsWith("```")) {
-                  cleanedCode = cleanedCode.substring(0, cleanedCode.length - 3)
+                  cleanedCode = cleanedCode.substring(0, cleanedCode.length - CODE_FENCE_MARKER_LENGTH)
                 }
 
                 // Final trim to remove any leading/trailing whitespace
@@ -137,7 +139,7 @@ export const POST = withUnkey(
                 error: "Contract compilation failed",
                 details: error instanceof Error ? error.message : "Unknown error",
               }),
-              { status: 400, headers },
+              { status: 400, headers }
             )
           }
 
@@ -171,7 +173,7 @@ export const POST = withUnkey(
           }
 
           if (cleanedFixedCode.endsWith("```")) {
-            cleanedFixedCode = cleanedFixedCode.substring(0, cleanedFixedCode.length - 3)
+            cleanedFixedCode = cleanedFixedCode.substring(0, cleanedFixedCode.length - CODE_FENCE_MARKER_LENGTH)
           }
 
           sourceCode = cleanedFixedCode.trim()
@@ -184,7 +186,7 @@ export const POST = withUnkey(
           JSON.stringify({
             error: "Failed to compile contract after multiple attempts",
           }),
-          { status: 400, headers },
+          { status: 400, headers }
         )
       }
 
@@ -200,16 +202,15 @@ export const POST = withUnkey(
           ipfsUrl,
           explorerUrl,
         },
-        { headers },
+        { headers }
       )
     } catch (error) {
-      console.error("Contract generation/deployment error:", error)
       return new NextResponse(
         JSON.stringify({
           error: "An error occurred during contract generation/deployment",
           details: error instanceof Error ? error.message : "Unknown error",
         }),
-        { status: 500, headers },
+        { status: 500, headers }
       )
     }
   },
@@ -220,11 +221,11 @@ export const POST = withUnkey(
       })
     },
     rootKey: UNKEY_ROOT_KEY,
-  },
+  }
 )
 
 // Handle CORS preflight requests
-export async function OPTIONS() {
+export function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {

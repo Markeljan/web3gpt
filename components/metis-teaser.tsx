@@ -15,12 +15,12 @@ export const MetisTeaser = () => {
   return (
     <Button
       asChild
-      className="bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-400 hover:from-purple-700 hover:via-blue-600 hover:to-indigo-500 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+      className="transform rounded-full bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-400 px-4 py-2 font-bold text-white shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:from-purple-700 hover:via-blue-600 hover:to-indigo-500"
     >
       <Link href="https://metis.fun" target="_blank">
         <span className="relative z-10">FUN</span>
-        <div className="absolute inset-0 bg-black opacity-10 rounded-full" />
-        <div className="absolute inset-0 animate-pulse bg-white opacity-10 rounded-full" />
+        <div className="absolute inset-0 rounded-full bg-black opacity-10" />
+        <div className="absolute inset-0 animate-pulse rounded-full bg-white opacity-10" />
       </Link>
     </Button>
   )

@@ -8,41 +8,24 @@ import type { Agent, DbChat, DbChatListItem, DeploymentRecord, VerifyContractPar
 
 type ActionWithUser<T, R> = (data: T, userId: string) => Promise<R>
 
-export const withUser = <T, R>(action: ActionWithUser<T, R>) => {
-  return async (data: T): Promise<R | undefined> => {
+export const withUser =
+  <T, R>(action: ActionWithUser<T, R>) =>
+  async (data: T): Promise<R | undefined> => {
     const session = await auth()
     const userId = session?.user?.id
-    if (!userId) return
+    if (!userId) {
+      return
+    }
 
     return action(data, userId)
   }
-}
 
-export type StoredUser = {
-  id: string
-  name?: string | null
-  email?: string | null
-  image?: string | null
-  walletAddress?: string | null
-  githubId?: string | null
-}
-
-export async function storeUser(user: StoredUser) {
+export async function storeUser(user: { id: string }) {
   const userKey = `user:details:${user.id}`
-  const sanitizedEntries = Object.entries(user).filter(([, value]) => value !== undefined)
 
-  await kv.hmset(userKey, Object.fromEntries(sanitizedEntries))
+  await kv.hmset(userKey, user)
+
   await kv.sadd("users:list", user.id)
-
-  const walletAddress = user.walletAddress
-  if (walletAddress) {
-    await kv.set(`wallet:user:${walletAddress.toLowerCase()}`, user.id)
-  }
-}
-
-export async function getUserIdByWallet(address: string | null | undefined) {
-  if (!address) return null
-  return await kv.get<string>(`wallet:user:${address.toLowerCase()}`)
 }
 
 export const getChatList = withUser<void, DbChatListItem[]>(
@@ -60,13 +43,11 @@ export const getChatList = withUser<void, DbChatListItem[]>(
       return await pipeline.exec<DbChatListItem[]>()
     },
     ["chat-list"],
-    { revalidate: 3600, tags: ["chat-list"] },
-  ),
+    { revalidate: 3600, tags: ["chat-list"] }
+  )
 )
 
-export const getChat = withUser<string, DbChat | null>(async (id) => {
-  return await kv.hgetall<DbChat>(`chat:${id}`)
-})
+export const getChat = withUser<string, DbChat | null>(async (id) => await kv.hgetall<DbChat>(`chat:${id}`))
 
 export async function getPublishedChat(id: string) {
   const chat = await kv.hgetall<DbChat>(`chat:${id}`)
@@ -81,9 +62,7 @@ export async function getPublishedChat(id: string) {
   return chat
 }
 
-export const getAgent = async (id: string) => {
-  return await kv.hgetall<Agent>(`agent:${id}`)
-}
+export const getAgent = async (id: string) => await kv.hgetall<Agent>(`agent:${id}`)
 
 // verifications
 
@@ -99,7 +78,7 @@ export const getVerifications = async () => {
       count: BATCH_SIZE,
     })
 
-    cursor = Number.parseInt(nextCursor)
+    cursor = Number.parseInt(nextCursor, 10)
 
     if (keys && keys.length > 0) {
       // Process in batches to avoid "too many keys" error
@@ -173,7 +152,7 @@ export const getUserDeployments = withUser<void, DeploymentRecord[]>(async (_, u
 
 export const getAllDeployments = async () => {
   const deployments: DeploymentRecord[] = []
-  const BATCH_SIZE = 10000 // Process up to 10000 keys at a time
+  const BATCH_SIZE = 10_000 // Process up to 10000 keys at a time
 
   // Use SCAN instead of KEYS to avoid blocking
   const [_, keys] = await kv.scan(0, {

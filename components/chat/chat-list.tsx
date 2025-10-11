@@ -14,13 +14,13 @@ export const ChatList = ({ messages, avatarUrl, status }: ChatList) => {
     return null
   }
   return (
-    <div className="relative flex flex-col mx-auto max-md:max-w-2xl max-w-4xl w-full p-2 md:translate-x-[8%]">
+    <div className="relative mx-auto flex w-full max-w-4xl flex-col p-2 max-md:max-w-2xl md:translate-x-[8%]">
       {messages
         .filter((unfilteredMessage) => unfilteredMessage.role !== "system")
         .map((message, index) => (
-          <div className="flex flex-col w-full" key={`${message.id}`}>
-            <ChatMessage message={message} avatarUrl={avatarUrl} status={status} />
-            {index < messages.length - 1 && <Separator className="my-4 md:my-8 md:-translate-x-[5%]" />}
+          <div className="flex w-full flex-col" key={`${message.id}`}>
+            <ChatMessage avatarUrl={avatarUrl} message={message} status={status} />
+            {index < messages.length - 1 && <Separator className="md:-translate-x-[5%] my-4 md:my-8" />}
           </div>
         ))}
     </div>

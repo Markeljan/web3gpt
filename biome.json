@@ -1,5 +1,6 @@
 {
-  "$schema": "node_modules/@biomejs//biome//configuration_schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["ultracite"],
   "assist": {
     "actions": {
       "recommended": true,
@@ -13,7 +14,15 @@
     }
   },
   "files": {
-    "includes": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "!**/node_modules", "!**/.next"],
+    "includes": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx",
+      "!**/dist",
+      "!**/.next",
+      "!components/ui"
+    ],
     "maxSize": 5242880
   },
   "vcs": {
@@ -40,7 +49,26 @@
       "recommended": true,
       "correctness": {
         "noUnusedVariables": "warn"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": {
+          "level": "warn",
+          "options": {
+            "maxAllowedComplexity": 30
+          }
+        }
+      },
+      "suspicious": {
+        "noConsole": "off"
       }
+    }
+  },
+  "css": {
+    "linter": {
+      "enabled": false
+    },
+    "formatter": {
+      "enabled": false
     }
   }
 }

@@ -3,10 +3,11 @@ import "server-only"
 import type { Message } from "ai"
 import { OpenAI } from "openai"
 import { storeAgent } from "@/lib/data/kv"
-import { TOOL_SCHEMAS, ToolName } from "@/lib/tools"
+import { TOOL_SCHEMAS } from "@/lib/tools"
 import type { CreateAgentParams } from "@/lib/types"
 
 export const openai = new OpenAI()
+const SECOND_IN_MS = 1000
 
 export const getAiThreadMessages = async (threadId: string) => {
   const fullMessages = (await openai.beta.threads.messages.list(threadId, { order: "asc" })).data
@@ -20,7 +21,7 @@ export const getAiThreadMessages = async (threadId: string) => {
       id,
       content: text,
       role,
-      createdAt: new Date(createdAt * 1000),
+      createdAt: new Date(createdAt * SECOND_IN_MS),
     } satisfies Message
   })
 }
@@ -35,15 +36,11 @@ export const createAgent = async ({
 }: CreateAgentParams) => {
   try {
     const { id } = await openai.beta.assistants.create({
-      name: name,
-      model: "gpt-4.1",
-      description: description,
-      instructions: instructions,
-      tools: [
-        TOOL_SCHEMAS[ToolName.DeployContract],
-        TOOL_SCHEMAS[ToolName.ResolveAddress],
-        TOOL_SCHEMAS[ToolName.ResolveDomain],
-      ],
+      name,
+      model: "gpt-4.1-mini",
+      description,
+      instructions,
+      tools: [TOOL_SCHEMAS.deployContract, TOOL_SCHEMAS.resolveAddress, TOOL_SCHEMAS.resolveDomain],
     })
 
     if (!userId) {
@@ -60,8 +57,7 @@ export const createAgent = async ({
     })
 
     return id
-  } catch (error) {
-    console.error("Error in createAgent", error)
+  } catch (_error) {
     return null
   }
 }

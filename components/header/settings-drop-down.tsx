@@ -17,12 +17,12 @@ export function SettingsDropDown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button size="icon" variant="ghost">
           <IconCog />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="mr-2" sideOffset={8} align="start">
+      <DropdownMenuContent align="start" className="mr-2" sideOffset={8}>
         <DropdownMenuItem
           onClick={() => {
             startTransition(() => {
@@ -56,8 +56,8 @@ export function SettingsDropDown() {
               <Link
                 className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
                 href="https://twitter.com/w3gptai"
-                target="_blank"
                 rel="noopener noreferrer"
+                target="_blank"
               >
                 <IconTwitter />
                 <span className="sr-only">Twitter</span>
@@ -70,8 +70,8 @@ export function SettingsDropDown() {
               <Link
                 className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
                 href="https://t.me/w3gptai"
-                target="_blank"
                 rel="noopener noreferrer"
+                target="_blank"
               >
                 <IconTelegram />
                 <span className="sr-only">Telegram</span>
@@ -84,8 +84,8 @@ export function SettingsDropDown() {
               <Link
                 className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
                 href="https://github.com/markeljan/web3gpt"
-                target="_blank"
                 rel="noopener noreferrer"
+                target="_blank"
               >
                 <IconGitHub />
                 <span className="sr-only">Github</span>

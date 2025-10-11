@@ -22,25 +22,16 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useWalletDeploy } from "@/lib/hooks/use-wallet-deploy"
 
-type DeployContractButtonProps = {
-  getSourceCode: () => string
-}
+const CONTRACT_NAME_REGEX = /contract\s+(\w+)\s*(?:is|{)/
+const CONSTRUCTOR_ARGS_REGEX = /constructor\(([^)]+)\)/
 
-// function to get the contract name from the source code
-const getContractName = (sourceCode: string) => {
-  const contractNameRegex = /contract\s+(\w+)\s*(?:is|{)/
-  const contractNameMatch = contractNameRegex.exec(sourceCode)
-  return contractNameMatch ? contractNameMatch[1] : ""
-}
-
-export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProps) => {
+export const DeployContractButton = ({ sourceCode }: { sourceCode: string }) => {
   const { deploy: deployWithWallet } = useWalletDeploy()
   const [explorerUrl, setExplorerUrl] = useState<string>("")
   const [ipfsUrl, setIpfsUrl] = useState<string>("")
   const [constructorArgValues, setConstructorArgValues] = useState<string[]>([])
   const [constructorArgNames, setConstructorArgNames] = useState<string[]>([])
   const [isErrorDeploying, setIsErrorDeploying] = useState<boolean>(false)
-  const [sourceCode, setSourceCode] = useState<string>("")
   const { isDeploying, setIsDeploying } = useGlobalStore()
   const supportedChains = useChains()
   const { chain } = useAccount()
@@ -48,13 +39,14 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
 
   const isSupportedChain = useMemo(
     () => !!chain && supportedChains.find((c) => c.id === chain.id),
-    [chain, supportedChains],
+    [chain, supportedChains]
   )
 
   const generateConstructorArgs = useCallback(() => {
-    const constructorArgsRegex = /constructor\(([^)]+)\)/
-    const constructorArgsMatch = constructorArgsRegex.exec(sourceCode)
-    if (!constructorArgsMatch) return []
+    const constructorArgsMatch = CONSTRUCTOR_ARGS_REGEX.exec(sourceCode)
+    if (!constructorArgsMatch) {
+      return []
+    }
     const constructorArgs = constructorArgsMatch[1]
     const constructorArgsArray = constructorArgs.split(",")
     return constructorArgsArray.map((arg) => arg.trim())
@@ -74,29 +66,32 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
     })
   }, [])
 
-  const generatedConstructorFields = useMemo(() => {
-    return constructorArgNames.map((arg, index) => (
-      <div key={`${arg}`} className="flex flex-col gap-2">
-        <Label className="text-sm font-medium">{arg}</Label>
-        <Input
-          type="text"
-          placeholder={arg}
-          value={constructorArgValues[index]}
-          onChange={(e) => {
-            e.preventDefault()
-            handleInputChange(index, e.target.value)
-          }}
-          className="rounded-md border border-gray-300 p-2"
-        />
-      </div>
-    ))
-  }, [constructorArgNames, constructorArgValues, handleInputChange])
+  const generatedConstructorFields = useMemo(
+    () =>
+      constructorArgNames.map((arg, index) => (
+        <div className="flex flex-col gap-2" key={`${arg}`}>
+          <Label className="font-medium text-sm">{arg}</Label>
+          <Input
+            className="rounded-md border border-gray-300 p-2"
+            onChange={(e) => {
+              e.preventDefault()
+              handleInputChange(index, e.target.value)
+            }}
+            placeholder={arg}
+            type="text"
+            value={constructorArgValues[index]}
+          />
+        </div>
+      )),
+    [constructorArgNames, constructorArgValues, handleInputChange]
+  )
 
-  const contractName = useMemo(() => getContractName(sourceCode), [sourceCode])
-
-  const handleClickDeploy = async () => {
+  const handleClickDeploy = useCallback(async () => {
     setIsDeploying(true)
     setIsErrorDeploying(false)
+
+    const contractNameMatch = CONTRACT_NAME_REGEX.exec(sourceCode)
+    const contractName = contractNameMatch ? contractNameMatch[1] : ""
     try {
       const deploymentData = await deployWithWallet({
         contractName,
@@ -109,44 +104,46 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
         return
       }
 
-      const { explorerUrl, ipfsUrl } = deploymentData
-      if (!explorerUrl || !ipfsUrl) {
+      const { explorerUrl: newExplorerUrl, ipfsUrl: newIpfsUrl } = deploymentData
+      if (!(newExplorerUrl && newIpfsUrl)) {
         setIsErrorDeploying(true)
         setIsDeploying(false)
         return
       }
-      explorerUrl && setExplorerUrl(explorerUrl)
-      setIpfsUrl(ipfsUrl)
+      if (newExplorerUrl) {
+        setExplorerUrl(newExplorerUrl)
+      }
+      if (newIpfsUrl) {
+        setIpfsUrl(newIpfsUrl)
+      }
 
       setIsDeploying(false)
-    } catch (e) {
-      console.error(e)
+    } catch (_e) {
       setIsErrorDeploying(true)
       setIsDeploying(false)
     }
-  }
+  }, [deployWithWallet, constructorArgValues, sourceCode, setIsDeploying])
 
   return (
     <div className="ml-4 flex w-full justify-end">
       <Dialog
-        open={isDialogOpen}
         onOpenChange={(isOpen) => {
           setIsDialogOpen(isOpen)
-          if (!isOpen && !isDeploying) {
+          if (!(isOpen || isDeploying)) {
             setIsErrorDeploying(false)
           }
         }}
+        open={isDialogOpen}
       >
         <DialogTrigger asChild>
           <Button
+            className="mr-2 bg-primary/80 text-primary-foreground hover:bg-primary"
+            disabled={!isSupportedChain}
             onClick={() => {
-              setSourceCode(getSourceCode())
               setIsDialogOpen(true)
             }}
-            className="mr-2 text-primary-foreground bg-primary/80 hover:bg-primary"
-            variant="default"
-            disabled={!isSupportedChain}
             size="sm"
+            variant="default"
           >
             <p className="hidden sm:flex">Deploy Contract</p>
             <p className="flex sm:hidden">Deploy</p>
@@ -162,23 +159,23 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
           <div className="flex flex-col gap-4 py-4">
             <div className="flex flex-col gap-2">
               <div className="flex">
-                <p className="text-sm font-medium">Agent Deploy</p>
-                <Badge variant="default" className="ml-2 rounded">
+                <p className="font-medium text-sm">Agent Deploy</p>
+                <Badge className="ml-2 rounded" variant="default">
                   RECOMMENDED
                 </Badge>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-gray-500 text-sm">
                 {`This method does not require wallet connection. Just use the keyword "deploy" in the chat.`}
               </p>
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex">
-                <p className="text-sm font-medium">Deploy with Wallet</p>
-                <Badge variant="destructive" className="ml-2 rounded">
+                <p className="font-medium text-sm">Deploy with Wallet</p>
+                <Badge className="ml-2 rounded" variant="destructive">
                   ADVANCED
                 </Badge>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-gray-500 text-sm">
                 Sign and deploy the contract using your own wallet. Be cautious of risks and network fees.
               </p>
             </div>
@@ -190,10 +187,10 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
             ) : null}
           </div>
           <div className="flex flex-col items-center gap-4">
-            {isErrorDeploying && <p className="text-sm text-destructive">Error deploying contract.</p>}
+            {isErrorDeploying && <p className="text-destructive text-sm">Error deploying contract.</p>}
             {isDeploying && <IconSpinner className="size-8 animate-spin text-gray-500" />}
             {explorerUrl && (
-              <Link href={explorerUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-green-500">
+              <Link className="text-green-500 text-sm" href={explorerUrl} rel="noopener noreferrer" target="_blank">
                 <div className="flex items-center">
                   View on Explorer
                   <IconExternalLink className="ml-1" />
@@ -201,7 +198,7 @@ export const DeployContractButton = ({ getSourceCode }: DeployContractButtonProp
               </Link>
             )}
             {ipfsUrl && (
-              <Link href={ipfsUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500">
+              <Link className="text-blue-500 text-sm" href={ipfsUrl} rel="noopener noreferrer" target="_blank">
                 <div className="flex items-center">
                   View on IPFS
                   <IconExternalLink className="ml-1" />

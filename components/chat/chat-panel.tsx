@@ -8,19 +8,19 @@ export type ChatPanelProps = Pick<UseAssistantHelpers, "status" | "append" | "st
 
 export function ChatPanel({ status, append, stop, setThreadId }: ChatPanelProps) {
   return (
-    <div className="fixed bottom-0 left-0 lg:left-80 lg:[html[data-sidebar-collapsed='true']_&]:left-16 right-0 p-3 sm:p-4 z-50 pointer-events-none transition-all duration-300 ease-in-out">
-      <div className="max-w-4xl mx-auto pointer-events-auto">
+    <div className="pointer-events-none fixed right-0 bottom-0 left-0 z-50 p-3 transition-all duration-300 ease-in-out sm:p-4 lg:left-80 lg:[html[data-sidebar-collapsed='true']_&]:left-16">
+      <div className="pointer-events-auto mx-auto max-w-4xl">
         <ButtonScrollToBottom />
-        <div className="flex h-10 items-center justify-center mb-2">
+        <div className="mb-2 flex h-10 items-center justify-center">
           {status === "in_progress" ? (
-            <Button variant="outline" onClick={() => stop()} className="bg-background shadow-md">
+            <Button className="bg-background shadow-md" onClick={() => stop()} variant="outline">
               <IconSpinner className="mr-2 animate-spin" />
               Stop generating
             </Button>
           ) : null}
         </div>
-        <div className="rounded-2xl border shadow-xl px-4 py-3 backdrop-blur-sm bg-background/95">
-          <PromptForm setThreadId={setThreadId} append={append} status={status} />
+        <div className="rounded-2xl border bg-background/95 px-4 py-3 shadow-xl backdrop-blur-sm">
+          <PromptForm append={append} setThreadId={setThreadId} status={status} />
         </div>
       </div>
     </div>

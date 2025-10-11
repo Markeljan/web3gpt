@@ -1,4 +1,4 @@
-"server-only"
+import "server-only"
 
 import { Resolution } from "@unstoppabledomains/resolution"
 

@@ -8,7 +8,7 @@ import { SidebarCollapsed } from "@/components/sidebar/sidebar-collapsed"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-interface PermanentSidebarProps {
+type PermanentSidebarProps = {
   children: React.ReactNode
   className?: string
   user?: Session["user"]
@@ -24,23 +24,23 @@ export function PermanentSidebar({ children, className, user }: PermanentSidebar
   return (
     <div
       className={cn(
-        "relative hidden lg:flex flex-col bg-muted/20 border-r border-border transition-all duration-300 ease-in-out h-full",
+        "relative hidden h-full flex-col border-border border-r bg-muted/20 transition-all duration-300 ease-in-out lg:flex",
         isCollapsed ? "w-16" : "w-80",
-        className,
+        className
       )}
     >
       {/* Collapse Toggle */}
       <Button
-        variant="ghost"
-        size="sm"
+        className="-right-3 absolute top-6 z-10 h-6 w-6 rounded-full border bg-background shadow-md hover:bg-accent"
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-6 z-10 h-6 w-6 rounded-full border bg-background shadow-md hover:bg-accent"
+        size="sm"
+        variant="ghost"
       >
         {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
       </Button>
 
       {/* Sidebar Content */}
-      <div className={cn("flex flex-col h-full overflow-hidden")}>
+      <div className={cn("flex h-full flex-col overflow-hidden")}>
         {isCollapsed ? <SidebarCollapsed user={user} /> : children}
       </div>
     </div>

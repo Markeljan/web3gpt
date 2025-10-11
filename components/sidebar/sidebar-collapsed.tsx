@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
-interface SidebarCollapsedProps {
+type SidebarCollapsedProps = {
   user?: Session["user"]
 }
 
@@ -19,13 +19,13 @@ export function SidebarCollapsed({ user }: SidebarCollapsedProps) {
   const pathname = usePathname()
 
   return (
-    <div className="flex flex-col h-full items-center py-4">
+    <div className="flex h-full flex-col items-center py-4">
       {/* Logo */}
       <div className="mb-6">
-        <Link href="/" className="block">
+        <Link className="block" href="/">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Image src="/assets/web3gpt.png" alt="Web3GPT" width={32} height={32} className="rounded-lg" />
+              <Image alt="Web3GPT" className="rounded-lg" height={32} src="/assets/web3gpt.png" width={32} />
             </TooltipTrigger>
             <TooltipContent side="right">Web3GPT</TooltipContent>
           </Tooltip>
@@ -33,7 +33,7 @@ export function SidebarCollapsed({ user }: SidebarCollapsedProps) {
       </div>
 
       {/* Navigation Icons */}
-      <div className="flex flex-col space-y-2 mb-6">
+      <div className="mb-6 flex flex-col space-y-2">
         {NAVIGATION_ITEMS.map((item) => {
           const Icon = item.icon
           const isExternal = item.external
@@ -43,15 +43,15 @@ export function SidebarCollapsed({ user }: SidebarCollapsedProps) {
             <Tooltip key={item.name}>
               <TooltipTrigger asChild>
                 <Button
-                  variant={isActive ? "secondary" : "ghost"}
-                  size="sm"
                   asChild
-                  className={cn("w-10 h-10 p-0", isActive && "bg-muted hover:bg-muted/80")}
+                  className={cn("h-10 w-10 p-0", isActive && "bg-muted hover:bg-muted/80")}
+                  size="sm"
+                  variant={isActive ? "secondary" : "ghost"}
                 >
                   <Link
                     href={item.href}
-                    target={isExternal ? "_blank" : undefined}
                     rel={isExternal ? "noopener noreferrer" : undefined}
+                    target={isExternal ? "_blank" : undefined}
                   >
                     <Icon className="h-5 w-5" />
                   </Link>
@@ -71,7 +71,7 @@ export function SidebarCollapsed({ user }: SidebarCollapsedProps) {
         {user ? (
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="w-10 h-10">
+              <div className="h-10 w-10">
                 <UserMenu user={user} variant="collapsed" />
               </div>
             </TooltipTrigger>
@@ -85,7 +85,7 @@ export function SidebarCollapsed({ user }: SidebarCollapsedProps) {
         ) : (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" className="w-10 h-10 p-0">
+              <Button className="h-10 w-10 p-0" size="sm" variant="ghost">
                 <User className="h-5 w-5" />
               </Button>
             </TooltipTrigger>

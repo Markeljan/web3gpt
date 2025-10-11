@@ -1,17 +1,11 @@
 import type { FunctionTool } from "openai/resources/beta/assistants"
 
-export enum ToolName {
-  ResolveAddress = "resolveAddress",
-  ResolveDomain = "resolveDomain",
-  DeployContract = "deployContract",
-  CreateAgent = "createAgent",
-  DeployTokenScript = "deployTokenScript",
-}
+type ToolName = "resolveAddress" | "resolveDomain" | "deployContract" | "createAgent" | "deployTokenScript"
 
-export const DEFAULT_TOOLS = [ToolName.ResolveAddress, ToolName.ResolveDomain, ToolName.DeployContract]
+export const DEFAULT_TOOLS = ["resolveAddress", "resolveDomain", "deployContract"]
 
 export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
-  [ToolName.ResolveAddress]: {
+  resolveAddress: {
     type: "function",
     function: {
       name: "resolveAddress",
@@ -31,7 +25,7 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
       },
     },
   },
-  [ToolName.ResolveDomain]: {
+  resolveDomain: {
     type: "function",
     function: {
       name: "resolveDomain",
@@ -55,7 +49,7 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
       },
     },
   },
-  [ToolName.DeployContract]: {
+  deployContract: {
     type: "function",
     function: {
       name: "deployContract",
@@ -98,12 +92,12 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
       },
     },
   },
-  [ToolName.CreateAgent]: {
+  createAgent: {
     type: "function",
     function: {
       name: "createAgent",
       description: `Create and publish an AI agent (assistant) to the Web3GPT Agents repository.  Agents are generally for Solidity smart contract development but can also be created for anything else.  All agents have these tools available: ${DEFAULT_TOOLS.map(
-        (tool) => tool,
+        (tool) => tool
       ).join(", ")}`,
       strict: false,
       parameters: {
@@ -136,7 +130,7 @@ export const TOOL_SCHEMAS: Record<ToolName, FunctionTool> = {
       },
     },
   },
-  [ToolName.DeployTokenScript]: {
+  deployTokenScript: {
     type: "function",
     function: {
       name: "deployTokenScript",

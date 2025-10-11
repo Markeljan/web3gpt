@@ -24,8 +24,11 @@ type ChatProps = {
   avatarUrl?: string | null
 }
 
+const SCROLL_TO_BOTTOM_DELAY = 500
+
 export const Chat = ({ initialThreadId, initialMessages = [], agent, className, userId, avatarUrl }: ChatProps) => {
   const chatRef = useRef<HTMLDivElement>(null)
+  const previousAgentId = useRef<string>()
   const { scrollToBottom } = useScrollToBottom(chatRef)
 
   const {
@@ -57,7 +60,7 @@ export const Chat = ({ initialThreadId, initialMessages = [], agent, className, 
         },
       ])
     },
-    [setMessages],
+    [setMessages]
   )
 
   useEffect(() => {
@@ -71,9 +74,17 @@ export const Chat = ({ initialThreadId, initialMessages = [], agent, className, 
       setMessages(initialMessages)
       setTimeout(() => {
         scrollToBottom()
-      }, 500)
+      }, SCROLL_TO_BOTTOM_DELAY)
     }
   }, [initialMessages, messages, setMessages, scrollToBottom])
+
+  // Clear messages when agent changes
+  useEffect(() => {
+    if (previousAgentId.current && previousAgentId.current !== agent.id) {
+      setMessages([])
+    }
+    previousAgentId.current = agent.id
+  }, [agent.id, setMessages])
 
   useEffect(() => {
     if (isTokenScriptAgent && lastDeploymentData && !completedDeploymentReport && !isInProgress) {
@@ -116,12 +127,16 @@ export const Chat = ({ initialThreadId, initialMessages = [], agent, className, 
 
   return (
     <>
-      <div ref={chatRef} className={cn("px-3 pb-32 pt-4 sm:px-4 md:pt-10", className)}>
-        {showLanding ? <Landing userId={userId} /> : <AgentCard setThreadId={setThreadId} agent={agent} />}
-        <ChatList messages={messages} avatarUrl={avatarUrl} status={status} />
+      <div className={cn("px-3 pt-4 pb-32 sm:px-4 md:pt-10", className)} ref={chatRef}>
+        {showLanding ? (
+          <Landing userId={userId} />
+        ) : (
+          <AgentCard agent={agent} setMessages={setMessages} setThreadId={setThreadId} />
+        )}
+        <ChatList avatarUrl={avatarUrl} messages={messages} status={status} />
         <ChatScrollAnchor trackVisibility={isInProgress} />
       </div>
-      <ChatPanel setThreadId={setThreadId} stop={stop} append={append} status={status} />
+      <ChatPanel append={append} setThreadId={setThreadId} status={status} stop={stop} />
     </>
   )
 }

@@ -21,13 +21,13 @@ export function LoginButton({
   const [isLoading, setIsLoading] = useState(false)
   return (
     <Button
-      variant="outline"
+      className={cn(className)}
+      disabled={isLoading}
       onClick={() => {
         setIsLoading(true)
         signIn("github")
       }}
-      disabled={isLoading}
-      className={cn(className)}
+      variant="outline"
       {...props}
     >
       {showGithubIcon && (isLoading ? <IconSpinner className="mr-2 animate-spin" /> : <IconGitHub className="mr-2" />)}

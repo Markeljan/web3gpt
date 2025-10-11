@@ -47,12 +47,7 @@ function getUserInitials(name: string) {
   return lastName ? `${firstName[0]}${lastName[0]}` : firstName.slice(0, 2)
 }
 
-function shortenAddress(address?: string | null) {
-  if (!address) return null
-  return `${address.slice(0, 6)}…${address.slice(-4)}`
-}
-
-interface UserMenuProps {
+type UserMenuProps = {
   user: Session["user"]
   variant?: "header" | "sidebar" | "collapsed"
   showClearHistory?: boolean
@@ -63,25 +58,19 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
   const [_, startTransition] = useTransition()
   const [clearHistoryOpen, setClearHistoryOpen] = useState(false)
   const [isClearPending, startClearTransition] = useTransition()
-  const walletSummary = shortenAddress(user?.walletAddress)
-  const manageAccountItem = (
-    <DropdownMenuItem asChild>
-      <Link className="w-full text-xs text-primary hover:underline" href="/sign-in">
-        Manage linked accounts
-      </Link>
-    </DropdownMenuItem>
-  )
 
   const renderClearHistory = () => {
-    if (!showClearHistory) return null
+    if (!showClearHistory) {
+      return null
+    }
 
     return (
       <>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <AlertDialog open={clearHistoryOpen} onOpenChange={setClearHistoryOpen}>
+          <AlertDialog onOpenChange={setClearHistoryOpen} open={clearHistoryOpen}>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" className="w-full justify-start p-0 h-auto font-normal" disabled={isClearPending}>
+              <Button className="h-auto w-full justify-start p-0 font-normal" disabled={isClearPending} variant="ghost">
                 {isClearPending && <IconSpinner className="mr-2" />}
                 <IconClear className="mr-2 h-4 w-4" />
                 Clear History
@@ -120,18 +109,18 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
   const renderSettingsItems = () => (
     <>
       <DropdownMenuSeparator />
-      <div className="mx-1 flex flex-row justify-between py-1 px-6">
+      <div className="mx-1 flex flex-row justify-between px-6 py-1">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant={theme === "light" ? "default" : "ghost"}
-              size="icon"
               className="h-8 w-8"
               onClick={() => {
                 startTransition(() => {
                   setTheme("light")
                 })
               }}
+              size="icon"
+              variant={theme === "light" ? "default" : "ghost"}
             >
               <IconSun className="h-4 w-4" />
               <span className="sr-only">Light theme</span>
@@ -142,14 +131,14 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant={theme === "dark" ? "default" : "ghost"}
-              size="icon"
               className="h-8 w-8"
               onClick={() => {
                 startTransition(() => {
                   setTheme("dark")
                 })
               }}
+              size="icon"
+              variant={theme === "dark" ? "default" : "ghost"}
             >
               <IconMoon className="h-4 w-4" />
               <span className="sr-only">Dark theme</span>
@@ -160,14 +149,14 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant={theme === "system" ? "default" : "ghost"}
-              size="icon"
               className="h-8 w-8"
               onClick={() => {
                 startTransition(() => {
                   setTheme("system")
                 })
               }}
+              size="icon"
+              variant={theme === "system" ? "default" : "ghost"}
             >
               <IconPC className="h-4 w-4" />
               <span className="sr-only">System theme</span>
@@ -177,14 +166,14 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
         </Tooltip>
       </div>
       <DropdownMenuSeparator />
-      <div className="mx-1 flex flex-row justify-between py-1 px-4">
+      <div className="mx-1 flex flex-row justify-between px-4 py-1">
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
               className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-8 w-8")}
               href="https://x.com/w3gptai"
-              target="_blank"
               rel="noopener noreferrer"
+              target="_blank"
             >
               <IconTwitter className="h-4 w-4" />
               <span className="sr-only">X</span>
@@ -197,8 +186,8 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
             <Link
               className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-8 w-8")}
               href="https://t.me/w3gptai"
-              target="_blank"
               rel="noopener noreferrer"
+              target="_blank"
             >
               <IconTelegram className="h-4 w-4" />
               <span className="sr-only">Telegram</span>
@@ -211,8 +200,8 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
             <Link
               className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-8 w-8")}
               href="https://github.com/markeljan/web3gpt"
-              target="_blank"
               rel="noopener noreferrer"
+              target="_blank"
             >
               <IconGitHub className="h-4 w-4" />
               <span className="sr-only">Github</span>
@@ -227,38 +216,27 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-10 h-10 p-0 rounded-full">
+          <Button className="h-10 w-10 rounded-full p-0" variant="ghost">
             {user?.image ? (
               <Image
-                className="w-8 h-8 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
-                src={`${user.image}&s=60`}
                 alt="User profile image"
-                width={32}
+                className="h-8 w-8 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
                 height={32}
+                src={`${user.image}&s=60`}
+                width={32}
               />
             ) : (
-              <div className="flex w-8 h-8 shrink-0 select-none items-center justify-center rounded-full bg-muted/50 text-xs font-medium uppercase text-muted-foreground">
+              <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full bg-muted/50 font-medium text-muted-foreground text-xs uppercase">
                 {user?.name ? getUserInitials(user?.name) : null}
               </div>
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent side="right" sideOffset={8} align="end" className="w-[220px]">
-          <DropdownMenuItem className="flex-col items-start gap-1">
-            <div className="text-xs font-medium">{user?.name}</div>
-            {user?.email ? <div className="text-xs text-zinc-500">{user.email}</div> : null}
-            <div className="text-xs text-zinc-500">
-              Wallet:{" "}
-              {user?.walletAddress ? (
-                <span className="font-mono text-muted-foreground" title={user.walletAddress}>
-                  {walletSummary}
-                </span>
-              ) : (
-                <span className="text-muted-foreground">Not linked</span>
-              )}
-            </div>
+        <DropdownMenuContent align="end" className="w-[220px]" side="right" sideOffset={8}>
+          <DropdownMenuItem className="flex-col items-start">
+            <div className="font-medium text-xs">{user?.name}</div>
+            <div className="text-xs text-zinc-500">{user?.email}</div>
           </DropdownMenuItem>
-          {manageAccountItem}
           <DropdownMenuItem>
             <SignOutButton />
           </DropdownMenuItem>
@@ -273,45 +251,34 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-full justify-start p-3 h-auto hover:bg-accent/50">
-            <div className="flex items-center gap-3 w-full">
+          <Button className="h-auto w-full justify-start p-3 hover:bg-accent/50" variant="ghost">
+            <div className="flex w-full items-center gap-3">
               {user?.image ? (
                 <Image
-                  className="size-8 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
-                  src={`${user.image}&s=60`}
                   alt="User profile image"
-                  width={32}
+                  className="size-8 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
                   height={32}
+                  src={`${user.image}&s=60`}
+                  width={32}
                 />
               ) : (
-                <div className="flex size-8 shrink-0 select-none items-center justify-center rounded-full bg-muted/50 text-xs font-medium uppercase text-muted-foreground">
+                <div className="flex size-8 shrink-0 select-none items-center justify-center rounded-full bg-muted/50 font-medium text-muted-foreground text-xs uppercase">
                   {user?.name ? getUserInitials(user?.name) : null}
                 </div>
               )}
-              <div className="flex-1 text-left min-w-0">
-                <div className="text-sm font-medium truncate">{user?.name}</div>
-                <div className="text-xs text-muted-foreground truncate">{user?.email}</div>
+              <div className="min-w-0 flex-1 text-left">
+                <div className="truncate font-medium text-sm">{user?.name}</div>
+                <div className="truncate text-muted-foreground text-xs">{user?.email}</div>
               </div>
-              <IconCog className="size-4 text-muted-foreground mr-2" />
+              <IconCog className="mr-2 size-4 text-muted-foreground" />
             </div>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent sideOffset={8} align="start" className="w-[220px]">
-          <DropdownMenuItem className="flex-col items-start gap-1">
-            <div className="text-xs font-medium">{user?.name}</div>
-            {user?.email ? <div className="text-xs text-zinc-500">{user.email}</div> : null}
-            <div className="text-xs text-zinc-500">
-              Wallet:{" "}
-              {user?.walletAddress ? (
-                <span className="font-mono text-muted-foreground" title={user.walletAddress}>
-                  {walletSummary}
-                </span>
-              ) : (
-                <span className="text-muted-foreground">Not linked</span>
-              )}
-            </div>
+        <DropdownMenuContent align="start" className="w-[220px]" sideOffset={8}>
+          <DropdownMenuItem className="flex-col items-start">
+            <div className="font-medium text-xs">{user?.name}</div>
+            <div className="text-xs text-zinc-500">{user?.email}</div>
           </DropdownMenuItem>
-          {manageAccountItem}
           <DropdownMenuItem>
             <SignOutButton />
           </DropdownMenuItem>
@@ -326,39 +293,28 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
     <div className="flex items-center justify-between">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="px-2">
+          <Button className="px-2" variant="ghost">
             {user?.image ? (
               <Image
-                className="size-6 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
-                src={`${user.image}&s=60`}
                 alt="User profile image"
-                width={24}
+                className="size-6 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
                 height={24}
+                src={`${user.image}&s=60`}
+                width={24}
               />
             ) : (
-              <div className="flex size-7 shrink-0 select-none items-center justify-center rounded-full bg-muted/50 text-xs font-medium uppercase text-muted-foreground">
+              <div className="flex size-7 shrink-0 select-none items-center justify-center rounded-full bg-muted/50 font-medium text-muted-foreground text-xs uppercase">
                 {user?.name ? getUserInitials(user?.name) : null}
               </div>
             )}
             <span className="ml-2 hidden lg:flex">{user?.name && user?.name}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent sideOffset={8} align="start" className="w-[220px]">
-          <DropdownMenuItem className="flex-col items-start gap-1">
-            <div className="text-xs font-medium">{user?.name}</div>
-            {user?.email ? <div className="text-xs text-zinc-500">{user.email}</div> : null}
-            <div className="text-xs text-zinc-500">
-              Wallet:{" "}
-              {user?.walletAddress ? (
-                <span className="font-mono text-muted-foreground" title={user.walletAddress}>
-                  {walletSummary}
-                </span>
-              ) : (
-                <span className="text-muted-foreground">Not linked</span>
-              )}
-            </div>
+        <DropdownMenuContent align="start" className="w-[220px]" sideOffset={8}>
+          <DropdownMenuItem className="flex-col items-start">
+            <div className="font-medium text-xs">{user?.name}</div>
+            <div className="text-xs text-zinc-500">{user?.email}</div>
           </DropdownMenuItem>
-          {manageAccountItem}
           <DropdownMenuItem>
             <SignOutButton />
           </DropdownMenuItem>

@@ -1,15 +1,39 @@
 "use client"
 
-import { darkTheme, lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit"
-import { useState } from "react"
+import { connectorsForWallets, darkTheme, lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit"
+import { getWagmiConfig } from "@/lib/config"
 import "@rainbow-me/rainbowkit/styles.css"
+import {
+  coinbaseWallet,
+  injectedWallet,
+  metaMaskWallet,
+  rainbowWallet,
+  safeWallet,
+  walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useTheme } from "next-themes"
+import { useState } from "react"
+import { DEPLOYMENT_URL } from "vercel-url"
 import { type State, WagmiProvider } from "wagmi"
 
-import { getWagmiConfig } from "@/lib/config"
-import { connectors } from "@/lib/rainbowkit"
+const NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ""
 
+export const connectors = connectorsForWallets(
+  [
+    {
+      groupName: "Recommended",
+      wallets: [coinbaseWallet, metaMaskWallet, rainbowWallet, walletConnectWallet, injectedWallet, safeWallet],
+    },
+  ],
+  {
+    appName: "Web3GPT",
+    appDescription: "Write and deploy Solidity smart contracts with AI",
+    appUrl: DEPLOYMENT_URL,
+    appIcon: "/assets/web3gpt.png",
+    projectId: NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+  }
+)
 export function Web3Provider({
   children,
   initialState,
@@ -25,7 +49,6 @@ export function Web3Provider({
     <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
-          key="wagmi"
           appInfo={{
             appName: "Web3GPT",
             disclaimer: ({ Text, Link }) => (

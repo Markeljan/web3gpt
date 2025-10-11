@@ -53,31 +53,32 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
   const { resolvedTheme } = useTheme()
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
-  const isDarkMode = !isClient ? true : resolvedTheme === "dark"
+  const isDarkMode = isClient ? resolvedTheme === "dark" : true
 
-  const memoizedHighlighter = useMemo(() => {
-    return (
+  const memoizedHighlighter = useMemo(
+    () => (
       <SyntaxHighlighter
-        language={language}
-        style={isDarkMode ? coldarkDark : coldarkCold}
-        PreTag="div"
-        customStyle={{
-          margin: 0,
-          width: "100%",
-          background: "transparent",
-          padding: "1.5rem 1rem",
-        }}
         codeTagProps={{
           style: {
             fontSize: "0.9rem",
             fontFamily: "var(--font-mono)",
           },
         }}
+        customStyle={{
+          margin: 0,
+          width: "100%",
+          background: "transparent",
+          padding: "1.5rem 1rem",
+        }}
+        language={language}
+        PreTag="div"
+        style={isDarkMode ? coldarkDark : coldarkCold}
       >
         {value}
       </SyntaxHighlighter>
-    )
-  }, [value, language, isDarkMode])
+    ),
+    [value, language, isDarkMode]
+  )
 
   const downloadAsFile = useCallback(() => {
     if (typeof window === "undefined") {
@@ -87,7 +88,9 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
     const suggestedFileName = `web3gpt-${generateId(6)}${fileExtension}`
     const fileName = window.prompt("Enter file name", suggestedFileName)
 
-    if (!fileName) return
+    if (!fileName) {
+      return
+    }
 
     const blob = new Blob([value], { type: "text/plain" })
     const url = URL.createObjectURL(blob)
@@ -103,34 +106,34 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
 
   const renderDeployButton = useCallback(() => {
     if (language === "solidity") {
-      return <DeployContractButton getSourceCode={() => value} />
+      return <DeployContractButton sourceCode={value} />
     }
     if (["tokenscript", "tokenscripttsml", "xml"].includes(language)) {
-      return <DeployTokenScriptButton getSourceCode={() => value} />
+      return <DeployTokenScriptButton sourceCode={value} />
     }
     return null
   }, [language, value])
 
   return (
-    <div className="relative w-full font-sans bg-muted/95 dark:bg-muted/50">
-      <div className="flex w-full items-center justify-between px-6 py-3 pr-4 bg-secondary-foreground/40 dark:bg-secondary-foreground/10 border-b">
+    <div className="relative w-full bg-muted/95 font-sans dark:bg-muted/50">
+      <div className="flex w-full items-center justify-between border-b bg-secondary-foreground/40 px-6 py-3 pr-4 dark:bg-secondary-foreground/10">
         <span className="text-xs lowercase dark:text-secondary-foreground">{language}</span>
         <div className="flex items-center space-x-1">
           {renderDeployButton()}
           <Button
-            variant="ghost"
             className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0"
             onClick={downloadAsFile}
             size="icon"
+            variant="ghost"
           >
             <IconDownload />
             <span className="sr-only">Download</span>
           </Button>
           <Button
-            variant="ghost"
-            size="icon"
             className="text-xs focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0"
             onClick={() => copyToClipboard(value)}
+            size="icon"
+            variant="ghost"
           >
             {isCopied ? <IconCheck /> : <IconCopy />}
             <span className="sr-only">Copy code</span>

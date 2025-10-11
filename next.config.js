@@ -3,6 +3,11 @@
 module.exports = {
   webpack: (config) => {
     config.externals.push("pino-pretty", "lokijs", "encoding")
+    // ignore metamask sdk react-native-async-storage errors
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      "@react-native-async-storage/async-storage": false,
+    }
     return config
   },
   images: {

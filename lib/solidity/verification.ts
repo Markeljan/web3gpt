@@ -1,8 +1,8 @@
-"server-only"
+import "server-only"
 
 import type { Chain } from "viem"
-
-import { DEFAULT_COMPILER_VERSION, getChainDetails } from "@/lib/config"
+import { getChainDetails } from "@/lib/config"
+import { DEFAULT_COMPILER_VERSION } from "@/lib/constants"
 import type { VerifyContractParams } from "@/lib/types"
 
 export const verifyContract = async ({
@@ -48,7 +48,7 @@ export const verifyContract = async ({
 
 export const checkVerifyStatus = async (
   guid: string,
-  viemChain: Chain,
+  viemChain: Chain
 ): Promise<{ status: string; result: string }> => {
   const { explorerApiUrl, explorerApiKey } = getChainDetails(viemChain)
 

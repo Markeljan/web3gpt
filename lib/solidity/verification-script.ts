@@ -3,6 +3,7 @@ import { checkVerifyStatus, verifyContract } from "@/lib/solidity/verification"
 
 const PASS_MESSAGE = "Pass - Verified"
 const ALREADY_VERIFIED_MESSAGES = ["Smart-contract already verified.", "Contract source code already verified"]
+const VERIFICATION_LIMIT = 5
 
 export async function processVerifications() {
   const verifications = await getVerifications()
@@ -18,12 +19,14 @@ export async function processVerifications() {
       if (verificationStatus.result === PASS_MESSAGE) {
         await deleteVerification(verificationData.deployHash)
       }
-    } catch (error) {
-      console.error(error instanceof Error ? error.message : "Unknown error")
+    } catch (_error) {
+      // ignore
     }
   }
 
-  if (verifications.length > 5) console.error(`Too many verifications in queue: ${verifications.length}`)
+  if (verifications.length > VERIFICATION_LIMIT) {
+    console.error(`Verification queue over limit: ${verifications.length}`)
+  }
 
   return { success: true, verificationCount: verifications.length }
 }

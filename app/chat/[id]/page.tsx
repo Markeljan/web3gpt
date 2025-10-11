@@ -34,10 +34,10 @@ export default async function ChatPage({ params, searchParams }: NextPageProps) 
   return (
     <Chat
       agent={agent || DEFAULT_AGENT}
-      initialThreadId={chat.id}
-      initialMessages={messages}
-      userId={session.user.id}
       avatarUrl={session.user.image}
+      initialMessages={messages}
+      initialThreadId={chat.id}
+      userId={session.user.id}
     />
   )
 }

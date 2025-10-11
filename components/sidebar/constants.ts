@@ -1,6 +1,6 @@
 import { BookText, Code, MessagesSquare } from "lucide-react"
 
-interface NavigationItem {
+type NavigationItem = {
   name: string
   href: string
   icon: React.ComponentType<{ className?: string }>

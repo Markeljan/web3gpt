@@ -6,13 +6,15 @@ import { getChainDetails } from "@/lib/config"
 
 export const cn = (...inputs: ClassValue[]): string => twMerge(clsx(inputs))
 
+const SECOND_IN_MS = 1000
+
 export const formatDate = (input: string | number | Date): string => {
   let date: Date
 
   if (typeof input === "number") {
     // treat 10 digit numbers as unix timestamps (seconds)
     if (input.toString().length === 10) {
-      date = new Date(input * 1000)
+      date = new Date(input * SECOND_IN_MS)
     } else {
       // assume milliseconds
       date = new Date(input)
@@ -32,15 +34,17 @@ export const formatDate = (input: string | number | Date): string => {
   })
 }
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 export const isValidEmail = (email: string): boolean => {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const regex = EMAIL_REGEX
   return regex.test(email)
 }
 
 export const getIpfsUrl = (cid: string): string => `${process.env.NEXT_PUBLIC_IPFS_GATEWAY}/ipfs/${cid}`
 
+const HASH_PREFIX_REGEX = /^0x/
 export function ensureHashPrefix(bytecode: string | Hash): Hash {
-  return `0x${bytecode.replace(/^0x/, "")}`
+  return `0x${bytecode.replace(HASH_PREFIX_REGEX, "")}`
 }
 
 export function getExplorerUrl({
@@ -54,10 +58,11 @@ export function getExplorerUrl({
 }): string {
   const { explorerUrl } = getChainDetails(viemChain)
   if (!explorerUrl) {
-    console.error(`No explorer URL found for chainId ${viemChain.id}`)
     return ""
   }
-  if (type === "tx") return `${explorerUrl}/tx/${hash}`
+  if (type === "tx") {
+    return `${explorerUrl}/tx/${hash}`
+  }
 
   return `${explorerUrl}/address/${hash}`
 }

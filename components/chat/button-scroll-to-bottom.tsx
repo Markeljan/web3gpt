@@ -14,10 +14,10 @@ export function ButtonScrollToBottom({ className, ...props }: ButtonProps) {
 
   return (
     <Button
-      variant="outline"
-      size="icon"
       className={cn("fixed right-4 bottom-24 z-50 bg-background transition-opacity duration-300 sm:right-8", className)}
       onClick={scrollToBottom}
+      size="icon"
+      variant="outline"
       {...props}
     >
       <IconArrowDown />

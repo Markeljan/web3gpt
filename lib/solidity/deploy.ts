@@ -1,4 +1,4 @@
-"server-only"
+import "server-only"
 
 import { track } from "@vercel/analytics/server"
 import {
@@ -55,7 +55,6 @@ export const deployContract = async ({
 
   if (!(await walletClient.getAddresses())) {
     const error = new Error(`Wallet for chain ${viemChain.name} not available`)
-    console.error(error)
     throw error
   }
 
@@ -136,6 +135,12 @@ export const deployContract = async ({
   return deploymentData
 }
 
+const BURN_CARD_REGEX = /<ts:card type="action" name="burn"[\s\S]*?<\/ts:card>/
+const TOKEN_NAME_REGEX = /TOKEN_NAME/g
+const CHAIN_ID_REGEX = /CHAIN_ID/g
+const CONTRACT_ADDRESS_REGEX = /CONTRACT_ADDRESS/g
+const ENS_DOMAIN_REGEX = /ENS_DOMAIN/g
+
 export const deployTokenScript = async ({
   chainId,
   tokenAddress,
@@ -158,26 +163,22 @@ export const deployTokenScript = async ({
 
   if (!(await walletClient.getAddresses())) {
     const error = new Error(`Wallet for chain ${viemChain.name} not available`)
-    console.error(error)
     throw error
   }
 
   // Prepare TokenScript
   let updatedTokenScriptSource = tokenScriptSource
-    .replace(/TOKEN_NAME/g, tokenName)
-    .replace(/CHAIN_ID/g, chainId)
-    .replace(/CONTRACT_ADDRESS/g, tokenAddress)
+    .replace(TOKEN_NAME_REGEX, tokenName)
+    .replace(CHAIN_ID_REGEX, chainId)
+    .replace(CONTRACT_ADDRESS_REGEX, tokenAddress)
 
   if (ensDomain) {
-    updatedTokenScriptSource = updatedTokenScriptSource.replace(/ENS_DOMAIN/g, ensDomain)
+    updatedTokenScriptSource = updatedTokenScriptSource.replace(ENS_DOMAIN_REGEX, ensDomain)
   }
 
   if (!includeBurnFunction) {
     // Remove burn card if not requested
-    updatedTokenScriptSource = updatedTokenScriptSource.replace(
-      /<ts:card type="action" name="burn"[\s\S]*?<\/ts:card>/,
-      "",
-    )
+    updatedTokenScriptSource = updatedTokenScriptSource.replace(BURN_CARD_REGEX, "")
   }
 
   // Upload TokenScript to IPFS

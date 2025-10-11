@@ -11,5 +11,5 @@ export default async function ChatPage({ searchParams }: NextPageProps) {
   const session = await auth()
   const { id, image } = session?.user || {}
 
-  return <Chat agent={agent} userId={id} avatarUrl={image} />
+  return <Chat agent={agent} avatarUrl={image} userId={id} />
 }

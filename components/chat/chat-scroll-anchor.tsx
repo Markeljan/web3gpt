@@ -6,7 +6,7 @@ import { useInView } from "react-intersection-observer"
 
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 
-interface ChatScrollAnchorProps {
+type ChatScrollAnchorProps = {
   trackVisibility?: boolean
 }
 
@@ -26,5 +26,5 @@ export function ChatScrollAnchor({ trackVisibility }: ChatScrollAnchorProps) {
     }
   }, [inView, entry, isAtBottom, trackVisibility])
 
-  return <div ref={ref} className="h-px w-full" />
+  return <div className="h-px w-full" ref={ref} />
 }

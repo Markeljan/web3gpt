@@ -2,7 +2,7 @@ import { create } from "zustand"
 
 import type { LastDeploymentData } from "@/lib/types"
 
-interface GlobalState {
+type GlobalState = {
   tokenScriptViewerUrl?: string | null
   setTokenScriptViewerUrl: (tokenScriptViewerUrl: string | null) => void
 

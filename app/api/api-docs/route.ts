@@ -1,5 +1,5 @@
 import { ApiReference } from "@scalar/nextjs-api-reference"
-import openApiSpec from "@/public/openapi.json"
+import openApiSpec from "@/public/openapi.json" with { type: "json" }
 
 const config = {
   theme: "saturn" as const,

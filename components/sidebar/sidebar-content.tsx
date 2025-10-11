@@ -5,11 +5,8 @@ import { Navigation } from "@/components/header/navigation"
 import { UserMenu } from "@/components/header/user-menu"
 import { SidebarAgents } from "@/components/sidebar/sidebar-agents"
 import { SidebarList } from "@/components/sidebar/sidebar-list"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { getChatList } from "@/lib/data/kv"
-import { cn } from "@/lib/utils"
 
 export async function SidebarContent() {
   const chatList = await getChatList()
@@ -17,9 +14,9 @@ export async function SidebarContent() {
   const user = session?.user
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       {/* Header Section */}
-      <div className="p-6 pb-4 flex-shrink-0">
+      <div className="flex-shrink-0 p-6 pb-4">
         <W3GPTLogo className="mb-6" />
 
         {/* Navigation */}
@@ -31,19 +28,13 @@ export async function SidebarContent() {
       <Separator className="flex-shrink-0" />
 
       {/* Agents Section */}
-      <div className="p-6 py-2 flex-shrink-0">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider pointer-events-none select-none">
+      <div className="flex-shrink-0 p-6 py-2">
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="pointer-events-none select-none font-semibold text-muted-foreground text-xs uppercase tracking-wider">
             Agents
           </h3>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge className={cn("text-xs text-slate-800 bg-yellow-300 pointer-events-auto")}>gpt-4.1</Badge>
-            </TooltipTrigger>
-            <TooltipContent>Using GPT-4.1</TooltipContent>
-          </Tooltip>
         </div>
-        <div className="max-sm:max-h-[108px] overflow-y-auto">
+        <div className="overflow-y-auto max-sm:max-h-[108px]">
           <SidebarAgents />
         </div>
       </div>
@@ -51,19 +42,19 @@ export async function SidebarContent() {
       <Separator className="flex-shrink-0" />
 
       {/* Chat History Section - Scrollable */}
-      <div className="flex-1 flex flex-col px-4 py-2 min-h-0 overflow-hidden">
-        <div className="flex items-center justify-between mb-3 flex-shrink-0 px-2">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider pointer-events-none select-none">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 py-2">
+        <div className="mb-3 flex flex-shrink-0 items-center justify-between px-2">
+          <h3 className="pointer-events-none select-none font-semibold text-muted-foreground text-xs uppercase tracking-wider">
             Chats
           </h3>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-hidden">
+        <div className="min-h-0 flex-1 overflow-hidden">
           {chatList ? (
             <SidebarList chatList={chatList} />
           ) : (
-            <div className="flex items-center justify-center h-20">
-              <p className="text-sm text-muted-foreground">No chat history</p>
+            <div className="flex h-20 items-center justify-center">
+              <p className="text-muted-foreground text-sm">No chat history</p>
             </div>
           )}
         </div>
@@ -72,18 +63,18 @@ export async function SidebarContent() {
       <Separator className="flex-shrink-0" />
 
       {/* User Section - Bottom */}
-      <div className="p-4 flex-shrink-0">
+      <div className="flex-shrink-0 p-4">
         {user ? (
-          <div className="rounded-lg bg-muted/50 border overflow-hidden">
+          <div className="overflow-hidden rounded-lg border bg-muted/50">
             <UserMenu user={user} variant="sidebar" />
           </div>
         ) : (
-          <div className="p-3 rounded-lg bg-muted/50 border">
+          <div className="rounded-lg border bg-muted/50 p-3">
             <LoginButton
-              variant="ghost"
+              className="w-full justify-start"
               showGithubIcon={true}
               text="Sign in to continue"
-              className="w-full justify-start"
+              variant="ghost"
             />
           </div>
         )}

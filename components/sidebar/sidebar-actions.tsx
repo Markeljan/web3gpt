@@ -2,9 +2,8 @@
 
 import Link from "next/link"
 import { useCallback, useState, useTransition } from "react"
-
 import { toast } from "sonner"
-
+import { DEPLOYMENT_URL } from "vercel-url"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,14 +27,15 @@ import {
 import { IconShare, IconSpinner, IconTrash, IconUsers } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { deleteChatAction, shareChatAction } from "@/lib/actions/chat"
-import { DEPLOYMENT_URL } from "@/lib/config"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import type { DbChatListItem } from "@/lib/types"
 import { cn, formatDate } from "@/lib/utils"
 
-interface SidebarActionsProps {
+type SidebarActionsProps = {
   chat: DbChatListItem
 }
+
+const SHARE_DELAY = 500
 
 export function SidebarActions({ chat }: SidebarActionsProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -63,7 +63,7 @@ export function SidebarActions({ chat }: SidebarActionsProps) {
       <div className="space-x-1">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" className="size-6 p-0 hover:bg-background" onClick={() => setShareDialogOpen(true)}>
+            <Button className="size-6 p-0 hover:bg-background" onClick={() => setShareDialogOpen(true)} variant="ghost">
               <IconShare />
               <span className="sr-only">Share</span>
             </Button>
@@ -73,10 +73,10 @@ export function SidebarActions({ chat }: SidebarActionsProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="ghost"
               className="size-6 p-0 hover:bg-background"
               disabled={isDeletePending}
               onClick={() => setDeleteDialogOpen(true)}
+              variant="ghost"
             >
               <IconTrash />
               <span className="sr-only">Delete</span>
@@ -85,7 +85,7 @@ export function SidebarActions({ chat }: SidebarActionsProps) {
           <TooltipContent>Delete chat</TooltipContent>
         </Tooltip>
       </div>
-      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+      <Dialog onOpenChange={setShareDialogOpen} open={shareDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Share link to chat</DialogTitle>
@@ -98,10 +98,10 @@ export function SidebarActions({ chat }: SidebarActionsProps) {
           <DialogFooter className="items-center">
             {chat.published && (
               <Link
-                href={`/share/${chat.id}`}
                 className={cn(badgeVariants({ variant: "secondary" }), "mr-auto")}
-                target="_blank"
+                href={`/share/${chat.id}`}
                 rel="noopener noreferrer"
+                target="_blank"
               >
                 <IconUsers className="mr-2" />
                 {`/share/${chat.id}`}
@@ -112,7 +112,7 @@ export function SidebarActions({ chat }: SidebarActionsProps) {
               onClick={() => {
                 startShareTransition(async () => {
                   if (chat.published) {
-                    await new Promise((resolve) => setTimeout(resolve, 500))
+                    await new Promise((resolve) => setTimeout(resolve, SHARE_DELAY))
                     copyShareLink()
                     return
                   }
@@ -134,7 +134,7 @@ export function SidebarActions({ chat }: SidebarActionsProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <AlertDialog onOpenChange={setDeleteDialogOpen} open={deleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>

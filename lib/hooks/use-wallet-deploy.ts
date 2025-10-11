@@ -28,10 +28,10 @@ export function useWalletDeploy() {
     }: {
       contractName: string
       sourceCode: string
-      constructorArgs: Array<string>
+      constructorArgs: string[]
       imports?: Record<string, string>
     }) => {
-      if (!viemChain || !walletClient || !address || !chainId) {
+      if (!(viemChain && walletClient && address && chainId)) {
         return
       }
       const deployLoadingToast = toast.loading("Deploying contract...")
@@ -93,10 +93,10 @@ export function useWalletDeploy() {
         }
 
         toast.dismiss(ipfsLoadingToast)
-        if (!cid) {
-          toast.error("Failed to upload to IPFS")
-        } else {
+        if (cid) {
           toast.success("Uploaded to IPFS successfully!")
+        } else {
+          toast.error("Failed to upload to IPFS")
         }
 
         const ipfsUrl = getIpfsUrl(cid)
@@ -167,14 +167,13 @@ export function useWalletDeploy() {
         setLastDeploymentData(deploymentData)
         toast.success("Contract deployed successfully!")
         return deploymentData
-      } catch (error) {
-        console.error(error)
+      } catch (_error) {
         toast.error("Failed to deploy contract")
       } finally {
         toast.dismiss(deployLoadingToast)
       }
     },
-    [viemChain, walletClient, address, setLastDeploymentData, chainId],
+    [viemChain, walletClient, address, setLastDeploymentData, chainId]
   )
 
   return { deploy }
