@@ -41,6 +41,8 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  secret: process.env.AUTH_SECRET,
+  trustHost: true,
   providers: [
     Credentials({
       name: "Ethereum",
