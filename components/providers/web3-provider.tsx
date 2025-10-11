@@ -19,21 +19,28 @@ import { type State, WagmiProvider } from "wagmi"
 
 const NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ""
 
-export const connectors = connectorsForWallets(
-  [
-    {
-      groupName: "Recommended",
-      wallets: [coinbaseWallet, metaMaskWallet, rainbowWallet, walletConnectWallet, injectedWallet, safeWallet],
-    },
-  ],
-  {
-    appName: "Web3GPT",
-    appDescription: "Write and deploy Solidity smart contracts with AI",
-    appUrl: DEPLOYMENT_URL,
-    appIcon: "/assets/web3gpt.png",
-    projectId: NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+export const getConnectors = () => {
+  if (typeof window === "undefined") {
+    return []
   }
-)
+
+  return connectorsForWallets(
+    [
+      {
+        groupName: "Recommended",
+        wallets: [coinbaseWallet, metaMaskWallet, rainbowWallet, walletConnectWallet, injectedWallet, safeWallet],
+      },
+    ],
+    {
+      appName: "Web3GPT",
+      appDescription: "Write and deploy Solidity smart contracts with AI",
+      appUrl: DEPLOYMENT_URL,
+      appIcon: "/assets/web3gpt.png",
+      projectId: NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+    }
+  )
+}
+
 export function Web3Provider({
   children,
   initialState,
@@ -42,7 +49,7 @@ export function Web3Provider({
   initialState: State | undefined
 }) {
   const { resolvedTheme } = useTheme()
-  const [config] = useState(() => getWagmiConfig(connectors))
+  const [config] = useState(() => getWagmiConfig(getConnectors()))
   const [queryClient] = useState(() => new QueryClient())
 
   return (
