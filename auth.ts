@@ -60,6 +60,7 @@ export const {
         try {
           const message = credentials?.message
           const signature = credentials?.signature
+          const csrfToken = credentials?.csrfToken
 
           if (!message || typeof message !== "string") {
             return null
@@ -70,7 +71,8 @@ export const {
           }
 
           const siweMessage = new SiweMessage(JSON.parse(message))
-          const nonce = getCsrfTokenFromRequest(request)
+          const nonce =
+            typeof csrfToken === "string" && csrfToken.length > 0 ? csrfToken : getCsrfTokenFromRequest(request)
           if (!nonce) {
             return null
           }
