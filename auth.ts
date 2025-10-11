@@ -58,8 +58,15 @@ export const {
       },
       async authorize(credentials, request) {
         try {
-          const message = credentials?.message
-          const signature = credentials?.signature
+          const typedCredentials = credentials as
+            | (Partial<Record<"message" | "signature", unknown>> & {
+                csrfToken?: unknown
+              })
+            | undefined
+
+          const message = typedCredentials?.message
+          const signature = typedCredentials?.signature
+          const csrfToken = typedCredentials?.csrfToken
 
           if (!message || typeof message !== "string") {
             return null
@@ -70,7 +77,8 @@ export const {
           }
 
           const siweMessage = new SiweMessage(JSON.parse(message))
-          const nonce = getCsrfTokenFromRequest(request)
+          const nonce =
+            typeof csrfToken === "string" && csrfToken.length > 0 ? csrfToken : getCsrfTokenFromRequest(request)
           if (!nonce) {
             return null
           }
