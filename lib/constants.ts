@@ -125,7 +125,7 @@ export const AGENTS_ARRAY: Agent[] = [
     description:
       "The chillest AI agent on w3gpt.ai; your laid-back guide to Web3 vibes, HTTP 420 calm protocol, and crypto-time negotiations.",
     creator: "soko.eth",
-    imageUrl: "https://avatar.vercel.sh/x420",
+    imageUrl: "https://lvjt7wkmlmpwhrpm.public.blob.vercel-storage.com/logo-upscaled.png",
   },
   DEFAULT_AGENT,
   {
