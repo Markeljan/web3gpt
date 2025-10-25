@@ -110,7 +110,6 @@ export const viemTransports = Object.fromEntries(
 )
 
 export const AGENTS_ARRAY: Agent[] = [
-  DEFAULT_AGENT,
   {
     id: "asst_FiWv3gKSXZyKGnuJdSZvpf6V",
     userId: "12901349",
@@ -120,13 +119,15 @@ export const AGENTS_ARRAY: Agent[] = [
     imageUrl: "https://ipfs.w3gpt.ai/ipfs/bafkreidmmwgfagx34nj4oy34her2tmcgp5deybs72ymy4edi4ye3nyfulu",
   },
   {
-    id: "asst_mv5KGoBLhXXQFiJHpgnopGQQ",
+    id: "asst_V9jrE4PX6j3ZDNNbzyLcOIm2",
     userId: "12901349",
-    name: "Unstoppable Domains",
-    description: "Resolve cryptocurrency addresses to domains and vice versa",
+    name: "x420",
+    description:
+      "The chillest AI agent on w3gpt.ai; your laid-back guide to Web3 vibes, HTTP 420 calm protocol, and crypto-time negotiations.",
     creator: "soko.eth",
-    imageUrl: "https://docs.unstoppabledomains.com/images/logo.png",
+    imageUrl: "https://avatar.vercel.sh/x420",
   },
+  DEFAULT_AGENT,
   {
     name: "OpenZeppelin 5.0",
     userId: "12901349",
