@@ -1,6 +1,5 @@
-import type { UseAssistantHelpers } from "@ai-sdk/react"
+import type { UseChatHelpers } from "@ai-sdk/react"
 import { ArrowUp } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { type ChangeEvent, useCallback, useEffect, useRef, useState, useTransition } from "react"
 import Textarea from "react-textarea-autosize"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -13,16 +12,18 @@ import { cn } from "@/lib/utils"
 
 const GUILD_PROMPT_STORAGE_KEY = "w3gpt-guild-prompt-seen"
 
-type PromptProps = Pick<UseAssistantHelpers, "append" | "status" | "setThreadId">
+type PromptProps = Pick<UseChatHelpers, "append"> & {
+  isLoading: boolean
+  onNewChat: () => void
+}
 
-export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
+export const PromptForm = ({ append, isLoading, onNewChat }: PromptProps) => {
   const [input, setInput] = useState<string>("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const { formRef, onKeyDown } = useEnterSubmit()
   const { scrollToBottom } = useScrollToBottom()
   const [isPendingTransition, startTransition] = useTransition()
-  const router = useRouter()
-  const isInProgress = status === "in_progress"
+  const isInProgress = isLoading
   const [hasSeenGuildPrompt, setHasSeenGuildPrompt] = useLocalStorage(GUILD_PROMPT_STORAGE_KEY, false)
   const [isGuildPromptReady, setIsGuildPromptReady] = useState(false)
   const [shouldOpenGuildPrompt, setShouldOpenGuildPrompt] = useState(false)
@@ -149,11 +150,10 @@ export const PromptForm = ({ append, status, setThreadId }: PromptProps) => {
                 disabled={isPendingTransition || isInProgress}
                 onClick={() => {
                   startTransition(() => {
-                    setThreadId(undefined)
-                    router.push("/")
+                    onNewChat()
                   })
                 }}
-                type="submit"
+                type="button"
               >
                 {isPendingTransition ? <IconSpinner /> : <IconPlus />}
                 <span className="sr-only">New Chat</span>

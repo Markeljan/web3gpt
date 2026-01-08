@@ -105,7 +105,8 @@ export const viewport: Viewport = {
 }
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const initialState = cookieToInitialState(getWagmiConfig(), cookies().get("cookie")?.value)
+  const cookieStore = await cookies()
+  const initialState = cookieToInitialState(getWagmiConfig(), cookieStore.get("cookie")?.value)
   const session = await auth()
 
   return (

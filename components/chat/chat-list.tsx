@@ -1,15 +1,15 @@
-import type { AssistantStatus, Message } from "ai"
+import type { Message } from "ai"
 
 import { ChatMessage } from "@/components/chat/chat-message"
 import { Separator } from "@/components/ui/separator"
 
-export type ChatList = {
+export type ChatListProps = {
   messages: Message[]
   avatarUrl?: string | null
-  status?: AssistantStatus
+  isLoading?: boolean
 }
 
-export const ChatList = ({ messages, avatarUrl, status }: ChatList) => {
+export const ChatList = ({ messages, avatarUrl, isLoading }: ChatListProps) => {
   if (!messages || messages.length === 0) {
     return null
   }
@@ -19,7 +19,7 @@ export const ChatList = ({ messages, avatarUrl, status }: ChatList) => {
         .filter((unfilteredMessage) => unfilteredMessage.role !== "system")
         .map((message, index) => (
           <div className="flex w-full flex-col" key={`${message.id}`}>
-            <ChatMessage avatarUrl={avatarUrl} message={message} status={status} />
+            <ChatMessage avatarUrl={avatarUrl} isLoading={isLoading} message={message} />
             {index < messages.length - 1 && <Separator className="md:-translate-x-[5%] my-4 md:my-8" />}
           </div>
         ))}

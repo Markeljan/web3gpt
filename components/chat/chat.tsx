@@ -1,8 +1,9 @@
 "use client"
 
-import { type CreateMessage, type Message, useAssistant } from "@ai-sdk/react"
+import { type Message, useChat } from "@ai-sdk/react"
 import { generateId } from "ai"
-import { useCallback, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useGlobalStore } from "@/app/state/global-store"
 import { AgentCard } from "@/components/agent-card"
@@ -18,7 +19,7 @@ import { cn } from "@/lib/utils"
 type ChatProps = {
   agent: Agent
   className?: string
-  initialThreadId?: string
+  initialChatId?: string
   initialMessages?: Message[]
   userId?: string
   avatarUrl?: string | null
@@ -26,10 +27,15 @@ type ChatProps = {
 
 const SCROLL_TO_BOTTOM_DELAY = 500
 
-export const Chat = ({ initialThreadId, initialMessages = [], agent, className, userId, avatarUrl }: ChatProps) => {
+export const Chat = ({ initialChatId, initialMessages = [], agent, className, userId, avatarUrl }: ChatProps) => {
   const chatRef = useRef<HTMLDivElement>(null)
-  const previousAgentId = useRef<string>()
+  const previousAgentId = useRef<string | undefined>(undefined)
+  const router = useRouter()
   const { scrollToBottom } = useScrollToBottom(chatRef)
+  const [chatId, setChatId] = useState<string | undefined>(initialChatId)
+
+  // Generate a new chat ID if not provided
+  const currentChatId = useMemo(() => chatId || generateId(), [chatId])
 
   const {
     tokenScriptViewerUrl,
@@ -38,36 +44,45 @@ export const Chat = ({ initialThreadId, initialMessages = [], agent, className, 
     setCompletedDeploymentReport,
     setTokenScriptViewerUrl,
   } = useGlobalStore()
-  const { messages, status, setThreadId, stop, append, setMessages, threadId } = useAssistant({
-    threadId: initialThreadId,
-    api: "/api/assistants/threads/messages",
+
+  const { messages, isLoading, stop, append, setMessages, id } = useChat({
+    id: currentChatId,
+    api: "/api/chat",
     body: {
-      assistantId: agent.id || DEFAULT_AGENT.id,
+      agentId: agent.id || DEFAULT_AGENT.id,
+      chatId: currentChatId,
     },
+    initialMessages,
   })
 
-  const isInProgress = status === "in_progress"
+  const isInProgress = isLoading
   const isTokenScriptAgent = agent.id === TOKENSCRIPT_AGENT_ID
-  const showLanding = agent.id === DEFAULT_AGENT_ID && !initialThreadId
+  const showLanding = agent.id === DEFAULT_AGENT_ID && !initialChatId
 
   const appendSystemMessage = useCallback(
-    (message: Message | CreateMessage) => {
+    (message: Message | Omit<Message, "id">) => {
       setMessages((prevMessages) => [
         ...prevMessages,
         {
           ...message,
-          id: message.id || generateId(),
-        },
+          id: "id" in message ? message.id : generateId(),
+        } as Message,
       ])
     },
     [setMessages]
   )
 
+  const handleNewChat = useCallback(() => {
+    setChatId(undefined)
+    setMessages([])
+    router.push("/")
+  }, [setMessages, router])
+
   useEffect(() => {
-    if (threadId && !isInProgress && initialThreadId !== threadId) {
-      history.pushState(null, "", `/chat/${threadId}`)
+    if (id && !isInProgress && initialChatId !== id && messages.length > 0) {
+      history.pushState(null, "", `/chat/${id}`)
     }
-  }, [initialThreadId, isInProgress, threadId])
+  }, [initialChatId, isInProgress, id, messages.length])
 
   useEffect(() => {
     if (messages.length === 0 && initialMessages?.length > 0) {
@@ -82,6 +97,7 @@ export const Chat = ({ initialThreadId, initialMessages = [], agent, className, 
   useEffect(() => {
     if (previousAgentId.current && previousAgentId.current !== agent.id) {
       setMessages([])
+      setChatId(undefined)
     }
     previousAgentId.current = agent.id
   }, [agent.id, setMessages])
@@ -131,12 +147,12 @@ export const Chat = ({ initialThreadId, initialMessages = [], agent, className, 
         {showLanding ? (
           <Landing userId={userId} />
         ) : (
-          <AgentCard agent={agent} setMessages={setMessages} setThreadId={setThreadId} />
+          <AgentCard agent={agent} onNewChat={handleNewChat} setMessages={setMessages} />
         )}
-        <ChatList avatarUrl={avatarUrl} messages={messages} status={status} />
+        <ChatList avatarUrl={avatarUrl} isLoading={isLoading} messages={messages} />
         <ChatScrollAnchor trackVisibility={isInProgress} />
       </div>
-      <ChatPanel append={append} setThreadId={setThreadId} status={status} stop={stop} />
+      <ChatPanel append={append} isLoading={isLoading} onNewChat={handleNewChat} stop={stop} />
     </>
   )
 }

@@ -5,7 +5,8 @@ import { getAgent } from "@/lib/data/kv"
 import type { NextPageProps } from "@/lib/types"
 
 export default async function ChatPage({ searchParams }: NextPageProps) {
-  const agentIdParam = typeof searchParams?.a === "string" ? searchParams.a : null
+  const searchParamsResolved = await searchParams
+  const agentIdParam = typeof searchParamsResolved?.a === "string" ? searchParamsResolved.a : null
 
   const agent = (agentIdParam && (await getAgent(agentIdParam))) || DEFAULT_AGENT
   const session = await auth()

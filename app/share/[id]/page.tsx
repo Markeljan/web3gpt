@@ -6,40 +6,42 @@ import { AgentCard } from "@/components/agent-card"
 import { ChatList } from "@/components/chat/chat-list"
 import { Landing } from "@/components/landing"
 import { getAgent, getPublishedChat } from "@/lib/data/kv"
-import { getAiThreadMessages } from "@/lib/data/openai"
 import type { NextPageProps } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
 
-export function generateMetadata({ params }: NextPageProps) {
+export async function generateMetadata({ params }: NextPageProps) {
+  const { id } = await params
   const metadata: Metadata = {
     title: "Shared Chat",
     description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
     openGraph: {
-      images: [`${DEPLOYMENT_URL}/api/og?id=${params.id}&h=630`],
-      url: `${DEPLOYMENT_URL}/share/${params.id}`,
+      images: [`${DEPLOYMENT_URL}/api/og?id=${id}&h=630`],
+      url: `${DEPLOYMENT_URL}/share/${id}`,
     },
     twitter: {
       card: "summary_large_image",
       site: "@w3gptai",
-      images: [`${DEPLOYMENT_URL}/api/og?id=${params.id}&h=675`],
+      images: [`${DEPLOYMENT_URL}/api/og?id=${id}&h=675`],
     },
   }
   return metadata
 }
 
 export default async function SharePage({ params, searchParams }: NextPageProps) {
-  const [session, chat] = await Promise.all([auth(), getPublishedChat(params.id)])
+  const { id } = await params
+  const searchParamsResolved = await searchParams
+  const [session, chat] = await Promise.all([auth(), getPublishedChat(id)])
   const userId = session?.user.id
 
   if (!chat?.published) {
     notFound()
   }
-  const { title, avatarUrl, agentId = searchParams?.a, createdAt = new Date(), id: chatId = params.id } = chat
+  const { title, avatarUrl, agentId = searchParamsResolved?.a, createdAt = new Date() } = chat
 
-  const [agent, messages] = await Promise.all([
-    typeof agentId === "string" ? getAgent(agentId) : undefined,
-    getAiThreadMessages(chatId),
-  ])
+  const agent = typeof agentId === "string" ? await getAgent(agentId) : undefined
+
+  // Use messages from KV storage
+  const messages = chat.messages || []
 
   return (
     <div className="flex-1 space-y-6">

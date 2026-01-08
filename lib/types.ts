@@ -2,8 +2,8 @@ import type { Message } from "ai"
 import type { Abi, Chain, Hash } from "viem"
 
 export type NextPageProps = {
-  params: { id: string }
-  searchParams?: { [key: string]: string | string[] | undefined }
+  params: Promise<{ id: string }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export type DbChat = {

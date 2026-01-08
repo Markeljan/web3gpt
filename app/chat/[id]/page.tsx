@@ -4,17 +4,18 @@ import { auth } from "@/auth"
 import { Chat } from "@/components/chat/chat"
 import { DEFAULT_AGENT } from "@/lib/constants"
 import { getAgent, getChat } from "@/lib/data/kv"
-import { getAiThreadMessages } from "@/lib/data/openai"
 import type { NextPageProps } from "@/lib/types"
 
 export default async function ChatPage({ params, searchParams }: NextPageProps) {
   const session = await auth()
+  const { id } = await params
+  const searchParamsResolved = await searchParams
 
   if (!session?.user.id) {
-    redirect(`/sign-in?next=/chat/${params.id}`)
+    redirect(`/sign-in?next=/chat/${id}`)
   }
 
-  const chat = await getChat(params.id)
+  const chat = await getChat(id)
 
   if (!chat) {
     redirect("/")
@@ -24,19 +25,22 @@ export default async function ChatPage({ params, searchParams }: NextPageProps) 
     notFound()
   }
 
-  const agentId = chat.agentId || searchParams?.a
+  const agentId = chat.agentId || searchParamsResolved?.a
   if (typeof agentId !== "string") {
     notFound()
   }
 
-  const [agent, messages] = await Promise.all([getAgent(agentId), getAiThreadMessages(params.id)])
+  const agent = await getAgent(agentId)
+
+  // Use messages stored in KV
+  const messages = chat.messages || []
 
   return (
     <Chat
       agent={agent || DEFAULT_AGENT}
       avatarUrl={session.user.image}
+      initialChatId={chat.id}
       initialMessages={messages}
-      initialThreadId={chat.id}
       userId={session.user.id}
     />
   )

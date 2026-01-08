@@ -1,6 +1,6 @@
 import { type RefObject, useCallback, useEffect, useState } from "react"
 
-export function useScrollToBottom(ref?: RefObject<HTMLElement>, offset = 200) {
+export function useScrollToBottom(ref?: RefObject<HTMLElement | null>, offset = 200) {
   const [isAtBottom, setIsAtBottom] = useState(false)
 
   const checkIfAtBottom = useCallback(() => {

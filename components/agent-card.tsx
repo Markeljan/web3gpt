@@ -1,6 +1,6 @@
 "use client"
 
-import type { Message } from "@ai-sdk/react"
+import type { Message } from "ai"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
@@ -14,11 +14,11 @@ import { cn } from "@/lib/utils"
 type AgentCardProps = {
   agent: Agent
   className?: string
-  setThreadId?: (threadId: string | undefined) => void
+  onNewChat?: () => void
   setMessages?: (messages: Message[]) => void
 }
 
-export const AgentCard = ({ agent, setThreadId, setMessages, className }: AgentCardProps) => {
+export const AgentCard = ({ agent, onNewChat, setMessages, className }: AgentCardProps) => {
   const router = useRouter()
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
   const [isPending, startTransition] = useTransition()
@@ -63,7 +63,7 @@ export const AgentCard = ({ agent, setThreadId, setMessages, className }: AgentC
         <p className="mt-1 text-gray-500 text-xs">by {agent.creator}</p>
       </div>
       <div className="flex flex-shrink-0 gap-1">
-        {setThreadId ? (
+        {onNewChat ? (
           <Tooltip delayDuration={500}>
             <TooltipTrigger asChild>
               <Button
@@ -71,7 +71,7 @@ export const AgentCard = ({ agent, setThreadId, setMessages, className }: AgentC
                 disabled={isPending}
                 onClick={() => {
                   startTransition(() => {
-                    setThreadId?.(undefined)
+                    onNewChat()
                     setMessages?.([])
                     router.push(`/?a=${agent.id}`)
                   })

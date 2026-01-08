@@ -1,13 +1,38 @@
 import "server-only"
 
+import { kv } from "@vercel/kv"
 import type { Message } from "ai"
 import { OpenAI } from "openai"
 import { storeAgent } from "@/lib/data/kv"
-import { TOOL_SCHEMAS } from "@/lib/tools"
 import type { CreateAgentParams } from "@/lib/types"
 
-export const openai = new OpenAI()
+const openai = new OpenAI()
+
 const SECOND_IN_MS = 1000
+const INSTRUCTIONS_CACHE_TTL = 3600 // 1 hour
+
+export const getAssistantInstructions = async (assistantId: string): Promise<string | null> => {
+  // Try to get from cache first
+  const cacheKey = `assistant:instructions:${assistantId}`
+  const cached = await kv.get<string>(cacheKey)
+  if (cached) {
+    return cached
+  }
+
+  try {
+    const assistant = await openai.beta.assistants.retrieve(assistantId)
+    const instructions = assistant.instructions || null
+
+    // Cache the instructions
+    if (instructions) {
+      await kv.set(cacheKey, instructions, { ex: INSTRUCTIONS_CACHE_TTL })
+    }
+
+    return instructions
+  } catch {
+    return null
+  }
+}
 
 export const getAiThreadMessages = async (threadId: string) => {
   const fullMessages = (await openai.beta.threads.messages.list(threadId, { order: "asc" })).data
@@ -35,12 +60,12 @@ export const createAgent = async ({
   imageUrl,
 }: CreateAgentParams) => {
   try {
+    // Create an OpenAI assistant with the provided instructions
     const { id } = await openai.beta.assistants.create({
       name,
       model: "gpt-4.1-mini",
       description,
       instructions,
-      tools: [TOOL_SCHEMAS.deployContract, TOOL_SCHEMAS.resolveAddress, TOOL_SCHEMAS.resolveDomain],
     })
 
     if (!userId) {
@@ -57,7 +82,7 @@ export const createAgent = async ({
     })
 
     return id
-  } catch (_error) {
+  } catch {
     return null
   }
 }
