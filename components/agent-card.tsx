@@ -1,30 +1,20 @@
-import type { UIMessage } from "ai"
+"use client"
+
 import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { useState, useTransition } from "react"
-import { IconCheck, IconCopy, IconPlus, IconSpinner } from "@/components/icons"
-import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
+import type { ReactNode } from "react"
+import { useState } from "react"
+import { CopyAgentUrlButton } from "@/components/copy-agent-url-button"
 import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 type AgentCardProps = {
   agent: Agent
   className?: string
-  onNewChat?: () => void
-  setMessages?: (messages: UIMessage[]) => void
+  children?: ReactNode
 }
 
-export const AgentCard = ({ agent, onNewChat, setMessages, className }: AgentCardProps) => {
-  const router = useRouter()
-  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
-  const [isPending, startTransition] = useTransition()
+export const AgentCard = ({ agent, className, children }: AgentCardProps) => {
   const [descriptionClamped, setDescriptionClamped] = useState(true)
-
-  const handleToggleDescriptionClamped = () => {
-    setDescriptionClamped(!descriptionClamped)
-  }
 
   return (
     <div
@@ -54,52 +44,15 @@ export const AgentCard = ({ agent, onNewChat, setMessages, className }: AgentCar
           <span>{agent.description}</span>
         </p>
         <div className="flex w-full items-center justify-end gap-1 text-gray-500 text-xs hover:text-gray-600 dark:hover:text-gray-400">
-          <button onClick={handleToggleDescriptionClamped} type="button">
+          <button onClick={() => setDescriptionClamped(!descriptionClamped)} type="button">
             {descriptionClamped ? "Show more" : "Show less"}
           </button>
         </div>
         <p className="mt-1 text-gray-500 text-xs">by {agent.creator}</p>
       </div>
       <div className="flex flex-shrink-0 gap-1">
-        {onNewChat ? (
-          <Tooltip delayDuration={500}>
-            <TooltipTrigger asChild>
-              <Button
-                className="h-8 w-8 p-0"
-                disabled={isPending}
-                onClick={() => {
-                  startTransition(() => {
-                    onNewChat()
-                    setMessages?.([])
-                    router.push(`/?a=${agent.id}`)
-                  })
-                }}
-                size="sm"
-                type="reset"
-                variant="ghost"
-              >
-                {isPending ? <IconSpinner className="size-4 animate-spin" /> : <IconPlus className="size-4" />}
-                <span className="sr-only">New Chat</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>New Chat</TooltipContent>
-          </Tooltip>
-        ) : null}
-        <Tooltip delayDuration={500}>
-          <TooltipTrigger asChild>
-            <Button
-              className="h-8 w-8 p-0"
-              onClick={() => copyToClipboard(`https://w3gpt.ai/?a=${agent.id}`)}
-              size="sm"
-              type="button"
-              variant="ghost"
-            >
-              {isCopied ? <IconCheck className="size-4" /> : <IconCopy className="size-4" />}
-              <span className="sr-only">Agent URL</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Agent URL</TooltipContent>
-        </Tooltip>
+        {children}
+        <CopyAgentUrlButton agentId={agent.id} />
       </div>
     </div>
   )

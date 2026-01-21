@@ -2,13 +2,13 @@
 
 import { type UIMessage, useChat } from "@ai-sdk/react"
 import { DefaultChatTransport, generateId } from "ai"
-import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AgentCard } from "@/components/agent-card"
 import { ChatList } from "@/components/chat/chat-list"
 import { ChatPanel } from "@/components/chat/chat-panel"
 import { ChatScrollAnchor } from "@/components/chat/chat-scroll-anchor"
 import { Landing } from "@/components/landing"
+import { NewChatButton } from "@/components/new-chat-button"
 import { DEFAULT_AGENT, DEFAULT_AGENT_ID } from "@/lib/constants"
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 import type { Agent } from "@/lib/types"
@@ -37,7 +37,6 @@ export const Chat = ({
 }: ChatProps) => {
   const chatRef = useRef<HTMLDivElement>(null)
   const previousAgentId = useRef<string | undefined>(undefined)
-  const router = useRouter()
   const { scrollToBottom } = useScrollToBottom(chatRef)
   const [chatId, setChatId] = useState<string | undefined>(initialChatId)
 
@@ -65,8 +64,7 @@ export const Chat = ({
   const handleNewChat = useCallback(() => {
     setChatId(undefined)
     setMessages([])
-    router.push("/")
-  }, [setMessages, router])
+  }, [setMessages])
 
   useEffect(() => {
     if (!isDeprecated && id && !isInProgress && initialChatId !== id && messages.length > 0) {
@@ -109,7 +107,9 @@ export const Chat = ({
         {showLanding ? (
           <Landing userId={userId} />
         ) : (
-          <AgentCard agent={agent} onNewChat={handleNewChat} setMessages={setMessages} />
+          <AgentCard agent={agent}>
+            <NewChatButton agentId={agent.id} onNewChat={handleNewChat} />
+          </AgentCard>
         )}
         <ChatList avatarUrl={avatarUrl} isLoading={isInProgress} isStreaming={isStreaming} messages={messages} />
         <ChatScrollAnchor trackVisibility={isInProgress} />

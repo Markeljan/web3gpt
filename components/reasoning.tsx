@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Content as CollapsibleContent,
   Root as CollapsibleRoot,
@@ -29,7 +31,6 @@ type ReasoningProps = {
   isStreaming?: boolean
   open?: boolean
   defaultOpen?: boolean
-  onOpenChange?: (open: boolean) => void
   duration?: number
   className?: string
 }
@@ -39,7 +40,6 @@ export function Reasoning({
   isStreaming = false,
   open: controlledOpen,
   defaultOpen = false,
-  onOpenChange,
   duration: controlledDuration,
   className,
 }: ReasoningProps) {
@@ -55,9 +55,8 @@ export function Reasoning({
       if (controlledOpen === undefined) {
         setUncontrolledOpen(newOpen)
       }
-      onOpenChange?.(newOpen)
     },
-    [controlledOpen, onOpenChange]
+    [controlledOpen]
   )
 
   // Auto-open when streaming starts, auto-close when streaming ends
@@ -114,7 +113,6 @@ export function Reasoning({
 }
 
 type ReasoningTriggerProps = {
-  getThinkingMessage?: (isStreaming: boolean, duration?: number) => ReactNode
   className?: string
 }
 
@@ -127,11 +125,11 @@ function formatDuration(seconds: number): string {
   return `${minutes}m ${remainingSeconds}s`
 }
 
-export function ReasoningTrigger({ getThinkingMessage, className }: ReasoningTriggerProps) {
+export function ReasoningTrigger({ className }: ReasoningTriggerProps) {
   const { isStreaming, isOpen, duration } = useReasoning()
 
-  const defaultMessage = (streaming: boolean, dur?: number) => {
-    if (streaming) {
+  const renderMessage = () => {
+    if (isStreaming) {
       return (
         <span className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5">
@@ -141,18 +139,18 @@ export function ReasoningTrigger({ getThinkingMessage, className }: ReasoningTri
             </span>
             Thinking
           </span>
-          {dur !== undefined && dur > 0 && <span className="text-muted-foreground">({formatDuration(dur)})</span>}
+          {duration !== undefined && duration > 0 && (
+            <span className="text-muted-foreground">({formatDuration(duration)})</span>
+          )}
         </span>
       )
     }
     return (
       <span className="flex items-center gap-2">
-        Thought{dur !== undefined && dur > 0 ? ` for ${formatDuration(dur)}` : ""}
+        Thought{duration !== undefined && duration > 0 ? ` for ${formatDuration(duration)}` : ""}
       </span>
     )
   }
-
-  const getMessage = getThinkingMessage || defaultMessage
 
   return (
     <CollapsibleTrigger
@@ -165,7 +163,7 @@ export function ReasoningTrigger({ getThinkingMessage, className }: ReasoningTri
       <ChevronDown
         className={cn("size-4 shrink-0 transition-transform duration-200", isOpen ? "rotate-0" : "-rotate-90")}
       />
-      {getMessage(isStreaming, duration)}
+      {renderMessage()}
     </CollapsibleTrigger>
   )
 }
