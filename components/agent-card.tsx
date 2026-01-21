@@ -1,11 +1,9 @@
-"use client"
-
-import type { Message } from "ai"
+import type { UIMessage } from "ai"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
+import { IconCheck, IconCopy, IconPlus, IconSpinner } from "@/components/icons"
 import { Button } from "@/components/ui/button"
-import { IconCheck, IconCopy, IconPlus, IconSpinner } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import type { Agent } from "@/lib/types"
@@ -15,7 +13,7 @@ type AgentCardProps = {
   agent: Agent
   className?: string
   onNewChat?: () => void
-  setMessages?: (messages: Message[]) => void
+  setMessages?: (messages: UIMessage[]) => void
 }
 
 export const AgentCard = ({ agent, onNewChat, setMessages, className }: AgentCardProps) => {

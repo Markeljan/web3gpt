@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useCallback, useState, useTransition } from "react"
 import { toast } from "sonner"
 import { DEPLOYMENT_URL } from "vercel-url"
+import { IconShare, IconSpinner, IconTrash, IconUsers } from "@/components/icons"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +25,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { IconShare, IconSpinner, IconTrash, IconUsers } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { deleteChatAction, shareChatAction } from "@/lib/actions/chat"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"

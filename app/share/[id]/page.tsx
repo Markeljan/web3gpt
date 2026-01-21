@@ -9,7 +9,7 @@ import { getAgent, getPublishedChat } from "@/lib/data/kv"
 import type { NextPageProps } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
 
-export async function generateMetadata({ params }: NextPageProps) {
+export async function generateMetadata({ params }: NextPageProps): Promise<Metadata> {
   const { id } = await params
   const metadata: Metadata = {
     title: "Shared Chat",
@@ -47,7 +47,7 @@ export default async function SharePage({ params, searchParams }: NextPageProps)
     <div className="flex-1 space-y-6">
       <div className="border-b bg-background px-4 py-6 md:px-6 md:py-8">
         <div className="mx-auto max-w-2xl md:px-6">
-          <div className="md:-mx-8 space-y-1">
+          <div className="space-y-1 md:-mx-8">
             <h1 className="font-bold text-2xl">{title}</h1>
             <div className="text-muted-foreground text-sm">
               {formatDate(createdAt)} · {messages.length} messages

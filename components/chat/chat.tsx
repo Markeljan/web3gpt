@@ -1,17 +1,15 @@
 "use client"
 
-import { type Message, useChat } from "@ai-sdk/react"
-import { generateId } from "ai"
+import { type UIMessage, useChat } from "@ai-sdk/react"
+import { DefaultChatTransport, generateId } from "ai"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-
-import { useGlobalStore } from "@/app/state/global-store"
 import { AgentCard } from "@/components/agent-card"
 import { ChatList } from "@/components/chat/chat-list"
 import { ChatPanel } from "@/components/chat/chat-panel"
 import { ChatScrollAnchor } from "@/components/chat/chat-scroll-anchor"
 import { Landing } from "@/components/landing"
-import { DEFAULT_AGENT, DEFAULT_AGENT_ID, TOKENSCRIPT_AGENT_ID } from "@/lib/constants"
+import { DEFAULT_AGENT, DEFAULT_AGENT_ID } from "@/lib/constants"
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 import type { Agent } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -20,14 +18,23 @@ type ChatProps = {
   agent: Agent
   className?: string
   initialChatId?: string
-  initialMessages?: Message[]
+  initialMessages?: UIMessage[]
   userId?: string
   avatarUrl?: string | null
+  isDeprecated?: boolean
 }
 
 const SCROLL_TO_BOTTOM_DELAY = 500
 
-export const Chat = ({ initialChatId, initialMessages = [], agent, className, userId, avatarUrl }: ChatProps) => {
+export const Chat = ({
+  initialChatId,
+  initialMessages = [],
+  agent,
+  className,
+  userId,
+  avatarUrl,
+  isDeprecated = false,
+}: ChatProps) => {
   const chatRef = useRef<HTMLDivElement>(null)
   const previousAgentId = useRef<string | undefined>(undefined)
   const router = useRouter()
@@ -37,40 +44,23 @@ export const Chat = ({ initialChatId, initialMessages = [], agent, className, us
   // Generate a new chat ID if not provided
   const currentChatId = useMemo(() => chatId || generateId(), [chatId])
 
-  const {
-    tokenScriptViewerUrl,
-    lastDeploymentData,
-    completedDeploymentReport,
-    setCompletedDeploymentReport,
-    setTokenScriptViewerUrl,
-  } = useGlobalStore()
-
-  const { messages, isLoading, stop, append, setMessages, id } = useChat({
+  const { messages, status, stop, sendMessage, setMessages, id } = useChat({
     id: currentChatId,
-    api: "/api/chat",
-    body: {
-      agentId: agent.id || DEFAULT_AGENT.id,
-      chatId: currentChatId,
-    },
-    initialMessages,
+    transport: isDeprecated
+      ? undefined
+      : new DefaultChatTransport({
+          api: "/api/chat",
+          body: {
+            agentId: agent.id || DEFAULT_AGENT.id,
+            chatId: currentChatId,
+          },
+        }),
+    messages: initialMessages,
   })
 
-  const isInProgress = isLoading
-  const isTokenScriptAgent = agent.id === TOKENSCRIPT_AGENT_ID
+  const isStreaming = status === "streaming"
+  const isInProgress = isStreaming || status === "submitted"
   const showLanding = agent.id === DEFAULT_AGENT_ID && !initialChatId
-
-  const appendSystemMessage = useCallback(
-    (message: Message | Omit<Message, "id">) => {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          ...message,
-          id: "id" in message ? message.id : generateId(),
-        } as Message,
-      ])
-    },
-    [setMessages]
-  )
 
   const handleNewChat = useCallback(() => {
     setChatId(undefined)
@@ -79,10 +69,10 @@ export const Chat = ({ initialChatId, initialMessages = [], agent, className, us
   }, [setMessages, router])
 
   useEffect(() => {
-    if (id && !isInProgress && initialChatId !== id && messages.length > 0) {
+    if (!isDeprecated && id && !isInProgress && initialChatId !== id && messages.length > 0) {
       history.pushState(null, "", `/chat/${id}`)
     }
-  }, [initialChatId, isInProgress, id, messages.length])
+  }, [initialChatId, isInProgress, id, messages.length, isDeprecated])
 
   useEffect(() => {
     if (messages.length === 0 && initialMessages?.length > 0) {
@@ -102,57 +92,35 @@ export const Chat = ({ initialChatId, initialMessages = [], agent, className, us
     previousAgentId.current = agent.id
   }, [agent.id, setMessages])
 
-  useEffect(() => {
-    if (isTokenScriptAgent && lastDeploymentData && !completedDeploymentReport && !isInProgress) {
-      const { ipfsUrl, explorerUrl, contractAddress, transactionHash, walletAddress, chainId } = lastDeploymentData
-      appendSystemMessage({
-        role: "system",
-        content: `User deployed the following TokenScript contract:
-        ${JSON.stringify({
-          ipfsUrl,
-          explorerUrl,
-          contractAddress,
-          transactionHash,
-          walletAddress,
-          chainId,
-        })}`,
-      })
-      setCompletedDeploymentReport(true)
-      scrollToBottom()
-    }
-  }, [
-    appendSystemMessage,
-    setCompletedDeploymentReport,
-    scrollToBottom,
-    lastDeploymentData,
-    isTokenScriptAgent,
-    completedDeploymentReport,
-    isInProgress,
-  ])
-
-  useEffect(() => {
-    if (tokenScriptViewerUrl && completedDeploymentReport && !isInProgress) {
-      appendSystemMessage({
-        role: "system",
-        content: `User uploaded the TokenScript and updated the scriptURI:
-        ${JSON.stringify(tokenScriptViewerUrl)}`,
-      })
-      setTokenScriptViewerUrl(null)
-    }
-  }, [appendSystemMessage, isInProgress, tokenScriptViewerUrl, completedDeploymentReport, setTokenScriptViewerUrl])
-
   return (
     <>
       <div className={cn("px-3 pt-4 pb-32 sm:px-4 md:pt-10", className)} ref={chatRef}>
+        {isDeprecated && (
+          <div className="mb-4 rounded-lg border border-yellow-500/50 bg-yellow-500/10 px-4 py-3 text-sm">
+            <div className="flex items-start gap-2">
+              <span className="font-semibold text-yellow-600 dark:text-yellow-400">⚠️ Deprecated Chat</span>
+            </div>
+            <p className="mt-1 text-muted-foreground">
+              This is an older chat from the previous version of Web3GPT. It is read-only. Start a new chat to continue
+              the conversation.
+            </p>
+          </div>
+        )}
         {showLanding ? (
           <Landing userId={userId} />
         ) : (
           <AgentCard agent={agent} onNewChat={handleNewChat} setMessages={setMessages} />
         )}
-        <ChatList avatarUrl={avatarUrl} isLoading={isLoading} messages={messages} />
+        <ChatList avatarUrl={avatarUrl} isLoading={isInProgress} isStreaming={isStreaming} messages={messages} />
         <ChatScrollAnchor trackVisibility={isInProgress} />
       </div>
-      <ChatPanel append={append} isLoading={isLoading} onNewChat={handleNewChat} stop={stop} />
+      <ChatPanel
+        append={sendMessage}
+        isDeprecated={isDeprecated}
+        isLoading={isInProgress}
+        onNewChat={handleNewChat}
+        stop={stop}
+      />
     </>
   )
 }

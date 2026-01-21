@@ -1,5 +1,4 @@
 "use server"
-
 import { kv } from "@vercel/kv"
 import { revalidateTag } from "next/cache"
 import { auth } from "@/auth"
@@ -18,12 +17,12 @@ export const shareChatAction = withUser<DbChatListItem, void>(async (chat, userI
 
   await kv.hmset(`chat:${chat.id}`, payload)
 
-  return revalidateTag("chat-list")
+  return revalidateTag("chat-list", "default")
 })
 export const deleteChatAction = withUser<string, void>(async (id, userId) => {
   await Promise.all([kv.del(`chat:${id}`), kv.zrem(`user:chat:${userId}`, `chat:${id}`)])
 
-  return revalidateTag("chat-list")
+  return revalidateTag("chat-list", "default")
 })
 
 export async function storeEmailAction(email: string) {
@@ -59,5 +58,5 @@ export const clearChatsAction = withUser<void, void>(async (_, userId) => {
 
   await pipeline.exec()
 
-  return revalidateTag("chat-list")
+  return revalidateTag("chat-list", "default")
 })

@@ -3,7 +3,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { Session } from "next-auth"
 import { useEffect, useState } from "react"
-
 import { SidebarCollapsed } from "@/components/sidebar/sidebar-collapsed"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -31,7 +30,7 @@ export function PermanentSidebar({ children, className, user }: PermanentSidebar
     >
       {/* Collapse Toggle */}
       <Button
-        className="-right-3 absolute top-6 z-10 h-6 w-6 rounded-full border bg-background shadow-md hover:bg-accent"
+        className="absolute top-6 -right-3 z-10 h-6 w-6 rounded-full border bg-background shadow-md hover:bg-accent"
         onClick={() => setIsCollapsed(!isCollapsed)}
         size="sm"
         variant="ghost"

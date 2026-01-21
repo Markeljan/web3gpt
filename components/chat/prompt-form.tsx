@@ -1,9 +1,10 @@
 import type { UseChatHelpers } from "@ai-sdk/react"
+import type { UIMessage } from "ai"
 import { ArrowUp } from "lucide-react"
 import { type ChangeEvent, useCallback, useEffect, useRef, useState, useTransition } from "react"
 import Textarea from "react-textarea-autosize"
+import { IconClose, IconPlus, IconSpinner } from "@/components/icons"
 import { Button, buttonVariants } from "@/components/ui/button"
-import { IconClose, IconPlus, IconSpinner } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useEnterSubmit } from "@/lib/hooks/use-enter-submit"
 import { useLocalStorage } from "@/lib/hooks/use-local-storage"
@@ -12,12 +13,14 @@ import { cn } from "@/lib/utils"
 
 const GUILD_PROMPT_STORAGE_KEY = "w3gpt-guild-prompt-seen"
 
-type PromptProps = Pick<UseChatHelpers, "append"> & {
+type PromptProps = {
+  append: UseChatHelpers<UIMessage>["sendMessage"]
   isLoading: boolean
   onNewChat: () => void
+  isDeprecated?: boolean
 }
 
-export const PromptForm = ({ append, isLoading, onNewChat }: PromptProps) => {
+export const PromptForm = ({ append, isLoading, onNewChat, isDeprecated = false }: PromptProps) => {
   const [input, setInput] = useState<string>("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const { formRef, onKeyDown } = useEnterSubmit()
@@ -135,7 +138,7 @@ export const PromptForm = ({ append, isLoading, onNewChat }: PromptProps) => {
 
           setInput("")
           scrollToBottom()
-          await append({ role: "user", content: value })
+          await append({ text: value })
         }}
         ref={formRef}
       >
@@ -164,27 +167,28 @@ export const PromptForm = ({ append, isLoading, onNewChat }: PromptProps) => {
           <Textarea
             autoComplete="off"
             autoCorrect="off"
-            autoFocus
+            autoFocus={!isDeprecated}
             className="max-h-[200px] min-h-[60px] w-full resize-none overflow-y-auto bg-transparent px-8 py-[1.3rem] focus-within:outline-none sm:text-sm md:min-h-[72px] md:py-[1.5rem]"
+            disabled={isDeprecated}
             onChange={handleInputChange}
             onFocus={handleGuildPromptTrigger}
             onKeyDown={onKeyDown}
-            placeholder="send a message"
+            placeholder={isDeprecated ? "This chat is read-only. Start a new chat to continue." : "send a message"}
             ref={inputRef}
             rows={1}
             spellCheck={false}
-            tabIndex={0}
+            tabIndex={isDeprecated ? -1 : 0}
             value={input}
           />
           <div className="absolute top-4 right-0 sm:right-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button disabled={input === "" || isInProgress} size="icon" type="submit">
+                <Button disabled={input === "" || isInProgress || isDeprecated} size="icon" type="submit">
                   <ArrowUp className="size-5" />
                   <span className="sr-only">Send message</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Send message</TooltipContent>
+              <TooltipContent>{isDeprecated ? "This chat is read-only" : "Send message"}</TooltipContent>
             </Tooltip>
           </div>
         </div>

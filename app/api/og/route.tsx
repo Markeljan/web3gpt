@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og"
 import type { NextRequest } from "next/server"
-
 import { DEPLOYMENT_URL } from "vercel-url"
 import { getPublishedChat } from "@/lib/data/kv"
 

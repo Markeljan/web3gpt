@@ -12,7 +12,6 @@ import {
 import type { Agent, ChainWithIcon } from "@/lib/types"
 
 export const DEFAULT_AGENT_ID = "asst_Tgzrzv0VaSgTRMn8ufAULlZG"
-export const TOKENSCRIPT_AGENT_ID = "asst_13kX3wWTUa7Gz9jvFOqnnA77"
 
 export const DEFAULT_AGENT: Agent = {
   id: DEFAULT_AGENT_ID,

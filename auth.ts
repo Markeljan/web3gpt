@@ -1,6 +1,5 @@
 import NextAuth, { type DefaultSession } from "next-auth"
 import GitHub from "next-auth/providers/github"
-
 import { storeUser } from "@/lib/data/kv"
 
 declare module "next-auth" {

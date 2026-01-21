@@ -3,10 +3,9 @@
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import { useTransition } from "react"
-
+import { IconCog, IconGitHub, IconTelegram, IconTwitter } from "@/components/icons"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { IconCog, IconGitHub, IconTelegram, IconTwitter } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 

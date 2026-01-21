@@ -1,9 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-
 import { useInView } from "react-intersection-observer"
-
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 
 type ChatScrollAnchorProps = {

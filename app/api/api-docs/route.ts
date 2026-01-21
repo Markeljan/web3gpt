@@ -1,34 +1,22 @@
+import type { HtmlRenderingConfiguration } from "@scalar/core/libs/html-rendering"
 import { ApiReference } from "@scalar/nextjs-api-reference"
 import openApiSpec from "@/public/openapi.json" with { type: "json" }
 
-const config = {
+const config: Partial<HtmlRenderingConfiguration> = {
   theme: "saturn" as const,
   metaData: {
     title: "Web3GPT API",
     description: "Web3GPT API Reference",
   },
   authentication: {
-    http: {
-      bearer: {
+    preferredSecurityScheme: "bearerAuth",
+    securitySchemes: {
+      bearerAuth: {
         token: undefined,
       },
-      basic: {
-        username: "",
-        password: "",
-      },
     },
-    securitySchemes: {
-      bearer: {
-        type: "http",
-        scheme: "bearer",
-        bearerFormat: "Bearer",
-      },
-    },
-    preferredSecurityScheme: "bearerAuth",
   },
-  spec: {
-    content: openApiSpec,
-  },
+  content: openApiSpec,
   hideClientButton: true,
 }
 

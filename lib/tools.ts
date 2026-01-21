@@ -1,29 +1,29 @@
 import { tool } from "ai"
+import { DEPLOYMENT_URL } from "vercel-url"
 import { z } from "zod"
+import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
+import { createAgent } from "@/lib/data/openai"
+import { deployContract } from "@/lib/solidity/deploy"
 
-export const DEFAULT_TOOLS = ["resolveAddress", "resolveDomain", "deployContract"]
+// Tool names for reference
+export const TOOL_NAMES = ["resolveAddress", "resolveDomain", "deployContract", "createAgent"] as const
+export type ToolName = (typeof TOOL_NAMES)[number]
+export const DEFAULT_TOOLS: ToolName[] = ["resolveAddress", "resolveDomain", "deployContract"]
 
-export const resolveAddressTool = tool({
-  description: "Resolve a cryptocurrency address to a domain. Returns the resolved domain for a given address.",
-  parameters: z.object({
+// Zod schemas (exported for reuse/testing)
+export const schemas = {
+  resolveAddress: z.object({
     address: z
       .string()
       .describe("The cryptocurrency address to resolve (e.g., '0x42e9c498135431a48796B5fFe2CBC3d7A1811927')"),
   }),
-})
 
-export const resolveDomainTool = tool({
-  description: "Resolve a domain to a cryptocurrency address. Returns the resolved address for a given domain.",
-  parameters: z.object({
+  resolveDomain: z.object({
     domain: z.string().describe("The domain to resolve (e.g., 'soko.eth')"),
     ticker: z.string().optional().default("ETH").describe("The cryptocurrency ticker (default: 'ETH')"),
   }),
-})
 
-export const deployContractTool = tool({
-  description:
-    "Deploy a smart contract to an EVM compatible chain. Returns the tx hash of the deployment and an IPFS url to a directory with the files used for the contract deployment.",
-  parameters: z.object({
+  deployContract: z.object({
     contractName: z.string().describe("The name of the contract to deploy"),
     chainId: z
       .number()
@@ -37,14 +37,11 @@ export const deployContractTool = tool({
       .array(z.union([z.string(), z.array(z.string())]))
       .default([])
       .describe(
-        "Array of arguments for the contract's constructor. Each array item is a string or an array of strings. Empty array if the constructor has no arguments."
+        "Array of arguments for the contract's constructor. Each argument should be a string representation of the value. Pass an empty array [] if the constructor has no arguments."
       ),
   }),
-})
 
-export const createAgentTool = tool({
-  description: `Create and publish an AI agent (assistant) to the Web3GPT Agents repository. Agents are generally for Solidity smart contract development but can also be created for anything else. All agents have these tools available: ${DEFAULT_TOOLS.join(", ")}`,
-  parameters: z.object({
+  createAgent: z.object({
     name: z.string().describe("The name of the agent."),
     description: z
       .string()
@@ -62,43 +59,81 @@ export const createAgentTool = tool({
         "A url used as the display image for the agent. If not provided, a default image will be used. When given a link, display the link to the user using markdown to confirm that it works before finalizing the agent creation. (NOT <img> tag)"
       ),
   }),
-})
-
-export const deployTokenScriptTool = tool({
-  description:
-    "Deploy a TokenScript to IPFS and update the scriptURI of an ERC721 or ERC20 token contract on an EVM compatible chain. Returns the transaction hash, explorer URL, IPFS URL, and a viewer URL for the deployed TokenScript.",
-  parameters: z.object({
-    chainId: z
-      .string()
-      .describe(
-        "Supported chainIds: 84532: base sepolia, 80002: polygon amoy, 11155111: sepolia, 5003: mantle sepolia, 421614: arbitrum sepolia, 59902: metis sepolia, 44787: celo alfajores"
-      ),
-    tokenAddress: z.string().describe("The address of the token contract to update with the new TokenScript"),
-    tokenName: z.string().describe("The name of the token, used in the TokenScript"),
-    tokenScriptSource: z
-      .string()
-      .describe(
-        "Source code of the TokenScript in XML format. Use the TokenScript template provided in the agent instructions, replacing placeholders as necessary."
-      ),
-    ensDomain: z
-      .string()
-      .optional()
-      .describe(
-        "Optional. The ENS domain to use if the TokenScript includes ENS naming feature. Should be one of: xnft.eth, smartlayer.eth, thesmartcats.eth, esp32.eth, cryptopunks.eth, 61cygni.eth"
-      ),
-    includeBurnFunction: z
-      .boolean()
-      .optional()
-      .default(false)
-      .describe("Optional. Whether to include a burn function in the TokenScript"),
-  }),
-})
-
-// Export all tools as an object for use in the API route
-export const TOOLS = {
-  resolveAddress: resolveAddressTool,
-  resolveDomain: resolveDomainTool,
-  deployContract: deployContractTool,
-  createAgent: createAgentTool,
-  deployTokenScript: deployTokenScriptTool,
 }
+
+// Context required for tools that need runtime data
+export type ToolContext = {
+  userId?: string
+}
+
+/**
+ * Creates the tools object with execute functions.
+ * Pass context for tools that require runtime data (e.g., userId for createAgent).
+ */
+export function createTools(context: ToolContext = {}) {
+  return {
+    resolveAddress: tool({
+      description: "Resolve a cryptocurrency address to a domain. Returns the resolved domain for a given address.",
+      inputSchema: schemas.resolveAddress,
+      execute: async ({ address }) => {
+        const domain = await resolveAddress(address)
+        return `Resolved domain for address ${address}: ${domain}`
+      },
+    }),
+
+    resolveDomain: tool({
+      description: "Resolve a domain to a cryptocurrency address. Returns the resolved address for a given domain.",
+      inputSchema: schemas.resolveDomain,
+      execute: async ({ domain, ticker = "ETH" }) => {
+        const address = await resolveDomain(domain, ticker)
+        return `Resolved address for domain ${domain}: ${address}`
+      },
+    }),
+
+    deployContract: tool({
+      description:
+        "Deploy a smart contract to an EVM compatible chain. Returns the tx hash of the deployment and an IPFS url to a directory with the files used for the contract deployment.",
+      inputSchema: schemas.deployContract,
+      execute: async ({ chainId, contractName, sourceCode, constructorArgs = [] }) => {
+        const deployResult = await deployContract({
+          chainId,
+          contractName,
+          sourceCode,
+          constructorArgs,
+        })
+        return `Contract Deployed: ${deployResult.explorerUrl} IPFS Repository: ${deployResult.ipfsUrl}`
+      },
+    }),
+
+    createAgent: tool({
+      description: `Create and publish an AI agent (assistant) to the Web3GPT Agents repository. Agents are generally for Solidity smart contract development but can also be created for anything else. All agents have these tools available: ${DEFAULT_TOOLS.join(", ")}`,
+      inputSchema: schemas.createAgent,
+      execute: async ({ name, description, instructions, creator, imageUrl }) => {
+        const { userId } = context
+
+        if (!userId) {
+          return JSON.stringify({ error: "Unauthorized, user not signed in." })
+        }
+
+        const createdAgentId = await createAgent({
+          name,
+          userId,
+          description,
+          instructions,
+          creator,
+          imageUrl: imageUrl || "/assets/agent-factory.png",
+        })
+
+        if (!createdAgentId) {
+          return JSON.stringify({ error: "Error creating agent" })
+        }
+
+        const agentChatUrl = `${DEPLOYMENT_URL}/?a=${createdAgentId}`
+        return `Agent created successfully, agent chat url: ${agentChatUrl}`
+      },
+    }),
+  }
+}
+
+// Type for the tools object
+export type Tools = ReturnType<typeof createTools>

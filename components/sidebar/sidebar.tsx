@@ -1,7 +1,7 @@
 "use client"
 
+import { IconSidebar } from "@/components/icons"
 import { Button } from "@/components/ui/button"
-import { IconSidebar } from "@/components/ui/icons"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 export type SidebarProps = {

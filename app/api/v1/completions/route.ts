@@ -55,10 +55,10 @@ export const POST = withUnkey(
         const result = streamText({
           system,
           prompt,
-          model: openai("gpt-4.1"),
+          model: openai("gpt-5-mini"),
         })
 
-        const response = result.toDataStreamResponse()
+        const response = result.toTextStreamResponse()
         // Add CORS headers to stream response
         response.headers.set("Access-Control-Allow-Origin", "*")
         return response
@@ -68,7 +68,7 @@ export const POST = withUnkey(
       const { text } = await generateText({
         system,
         prompt,
-        model: openai("gpt-4.1"),
+        model: openai("gpt-5-mini"),
       })
 
       return NextResponse.json({ text }, { headers })

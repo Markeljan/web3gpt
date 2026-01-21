@@ -2,9 +2,8 @@
 
 import { signIn } from "next-auth/react"
 import { useState } from "react"
-
+import { IconGitHub, IconSpinner } from "@/components/icons"
 import { Button, type ButtonProps } from "@/components/ui/button"
-import { IconGitHub, IconSpinner } from "@/components/ui/icons"
 import { cn } from "@/lib/utils"
 
 interface LoginButtonProps extends ButtonProps {

@@ -1,7 +1,7 @@
 "use client"
 
+import { IconArrowDown } from "@/components/icons"
 import { Button, type ButtonProps } from "@/components/ui/button"
-import { IconArrowDown } from "@/components/ui/icons"
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 import { cn } from "@/lib/utils"
 

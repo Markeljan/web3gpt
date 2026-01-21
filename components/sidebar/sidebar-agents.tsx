@@ -1,6 +1,5 @@
 import Image from "next/image"
 import Link from "next/link"
-
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { AGENTS_ARRAY } from "@/lib/constants"

@@ -75,7 +75,7 @@ export function Navigation({ className, variant = "desktop" }: NavigationProps) 
               <Icon className="h-4 w-4" />
               <span>{item.name}</span>
               {item.badge && (
-                <span className="-top-1 -right-1 absolute rounded-full bg-primary px-1.5 py-0.5 font-semibold text-primary-foreground text-xs">
+                <span className="absolute -top-1 -right-1 rounded-full bg-primary px-1.5 py-0.5 font-semibold text-primary-foreground text-xs">
                   {item.badge}
                 </span>
               )}

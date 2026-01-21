@@ -1,7 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import type { Chain, Hash } from "viem"
-
 import { getChainDetails } from "@/lib/config"
 
 export const cn = (...inputs: ClassValue[]): string => twMerge(clsx(inputs))

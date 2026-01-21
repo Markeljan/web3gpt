@@ -1,6 +1,5 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["ultracite"],
   "assist": {
     "actions": {
       "recommended": true,
@@ -13,6 +12,11 @@
       }
     }
   },
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/react",
+    "ultracite/biome/next"
+  ],
   "files": {
     "includes": [
       "**/*.ts",
@@ -21,6 +25,7 @@
       "**/*.jsx",
       "!**/dist",
       "!**/.next",
+      "!next-env.d.ts",
       "!components/ui"
     ],
     "maxSize": 5242880
@@ -60,6 +65,14 @@
       },
       "suspicious": {
         "noConsole": "off"
+      },
+      "style": {
+        "useConsistentTypeDefinitions": {
+          "level": "error",
+          "options": {
+            "style": "type"
+          }
+        }
       }
     }
   },

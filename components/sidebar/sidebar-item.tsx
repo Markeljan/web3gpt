@@ -1,9 +1,8 @@
 "use client"
 
 import Link from "next/link"
-
+import { IconMessage, IconUsers } from "@/components/icons"
 import { buttonVariants } from "@/components/ui/button"
-import { IconMessage, IconUsers } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import type { DbChatListItem } from "@/lib/types"
 import { cn } from "@/lib/utils"

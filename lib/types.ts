@@ -1,9 +1,17 @@
-import type { Message } from "ai"
+import type { UIMessage } from "ai"
 import type { Abi, Chain, Hash } from "viem"
 
 export type NextPageProps = {
   params: Promise<{ id: string }>
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+// Support both v4 (content) and v5 (parts) message formats for backward compatibility
+export type LegacyMessage = {
+  id: string
+  role: "user" | "assistant" | "system"
+  content?: string
+  parts?: UIMessage["parts"]
 }
 
 export type DbChat = {
@@ -12,7 +20,7 @@ export type DbChat = {
   title: string
   createdAt: number
   userId: string
-  messages: Message[]
+  messages: (UIMessage | LegacyMessage)[]
   published: boolean
   avatarUrl?: string | null
 }
@@ -76,25 +84,6 @@ export type LastDeploymentData = DeployContractResult & {
   walletAddress: Hash
   chainId: number
   transactionHash: Hash
-}
-
-export type DeployTokenScriptParams = {
-  chainId: string
-  tokenAddress: Hash
-  tokenScriptSource: string
-  tokenName: string
-  ensDomain: string
-  includeBurnFunction: boolean
-}
-
-export type DeployTokenScriptResult = {
-  txHash: string
-  explorerUrl: string
-  ipfsUrl: string
-  viewerUrl: string
-  tokenName: string
-  ensDomain: string
-  includeBurnFunction: boolean
 }
 
 export type DeploymentRecordBase = {

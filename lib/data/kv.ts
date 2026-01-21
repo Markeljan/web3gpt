@@ -1,8 +1,6 @@
 import "server-only"
-
 import { kv } from "@vercel/kv"
 import { unstable_cache as cache, revalidateTag } from "next/cache"
-
 import { auth } from "@/auth"
 import type { Agent, DbChat, DbChatListItem, DeploymentRecord, VerifyContractParams } from "@/lib/types"
 
@@ -30,7 +28,7 @@ export async function storeUser(user: { id: string }) {
 
 export const getChatList = withUser<void, DbChatListItem[]>(
   cache(
-    async (_, userId) => {
+    async (_, userId: string) => {
       const chats: string[] = await kv.zrange(`user:chat:${userId}`, 0, -1, { rev: true })
       if (!chats.length) {
         return []
@@ -129,7 +127,7 @@ export const storeChat = withUser<
     }),
   ])
 
-  return revalidateTag("chat-list")
+  return revalidateTag("chat-list", "default")
 })
 
 export const getUserDeployments = withUser<void, DeploymentRecord[]>(async (_, userId) => {

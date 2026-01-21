@@ -3,7 +3,6 @@ import { useCallback } from "react"
 import { toast } from "sonner"
 import { encodeDeployData, getCreateAddress, publicActions } from "viem"
 import { useAccount, useWalletClient } from "wagmi"
-
 import { useGlobalStore } from "@/app/state/global-store"
 import { compileContract, ipfsUploadDirAction } from "@/lib/actions/deploy-contract"
 import { storeDeploymentAction, storeVerificationAction } from "@/lib/actions/verification"
