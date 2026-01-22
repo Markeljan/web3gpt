@@ -5,7 +5,17 @@ import Link from "next/link"
 import type { Session } from "next-auth"
 import { useTheme } from "next-themes"
 import { useState, useTransition } from "react"
-
+import {
+  IconClear,
+  IconCog,
+  IconGitHub,
+  IconMoon,
+  IconPC,
+  IconSpinner,
+  IconSun,
+  IconTelegram,
+  IconTwitter,
+} from "@/components/icons"
 import { SignOutButton } from "@/components/sign-out-button"
 import {
   AlertDialog,
@@ -26,17 +36,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  IconClear,
-  IconCog,
-  IconGitHub,
-  IconMoon,
-  IconPC,
-  IconSpinner,
-  IconSun,
-  IconTelegram,
-  IconTwitter,
-} from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { clearChatsAction } from "@/lib/actions/chat"
 import { cn } from "@/lib/utils"

@@ -1,5 +1,4 @@
 import { useState } from "react"
-
 import { useIsClient } from "@/lib/hooks/use-is-client"
 
 export type useCopyToClipboardProps = {

@@ -4,7 +4,7 @@
     "target": "esnext",
     "module": "esnext",
     "moduleDetection": "force",
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "allowJs": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -38,7 +38,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "components/ui/.d.ts",
-    "lib/solc.d.ts"
+    "lib/solc.d.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

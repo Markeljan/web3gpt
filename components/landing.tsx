@@ -1,10 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-
 import Player from "react-lottie-player"
 import { toast } from "sonner"
-
 import { CustomLogoText, W3GPTLogo } from "@/components/header/logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

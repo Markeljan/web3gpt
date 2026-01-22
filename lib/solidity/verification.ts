@@ -1,5 +1,4 @@
 import "server-only"
-
 import type { Chain } from "viem"
 import { getChainDetails } from "@/lib/config"
 import { DEFAULT_COMPILER_VERSION } from "@/lib/constants"

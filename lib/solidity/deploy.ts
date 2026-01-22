@@ -1,29 +1,13 @@
 import "server-only"
-
 import { track } from "@vercel/analytics/server"
-import {
-  createWalletClient,
-  encodeDeployData,
-  encodeFunctionData,
-  getCreateAddress,
-  http,
-  parseAbiItem,
-  publicActions,
-} from "viem"
+import { createWalletClient, encodeDeployData, getCreateAddress, http, publicActions } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
-
-import { compileContract, storeTokenScriptDeploymentAction } from "@/lib/actions/deploy-contract"
+import { compileContract } from "@/lib/actions/deploy-contract"
 import { storeDeploymentAction, storeVerificationAction } from "@/lib/actions/verification"
 import { getChainById, getChainDetails } from "@/lib/config"
-import { ipfsUploadDir, ipfsUploadFile } from "@/lib/data/ipfs"
+import { ipfsUploadDir } from "@/lib/data/ipfs"
 import { getContractFileName } from "@/lib/solidity/utils"
-import type {
-  DeployContractParams,
-  DeployContractResult,
-  DeployTokenScriptParams,
-  DeployTokenScriptResult,
-  VerifyContractParams,
-} from "@/lib/types"
+import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/types"
 import { getExplorerUrl, getIpfsUrl } from "@/lib/utils"
 
 const DEPLOYER_ACCOUNT = privateKeyToAccount(`0x${process.env.DEPLOYER_PRIVATE_KEY}`)
@@ -129,120 +113,6 @@ export const deployContract = async ({
       contractName,
       explorerUrl,
       contractAddress,
-    }),
-  ])
-
-  return deploymentData
-}
-
-const BURN_CARD_REGEX = /<ts:card type="action" name="burn"[\s\S]*?<\/ts:card>/
-const TOKEN_NAME_REGEX = /TOKEN_NAME/g
-const CHAIN_ID_REGEX = /CHAIN_ID/g
-const CONTRACT_ADDRESS_REGEX = /CONTRACT_ADDRESS/g
-const ENS_DOMAIN_REGEX = /ENS_DOMAIN/g
-
-export const deployTokenScript = async ({
-  chainId,
-  tokenAddress,
-  tokenScriptSource,
-  tokenName,
-  ensDomain,
-  includeBurnFunction,
-}: DeployTokenScriptParams): Promise<DeployTokenScriptResult> => {
-  const viemChain = getChainById(Number(chainId))
-
-  if (!viemChain) {
-    throw new Error(`Chain ${chainId} not found`)
-  }
-
-  const walletClient = createWalletClient({
-    account: DEPLOYER_ACCOUNT,
-    chain: viemChain,
-    transport: http(getChainDetails(viemChain).rpcUrl),
-  }).extend(publicActions)
-
-  if (!(await walletClient.getAddresses())) {
-    const error = new Error(`Wallet for chain ${viemChain.name} not available`)
-    throw error
-  }
-
-  // Prepare TokenScript
-  let updatedTokenScriptSource = tokenScriptSource
-    .replace(TOKEN_NAME_REGEX, tokenName)
-    .replace(CHAIN_ID_REGEX, chainId)
-    .replace(CONTRACT_ADDRESS_REGEX, tokenAddress)
-
-  if (ensDomain) {
-    updatedTokenScriptSource = updatedTokenScriptSource.replace(ENS_DOMAIN_REGEX, ensDomain)
-  }
-
-  if (!includeBurnFunction) {
-    // Remove burn card if not requested
-    updatedTokenScriptSource = updatedTokenScriptSource.replace(BURN_CARD_REGEX, "")
-  }
-
-  // Upload TokenScript to IPFS
-  const cid = await ipfsUploadFile("tokenscript.tsml", updatedTokenScriptSource)
-  if (!cid) {
-    throw new Error("Error uploading to IPFS")
-  }
-
-  const ipfsUrl = getIpfsUrl(cid)
-  const ipfsRoute = [`ipfs://${cid}`]
-
-  // Prepare transaction to update scriptURI
-  const setScriptURIAbi = parseAbiItem("function setScriptURI(string[] memory newScriptURI)")
-  const data = encodeFunctionData({
-    abi: [setScriptURIAbi],
-    functionName: "setScriptURI",
-    args: [ipfsRoute],
-  })
-
-  // Send transaction
-  const txHash = await walletClient.sendTransaction({
-    to: tokenAddress,
-    data,
-  })
-
-  const explorerUrl = getExplorerUrl({
-    viemChain,
-    hash: txHash,
-    type: "tx",
-  })
-
-  // Wait for transaction confirmation
-  const transactionReceipt = await walletClient.waitForTransactionReceipt({
-    hash: txHash,
-  })
-
-  if (!transactionReceipt) {
-    throw new Error("Failed to receive transaction confirmation")
-  }
-
-  // Generate viewer URL
-  const viewerUrl = `https://viewer.tokenscript.org/?chain=${chainId}&contract=${tokenAddress}`
-
-  const deploymentData: DeployTokenScriptResult = {
-    txHash,
-    explorerUrl,
-    ipfsUrl,
-    viewerUrl,
-    tokenName,
-    ensDomain,
-    includeBurnFunction,
-  }
-
-  await Promise.all([
-    storeTokenScriptDeploymentAction({
-      chainId,
-      deployHash: txHash,
-      cid,
-      tokenAddress,
-    }),
-    track("deployed_tokenscript", {
-      tokenAddress,
-      explorerUrl,
-      cid,
     }),
   ])
 

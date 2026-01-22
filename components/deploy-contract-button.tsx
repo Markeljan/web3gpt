@@ -2,10 +2,9 @@
 
 import Link from "next/link"
 import { useCallback, useEffect, useMemo, useState } from "react"
-
 import { useAccount, useChains } from "wagmi"
-
 import { useGlobalStore } from "@/app/state/global-store"
+import { IconExternalLink, IconSpinner } from "@/components/icons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,7 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { IconExternalLink, IconSpinner } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useWalletDeploy } from "@/lib/hooks/use-wallet-deploy"

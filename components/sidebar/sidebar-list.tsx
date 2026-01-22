@@ -1,6 +1,6 @@
 "use client"
-import { usePathname } from "next/navigation"
 
+import { usePathname } from "next/navigation"
 import { SidebarActions } from "@/components/sidebar/sidebar-actions"
 import { SidebarItem } from "@/components/sidebar/sidebar-item"
 import type { DbChatListItem } from "@/lib/types"

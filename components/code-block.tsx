@@ -5,11 +5,9 @@ import { useTheme } from "next-themes"
 import { memo, useCallback, useMemo } from "react"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { coldarkCold, coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism"
-
 import { DeployContractButton } from "@/components/deploy-contract-button"
-import { DeployTokenScriptButton } from "@/components/deploy-tokenscript-button"
+import { IconCheck, IconCopy, IconDownload } from "@/components/icons"
 import { Button } from "@/components/ui/button"
-import { IconCheck, IconCopy, IconDownload } from "@/components/ui/icons"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import { useIsClient } from "@/lib/hooks/use-is-client"
 
@@ -39,8 +37,6 @@ const PROGRAMMING_LANGUAGES: Record<string, string> = {
   css: ".css",
   solidity: ".sol",
   clarity: ".clar",
-  tokenscript: ".xml",
-  tokenscripttsml: ".tsml",
 }
 
 type CodeBlockProps = {
@@ -85,7 +81,8 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
       return
     }
     const fileExtension = PROGRAMMING_LANGUAGES[language] || ".file"
-    const suggestedFileName = `web3gpt-${generateId(6)}${fileExtension}`
+    const suggestedFileName = `web3gpt-${generateId()}${fileExtension}`
+    // biome-ignore lint/suspicious/noAlert: intentional use of prompt for simple filename input
     const fileName = window.prompt("Enter file name", suggestedFileName)
 
     if (!fileName) {
@@ -107,9 +104,6 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
   const renderDeployButton = useCallback(() => {
     if (language === "solidity") {
       return <DeployContractButton sourceCode={value} />
-    }
-    if (["tokenscript", "tokenscripttsml", "xml"].includes(language)) {
-      return <DeployTokenScriptButton sourceCode={value} />
     }
     return null
   }, [language, value])

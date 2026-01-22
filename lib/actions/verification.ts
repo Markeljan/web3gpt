@@ -1,7 +1,5 @@
 "use server"
-
 import { kv } from "@vercel/kv"
-
 import { auth } from "@/auth"
 import type { DeploymentRecord, VerifyContractParams } from "@/lib/types"
 

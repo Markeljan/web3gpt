@@ -1,8 +1,6 @@
 import "server-only"
-
 import { kv } from "@vercel/kv"
 import { unstable_cache as cache, revalidateTag } from "next/cache"
-
 import { auth } from "@/auth"
 import type { Agent, DbChat, DbChatListItem, DeploymentRecord, VerifyContractParams } from "@/lib/types"
 
@@ -30,7 +28,7 @@ export async function storeUser(user: { id: string }) {
 
 export const getChatList = withUser<void, DbChatListItem[]>(
   cache(
-    async (_, userId) => {
+    async (_, userId: string) => {
       const chats: string[] = await kv.zrange(`user:chat:${userId}`, 0, -1, { rev: true })
       if (!chats.length) {
         return []
@@ -62,7 +60,32 @@ export async function getPublishedChat(id: string) {
   return chat
 }
 
-export const getAgent = async (id: string) => await kv.hgetall<Agent>(`agent:${id}`)
+export const getAgent = async (id: string): Promise<Agent | null> => {
+  return await kv.hgetall<Agent>(`agent:${id}`)
+}
+
+export const getAllAgents = async (): Promise<Agent[]> => {
+  const agentIds = await kv.smembers<string[]>("agents:list")
+
+  if (!agentIds || agentIds.length === 0) {
+    return []
+  }
+
+  const pipeline = kv.pipeline()
+  for (const agentId of agentIds) {
+    pipeline.hgetall<Agent>(`agent:${agentId}`)
+  }
+
+  const results = await pipeline.exec<Agent[]>()
+  return results.filter(Boolean)
+}
+
+/**
+ * Store agent directly without auth check (for internal use like tool execution)
+ */
+export const storeAgentDirect = async (agent: Agent): Promise<void> => {
+  await Promise.all([kv.hmset(`agent:${agent.id}`, agent), kv.sadd("agents:list", agent.id)])
+}
 
 // verifications
 
@@ -129,7 +152,7 @@ export const storeChat = withUser<
     }),
   ])
 
-  return revalidateTag("chat-list")
+  return revalidateTag("chat-list", "default")
 })
 
 export const getUserDeployments = withUser<void, DeploymentRecord[]>(async (_, userId) => {

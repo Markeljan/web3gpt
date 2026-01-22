@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server"
-
 import { processVerifications } from "@/lib/solidity/verification-script"
 
 const CRON_SECRET = process.env.CRON_SECRET

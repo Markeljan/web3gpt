@@ -1,10 +1,7 @@
 "use server"
-
-import { kv } from "@vercel/kv"
 import solc, { type SolcInput, type SolcOutput } from "solc"
 import type { Abi } from "viem"
 import { ipfsUploadDir, ipfsUploadFile } from "@/lib/data/ipfs"
-import { withUser } from "@/lib/data/kv"
 import { getContractFileName, prepareContractSources } from "@/lib/solidity/utils"
 import { ensureHashPrefix } from "@/lib/utils"
 
@@ -56,23 +53,6 @@ export async function compileContract({
     sources,
   }
 }
-
-export const storeTokenScriptDeploymentAction = withUser<
-  {
-    chainId: string
-    deployHash: string
-    cid: string
-    tokenAddress: string
-  },
-  void
->(async (data, userId) => {
-  await kv.hmset(`tokenscript:${data.cid}`, data)
-
-  await kv.zadd(`user:tokenscripts:${userId}`, {
-    score: Date.now(),
-    member: `tokenscript:${data.cid}`,
-  })
-})
 
 export async function ipfsUploadFileAction(fileName: string, fileContent: string): Promise<string | null> {
   return await ipfsUploadFile(fileName, fileContent)

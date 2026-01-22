@@ -1,6 +1,10 @@
-/** @type {import('next').NextConfig} */
+import type { NextConfig } from "next"
 
-module.exports = {
+const config: NextConfig = {
+  // Migrated from webpack config for Turbopack compatibility
+  serverExternalPackages: ["pino-pretty", "lokijs", "encoding"],
+  turbopack: {},
+  // Keep webpack config for fallback when using --webpack flag
   webpack: (config) => {
     config.externals.push("pino-pretty", "lokijs", "encoding")
     // ignore metamask sdk react-native-async-storage errors
@@ -56,3 +60,5 @@ module.exports = {
     ]
   },
 }
+
+export default config

@@ -1,5 +1,4 @@
 import "server-only"
-
 import { Resolution } from "@unstoppabledomains/resolution"
 
 const INFURA_API_KEY = process.env.NEXT_PUBLIC_INFURA_API_KEY
