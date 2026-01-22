@@ -60,7 +60,32 @@ export async function getPublishedChat(id: string) {
   return chat
 }
 
-export const getAgent = async (id: string) => await kv.hgetall<Agent>(`agent:${id}`)
+export const getAgent = async (id: string): Promise<Agent | null> => {
+  return await kv.hgetall<Agent>(`agent:${id}`)
+}
+
+export const getAllAgents = async (): Promise<Agent[]> => {
+  const agentIds = await kv.smembers<string[]>("agents:list")
+
+  if (!agentIds || agentIds.length === 0) {
+    return []
+  }
+
+  const pipeline = kv.pipeline()
+  for (const agentId of agentIds) {
+    pipeline.hgetall<Agent>(`agent:${agentId}`)
+  }
+
+  const results = await pipeline.exec<Agent[]>()
+  return results.filter(Boolean)
+}
+
+/**
+ * Store agent directly without auth check (for internal use like tool execution)
+ */
+export const storeAgentDirect = async (agent: Agent): Promise<void> => {
+  await Promise.all([kv.hmset(`agent:${agent.id}`, agent), kv.sadd("agents:list", agent.id)])
+}
 
 // verifications
 

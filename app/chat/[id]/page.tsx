@@ -3,8 +3,8 @@ import { notFound, redirect } from "next/navigation"
 import { auth } from "@/auth"
 import { Chat } from "@/components/chat/chat"
 import { DEFAULT_AGENT } from "@/lib/constants"
-import { getAgent, getChat } from "@/lib/data/kv"
-import { getAiThreadAssistantId, getAiThreadMessages } from "@/lib/data/openai"
+import { getChat } from "@/lib/data/kv"
+import { getAgentById, getAiThreadAssistantId, getAiThreadMessages } from "@/lib/data/openai"
 import type { NextPageProps } from "@/lib/types"
 
 // Check if this is an old OpenAI thread ID (starts with "thread_")
@@ -34,7 +34,7 @@ export default async function ChatPage({ params, searchParams }: NextPageProps) 
         notFound()
       }
 
-      const threadAgent = await getAgent(threadAssistantId)
+      const threadAgent = await getAgentById(threadAssistantId)
 
       return (
         <Chat
@@ -67,7 +67,7 @@ export default async function ChatPage({ params, searchParams }: NextPageProps) 
     notFound()
   }
 
-  const agent = await getAgent(agentId)
+  const agent = await getAgentById(agentId)
 
   // Use messages stored in KV - convert LegacyMessage to UIMessage if needed
   const messages = (chat.messages || []).map((msg) => {

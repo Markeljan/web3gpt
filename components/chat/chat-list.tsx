@@ -15,12 +15,12 @@ export const ChatList = ({ messages, avatarUrl, isLoading, isStreaming = false }
     return null
   }
 
-  const filteredMessages = messages.filter((msg) => msg.role !== "system")
+  // const filteredMessages = messages.filter((msg) => msg.role !== "system")
 
   return (
     <div className="relative mx-auto flex w-full max-w-4xl flex-col p-2 max-md:max-w-2xl md:translate-x-[8%]">
-      {filteredMessages.map((message, index) => {
-        const isLastMessage = index === filteredMessages.length - 1
+      {messages.map((message, index) => {
+        const isLastMessage = index === messages.length - 1
         return (
           <div className="flex w-full flex-col" key={`${message.id}`}>
             <ChatMessage
@@ -30,7 +30,7 @@ export const ChatList = ({ messages, avatarUrl, isLoading, isStreaming = false }
               isStreaming={isStreaming}
               message={message}
             />
-            {index < filteredMessages.length - 1 && <Separator className="my-4 md:my-8 md:-translate-x-[5%]" />}
+            {index < messages.length - 1 && <Separator className="my-4 md:my-8 md:-translate-x-[5%]" />}
           </div>
         )
       })}

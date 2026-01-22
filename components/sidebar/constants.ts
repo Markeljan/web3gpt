@@ -18,7 +18,6 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     name: "Contracts",
     href: "/contracts",
     icon: Code,
-    badge: "New",
   },
   {
     name: "Docs",

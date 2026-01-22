@@ -34,23 +34,20 @@ export type DbChatListItem = {
   published: boolean
 }
 
+export type ToolName = "resolveAddress" | "resolveDomain" | "deployContract" | "createAgent"
+
 export type Agent = {
   id: string
   userId: string
   name: string
   description: string
+  instructions: string
   imageUrl: string
   creator: string
+  toolNames: ToolName[]
 }
 
-export type CreateAgentParams = {
-  name: string
-  userId: string
-  description: string
-  instructions: string
-  creator: string
-  imageUrl: string
-}
+export type CreateAgentParams = Omit<Agent, "id">
 
 export type DeployContractParams = {
   chainId: number

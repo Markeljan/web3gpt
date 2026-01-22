@@ -1,14 +1,17 @@
-import { tool } from "ai"
-import { DEPLOYMENT_URL } from "vercel-url"
+import { generateId, tool } from "ai"
 import { z } from "zod"
 import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
-import { createAgent } from "@/lib/data/openai"
 import { deployContract } from "@/lib/solidity/deploy"
+import type { ToolName } from "@/lib/types"
 
-// Tool names for reference
+// Re-export type for convenience
+export type { ToolName } from "@/lib/types"
+
+// Tool names constant array
 export const TOOL_NAMES = ["resolveAddress", "resolveDomain", "deployContract", "createAgent"] as const
-export type ToolName = (typeof TOOL_NAMES)[number]
-export const DEFAULT_TOOLS: ToolName[] = ["resolveAddress", "resolveDomain", "deployContract"]
+
+// Default tools for most agents (createAgent excluded - only for Creator agent)
+export const DEFAULT_TOOL_NAMES: ToolName[] = ["resolveAddress", "resolveDomain", "deployContract"]
 
 // Zod schemas (exported for reuse/testing)
 export const schemas = {
@@ -42,6 +45,10 @@ export const schemas = {
   }),
 
   createAgent: z.object({
+    toolNames: z
+      .array(z.enum(TOOL_NAMES))
+      .default(["resolveAddress", "resolveDomain", "deployContract"])
+      .describe("The names of the tools that the agent will have available."),
     name: z.string().describe("The name of the agent."),
     description: z
       .string()
@@ -66,74 +73,102 @@ export type ToolContext = {
   userId?: string
 }
 
+// Tool definitions factory - creates tool with execute function
+const createToolDefinitions = (context: ToolContext = {}) => ({
+  resolveAddress: tool({
+    description: "Resolve a cryptocurrency address to a domain. Returns the resolved domain for a given address.",
+    inputSchema: schemas.resolveAddress,
+    execute: async ({ address }) => {
+      const domain = await resolveAddress(address)
+      return `Resolved domain for address ${address}: ${domain}`
+    },
+  }),
+
+  resolveDomain: tool({
+    description: "Resolve a domain to a cryptocurrency address. Returns the resolved address for a given domain.",
+    inputSchema: schemas.resolveDomain,
+    execute: async ({ domain, ticker = "ETH" }) => {
+      const address = await resolveDomain(domain, ticker)
+      return `Resolved address for domain ${domain}: ${address}`
+    },
+  }),
+
+  deployContract: tool({
+    description:
+      "Deploy a smart contract to an EVM compatible chain. Returns the tx hash of the deployment and an IPFS url to a directory with the files used for the contract deployment.",
+    inputSchema: schemas.deployContract,
+    execute: async ({ chainId, contractName, sourceCode, constructorArgs = [] }) => {
+      const deployResult = await deployContract({
+        chainId,
+        contractName,
+        sourceCode,
+        constructorArgs,
+      })
+      return `Contract Deployed: ${deployResult.explorerUrl} IPFS Repository: ${deployResult.ipfsUrl}`
+    },
+  }),
+
+  createAgent: tool({
+    description: `Create and publish an AI agent (assistant) to the Web3GPT Agents repository. Agents are generally for Solidity smart contract development but can also be created for anything else. All agents have these tools available: ${DEFAULT_TOOL_NAMES.join(", ")}`,
+    inputSchema: schemas.createAgent,
+    execute: async ({ name, description, instructions, creator, imageUrl, toolNames }) => {
+      const { userId } = context
+
+      if (!userId) {
+        return JSON.stringify({ error: "Unauthorized, user not signed in." })
+      }
+
+      // Generate a unique agent ID
+      const agentId = `agent_${generateId()}`
+
+      // Store the agent in KV
+      const { storeAgentDirect } = await import("@/lib/data/kv")
+      await storeAgentDirect({
+        id: agentId,
+        userId,
+        name,
+        description,
+        instructions,
+        creator,
+        imageUrl: imageUrl || "/assets/agent-factory.png",
+        toolNames: (toolNames as ToolName[]) || DEFAULT_TOOL_NAMES,
+      })
+
+      const agentChatUrl = `${process.env.NEXT_PUBLIC_APP_URL || "https://w3gpt.ai"}/?a=${agentId}`
+      return `Agent created successfully! Agent chat URL: ${agentChatUrl}`
+    },
+  }),
+})
+
 /**
- * Creates the tools object with execute functions.
- * Pass context for tools that require runtime data (e.g., userId for createAgent).
+ * Get a single tool by name
  */
-export function createTools(context: ToolContext = {}) {
-  return {
-    resolveAddress: tool({
-      description: "Resolve a cryptocurrency address to a domain. Returns the resolved domain for a given address.",
-      inputSchema: schemas.resolveAddress,
-      execute: async ({ address }) => {
-        const domain = await resolveAddress(address)
-        return `Resolved domain for address ${address}: ${domain}`
-      },
-    }),
-
-    resolveDomain: tool({
-      description: "Resolve a domain to a cryptocurrency address. Returns the resolved address for a given domain.",
-      inputSchema: schemas.resolveDomain,
-      execute: async ({ domain, ticker = "ETH" }) => {
-        const address = await resolveDomain(domain, ticker)
-        return `Resolved address for domain ${domain}: ${address}`
-      },
-    }),
-
-    deployContract: tool({
-      description:
-        "Deploy a smart contract to an EVM compatible chain. Returns the tx hash of the deployment and an IPFS url to a directory with the files used for the contract deployment.",
-      inputSchema: schemas.deployContract,
-      execute: async ({ chainId, contractName, sourceCode, constructorArgs = [] }) => {
-        const deployResult = await deployContract({
-          chainId,
-          contractName,
-          sourceCode,
-          constructorArgs,
-        })
-        return `Contract Deployed: ${deployResult.explorerUrl} IPFS Repository: ${deployResult.ipfsUrl}`
-      },
-    }),
-
-    createAgent: tool({
-      description: `Create and publish an AI agent (assistant) to the Web3GPT Agents repository. Agents are generally for Solidity smart contract development but can also be created for anything else. All agents have these tools available: ${DEFAULT_TOOLS.join(", ")}`,
-      inputSchema: schemas.createAgent,
-      execute: async ({ name, description, instructions, creator, imageUrl }) => {
-        const { userId } = context
-
-        if (!userId) {
-          return JSON.stringify({ error: "Unauthorized, user not signed in." })
-        }
-
-        const createdAgentId = await createAgent({
-          name,
-          userId,
-          description,
-          instructions,
-          creator,
-          imageUrl: imageUrl || "/assets/agent-factory.png",
-        })
-
-        if (!createdAgentId) {
-          return JSON.stringify({ error: "Error creating agent" })
-        }
-
-        const agentChatUrl = `${DEPLOYMENT_URL}/?a=${createdAgentId}`
-        return `Agent created successfully, agent chat url: ${agentChatUrl}`
-      },
-    }),
-  }
+export const getTool = (toolName: ToolName, context: ToolContext = {}) => {
+  return createToolDefinitions(context)[toolName]
 }
 
+/**
+ * Get multiple tools by names - returns object keyed by tool name
+ * This is the primary function for creating toolsets for agents
+ */
+export const getTools = <T extends ToolName>(toolNames: T[], context: ToolContext = {}) => {
+  const allTools = createToolDefinitions(context)
+  return Object.fromEntries(toolNames.map((name) => [name, allTools[name]])) as Pick<
+    ReturnType<typeof createToolDefinitions>,
+    T
+  >
+}
+
+/**
+ * Get all available tools
+ */
+export const getAllTools = (context: ToolContext = {}) => {
+  return createToolDefinitions(context)
+}
+
+// Legacy exports for backward compatibility
+export const createTools = getTools
+export const createAllTools = getAllTools
+
 // Type for the tools object
-export type Tools = ReturnType<typeof createTools>
+export type Tools = ReturnType<typeof getTools>

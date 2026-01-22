@@ -2,15 +2,61 @@ import "server-only"
 import { kv } from "@vercel/kv"
 import type { UIMessage } from "ai"
 import { OpenAI } from "openai"
-import { storeAgent } from "@/lib/data/kv"
-import type { CreateAgentParams } from "@/lib/types"
+import { AGENTS_ARRAY, DEFAULT_AGENT } from "@/lib/constants"
+import { getAgent } from "@/lib/data/kv"
+import type { Agent } from "@/lib/types"
 
 const openai = new OpenAI()
 
-const INSTRUCTIONS_CACHE_TTL = 3600 // 1 hour
+const AGENT_CACHE_TTL = 3600 // 1 hour
 
+/**
+ * Get an agent by ID - checks built-in agents first, then KV for user-created agents
+ */
+export const getAgentById = async (agentId: string): Promise<Agent> => {
+  // Check built-in agents first (no cache needed, they're in-memory)
+  const builtInAgent = AGENTS_ARRAY.find((a) => a.id === agentId)
+  if (builtInAgent) {
+    return builtInAgent
+  }
+
+  // Check cache for user-created agents
+  const cacheKey = `agent:cache:${agentId}`
+  const cached = await kv.get<Agent>(cacheKey)
+  if (cached) {
+    return cached
+  }
+
+  // Check KV for user-created agents
+  const kvAgent = await getAgent(agentId)
+  if (kvAgent) {
+    await kv.set(cacheKey, kvAgent, { ex: AGENT_CACHE_TTL })
+    return kvAgent
+  }
+
+  // Fallback to default agent
+  return DEFAULT_AGENT
+}
+
+/**
+ * Get agent instructions by ID
+ */
+export const getAgentInstructions = async (agentId: string): Promise<string | null> => {
+  const agent = await getAgentById(agentId)
+  return agent?.instructions || null
+}
+
+/**
+ * Legacy function - kept for backward compatibility with old assistant-based chats
+ * Fetches instructions from OpenAI Assistants API
+ */
 export const getAssistantInstructions = async (assistantId: string): Promise<string | null> => {
-  // Try to get from cache first
+  // First check if this is a new-style agent ID
+  if (assistantId.startsWith("agent_")) {
+    return getAgentInstructions(assistantId)
+  }
+
+  // Check cache first
   const cacheKey = `assistant:instructions:${assistantId}`
   const cached = await kv.get<string>(cacheKey)
   if (cached) {
@@ -23,7 +69,7 @@ export const getAssistantInstructions = async (assistantId: string): Promise<str
 
     // Cache the instructions
     if (instructions) {
-      await kv.set(cacheKey, instructions, { ex: INSTRUCTIONS_CACHE_TTL })
+      await kv.set(cacheKey, instructions, { ex: AGENT_CACHE_TTL })
     }
 
     return instructions
@@ -32,6 +78,9 @@ export const getAssistantInstructions = async (assistantId: string): Promise<str
   }
 }
 
+/**
+ * Legacy function - get assistant ID from thread
+ */
 export const getAiThreadAssistantId = async (threadId: string): Promise<string | null> => {
   try {
     // Get the most recent run to find the assistant ID
@@ -45,6 +94,9 @@ export const getAiThreadAssistantId = async (threadId: string): Promise<string |
   }
 }
 
+/**
+ * Legacy function - get messages from OpenAI thread
+ */
 export const getAiThreadMessages = async (threadId: string): Promise<UIMessage[]> => {
   const fullMessages = (await openai.beta.threads.messages.list(threadId, { order: "asc" })).data
 
@@ -68,40 +120,4 @@ export const getAiThreadMessages = async (threadId: string): Promise<UIMessage[]
     .filter((msg: UIMessage | null): msg is UIMessage => msg !== null)
 
   return messages
-}
-
-export const createAgent = async ({
-  name,
-  userId,
-  description,
-  instructions,
-  creator,
-  imageUrl,
-}: CreateAgentParams) => {
-  try {
-    // Create an OpenAI assistant with the provided instructions
-    const { id } = await openai.beta.assistants.create({
-      name,
-      model: "gpt-5-mini",
-      description,
-      instructions,
-    })
-
-    if (!userId) {
-      throw new Error("Unauthorized")
-    }
-
-    await storeAgent({
-      id,
-      userId,
-      name,
-      description,
-      creator,
-      imageUrl,
-    })
-
-    return id
-  } catch {
-    return null
-  }
 }

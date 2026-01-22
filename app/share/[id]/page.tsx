@@ -5,7 +5,8 @@ import { auth } from "@/auth"
 import { AgentCard } from "@/components/agent-card"
 import { ChatList } from "@/components/chat/chat-list"
 import { Landing } from "@/components/landing"
-import { getAgent, getPublishedChat } from "@/lib/data/kv"
+import { getPublishedChat } from "@/lib/data/kv"
+import { getAgentById } from "@/lib/data/openai"
 import type { NextPageProps } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
 
@@ -38,7 +39,7 @@ export default async function SharePage({ params, searchParams }: NextPageProps)
   }
   const { title, avatarUrl, agentId = searchParamsResolved?.a, createdAt = new Date() } = chat
 
-  const agent = typeof agentId === "string" ? await getAgent(agentId) : undefined
+  const agent = typeof agentId === "string" ? await getAgentById(agentId) : null
 
   // Use messages from KV storage
   const messages = chat.messages || []

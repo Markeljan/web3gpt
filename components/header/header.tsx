@@ -1,4 +1,5 @@
 import { ConnectButton } from "@/components/connect-button"
+import { ModelBadge } from "@/components/header/model-badge"
 import { MetisTeaser } from "@/components/metis-teaser"
 import { Sidebar } from "@/components/sidebar/sidebar"
 import { SidebarContent } from "@/components/sidebar/sidebar-content"
@@ -14,8 +15,8 @@ export const Header = () => {
           </Sidebar>
         </div>
 
-        {/* Empty left space for desktop - sidebar handles everything */}
-        <div className="hidden lg:block">{/* This space intentionally left empty - sidebar handles navigation */}</div>
+        {/* Model Badge - Desktop only */}
+        <ModelBadge />
       </div>
 
       {/* Right Actions */}

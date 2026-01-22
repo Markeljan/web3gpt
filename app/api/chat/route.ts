@@ -1,11 +1,11 @@
-import { openai } from "@ai-sdk/openai"
+import { type OpenAIResponsesProviderOptions, openai } from "@ai-sdk/openai"
 import { convertToModelMessages, generateId, stepCountIs, streamText, type UIMessage } from "ai"
 import { type NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
-import { DEFAULT_COMPILER_VERSION, SUPPORTED_CHAINS } from "@/lib/constants"
+import { DEFAULT_AGENT, DEFAULT_COMPILER_VERSION, DEFAULT_TOOL_NAMES, SUPPORTED_CHAINS } from "@/lib/constants"
 import { storeChat } from "@/lib/data/kv"
-import { getAssistantInstructions } from "@/lib/data/openai"
-import { createTools } from "@/lib/tools"
+import { getAgentById } from "@/lib/data/openai"
+import { getTools } from "@/lib/tools"
 import type { DbChat } from "@/lib/types"
 
 const MAX_TITLE_LENGTH = 50
@@ -26,21 +26,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Agent ID is required" }, { status: 400 })
   }
 
-  // Fetch agent instructions from OpenAI
-  const agentInstructions = await getAssistantInstructions(agentId)
+  // Fetch agent from KV or built-in agents
+  const agent = await getAgentById(agentId)
 
-  // Build system prompt with latest settings
-  const systemPrompt = `${agentInstructions || "You are a helpful assistant for Web3 development."}
+  if (!agent) {
+    return NextResponse.json({ error: "Agent not found" }, { status: 404 })
+  }
+
+  // Build system prompt with agent instructions and current settings
+  const systemPrompt = `${agent.instructions || DEFAULT_AGENT.instructions}
 
 Current Settings:
 - Compiler Version: ${DEFAULT_COMPILER_VERSION}
 - Available Chains: ${SUPPORTED_CHAINS.map((chain) => `${chain.name} (chainId: ${chain.id})`).join(", ")}`
 
-  // Create tools with runtime context
-  const tools = createTools({ userId })
+  // Create tools dynamically based on agent's toolNames (fallback to default for user-created agents without toolNames)
+  const tools = getTools(agent.toolNames ?? DEFAULT_TOOL_NAMES, { userId })
 
   const result = streamText({
     model: openai("gpt-5-mini"),
+    providerOptions: {
+      openai: {
+        reasoningSummary: "concise",
+        reasoningEffort: "medium",
+      } satisfies OpenAIResponsesProviderOptions,
+    },
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
     tools,
@@ -49,8 +59,6 @@ Current Settings:
       // Store chat after completion if user is logged in
       if (userId && chatId) {
         // Convert response messages to the format expected by DbChat
-        // Response messages are ModelMessages, convert them to UIMessages
-        // Only include assistant messages from the response
         const responseMessages: UIMessage[] = response.messages
           .filter((msg) => msg.role === "assistant")
           .map((msg) => {
