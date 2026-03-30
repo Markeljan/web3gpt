@@ -5,16 +5,8 @@ import openApiSpec from "@/public/openapi.json" with { type: "json" }
 const config: Partial<HtmlRenderingConfiguration> = {
   theme: "saturn" as const,
   metaData: {
-    title: "Web3GPT API",
-    description: "Web3GPT API Reference",
-  },
-  authentication: {
-    preferredSecurityScheme: "bearerAuth",
-    securitySchemes: {
-      bearerAuth: {
-        token: undefined,
-      },
-    },
+    title: "Web3GPT Skill API",
+    description: "Web3GPT skill and agent API reference",
   },
   content: openApiSpec,
   hideClientButton: true,

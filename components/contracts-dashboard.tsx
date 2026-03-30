@@ -27,7 +27,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getChainById } from "@/lib/config"
-import { SUPPORTED_CHAINS } from "@/lib/constants"
+import { AGENT_DEPLOY_CHAINS } from "@/lib/constants"
 import type { DeploymentRecordBase } from "@/lib/types"
 import { cn, getExplorerUrl, getIpfsUrl } from "@/lib/utils"
 
@@ -231,7 +231,9 @@ export function ContractsDashboard({
   // Get filtered chains for rewards
   const rewardChains = useMemo(
     () =>
-      filters.selectedChain ? SUPPORTED_CHAINS.filter((chain) => chain.id === filters.selectedChain) : SUPPORTED_CHAINS,
+      filters.selectedChain
+        ? AGENT_DEPLOY_CHAINS.filter((chain) => chain.id === filters.selectedChain)
+        : AGENT_DEPLOY_CHAINS,
     [filters.selectedChain]
   )
 
@@ -388,7 +390,7 @@ export function ContractsDashboard({
 
                 {/* Chain Buttons */}
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                  {SUPPORTED_CHAINS.map((chainInfo) => {
+                  {AGENT_DEPLOY_CHAINS.map((chainInfo) => {
                     const deploymentCount = deploymentsByChain[chainInfo.id] || 0
                     const isSelected = filters.selectedChain === chainInfo.id
 

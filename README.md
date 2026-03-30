@@ -1,47 +1,97 @@
-# Web3GPT 🚀
+# Web3GPT
 
-Web3GPT is an AI-powered smart contract development platform that combines Large Language Models (LLMs) with specialized AI agents to streamline blockchain development. Try it live at [w3gpt.ai](https://w3gpt.ai) or check out our [documentation](https://docs.w3gpt.ai).
+Web3GPT is an AI-powered smart contract platform for chatting with onchain agents, deploying Solidity contracts, and running agent-driven workflows on EVM chains.
 
-![image](https://github.com/Markeljan/Web3GPT/assets/12901349/c84ec7ed-3657-4d19-a739-2285e25c29a1)
+The current public integration surface is agent-first:
 
-## Key Features 🌟
+- browser chat UI at [w3gpt.ai](https://w3gpt.ai)
+- skill endpoint at `https://w3gpt.ai/api/skill`
+- skill guide at `https://w3gpt.ai/skill.md`
+- API reference at `https://w3gpt.ai/api-docs`
 
-- **Multi-Chain Smart Contract Development:** Deploy contracts across multiple EVM-compatible testnets including:
-  - Arbitrum Sepolia
-  - Optimism Sepolia
-  - Base Sepolia
-  - Metis Sepolia
-  - Mantle Sepolia
-  - Celo Alfajores
-  - Polygon Amoy
-  - Sepolia
+## What Changed
 
-- **Specialized AI Agents:**
-  - Web3GPT - Core smart contract development agent
-  - GENT - first token agent launched on W3GPT
-  - Unstoppable Domains - Domain resolution specialist
-  - OpenZeppelin 5.0 - Security-focused development using latest OZ libraries
-  - CTF Agent - Interactive Capture The Flag challenges
-  - Creator - Custom AI agent creation
+- the old Unkey-backed `/api/v1` endpoints are removed
+- the SDK now targets the skill/chat flow instead of separate completions/deploy APIs
+- Polygon mainnet deployment is available through the agent and skill endpoint
+- Polygon mainnet is not exposed through wallet connectors in the UI
 
-- **GitHub Authentication:** Secure login and persistence of your development sessions
+## Core Flows
 
-- **Share & Collaborate:** Share your smart contract development conversations with unique shareable URLs
+- chat with built-in or user-created Web3GPT agents
+- deploy contracts through the agent conversation
+- persist authenticated browser chats in Vercel KV
+- persist anonymous skill chats by `chatId`
+- verify deployments through the Vercel cron job
 
-## Getting Started 🛠️
+## Supported Agent Deployment Chains
 
-1. Clone the repository
-2. Configure environment variables (see `.env.example`)
-3. Install dependencies and run the development server
+- Polygon Mainnet
+- Polygon Amoy
+- Base Sepolia
+- Arbitrum Sepolia
+- Optimism Sepolia
+- Mantle Sepolia
+- Metis Sepolia
+- Celo Alfajores
+- Ethereum Sepolia
+
+## Getting Started
+
+1. Clone the repository.
+2. Copy `.env.example` and fill in the required variables.
+3. Install dependencies.
+4. Run the app.
 
 ```bash
 bun install
-```
-
-```bash
 bun dev
 ```
 
-## Deploying Contracts with Local Imports
+## Important Environment Variables
 
-Web3GPT now supports deploying factory contracts that rely on local Solidity imports. Provide additional source files alongside your main contract and reference them with relative paths (e.g., `import "./AddressBook.sol";`). The compiler will include these dependencies automatically, enabling factory patterns without flattening contracts.
+- `OPENAI_API_KEY`
+- `DEPLOYER_PRIVATE_KEY`
+- `AUTH_GITHUB_ID`
+- `AUTH_GITHUB_SECRET`
+- `AUTH_SECRET`
+- `CRON_SECRET`
+- `KV_REST_API_URL`
+- `KV_REST_API_TOKEN`
+- `NEXT_PUBLIC_ALCHEMY_API_KEY`
+- `NEXT_PUBLIC_TENDERLY_API_KEY`
+- `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`
+- `PINATA_JWT`
+
+## Skill API
+
+Start a chat:
+
+```bash
+curl https://w3gpt.ai/api/skill
+```
+
+Continue a chat:
+
+```bash
+curl -X POST "https://w3gpt.ai/api/skill?chatId=your-chat-id" \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Deploy an ERC20 on Polygon mainnet"}'
+```
+
+Include full history:
+
+```bash
+curl "https://w3gpt.ai/api/skill?chatId=your-chat-id&history=true"
+```
+
+The `chatId` is the secret for continuing a thread outside the browser UI.
+
+## Development Commands
+
+- `bun dev`
+- `bun run build`
+- `bun run start`
+- `bun run typecheck`
+- `bun run lint`
+- `bun run format`

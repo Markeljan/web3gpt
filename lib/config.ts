@@ -1,7 +1,7 @@
 import type { Chain } from "viem"
 import { type CreateConnectorFn, cookieStorage, createConfig, createStorage } from "wagmi"
 import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
-import { RPC_URLS, SUPPORTED_CHAINS, viemTransports } from "@/lib/constants"
+import { AGENT_DEPLOY_CHAINS, RPC_URLS, SUPPORTED_CHAINS, viemTransports } from "@/lib/constants"
 import { ETHERSCAN_V2_URLS } from "@/lib/etherscan"
 import type { ChainDetails, ChainWithIcon } from "@/lib/types"
 
@@ -30,7 +30,7 @@ export const getChainDetails = (viemChain: Chain): ChainDetails => {
 }
 
 export function getChainById(chainId: number): ChainWithIcon | null {
-  return SUPPORTED_CHAINS.find((chain) => chain.id === chainId) || null
+  return AGENT_DEPLOY_CHAINS.find((chain) => chain.id === chainId) || null
 }
 
 export const getWagmiConfig = (connectors?: CreateConnectorFn[]) =>

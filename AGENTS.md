@@ -5,7 +5,7 @@
 Web3GPT is a single-app Next.js 16 project for AI-assisted smart contract development. The app combines:
 
 - App Router pages and API routes
-- AI SDK chat/completions flows backed by OpenAI models
+- AI SDK chat flows backed by OpenAI models
 - GitHub authentication via NextAuth v5 beta
 - Wallet connectivity through Wagmi and RainbowKit
 - Contract compilation/deployment helpers built on `solc` and `viem`
@@ -27,7 +27,7 @@ Primary product flows:
 - AI: Vercel AI SDK (`ai`, `@ai-sdk/react`, `@ai-sdk/openai`)
 - Auth: `next-auth` with GitHub provider
 - Web3: `wagmi`, `viem`, `@rainbow-me/rainbowkit`
-- Storage/services: `@vercel/kv`, Vercel Analytics, Pinata, Unkey
+- Storage/services: `@vercel/kv`, Vercel Analytics, Pinata
 - Lint/format: Ultracite/Biome
 
 ## Common Commands
@@ -52,14 +52,12 @@ Copy from `.env.example`. Important groups:
 - AI providers: `OPENAI_API_KEY`, optional `XAI_API_KEY`, `STABILITY_API_KEY`
 - Persistence: `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_REST_API_READ_ONLY_TOKEN`, `KV_URL`
 - Deployment/signing: `DEPLOYER_PRIVATE_KEY`
-- API protection: `UNKEY_ROOT_KEY`
 - Cron auth: `CRON_SECRET`
 - IPFS uploads: `PINATA_API_KEY`, `PINATA_API_SECRET`, `PINATA_JWT`
 
 Notes:
 
 - `lib/solidity/deploy.ts` assumes `DEPLOYER_PRIVATE_KEY` is present at module load.
-- The v1 API routes throw during initialization if `UNKEY_ROOT_KEY` is missing.
 - `vercel.json` schedules `/api/cron` every minute and expects `Authorization: Bearer <CRON_SECRET>`.
 
 ## Project Map
@@ -70,8 +68,7 @@ Notes:
   - `app/share/[id]/page.tsx`: public published-chat view
   - `app/contracts/page.tsx`: deployments dashboard
   - `app/api/chat/route.ts`: main streaming chat endpoint with tool calling
-  - `app/api/v1/completions/route.ts`: Unkey-protected text completions API
-  - `app/api/v1/contracts/deploy/route.ts`: Unkey-protected generate/compile/deploy API
+  - `app/api/skill/route.ts`: public skill endpoint for starting/continuing agent chats by `chatId`
   - `app/api/cron/route.ts`: verification processor for Vercel Cron
 - `components/`
   - `components/chat/*`: chat shell, list, composer, actions
@@ -93,9 +90,10 @@ Notes:
 
 - Built-in agents live in `lib/constants.ts`; user-created agents are stored in KV.
 - `app/api/chat/route.ts` builds a system prompt from the selected agent and attaches tools from `lib/tools.ts`.
+- `app/api/skill/route.ts` persists anonymous agent chats in KV by `chatId` and returns simplified responses/history for SDK and skill consumers.
 - Chat history is persisted only when a user is signed in and a `chatId` is present.
 - Contract deployment flow compiles Solidity, deploys with a server-side private key, uploads artifacts to IPFS, stores verification metadata, and later verifies via cron.
-- Supported chains are testnets defined in `lib/constants.ts`; update chain metadata and RPC URLs together.
+- Wallet-visible chains live separately from agent deploy chains; Polygon mainnet is agent-only and should not be added to Wagmi connectors.
 - Legacy OpenAI thread support still exists in `app/chat/[id]/page.tsx` and `lib/data/openai.ts`.
 
 ## Working Conventions
@@ -114,7 +112,7 @@ Notes:
 - For auth-sensitive changes, review `auth.ts`, `proxy.ts`, and any `auth()` call sites.
 - For chain/deployment changes, review `lib/constants.ts`, `lib/config.ts`, `lib/solidity/deploy.ts`, and verification helpers together.
 - For data model changes in chats/agents/deployments, audit `lib/types.ts` and `lib/data/kv.ts` before editing route or UI code.
-- For API changes, update `public/openapi.json` if the external contract changes.
+- For public API changes, update both `public/openapi.json` and `public/skill.md`.
 
 ## Validation
 

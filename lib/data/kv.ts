@@ -2,7 +2,7 @@ import "server-only"
 import { kv } from "@vercel/kv"
 import { unstable_cache as cache, revalidateTag } from "next/cache"
 import { auth } from "@/auth"
-import type { Agent, DbChat, DbChatListItem, DeploymentRecord, VerifyContractParams } from "@/lib/types"
+import type { Agent, DbChat, DbChatListItem, DeploymentRecord, SkillChat, VerifyContractParams } from "@/lib/types"
 
 type ActionWithUser<T, R> = (data: T, userId: string) => Promise<R>
 
@@ -58,6 +58,14 @@ export async function getPublishedChat(id: string) {
   }
 
   return chat
+}
+
+export const getSkillChat = async (id: string): Promise<SkillChat | null> => {
+  return await kv.hgetall<SkillChat>(`skill-chat:${id}`)
+}
+
+export async function storeSkillChat(chat: SkillChat) {
+  await kv.hmset(`skill-chat:${chat.id}`, chat)
 }
 
 export const getAgent = async (id: string): Promise<Agent | null> => {

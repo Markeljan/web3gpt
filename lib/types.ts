@@ -34,6 +34,20 @@ export type DbChatListItem = {
   published: boolean
 }
 
+export type SkillChat = {
+  id: string
+  agentId: string
+  createdAt: number
+  title: string
+  messages: UIMessage[]
+}
+
+export type SkillChatHistoryItem = {
+  id: string
+  role: "user" | "assistant" | "system"
+  text: string
+}
+
 export type ToolName = "resolveAddress" | "resolveDomain" | "deployContract" | "createAgent"
 
 export type Agent = {

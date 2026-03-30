@@ -6,6 +6,7 @@ import {
   mantleSepoliaTestnet,
   metisSepolia,
   optimismSepolia,
+  polygon,
   polygonAmoy,
   sepolia,
 } from "viem/chains"
@@ -30,13 +31,13 @@ Your core capabilities:
 - Resolving ENS domains and wallet addresses
 
 When writing smart contracts:
-1. Always use the latest stable Solidity version (0.8.x)
+1. Always use the supported Solidity version (0.8.29)
 2. Include proper SPDX license identifiers
 3. Follow security best practices (checks-effects-interactions, etc.)
 4. Use OpenZeppelin libraries when appropriate
 5. Add clear comments and NatSpec documentation
 
-You can deploy contracts to multiple testnets. Always confirm the target chain with the user before deployment.`,
+You can deploy contracts to supported testnets and Polygon mainnet. Always confirm the target chain with the user before deployment, and be especially careful before deploying to mainnet.`,
   creator: "soko.eth",
   imageUrl: "/assets/web3gpt.png",
   toolNames: DEFAULT_TOOL_NAMES,
@@ -45,6 +46,7 @@ You can deploy contracts to multiple testnets. Always confirm the target chain w
 export const DEFAULT_COMPILER_VERSION = "v0.8.29+commit.ab55807c"
 
 export const RPC_URLS: Record<number, string> = {
+  [polygon.id]: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
   [sepolia.id]: `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
   [polygonAmoy.id]: `https://polygon-amoy.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
   [baseSepolia.id]: `https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
@@ -79,6 +81,12 @@ const mantleSepoliaWithIcon = {
 }
 const polygonAmoyWithIcon = {
   ...polygonAmoy,
+  iconUrl: "/assets/chains/polygon-logo.png",
+  iconBackground: "#8247E5",
+}
+
+const polygonMainnetWithIcon = {
+  ...polygon,
   iconUrl: "/assets/chains/polygon-logo.png",
   iconBackground: "#8247E5",
 }
@@ -123,6 +131,8 @@ export const SUPPORTED_CHAINS: [ChainWithIcon, ...ChainWithIcon[]] = [
   celoAlfajoresWithIcon,
   sepoliaWithIcon,
 ]
+
+export const AGENT_DEPLOY_CHAINS: [ChainWithIcon, ...ChainWithIcon[]] = [polygonMainnetWithIcon, ...SUPPORTED_CHAINS]
 
 export const viemTransports = Object.fromEntries(
   SUPPORTED_CHAINS.map((chain) => [[chain.id], http(RPC_URLS[chain.id])])
