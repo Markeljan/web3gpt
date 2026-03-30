@@ -104,7 +104,7 @@ const createToolDefinitions = (context: ToolContext = {}) => ({
         sourceCode,
         constructorArgs,
       })
-      return `Contract Deployed: ${deployResult.explorerUrl} IPFS Repository: ${deployResult.ipfsUrl}`
+      return `Contract deployed: ${deployResult.explorerUrl} IPFS repository: ${deployResult.ipfsUrl} Verification queued for explorer verification.`
     },
   }),
 

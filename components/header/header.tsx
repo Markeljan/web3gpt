@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { ConnectButton } from "@/components/connect-button"
 import { ModelBadge } from "@/components/header/model-badge"
 import { MetisTeaser } from "@/components/metis-teaser"
@@ -7,7 +8,7 @@ import { SidebarContent } from "@/components/sidebar/sidebar-content"
 export const Header = () => {
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex items-center gap-4">
+      <div className="flex min-w-0 items-center gap-4">
         {/* Mobile Sidebar */}
         <div className="lg:hidden">
           <Sidebar>
@@ -16,7 +17,17 @@ export const Header = () => {
         </div>
 
         {/* Model Badge - Desktop only */}
-        <ModelBadge />
+        <div className="flex min-w-0 items-center gap-3">
+          <ModelBadge />
+          <Link
+            className="whitespace-nowrap text-[11px] text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline sm:text-xs"
+            href="https://w3gpt.ai/skill.md"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Agents: install our skill.md
+          </Link>
+        </div>
       </div>
 
       {/* Right Actions */}

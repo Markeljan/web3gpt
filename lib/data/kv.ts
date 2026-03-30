@@ -129,6 +129,10 @@ export const deleteVerification = async (deployHash: string) => {
   await kv.del(`verification:${deployHash}`)
 }
 
+export const updateVerification = async (deployHash: string, data: Partial<VerifyContractParams>) => {
+  await kv.hmset(`verification:${deployHash}`, data)
+}
+
 export const storeAgent = withUser<Agent, void>(async (agent, userId) => {
   if (userId !== agent.userId) {
     return

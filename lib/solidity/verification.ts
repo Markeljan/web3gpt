@@ -4,6 +4,14 @@ import { getChainDetails } from "@/lib/config"
 import { DEFAULT_COMPILER_VERSION } from "@/lib/constants"
 import type { VerifyContractParams } from "@/lib/types"
 
+type VerifyApiResponse = {
+  status: string
+  result: string
+  message?: string
+}
+
+const MIT_LICENSE_TYPE = "3"
+
 export const verifyContract = async ({
   contractAddress,
   standardJsonInput,
@@ -11,10 +19,21 @@ export const verifyContract = async ({
   fileName,
   contractName,
   viemChain,
-}: VerifyContractParams): Promise<{ status: string; result: string; message?: string }> => {
-  const { explorerApiUrl, explorerApiKey } = getChainDetails(viemChain)
+}: VerifyContractParams): Promise<VerifyApiResponse> => {
+  const { explorerApiUrl, explorerApiKey, explorerType } = getChainDetails(viemChain)
+
+  if (!explorerApiUrl) {
+    throw new Error(`No explorer API URL configured for ${viemChain.name} (${viemChain.id})`)
+  }
+
+  if (!explorerApiKey) {
+    throw new Error(`No explorer API key configured for ${viemChain.name} (${viemChain.id})`)
+  }
 
   const params = new URLSearchParams()
+  if (explorerType === "etherscan") {
+    params.append("chainid", String(viemChain.id))
+  }
   params.append("module", "contract")
   params.append("action", "verifysourcecode")
   params.append("contractaddress", contractAddress)
@@ -23,11 +42,11 @@ export const verifyContract = async ({
   params.append("contractname", `${fileName}:${contractName}`)
   params.append("compilerversion", DEFAULT_COMPILER_VERSION)
   if (encodedConstructorArgs) {
-    params.append("constructorArguements", encodedConstructorArgs)
+    params.append("constructorArguments", encodedConstructorArgs)
   }
   params.append("optimizationUsed", "1")
   params.append("runs", "200")
-  params.append("licenseType", "mit")
+  params.append("licenseType", MIT_LICENSE_TYPE)
   params.append("apikey", explorerApiKey)
 
   const response = await fetch(explorerApiUrl, {
@@ -45,13 +64,21 @@ export const verifyContract = async ({
   return await response.json()
 }
 
-export const checkVerifyStatus = async (
-  guid: string,
-  viemChain: Chain
-): Promise<{ status: string; result: string }> => {
-  const { explorerApiUrl, explorerApiKey } = getChainDetails(viemChain)
+export const checkVerifyStatus = async (guid: string, viemChain: Chain): Promise<VerifyApiResponse> => {
+  const { explorerApiUrl, explorerApiKey, explorerType } = getChainDetails(viemChain)
+
+  if (!explorerApiUrl) {
+    throw new Error(`No explorer API URL configured for ${viemChain.name} (${viemChain.id})`)
+  }
+
+  if (!explorerApiKey) {
+    throw new Error(`No explorer API key configured for ${viemChain.name} (${viemChain.id})`)
+  }
 
   const params = new URLSearchParams()
+  if (explorerType === "etherscan") {
+    params.append("chainid", String(viemChain.id))
+  }
   params.append("apikey", explorerApiKey)
   params.append("module", "contract")
   params.append("action", "checkverifystatus")

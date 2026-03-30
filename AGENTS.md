@@ -46,7 +46,7 @@ Git hooks are managed by `lefthook.yml`. Pre-commit runs `bunx ultracite fix` on
 
 Copy from `.env.example`. Important groups:
 
-- RPC and explorer access: `NEXT_PUBLIC_ALCHEMY_API_KEY`, `NEXT_PUBLIC_TENDERLY_API_KEY`, `NEXT_PUBLIC_BLOCKSCOUT_API_KEY`, `NEXT_PUBLIC_ETHERSCAN_API_KEY`
+- RPC and explorer access: `NEXT_PUBLIC_ALCHEMY_API_KEY`, `NEXT_PUBLIC_TENDERLY_API_KEY`, `BLOCKSCOUT_API_KEY`, `ETHERSCAN_API_KEY`
 - Wallet connectivity: `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`
 - Auth: `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `AUTH_SECRET`, `AUTH_REDIRECT_PROXY_URL`
 - AI providers: `OPENAI_API_KEY`, optional `XAI_API_KEY`, `STABILITY_API_KEY`
@@ -58,6 +58,7 @@ Copy from `.env.example`. Important groups:
 Notes:
 
 - `lib/solidity/deploy.ts` assumes `DEPLOYER_PRIVATE_KEY` is present at module load.
+- Explorer verification prefers server-side `BLOCKSCOUT_API_KEY` and `ETHERSCAN_API_KEY`, with `NEXT_PUBLIC_*` explorer keys only as fallback for older environments.
 - `vercel.json` schedules `/api/cron` every minute and expects `Authorization: Bearer <CRON_SECRET>`.
 
 ## Project Map

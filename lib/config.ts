@@ -16,6 +16,15 @@ export const getChainDetails = (viemChain: Chain): ChainDetails => {
   const chainId = viemChain.id
   const blockscoutUrl = BLOCKSCOUT_URLS[chainId]
   const etherscan = ETHERSCAN_V2_URLS[chainId]
+  const isBlockscout = Boolean(blockscoutUrl)
+  const isEtherscan = Boolean(etherscan)
+  let explorerType: ChainDetails["explorerType"] = "unknown"
+
+  if (isBlockscout) {
+    explorerType = "blockscout"
+  } else if (isEtherscan) {
+    explorerType = "etherscan"
+  }
 
   return {
     rpcUrl: RPC_URLS[chainId] || viemChain.rpcUrls.default.http[0],
@@ -23,9 +32,10 @@ export const getChainDetails = (viemChain: Chain): ChainDetails => {
     explorerApiUrl: blockscoutUrl
       ? buildApiUrl(blockscoutUrl)
       : etherscan?.apiUrl || viemChain.blockExplorers?.default.apiUrl || "",
-    explorerApiKey: blockscoutUrl
-      ? process.env.NEXT_PUBLIC_BLOCKSCOUT_API_KEY || ""
-      : process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY || "",
+    explorerApiKey: isBlockscout
+      ? process.env.BLOCKSCOUT_API_KEY || process.env.NEXT_PUBLIC_BLOCKSCOUT_API_KEY || ""
+      : process.env.ETHERSCAN_API_KEY || process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY || "",
+    explorerType,
   }
 }
 

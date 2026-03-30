@@ -89,6 +89,14 @@ export type VerifyContractParams = {
   fileName: string
   contractName: string
   viemChain: Omit<Chain, "contracts" | "ensRegistry" | "ensUniversalResolver" | "multicall3" | "formatters">
+  verificationAttempts?: number
+  verificationGuid?: string
+  verificationStatus?: "queued" | "submitted" | "verified" | "error"
+  queuedAt?: number
+  submittedAt?: number
+  lastCheckedAt?: number
+  verifiedAt?: number
+  lastVerificationError?: string
 }
 
 export type LastDeploymentData = DeployContractResult & {
@@ -116,4 +124,5 @@ export type ChainDetails = {
   explorerUrl: string
   explorerApiUrl: string
   explorerApiKey: string
+  explorerType: "blockscout" | "etherscan" | "unknown"
 }
