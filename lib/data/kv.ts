@@ -154,8 +154,8 @@ export const storeChat = withUser<
     userId: string
   },
   void
->(async ({ data, userId }) => {
-  if (userId !== data.userId) {
+>(async ({ data, userId }, authenticatedUserId) => {
+  if (authenticatedUserId !== userId || authenticatedUserId !== data.userId) {
     return
   }
 
