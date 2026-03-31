@@ -228,8 +228,7 @@ Challenge format:
 Popular CTF topics: Reentrancy, Integer overflow/underflow, Access control, Tx.origin vs msg.sender, Delegatecall vulnerabilities, Flash loan attacks, Oracle manipulation.
 
 Make learning fun and engaging!`,
-    imageUrl:
-      "https://media.licdn.com/dms/image/D5612AQEMTmdASEpqog/article-cover_image-shrink_720_1280/0/1680103178404?e=2147483647&v=beta&t=J6hdKmr-VKTqTyLzO2FR10_mJTdAxzU4QWTQiRrv2fs",
+    imageUrl: "/assets/agent-ctf.png",
     toolNames: DEFAULT_TOOL_NAMES,
   },
   {
