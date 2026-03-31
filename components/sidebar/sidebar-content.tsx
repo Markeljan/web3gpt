@@ -50,7 +50,7 @@ export async function SidebarContent() {
         </div>
 
         <div className="min-h-0 flex-1 overflow-hidden">
-          {chatList ? (
+          {user ? (
             <SidebarList chatList={chatList} />
           ) : (
             <div className="flex h-20 items-center justify-center">
