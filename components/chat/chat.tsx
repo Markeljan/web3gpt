@@ -2,6 +2,7 @@
 
 import { type UIMessage, useChat } from "@ai-sdk/react"
 import { DefaultChatTransport, generateId } from "ai"
+import { usePathname, useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AgentCard } from "@/components/agent-card"
 import { ChatList } from "@/components/chat/chat-list"
@@ -37,8 +38,11 @@ export const Chat = ({
 }: ChatProps) => {
   const chatRef = useRef<HTMLDivElement>(null)
   const previousAgentId = useRef<string | undefined>(undefined)
+  const lastSyncedMessageCount = useRef(initialMessages.length)
   const { scrollToBottom } = useScrollToBottom(chatRef)
   const [chatId, setChatId] = useState<string | undefined>(initialChatId)
+  const router = useRouter()
+  const pathname = usePathname()
 
   // Generate a new chat ID if not provided
   const currentChatId = useMemo(() => chatId || generateId(), [chatId])
@@ -64,13 +68,30 @@ export const Chat = ({
   const handleNewChat = useCallback(() => {
     setChatId(undefined)
     setMessages([])
+    lastSyncedMessageCount.current = 0
   }, [setMessages])
 
   useEffect(() => {
-    if (!isDeprecated && id && !isInProgress && initialChatId !== id && messages.length > 0) {
-      history.pushState(null, "", `/chat/${id}`)
+    if (!isDeprecated && id && !isInProgress && messages.length > 0) {
+      const nextPath = `/chat/${id}`
+      if (pathname !== nextPath) {
+        router.replace(nextPath)
+      }
     }
-  }, [initialChatId, isInProgress, id, messages.length, isDeprecated])
+  }, [id, isInProgress, messages.length, isDeprecated, pathname, router])
+
+  useEffect(() => {
+    if (isDeprecated || !id || isInProgress || messages.length === 0) {
+      return
+    }
+
+    if (messages.length <= lastSyncedMessageCount.current) {
+      return
+    }
+
+    lastSyncedMessageCount.current = messages.length
+    router.refresh()
+  }, [id, isDeprecated, isInProgress, messages.length, router])
 
   useEffect(() => {
     if (messages.length === 0 && initialMessages?.length > 0) {
@@ -86,6 +107,7 @@ export const Chat = ({
     if (previousAgentId.current && previousAgentId.current !== agent.id) {
       setMessages([])
       setChatId(undefined)
+      lastSyncedMessageCount.current = 0
     }
     previousAgentId.current = agent.id
   }, [agent.id, setMessages])
