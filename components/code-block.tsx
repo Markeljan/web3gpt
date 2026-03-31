@@ -8,6 +8,7 @@ import { coldarkCold, coldarkDark } from "react-syntax-highlighter/dist/cjs/styl
 import { DeployContractButton } from "@/components/deploy-contract-button"
 import { IconCheck, IconCopy, IconDownload } from "@/components/icons"
 import { Button } from "@/components/ui/button"
+import { normalizeCodeLanguage } from "@/lib/code-language"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import { useIsClient } from "@/lib/hooks/use-is-client"
 
@@ -48,6 +49,8 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
   const isClient = useIsClient()
   const { resolvedTheme } = useTheme()
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
+  const normalizedLanguage = normalizeCodeLanguage(language, value)
+  const languageLabel = normalizedLanguage || language || "code"
 
   const isDarkMode = isClient ? resolvedTheme === "dark" : true
 
@@ -66,21 +69,21 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
           background: "transparent",
           padding: "1.5rem 1rem",
         }}
-        language={language}
+        language={normalizedLanguage || undefined}
         PreTag="div"
         style={isDarkMode ? coldarkDark : coldarkCold}
       >
         {value}
       </SyntaxHighlighter>
     ),
-    [value, language, isDarkMode]
+    [value, normalizedLanguage, isDarkMode]
   )
 
   const downloadAsFile = useCallback(() => {
     if (typeof window === "undefined") {
       return
     }
-    const fileExtension = PROGRAMMING_LANGUAGES[language] || ".file"
+    const fileExtension = PROGRAMMING_LANGUAGES[normalizedLanguage] || ".file"
     const suggestedFileName = `web3gpt-${generateId()}${fileExtension}`
     // biome-ignore lint/suspicious/noAlert: intentional use of prompt for simple filename input
     const fileName = window.prompt("Enter file name", suggestedFileName)
@@ -99,19 +102,19 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-  }, [value, language])
+  }, [value, normalizedLanguage])
 
   const renderDeployButton = useCallback(() => {
-    if (language === "solidity") {
+    if (normalizedLanguage === "solidity") {
       return <DeployContractButton sourceCode={value} />
     }
     return null
-  }, [language, value])
+  }, [normalizedLanguage, value])
 
   return (
     <div className="relative w-full bg-muted/95 font-sans dark:bg-muted/50">
       <div className="flex w-full items-center justify-between border-b bg-secondary-foreground/40 px-6 py-3 pr-4 dark:bg-secondary-foreground/10">
-        <span className="text-xs lowercase dark:text-secondary-foreground">{language}</span>
+        <span className="text-xs lowercase dark:text-secondary-foreground">{languageLabel}</span>
         <div className="flex items-center space-x-1">
           {renderDeployButton()}
           <Button
