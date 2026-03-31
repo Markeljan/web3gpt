@@ -1,6 +1,6 @@
 import "server-only"
 import { kv } from "@vercel/kv"
-import { revalidateTag } from "next/cache"
+import { unstable_cache as cache, revalidateTag } from "next/cache"
 import { auth } from "@/auth"
 import type { Agent, DbChat, DbChatListItem, DeploymentRecord, SkillChat, VerifyContractParams } from "@/lib/types"
 
@@ -26,23 +26,31 @@ export async function storeUser(user: { id: string }) {
   await kv.sadd("users:list", user.id)
 }
 
-export async function getChatList(userId?: string) {
+const getChatListCached = cache(
+  async (userId: string) => {
+    const chats: string[] = await kv.zrange(`user:chat:${userId}`, 0, -1, { rev: true })
+    if (!chats.length) {
+      return []
+    }
+    const pipeline = kv.pipeline()
+
+    for (const chat of chats) {
+      pipeline.hmget<DbChatListItem>(chat, "id", "title", "published", "createdAt", "avatarUrl", "userId")
+    }
+    return await pipeline.exec<DbChatListItem[]>()
+  },
+  ["chat-list"],
+  { revalidate: 3600, tags: ["chat-list"] }
+)
+
+export async function getChatList(): Promise<DbChatListItem[]> {
+  const session = await auth()
+  const userId = session?.user?.id
   if (!userId) {
     return []
   }
 
-  const chats: string[] = await kv.zrange(`user:chat:${userId}`, 0, -1, { rev: true })
-  if (!chats.length) {
-    return []
-  }
-
-  const pipeline = kv.pipeline()
-
-  for (const chat of chats) {
-    pipeline.hmget<DbChatListItem>(chat, "id", "title", "published", "createdAt", "avatarUrl", "userId")
-  }
-
-  return await pipeline.exec<DbChatListItem[]>()
+  return getChatListCached(userId)
 }
 
 export const getChat = withUser<string, DbChat | null>(async (id) => await kv.hgetall<DbChat>(`chat:${id}`))
