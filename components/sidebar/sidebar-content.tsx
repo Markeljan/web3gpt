@@ -9,9 +9,9 @@ import { Separator } from "@/components/ui/separator"
 import { getChatList } from "@/lib/data/kv"
 
 export async function SidebarContent() {
-  const chatList = await getChatList()
   const session = await auth()
   const user = session?.user
+  const chatList = await getChatList(user?.id)
 
   return (
     <div className="flex h-full flex-col">
