@@ -211,16 +211,19 @@ export function ChatMessage({
     code({ className, children, node: _node, ...props }) {
       const childArray = Array.isArray(children) ? children : [children]
       const code = childArray.map((child) => (typeof child === "string" ? child : "")).join("")
+      const inlineFromProps = "inline" in props && Boolean((props as { inline?: boolean }).inline)
+      const hasLanguageClass = Boolean(LANGUAGE_REGEX.exec(className || "") || className?.includes("language-"))
+      const hasBlockShape = code.includes("\n")
+      const isInline = inlineFromProps || !(hasLanguageClass || hasBlockShape)
 
       if (code === "▍") {
         return <span className="mt-1 animate-pulse cursor-default">▍</span>
       }
 
       const match = LANGUAGE_REGEX.exec(className || "")
-      const normalizedLanguage = normalizeCodeLanguage(match?.[1], code)
-      const isInline =
-        ("inline" in props && Boolean((props as { inline?: boolean }).inline)) ||
-        !(match || className?.includes("language-") || code.includes("\n") || normalizedLanguage)
+      const normalizedLanguage = normalizeCodeLanguage(match?.[1], code, {
+        inferFromContent: !isInline,
+      })
 
       if (isInline) {
         return (

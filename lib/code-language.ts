@@ -12,14 +12,23 @@ const LANGUAGE_ALIASES: Record<string, string> = {
 const SOLIDITY_CODE_REGEX =
   /(?:pragma\s+solidity\b|SPDX-License-Identifier:|(?:contract|interface|library|abstract\s+contract)\s+[A-Za-z_]\w*|import\s+["']@openzeppelin\/)/m
 
-export const normalizeCodeLanguage = (language?: string | null, value?: string) => {
+export type NormalizeCodeLanguageOptions = {
+  inferFromContent?: boolean
+}
+
+export const normalizeCodeLanguage = (
+  language?: string | null,
+  value?: string,
+  options: NormalizeCodeLanguageOptions = {}
+) => {
+  const { inferFromContent = true } = options
   const normalizedLanguage = language?.trim().toLowerCase()
 
   if (normalizedLanguage) {
     return LANGUAGE_ALIASES[normalizedLanguage] ?? normalizedLanguage
   }
 
-  if (value && SOLIDITY_CODE_REGEX.test(value)) {
+  if (inferFromContent && value && SOLIDITY_CODE_REGEX.test(value)) {
     return "solidity"
   }
 
