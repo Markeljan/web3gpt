@@ -27,7 +27,7 @@ export const ChatList = ({ messages, avatarUrl, isLoading, isStreaming = false }
               avatarUrl={avatarUrl}
               isLastMessage={isLastMessage}
               isLoading={isLoading}
-              isStreaming={isStreaming}
+              isStreaming={isStreaming && isLastMessage}
               message={message}
             />
             {index < messages.length - 1 && <Separator className="my-4 md:my-8 md:-translate-x-[5%]" />}

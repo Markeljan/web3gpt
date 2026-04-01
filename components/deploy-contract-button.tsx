@@ -23,7 +23,7 @@ import { useWalletDeploy } from "@/lib/hooks/use-wallet-deploy"
 const CONTRACT_NAME_REGEX = /contract\s+(\w+)\s*(?:is|{)/
 const CONSTRUCTOR_ARGS_REGEX = /constructor\(([^)]+)\)/
 
-export const DeployContractButton = ({ sourceCode }: { sourceCode: string }) => {
+export const DeployContractButton = ({ sourceCode, disabled = false }: { disabled?: boolean; sourceCode: string }) => {
   const { deploy: deployWithWallet } = useWalletDeploy()
   const [explorerUrl, setExplorerUrl] = useState<string>("")
   const [ipfsUrl, setIpfsUrl] = useState<string>("")
@@ -136,7 +136,7 @@ export const DeployContractButton = ({ sourceCode }: { sourceCode: string }) => 
         <DialogTrigger asChild>
           <Button
             className="mr-2 bg-primary/80 text-primary-foreground hover:bg-primary"
-            disabled={!isSupportedChain}
+            disabled={disabled || !isSupportedChain}
             onClick={() => {
               setIsDialogOpen(true)
             }}

@@ -26,6 +26,7 @@ type ChatProps = {
 }
 
 const SCROLL_TO_BOTTOM_DELAY = 500
+const CHAT_STREAM_THROTTLE_MS = 100
 
 export const Chat = ({
   initialChatId,
@@ -48,6 +49,7 @@ export const Chat = ({
   const currentChatId = useMemo(() => chatId || generateId(), [chatId])
 
   const { messages, status, stop, sendMessage, setMessages, id } = useChat({
+    experimental_throttle: CHAT_STREAM_THROTTLE_MS,
     id: currentChatId,
     transport: isDeprecated
       ? undefined

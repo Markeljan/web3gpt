@@ -2,7 +2,7 @@
 
 import { generateId } from "ai"
 import { useTheme } from "next-themes"
-import { memo, useCallback, useMemo } from "react"
+import { memo, startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { coldarkCold, coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism"
 import { DeployContractButton } from "@/components/deploy-contract-button"
@@ -40,19 +40,65 @@ const PROGRAMMING_LANGUAGES: Record<string, string> = {
   clarity: ".clar",
 }
 
+const HIGHLIGHT_UPDATE_INTERVAL_MS = 150
+
 type CodeBlockProps = {
   language: string
+  isStreaming?: boolean
   value: string
 }
 
-export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
+export const CodeBlock = memo(({ language, isStreaming = false, value }: CodeBlockProps) => {
   const isClient = useIsClient()
   const { resolvedTheme } = useTheme()
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
+  const [highlightedValue, setHighlightedValue] = useState(value)
+  const lastHighlightAtRef = useRef(0)
+  const latestValueRef = useRef(value)
+  const pendingHighlightRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const normalizedLanguage = normalizeCodeLanguage(language, value)
   const languageLabel = normalizedLanguage || language || "code"
 
   const isDarkMode = isClient ? resolvedTheme === "dark" : true
+
+  useEffect(() => {
+    latestValueRef.current = value
+
+    const commitHighlight = () => {
+      pendingHighlightRef.current = null
+      lastHighlightAtRef.current = Date.now()
+      startTransition(() => {
+        setHighlightedValue(latestValueRef.current)
+      })
+    }
+
+    if (!isStreaming) {
+      if (pendingHighlightRef.current) {
+        clearTimeout(pendingHighlightRef.current)
+        pendingHighlightRef.current = null
+      }
+      commitHighlight()
+      return
+    }
+
+    const elapsed = Date.now() - lastHighlightAtRef.current
+    if (elapsed >= HIGHLIGHT_UPDATE_INTERVAL_MS) {
+      commitHighlight()
+      return
+    }
+
+    if (!pendingHighlightRef.current) {
+      pendingHighlightRef.current = setTimeout(commitHighlight, HIGHLIGHT_UPDATE_INTERVAL_MS - elapsed)
+    }
+  }, [isStreaming, value])
+
+  useEffect(() => {
+    return () => {
+      if (pendingHighlightRef.current) {
+        clearTimeout(pendingHighlightRef.current)
+      }
+    }
+  }, [])
 
   const memoizedHighlighter = useMemo(
     () => (
@@ -73,10 +119,10 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
         PreTag="div"
         style={isDarkMode ? coldarkDark : coldarkCold}
       >
-        {value}
+        {highlightedValue}
       </SyntaxHighlighter>
     ),
-    [value, normalizedLanguage, isDarkMode]
+    [highlightedValue, isDarkMode, normalizedLanguage]
   )
 
   const downloadAsFile = useCallback(() => {
@@ -106,10 +152,10 @@ export const CodeBlock = memo(({ language, value }: CodeBlockProps) => {
 
   const renderDeployButton = useCallback(() => {
     if (normalizedLanguage === "solidity") {
-      return <DeployContractButton sourceCode={value} />
+      return <DeployContractButton disabled={isStreaming} sourceCode={value} />
     }
     return null
-  }, [normalizedLanguage, value])
+  }, [isStreaming, normalizedLanguage, value])
 
   return (
     <div className="relative w-full bg-muted/95 font-sans dark:bg-muted/50">

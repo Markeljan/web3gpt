@@ -1,6 +1,6 @@
 import type { UIMessage } from "ai"
 import Image from "next/image"
-import { Fragment, type ReactNode } from "react"
+import { Fragment, memo, type ReactNode } from "react"
 import type { Components } from "react-markdown"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
@@ -120,7 +120,7 @@ function getMessageParts(message: UIMessage | LegacyMessage): MessageParts {
   return []
 }
 
-export function ChatMessage({
+function ChatMessageComponent({
   message,
   avatarUrl,
   isLoading,
@@ -169,7 +169,14 @@ export function ChatMessage({
         )
       }
 
-      return <CodeBlock key={message.id} language={normalizedLanguage} value={code.replace(NEWLINE_REGEX, "")} />
+      return (
+        <CodeBlock
+          isStreaming={isStreaming && isLastMessage}
+          key={message.id}
+          language={normalizedLanguage}
+          value={code.replace(NEWLINE_REGEX, "")}
+        />
+      )
     },
   }
 
@@ -373,3 +380,5 @@ export function ChatMessage({
     </div>
   )
 }
+
+export const ChatMessage = memo(ChatMessageComponent)
