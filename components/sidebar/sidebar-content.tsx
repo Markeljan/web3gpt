@@ -11,7 +11,7 @@ import { getChatList } from "@/lib/data/kv"
 export async function SidebarContent() {
   const session = await auth()
   const user = session?.user
-  const chatList = await getChatList()
+  const chatList = await getChatList(user?.id)
 
   return (
     <div className="flex h-full flex-col">

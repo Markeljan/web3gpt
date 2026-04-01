@@ -43,14 +43,13 @@ const getChatListCached = cache(
   { revalidate: 3600, tags: ["chat-list"] }
 )
 
-export async function getChatList(): Promise<DbChatListItem[]> {
-  const session = await auth()
-  const userId = session?.user?.id
-  if (!userId) {
+export async function getChatList(userId?: string): Promise<DbChatListItem[]> {
+  const resolvedUserId = userId ?? (await auth())?.user?.id
+  if (!resolvedUserId) {
     return []
   }
 
-  return getChatListCached(userId)
+  return getChatListCached(resolvedUserId)
 }
 
 export const getChat = withUser<string, DbChat | null>(async (id) => await kv.hgetall<DbChat>(`chat:${id}`))

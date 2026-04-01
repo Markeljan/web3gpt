@@ -8,6 +8,7 @@ import { ChatMessageActions } from "@/components/chat/chat-message-actions"
 import { CodeBlock } from "@/components/code-block"
 import { IconUser, IconWeb3GPT } from "@/components/icons"
 import { MemoizedReactMarkdown } from "@/components/markdown"
+import { normalizeCodeLanguage } from "@/lib/code-language"
 import type { LegacyMessage } from "@/lib/types"
 
 export type ChatMessageProps = {
@@ -21,7 +22,7 @@ export type ChatMessageProps = {
 type MessageParts = UIMessage["parts"]
 type MessagePart = MessageParts[number]
 
-const LANGUAGE_REGEX = /language-(\w+)/
+const LANGUAGE_REGEX = /language-([a-z0-9#+-]+)/i
 const NEWLINE_REGEX = /\n$/
 
 // Helper to check if a part is a tool invocation (starts with "tool-" or is "dynamic-tool")
@@ -104,10 +105,101 @@ export function ChatMessage({
 }: ChatMessageProps) {
   // Extract parts from message - handle both v4 (content) and v5 (parts) formats
   const messageParts = getMessageParts(message)
+  const reasoningSessions: Array<{ key: string; text: string; isStreaming: boolean }> = []
+  const renderItems: Array<
+    | { type: "text"; key: string; text: string }
+    | { type: "tool"; key: string; part: MessagePart }
+    | { type: "source-url"; key: string; part: MessagePart }
+  > = []
+
+  let textBuffer = ""
+  let textStartIndex: number | null = null
+
+  const flushTextBuffer = () => {
+    if (!textBuffer) {
+      return
+    }
+
+    renderItems.push({
+      type: "text",
+      key: `${message.id}-text-${textStartIndex ?? renderItems.length}`,
+      text: textBuffer,
+    })
+    textBuffer = ""
+    textStartIndex = null
+  }
+
+  for (const [index, part] of messageParts.entries()) {
+    const isLastPart = index === messageParts.length - 1
+    const partState = "state" in part ? part.state : undefined
+    const isPartStreaming = partState === "streaming" || (isStreaming && isLastMessage && isLastPart && !partState)
+
+    if (part.type === "reasoning") {
+      reasoningSessions.push({
+        key: `${message.id}-reasoning-session-${index}`,
+        text: part.text || "",
+        isStreaming: isPartStreaming,
+      })
+      continue
+    }
+
+    if (part.type === "step-start") {
+      continue
+    }
+
+    if (part.type === "text") {
+      textStartIndex ??= index
+      textBuffer += part.text || ""
+      continue
+    }
+
+    flushTextBuffer()
+
+    if (isToolPart(part)) {
+      renderItems.push({
+        type: "tool",
+        key: `${message.id}-tool-${index}`,
+        part,
+      })
+      continue
+    }
+
+    if (part.type === "source-url") {
+      renderItems.push({
+        type: "source-url",
+        key: `${message.id}-source-${index}`,
+        part,
+      })
+    }
+  }
+
+  flushTextBuffer()
+
+  const groupedReasoningText = reasoningSessions
+    .map((session, index) => {
+      const text = session.text.trim()
+      if (!text) {
+        return null
+      }
+
+      if (reasoningSessions.length === 1) {
+        return text
+      }
+
+      return `#### Thinking session ${index + 1}\n\n${text}`
+    })
+    .filter(Boolean)
+    .join("\n\n---\n\n")
+
+  const hasReasoning = reasoningSessions.length > 0
+  const isReasoningStreaming = reasoningSessions.some((session) => session.isStreaming)
 
   const components: Components = {
     p({ children }) {
       return <p className="mb-2 last:mb-0">{children}</p>
+    },
+    pre({ children }) {
+      return <>{children}</>
     },
     a({ href, children }) {
       return (
@@ -116,16 +208,22 @@ export function ChatMessage({
         </a>
       )
     },
-    code({ className, children, ...props }) {
+    code({ className, children, node: _node, ...props }) {
       const childArray = Array.isArray(children) ? children : [children]
+      const code = childArray.map((child) => (typeof child === "string" ? child : "")).join("")
+      const inlineFromProps = "inline" in props && Boolean((props as { inline?: boolean }).inline)
+      const hasLanguageClass = Boolean(LANGUAGE_REGEX.exec(className || "") || className?.includes("language-"))
+      const hasBlockShape = code.includes("\n")
+      const isInline = inlineFromProps || !(hasLanguageClass || hasBlockShape)
 
-      if (typeof childArray?.[0] === "string" && childArray[0] === "▍") {
+      if (code === "▍") {
         return <span className="mt-1 animate-pulse cursor-default">▍</span>
       }
 
-      // Check if this is an inline code block (no language class and short content)
       const match = LANGUAGE_REGEX.exec(className || "")
-      const isInline = !(match || className?.includes("language-"))
+      const normalizedLanguage = normalizeCodeLanguage(match?.[1], code, {
+        inferFromContent: !isInline,
+      })
 
       if (isInline) {
         return (
@@ -135,9 +233,7 @@ export function ChatMessage({
         )
       }
 
-      return (
-        <CodeBlock key={message.id} language={match?.[1] || ""} value={String(children).replace(NEWLINE_REGEX, "")} />
-      )
+      return <CodeBlock key={message.id} language={normalizedLanguage} value={code.replace(NEWLINE_REGEX, "")} />
     },
   }
 
@@ -152,63 +248,38 @@ export function ChatMessage({
   }
 
   const renderMessageParts = () => {
-    return messageParts.map((part, index) => {
-      const isLastPart = index === messageParts.length - 1
-      // Use the part's state property if available, otherwise fall back to message-level streaming check
-      const partState = "state" in part ? part.state : undefined
-      const isPartStreaming = partState === "streaming" || (isStreaming && isLastMessage && isLastPart && !partState)
-
-      // Handle reasoning parts
-      if (part.type === "reasoning") {
-        return (
-          <Reasoning isStreaming={isPartStreaming} key={`${message.id}-reasoning-${index}`}>
-            <ReasoningTrigger />
-            <ReasoningContent>{part.text || ""}</ReasoningContent>
-          </Reasoning>
-        )
-      }
-
-      // Handle text parts
-      if (part.type === "text") {
+    return renderItems.map((item) => {
+      if (item.type === "text") {
         return (
           <MemoizedReactMarkdown
             className="prose dark:prose-invert flex max-w-full flex-col break-words prose-pre:p-0 prose-p:leading-relaxed"
             components={components}
-            key={`${message.id}-text-${index}`}
+            key={item.key}
             remarkPlugins={[remarkGfm, remarkMath]}
           >
-            {part.text || ""}
+            {item.text}
           </MemoizedReactMarkdown>
         )
       }
 
-      // Handle tool invocation parts (tool-* and dynamic-tool)
-      if (isToolPart(part)) {
-        return <ToolInvocationPart key={`${message.id}-tool-${index}`} part={part} />
+      if (item.type === "tool") {
+        return <ToolInvocationPart key={item.key} part={item.part} />
       }
 
-      // Handle source URL parts
-      if (part.type === "source-url") {
+      if (item.type === "source-url" && item.part.type === "source-url") {
         return (
           <a
             className="my-1 inline-flex items-center gap-1 text-blue-500 text-xs hover:underline"
-            href={part.url}
-            key={`${message.id}-source-${index}`}
+            href={item.part.url}
+            key={item.key}
             rel="noopener noreferrer"
             target="_blank"
           >
-            [{part.sourceId}] {part.title || part.url}
+            [{item.part.sourceId}] {item.part.title || item.part.url}
           </a>
         )
       }
 
-      // DISABLED: Handle step-start parts (visual separator for multi-step responses)
-      if (part.type === "step-start") {
-        // return <div className="my-2 border-muted border-t border-dashed" key={`${message.id}-step-${index}`} />
-        return null
-      }
-
-      // Ignore other part types (file, source-document, data-*, etc.)
       return null
     })
   }
@@ -219,6 +290,12 @@ export function ChatMessage({
         {renderAvatar()}
       </div>
       <div className="ml-1 flex-1 space-y-2 overflow-x-auto md:ml-4">
+        {hasReasoning ? (
+          <Reasoning isStreaming={isReasoningStreaming} key={`${message.id}-reasoning`}>
+            <ReasoningTrigger />
+            <ReasoningContent>{groupedReasoningText}</ReasoningContent>
+          </Reasoning>
+        ) : null}
         {renderMessageParts()}
         {isLoading ? null : <ChatMessageActions message={message} />}
       </div>
