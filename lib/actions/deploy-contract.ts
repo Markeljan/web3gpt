@@ -1,9 +1,8 @@
 "use server"
-import solc, { type SolcInput, type SolcOutput } from "solc"
+import type { SolcOutput } from "solc"
 import type { Abi } from "viem"
 import { ipfsUploadDir, ipfsUploadFile } from "@/lib/data/ipfs"
-import { getContractFileName, prepareContractSources } from "@/lib/solidity/utils"
-import { ensureHashPrefix } from "@/lib/utils"
+import { compileContractSource } from "@/lib/solidity/compile"
 
 export async function compileContract({
   contractName,
@@ -14,44 +13,11 @@ export async function compileContract({
   sourceCode: string
   sources?: Record<string, string>
 }) {
-  const sources = await prepareContractSources(contractName, sourceCode, additionalSources)
-  const standardJsonInputString = JSON.stringify({
-    language: "Solidity",
-    sources,
-    settings: {
-      outputSelection: {
-        "*": {
-          "*": ["*"],
-        },
-      },
-      optimizer: {
-        enabled: true,
-        runs: 200,
-      },
-    },
-  } satisfies SolcInput)
-
-  const fileName = getContractFileName(contractName)
-
-  const compileOutput: SolcOutput = JSON.parse(solc.compile(standardJsonInputString))
-
-  if (compileOutput.errors) {
-    const errors = compileOutput.errors.filter((error) => error.severity === "error")
-    if (errors.length > 0) {
-      throw new Error(errors[0].formattedMessage)
-    }
-  }
-
-  const contract = compileOutput.contracts[fileName][contractName]
-  const abi = contract.abi
-  const bytecode = ensureHashPrefix(contract.evm.bytecode.object)
-
-  return {
-    abi,
-    bytecode,
-    standardJsonInput: standardJsonInputString,
-    sources,
-  }
+  return await compileContractSource({
+    contractName,
+    sourceCode,
+    sources: additionalSources,
+  })
 }
 
 export async function ipfsUploadFileAction(fileName: string, fileContent: string): Promise<string | null> {

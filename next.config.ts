@@ -25,10 +25,6 @@ const config: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/skills.md",
-        destination: "/skill.md",
-      },
-      {
         source: "/api-docs",
         destination: "/api/api-docs",
       },

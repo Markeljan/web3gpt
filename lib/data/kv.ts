@@ -2,9 +2,18 @@ import "server-only"
 import { kv } from "@vercel/kv"
 import { unstable_cache as cache, revalidateTag } from "next/cache"
 import { auth } from "@/auth"
-import type { Agent, DbChat, DbChatListItem, DeploymentRecord, SkillChat, VerifyContractParams } from "@/lib/types"
+import type {
+  Agent,
+  DbChat,
+  DbChatListItem,
+  DeploymentRecord,
+  SkillChat,
+  VerifyContractParams,
+  WalletDeployArtifact,
+} from "@/lib/types"
 
 type ActionWithUser<T, R> = (data: T, userId: string) => Promise<R>
+const WALLET_DEPLOY_ARTIFACT_TTL_SECONDS = 60 * 60
 
 export const withUser =
   <T, R>(action: ActionWithUser<T, R>) =>
@@ -136,8 +145,43 @@ export const deleteVerification = async (deployHash: string) => {
   await kv.del(`verification:${deployHash}`)
 }
 
+export const storeVerification = async (data: VerifyContractParams) => {
+  await kv.hmset(`verification:${data.deployHash}`, {
+    ...data,
+    queuedAt: data.queuedAt || Date.now(),
+    verificationAttempts: data.verificationAttempts || 0,
+    verificationStatus: data.verificationStatus || "queued",
+    verificationGuid: data.verificationGuid || "",
+    lastVerificationError: data.lastVerificationError || "",
+  })
+}
+
 export const updateVerification = async (deployHash: string, data: Partial<VerifyContractParams>) => {
   await kv.hmset(`verification:${deployHash}`, data)
+}
+
+export const storeDeployment = async (data: DeploymentRecord, userId = "anon") => {
+  await Promise.all([
+    kv.hmset(`deployment:${data.cid}`, data),
+    kv.zadd(`user:deployments:${userId}`, {
+      score: Date.now(),
+      member: `deployment:${data.cid}`,
+    }),
+  ])
+}
+
+export const storeWalletDeployArtifact = async (artifactId: string, artifact: WalletDeployArtifact) => {
+  await kv.set(`wallet-deploy:${artifactId}`, artifact, {
+    ex: WALLET_DEPLOY_ARTIFACT_TTL_SECONDS,
+  })
+}
+
+export const getWalletDeployArtifact = async (artifactId: string) => {
+  return await kv.get<WalletDeployArtifact>(`wallet-deploy:${artifactId}`)
+}
+
+export const deleteWalletDeployArtifact = async (artifactId: string) => {
+  await kv.del(`wallet-deploy:${artifactId}`)
 }
 
 export const storeAgent = withUser<Agent, void>(async (agent, userId) => {

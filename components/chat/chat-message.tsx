@@ -1,9 +1,15 @@
 import type { UIMessage } from "ai"
 import Image from "next/image"
+import { Fragment, type ReactNode } from "react"
 import type { Components } from "react-markdown"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
-import { Reasoning, ReasoningContent, ReasoningTrigger } from "@/components/ai-elements/reasoning"
+import {
+  ChainOfThought,
+  ChainOfThoughtContent,
+  ChainOfThoughtHeader,
+  ChainOfThoughtStep,
+} from "@/components/ai-elements/chain-of-thought"
 import { ChatMessageActions } from "@/components/chat/chat-message-actions"
 import { CodeBlock } from "@/components/code-block"
 import { IconUser, IconWeb3GPT } from "@/components/icons"
@@ -21,9 +27,27 @@ export type ChatMessageProps = {
 
 type MessageParts = UIMessage["parts"]
 type MessagePart = MessageParts[number]
+type ReasoningPart = Extract<MessagePart, { type: "reasoning" }>
 
 const LANGUAGE_REGEX = /language-([a-z0-9#+-]+)/i
 const NEWLINE_REGEX = /\n$/
+const REASONING_SPLIT_REGEX = /\n{2,}/
+const REASONING_HEADING_REGEX = /^#{1,6}\s*/
+
+function splitReasoningText(text: string): { title: string; details: string } {
+  const normalized = text.trim()
+
+  if (!normalized) {
+    return { title: "Thinking", details: "" }
+  }
+
+  const [headline, ...rest] = normalized.split(REASONING_SPLIT_REGEX)
+
+  return {
+    title: headline.replace(REASONING_HEADING_REGEX, "").trim() || "Thinking",
+    details: rest.join("\n\n").trim(),
+  }
+}
 
 // Helper to check if a part is a tool invocation (starts with "tool-" or is "dynamic-tool")
 function isToolPart(part: MessagePart): boolean {
@@ -105,94 +129,6 @@ export function ChatMessage({
 }: ChatMessageProps) {
   // Extract parts from message - handle both v4 (content) and v5 (parts) formats
   const messageParts = getMessageParts(message)
-  const reasoningSessions: Array<{ key: string; text: string; isStreaming: boolean }> = []
-  const renderItems: Array<
-    | { type: "text"; key: string; text: string }
-    | { type: "tool"; key: string; part: MessagePart }
-    | { type: "source-url"; key: string; part: MessagePart }
-  > = []
-
-  let textBuffer = ""
-  let textStartIndex: number | null = null
-
-  const flushTextBuffer = () => {
-    if (!textBuffer) {
-      return
-    }
-
-    renderItems.push({
-      type: "text",
-      key: `${message.id}-text-${textStartIndex ?? renderItems.length}`,
-      text: textBuffer,
-    })
-    textBuffer = ""
-    textStartIndex = null
-  }
-
-  for (const [index, part] of messageParts.entries()) {
-    const isLastPart = index === messageParts.length - 1
-    const partState = "state" in part ? part.state : undefined
-    const isPartStreaming = partState === "streaming" || (isStreaming && isLastMessage && isLastPart && !partState)
-
-    if (part.type === "reasoning") {
-      reasoningSessions.push({
-        key: `${message.id}-reasoning-session-${index}`,
-        text: part.text || "",
-        isStreaming: isPartStreaming,
-      })
-      continue
-    }
-
-    if (part.type === "step-start") {
-      continue
-    }
-
-    if (part.type === "text") {
-      textStartIndex ??= index
-      textBuffer += part.text || ""
-      continue
-    }
-
-    flushTextBuffer()
-
-    if (isToolPart(part)) {
-      renderItems.push({
-        type: "tool",
-        key: `${message.id}-tool-${index}`,
-        part,
-      })
-      continue
-    }
-
-    if (part.type === "source-url") {
-      renderItems.push({
-        type: "source-url",
-        key: `${message.id}-source-${index}`,
-        part,
-      })
-    }
-  }
-
-  flushTextBuffer()
-
-  const groupedReasoningText = reasoningSessions
-    .map((session, index) => {
-      const text = session.text.trim()
-      if (!text) {
-        return null
-      }
-
-      if (reasoningSessions.length === 1) {
-        return text
-      }
-
-      return `#### Thinking session ${index + 1}\n\n${text}`
-    })
-    .filter(Boolean)
-    .join("\n\n---\n\n")
-
-  const hasReasoning = reasoningSessions.length > 0
-  const isReasoningStreaming = reasoningSessions.some((session) => session.isStreaming)
 
   const components: Components = {
     p({ children }) {
@@ -247,31 +183,172 @@ export function ChatMessage({
     return <IconWeb3GPT />
   }
 
+  const getIsPartStreaming = (part: MessagePart, index: number) => {
+    const isLastPart = index === messageParts.length - 1
+    const partState = "state" in part ? part.state : undefined
+
+    return partState === "streaming" || (isStreaming && isLastMessage && isLastPart && !partState)
+  }
+
+  const reasoningEntries = messageParts.reduce<Array<{ index: number; part: ReasoningPart; isStreaming: boolean }>>(
+    (entries, part, index) => {
+      if (part.type === "reasoning") {
+        entries.push({
+          index,
+          part: part as ReasoningPart,
+          isStreaming: getIsPartStreaming(part, index),
+        })
+      }
+
+      return entries
+    },
+    []
+  )
+
+  const firstReasoningIndex = reasoningEntries[0]?.index ?? -1
+
+  const renderItems: Array<
+    | { key: string; type: "reasoning" }
+    | { key: string; text: string; type: "text" }
+    | { key: string; part: MessagePart; type: "tool" }
+    | { key: string; part: MessagePart; type: "source-url" }
+  > = []
+  let textBuffer = ""
+  let textStartIndex: number | null = null
+
+  const flushTextBuffer = () => {
+    if (!textBuffer) {
+      return
+    }
+
+    renderItems.push({
+      key: `${message.id}-text-${textStartIndex ?? renderItems.length}`,
+      text: textBuffer,
+      type: "text",
+    })
+    textBuffer = ""
+    textStartIndex = null
+  }
+
+  for (const [index, part] of messageParts.entries()) {
+    if (part.type === "reasoning") {
+      if (index === firstReasoningIndex) {
+        flushTextBuffer()
+        renderItems.push({
+          key: `${message.id}-reasoning-group`,
+          type: "reasoning",
+        })
+      }
+      continue
+    }
+
+    if (part.type === "step-start") {
+      continue
+    }
+
+    if (part.type === "text") {
+      textStartIndex ??= index
+      textBuffer += part.text || ""
+      continue
+    }
+
+    flushTextBuffer()
+
+    if (isToolPart(part)) {
+      renderItems.push({
+        key: `${message.id}-tool-${index}`,
+        part,
+        type: "tool",
+      })
+      continue
+    }
+
+    if (part.type === "source-url") {
+      renderItems.push({
+        key: `${message.id}-source-${index}`,
+        part,
+        type: "source-url",
+      })
+    }
+  }
+
+  flushTextBuffer()
+
+  const renderReasoningGroup = () => {
+    if (!reasoningEntries.length) {
+      return null
+    }
+
+    const isReasoningStreaming = reasoningEntries.some((entry) => entry.isStreaming)
+
+    return (
+      <ChainOfThought
+        className="mb-3 rounded-xl border border-border/60 bg-muted/20 px-3 py-3 pb-4"
+        defaultOpen={false}
+        key={`${message.id}-reasoning-group`}
+      >
+        <ChainOfThoughtHeader>
+          {isReasoningStreaming ? "Thinking..." : "Thought for a few seconds"}
+        </ChainOfThoughtHeader>
+        <ChainOfThoughtContent className="mt-4">
+          {reasoningEntries.map(({ index, part, isStreaming: isEntryStreaming }) => {
+            const { title, details } = splitReasoningText(part.text || "")
+
+            return (
+              <ChainOfThoughtStep
+                className="gap-3 last:[&_[data-chain-line]]:hidden"
+                key={`${message.id}-reasoning-step-${index}`}
+                label={
+                  <MemoizedReactMarkdown
+                    className="prose prose-sm dark:prose-invert prose-headings:my-0 prose-p:my-0 prose-pre:my-2 max-w-full break-words prose-pre:p-0"
+                    components={components}
+                    remarkPlugins={[remarkGfm, remarkMath]}
+                  >
+                    {title}
+                  </MemoizedReactMarkdown>
+                }
+                status={isEntryStreaming ? "active" : "complete"}
+              >
+                {details ? (
+                  <MemoizedReactMarkdown
+                    className="prose prose-sm dark:prose-invert prose-headings:my-0 prose-ol:my-2 prose-p:my-0 prose-pre:my-2 prose-ul:my-2 max-w-full break-words prose-pre:p-0 text-muted-foreground"
+                    components={components}
+                    remarkPlugins={[remarkGfm, remarkMath]}
+                  >
+                    {details}
+                  </MemoizedReactMarkdown>
+                ) : null}
+              </ChainOfThoughtStep>
+            )
+          })}
+        </ChainOfThoughtContent>
+      </ChainOfThought>
+    )
+  }
+
   const renderMessageParts = () => {
     return renderItems.map((item) => {
-      if (item.type === "text") {
-        return (
+      let content: ReactNode = null
+
+      if (item.type === "reasoning") {
+        content = renderReasoningGroup()
+      } else if (item.type === "text") {
+        content = (
           <MemoizedReactMarkdown
             className="prose dark:prose-invert flex max-w-full flex-col break-words prose-pre:p-0 prose-p:leading-relaxed"
             components={components}
-            key={item.key}
             remarkPlugins={[remarkGfm, remarkMath]}
           >
             {item.text}
           </MemoizedReactMarkdown>
         )
-      }
-
-      if (item.type === "tool") {
-        return <ToolInvocationPart key={item.key} part={item.part} />
-      }
-
-      if (item.type === "source-url" && item.part.type === "source-url") {
-        return (
+      } else if (item.type === "tool") {
+        content = <ToolInvocationPart part={item.part} />
+      } else if (item.type === "source-url" && item.part.type === "source-url") {
+        content = (
           <a
             className="my-1 inline-flex items-center gap-1 text-blue-500 text-xs hover:underline"
             href={item.part.url}
-            key={item.key}
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -280,7 +357,7 @@ export function ChatMessage({
         )
       }
 
-      return null
+      return <Fragment key={item.key}>{content}</Fragment>
     })
   }
 
@@ -290,12 +367,6 @@ export function ChatMessage({
         {renderAvatar()}
       </div>
       <div className="ml-1 flex-1 space-y-2 overflow-x-auto md:ml-4">
-        {hasReasoning ? (
-          <Reasoning isStreaming={isReasoningStreaming} key={`${message.id}-reasoning`}>
-            <ReasoningTrigger />
-            <ReasoningContent>{groupedReasoningText}</ReasoningContent>
-          </Reasoning>
-        ) : null}
         {renderMessageParts()}
         {isLoading ? null : <ChatMessageActions message={message} />}
       </div>

@@ -1,14 +1,10 @@
-import { track } from "@vercel/analytics"
 import { useCallback } from "react"
 import { toast } from "sonner"
-import { encodeDeployData, getCreateAddress, publicActions } from "viem"
+import { type Abi, encodeDeployData, getCreateAddress, type Hash, publicActions } from "viem"
 import { useAccount, useWalletClient } from "wagmi"
 import { useGlobalStore } from "@/app/state/global-store"
-import { compileContract, ipfsUploadDirAction } from "@/lib/actions/deploy-contract"
-import { storeDeploymentAction, storeVerificationAction } from "@/lib/actions/verification"
-import { getContractFileName } from "@/lib/solidity/utils"
 import type { LastDeploymentData, VerifyContractParams } from "@/lib/types"
-import { getExplorerUrl, getIpfsUrl } from "@/lib/utils"
+import { getExplorerUrl } from "@/lib/utils"
 
 export function useWalletDeploy() {
   const { chain: viemChain, address, chainId } = useAccount()
@@ -36,11 +32,39 @@ export function useWalletDeploy() {
       const deployLoadingToast = toast.loading("Deploying contract...")
 
       try {
-        const { abi, bytecode, standardJsonInput, sources } = await compileContract({
-          contractName,
-          sourceCode,
-          sources: imports,
+        const prepareResponse = await fetch("/api/wallet-deploy/prepare", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(
+            imports
+              ? {
+                  contractName,
+                  sourceCode,
+                  sources: imports,
+                }
+              : {
+                  contractName,
+                  sourceCode,
+                }
+          ),
         })
+        const prepareResult = (await prepareResponse.json()) as {
+          abi?: Abi
+          artifactId?: string
+          bytecode?: Hash
+          error?: string
+          standardJsonInput?: string
+        }
+
+        if (
+          !(prepareResponse.ok && prepareResult.artifactId && prepareResult.bytecode && prepareResult.standardJsonInput)
+        ) {
+          throw new Error(prepareResult.error || "Failed to compile contract")
+        }
+
+        const { abi = [], artifactId, bytecode, standardJsonInput } = prepareResult
 
         const parsedConstructorArgs = constructorArgs.map((arg) => {
           if (arg.startsWith("[") && arg.endsWith("]") && arg.match(/(?<=\[)(?=[^"'])(.*)(?<=[^"'])(?=\])/g)) {
@@ -82,64 +106,12 @@ export function useWalletDeploy() {
           return
         }
 
-        const ipfsLoadingToast = toast.loading("Uploading to IPFS...")
-        const cid = await ipfsUploadDirAction(sources, abi, bytecode, standardJsonInput)
-
-        if (!cid) {
-          toast.dismiss(ipfsLoadingToast)
-          toast.error("Failed to upload to IPFS")
-          return
-        }
-
-        toast.dismiss(ipfsLoadingToast)
-        if (cid) {
-          toast.success("Uploaded to IPFS successfully!")
-        } else {
-          toast.error("Failed to upload to IPFS")
-        }
-
-        const ipfsUrl = getIpfsUrl(cid)
-
         const encodedConstructorArgs = deployData.slice(bytecode.length)
-        const fileName = getContractFileName(contractName)
-
-        const verifyContractConfig: VerifyContractParams = {
-          deployHash,
-          contractAddress,
-          standardJsonInput,
-          encodedConstructorArgs,
-          fileName,
-          contractName,
-          viemChain: {
-            id: viemChain.id,
-            name: viemChain.name,
-            nativeCurrency: viemChain.nativeCurrency,
-            rpcUrls: viemChain.rpcUrls,
-            blockExplorers: viemChain.blockExplorers,
-          },
-        }
-
         const explorerUrl = getExplorerUrl({
           viemChain,
           hash: contractAddress,
           type: "address",
         })
-
-        await Promise.all([
-          storeDeploymentAction({
-            chainId,
-            deployHash,
-            contractAddress,
-            cid,
-            contractName,
-            deployerAddress: address,
-          }),
-          storeVerificationAction(verifyContractConfig),
-          track("deployed_contract", {
-            contractName,
-            explorerUrl,
-          }),
-        ])
 
         const transactionReceipt = await walletClient.waitForTransactionReceipt({
           hash: deployHash,
@@ -150,14 +122,43 @@ export function useWalletDeploy() {
           return
         }
 
+        const finalizeLoadingToast = toast.loading("Uploading to IPFS and queuing verification...")
+        const finalizeResponse = await fetch("/api/wallet-deploy/finalize", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            artifactId,
+            chainId,
+            contractAddress,
+            deployHash,
+            deployerAddress: address,
+            encodedConstructorArgs,
+          }),
+        })
+        const finalizeResult = (await finalizeResponse.json()) as {
+          error?: string
+          explorerUrl?: string
+          ipfsUrl?: string
+          verifyContractConfig?: VerifyContractParams
+        }
+        toast.dismiss(finalizeLoadingToast)
+
+        if (!(finalizeResponse.ok && finalizeResult.ipfsUrl && finalizeResult.verifyContractConfig)) {
+          throw new Error(finalizeResult.error || "Contract deployed, but failed to persist metadata")
+        }
+
+        toast.success("Uploaded to IPFS successfully!")
+
         const deploymentData: LastDeploymentData = {
           walletAddress: address,
           contractAddress,
           chainId,
           transactionHash: deployHash,
-          ipfsUrl,
-          explorerUrl,
-          verifyContractConfig,
+          ipfsUrl: finalizeResult.ipfsUrl,
+          explorerUrl: finalizeResult.explorerUrl || explorerUrl,
+          verifyContractConfig: finalizeResult.verifyContractConfig,
           standardJsonInput,
           abi,
           sourceCode,
@@ -166,8 +167,9 @@ export function useWalletDeploy() {
         setLastDeploymentData(deploymentData)
         toast.success("Contract deployed successfully!")
         return deploymentData
-      } catch (_error) {
-        toast.error("Failed to deploy contract")
+      } catch (error) {
+        const message = error instanceof Error ? error.message.split("\n")[0] : "Failed to deploy contract"
+        toast.error(message)
       } finally {
         toast.dismiss(deployLoadingToast)
       }

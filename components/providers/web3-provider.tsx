@@ -1,102 +1,73 @@
 "use client"
 
-import { connectorsForWallets, darkTheme, lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit"
-import { getWagmiConfig } from "@/lib/config"
+import { darkTheme, lightTheme, RainbowKitProvider, type Theme } from "@rainbow-me/rainbowkit"
+import { wagmiConfig } from "@/lib/wagmi-config"
 import "@rainbow-me/rainbowkit/styles.css"
-import {
-  coinbaseWallet,
-  injectedWallet,
-  metaMaskWallet,
-  rainbowWallet,
-  safeWallet,
-  walletConnectWallet,
-} from "@rainbow-me/rainbowkit/wallets"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useTheme } from "next-themes"
-import { useState } from "react"
-import { DEPLOYMENT_URL } from "vercel-url"
-import { type State, WagmiProvider } from "wagmi"
-import { useIsClient } from "@/lib/hooks/use-is-client"
-
-const NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ""
-
-export const getConnectors = () => {
-  if (typeof window === "undefined") {
-    return []
-  }
-
-  return connectorsForWallets(
-    [
-      {
-        groupName: "Recommended",
-        wallets: [coinbaseWallet, metaMaskWallet, rainbowWallet, walletConnectWallet, injectedWallet, safeWallet],
-      },
-    ],
-    {
-      appName: "Web3GPT",
-      appDescription: "Write and deploy Solidity smart contracts with AI",
-      appUrl: DEPLOYMENT_URL,
-      appIcon: "/assets/web3gpt.png",
-      projectId: NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
-    }
-  )
-}
+import { useEffect, useMemo, useState } from "react"
+import { cookieToInitialState, WagmiProvider } from "wagmi"
 
 export function Web3Provider({
   children,
-  initialState,
+  cookiesValue,
 }: {
   children: React.ReactNode
-  initialState: State | undefined
+  cookiesValue?: string | undefined
 }) {
-  const { resolvedTheme } = useTheme()
-  const isClient = useIsClient()
-  const [config] = useState(() => getWagmiConfig(getConnectors()))
   const [queryClient] = useState(() => new QueryClient())
+  const [rainbowKitTheme, setRainbowKitTheme] = useState<Theme | undefined>(undefined)
+  const { theme } = useTheme()
+  const initialState = useMemo(() => cookieToInitialState(wagmiConfig, cookiesValue), [cookiesValue])
 
-  // Default to dark theme during SSR to prevent hydration mismatch
-  const getTheme = () => {
-    if (!isClient) {
-      return darkTheme({
-        accentColor: "#21C55E",
-        accentColorForeground: "black",
-      })
+  useEffect(() => {
+    const getRainbowKitTheme = () => {
+      switch (theme) {
+        case "system":
+          return {
+            lightMode: lightTheme({
+              accentColor: "#21C55E",
+              accentColorForeground: "white",
+            }),
+            darkMode: darkTheme({
+              accentColor: "#21C55E",
+              accentColorForeground: "black",
+            }),
+          }
+        case "dark":
+          return darkTheme({
+            accentColor: "#21C55E",
+            accentColorForeground: "black",
+          })
+        default:
+          return lightTheme({
+            accentColor: "#21C55E",
+            accentColorForeground: "white",
+          })
+      }
     }
-    if (resolvedTheme === "dark") {
-      return darkTheme({
-        accentColor: "#21C55E",
-        accentColorForeground: "black",
-      })
-    }
-    return lightTheme({
-      accentColor: "#21C55E",
-      accentColorForeground: "white",
-    })
-  }
-
-  const theme = getTheme()
+    setRainbowKitTheme(getRainbowKitTheme())
+  }, [theme])
 
   return (
-    <WagmiProvider config={config} initialState={initialState}>
+    <WagmiProvider config={wagmiConfig} initialState={initialState} reconnectOnMount={true}>
       <QueryClientProvider client={queryClient}>
-        <div suppressHydrationWarning>
-          <RainbowKitProvider
-            appInfo={{
-              appName: "Web3GPT",
-              disclaimer: ({ Text, Link }) => (
-                <Text>
-                  Web3GPT is an experimental AI tool. Beware of the{" "}
-                  <Link href="https://docs.soliditylang.org/en/latest/security-considerations.html">risks</Link>{" "}
-                  associated with deploying smart contracts.
-                </Text>
-              ),
-              learnMoreUrl: "https://x.com/w3gptai",
-            }}
-            theme={theme}
-          >
-            {children}
-          </RainbowKitProvider>
-        </div>
+        <RainbowKitProvider
+          appInfo={{
+            appName: "Web3GPT",
+            disclaimer: ({ Text, Link }) => (
+              <Text>
+                Web3GPT is an experimental AI tool. Beware of the{" "}
+                <Link href="https://docs.soliditylang.org/en/latest/security-considerations.html">risks</Link>{" "}
+                associated with deploying smart contracts.
+              </Text>
+            ),
+            learnMoreUrl: "https://x.com/w3gptai",
+          }}
+          theme={rainbowKitTheme}
+        >
+          {children}
+        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   )

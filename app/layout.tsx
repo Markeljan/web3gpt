@@ -5,8 +5,6 @@ import { JetBrains_Mono as FontMono, Inter as FontSans } from "next/font/google"
 import { cookies } from "next/headers"
 import { ThemeProvider } from "next-themes"
 import type { ReactNode } from "react"
-import { DEPLOYMENT_URL } from "vercel-url"
-import { cookieToInitialState } from "wagmi"
 import { auth } from "@/auth"
 import { Header } from "@/components/header/header"
 import { MiniAppInitializer } from "@/components/miniapp-initializer"
@@ -15,7 +13,7 @@ import { PermanentSidebar } from "@/components/sidebar/permanent-sidebar"
 import { SidebarContent } from "@/components/sidebar/sidebar-content"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { getWagmiConfig } from "@/lib/config"
+import { APP_URL } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
 const fontSans = FontSans({
@@ -30,14 +28,14 @@ const fontMono = FontMono({
 
 const STRINGIFIED_MINIAPP = JSON.stringify({
   version: "1",
-  imageUrl: `${DEPLOYMENT_URL}/opengraph-image.png`,
+  imageUrl: `${APP_URL}/opengraph-image.png`,
   button: {
     title: "🚀 Launch Web3GPT",
     action: {
       type: "launch_frame",
       name: "Web3GPT",
-      url: DEPLOYMENT_URL,
-      splashImageUrl: `${DEPLOYMENT_URL}/assets/web3gpt.png`,
+      url: APP_URL,
+      splashImageUrl: `${APP_URL}/assets/web3gpt.png`,
       splashBackgroundColor: "#262626",
     },
   },
@@ -66,17 +64,17 @@ export const metadata: Metadata = {
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
-  metadataBase: new URL(DEPLOYMENT_URL),
+  metadataBase: new URL(APP_URL),
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: DEPLOYMENT_URL,
+    url: APP_URL,
     title: "Web3GPT",
     description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
     siteName: "Web3GPT",
     images: [
       {
-        url: `${DEPLOYMENT_URL}/opengraph-image.png`,
+        url: `${APP_URL}/opengraph-image.png`,
         width: 1200,
         height: 630,
         alt: "Web3GPT",
@@ -89,7 +87,7 @@ export const metadata: Metadata = {
     description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
     site: "@w3gptai",
     creator: "@soko_eth",
-    images: [`${DEPLOYMENT_URL}/twitter-image.png`],
+    images: [`${APP_URL}/twitter-image.png`],
   },
   other: {
     "fc:miniapp": STRINGIFIED_MINIAPP,
@@ -105,23 +103,21 @@ export const viewport: Viewport = {
 }
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const cookieStore = await cookies()
-  const initialState = cookieToInitialState(getWagmiConfig(), cookieStore.get("cookie")?.value)
-  const session = await auth()
+  const [session, cookieStore] = await Promise.all([auth(), cookies()])
+  const cookiesValue = cookieStore.get("cookie")?.value
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("font-sans antialiased", fontSans.variable, fontMono.variable)}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
-          disableTransitionOnChange
+          defaultTheme="system"
           enableColorScheme
           enableSystem
           storageKey="preffered-theme"
         >
           <TooltipProvider>
-            <Web3Provider initialState={initialState}>
+            <Web3Provider cookiesValue={cookiesValue}>
               <MiniAppInitializer />
               <div className="flex h-screen overflow-hidden">
                 <PermanentSidebar user={session?.user}>

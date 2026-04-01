@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { DEPLOYMENT_URL } from "vercel-url"
 import { auth } from "@/auth"
 import { AgentCard } from "@/components/agent-card"
 import { ChatList } from "@/components/chat/chat-list"
 import { Landing } from "@/components/landing"
+import { APP_URL } from "@/lib/config"
 import { getPublishedChat } from "@/lib/data/kv"
 import { getAgentById } from "@/lib/data/openai"
 import type { NextPageProps } from "@/lib/types"
@@ -16,13 +16,13 @@ export async function generateMetadata({ params }: NextPageProps): Promise<Metad
     title: "Shared Chat",
     description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
     openGraph: {
-      images: [`${DEPLOYMENT_URL}/api/og?id=${id}&h=630`],
-      url: `${DEPLOYMENT_URL}/share/${id}`,
+      images: [`${APP_URL}/api/og?id=${id}&h=630`],
+      url: `${APP_URL}/share/${id}`,
     },
     twitter: {
       card: "summary_large_image",
       site: "@w3gptai",
-      images: [`${DEPLOYMENT_URL}/api/og?id=${id}&h=675`],
+      images: [`${APP_URL}/api/og?id=${id}&h=675`],
     },
   }
   return metadata

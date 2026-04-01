@@ -1,5 +1,10 @@
 const IMPORT_REGEX = /import\s+(?:{[^}]+}\s+from\s+)?["']([^"']+)["'];/g
 const LOCAL_IMPORT_REGEX = /^\.\//
+const OPENZEPPELIN_IMPORT_FALLBACKS: Record<string, string[]> = {
+  "@openzeppelin/contracts/security/Pausable.sol": ["@openzeppelin/contracts/utils/Pausable.sol"],
+  "@openzeppelin/contracts/security/PullPayment.sol": ["@openzeppelin/contracts/utils/PullPayment.sol"],
+  "@openzeppelin/contracts/security/ReentrancyGuard.sol": ["@openzeppelin/contracts/utils/ReentrancyGuard.sol"],
+}
 
 export async function resolveImports(sourceCode: string, sourcePath?: string, localSources?: Record<string, string>) {
   const sources: { [fileName: string]: { content: string } } = {}
@@ -50,37 +55,27 @@ async function fetchImport(importPath: string, sourcePath?: string, localSources
     }
   }
 
-  // Determine the URL to fetch
-  let urlToFetch: string
-  if (importPath[0] === "." && sourcePath) {
-    // If the import path starts with '.', it's a relative path, so resolve the path
-    const finalPath = resolveImportPath(importPath, sourcePath)
-    urlToFetch = finalPath
-  } else if (importPath[0] !== "@") {
-    // If the import path starts with anything other than '@', use it directly
-    urlToFetch = importPath
-  } else {
-    // Otherwise, convert the import path to an unpkg URL
-    urlToFetch = `https://unpkg.com/${importPath}`
-  }
-  // Convert GitHub URLs to raw content URLs
-  if (urlToFetch.includes("github.com")) {
-    urlToFetch = urlToFetch.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
-  }
+  const importCandidates = [importPath, ...getImportFallbacks(importPath)]
+  let lastError: Error | undefined
 
-  // Fetch the imported file
-  const response = await fetch(urlToFetch)
+  for (const importCandidate of importCandidates) {
+    const urlToFetch = getImportUrl(importCandidate, sourcePath)
+    const response = await fetch(urlToFetch)
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
+    if (!response.ok) {
+      lastError = new Error(`HTTP error! status: ${response.status} while fetching ${importCandidate}`)
+      continue
+    }
+
+    const importedSource = await response.text()
+
+    // Handle any imports within the fetched source code
+    const { sources, sourceCode } = await resolveImports(importedSource, urlToFetch, localSources)
+
+    return { sources, sourceCode }
   }
 
-  const importedSource = await response.text()
-
-  // Handle any imports within the fetched source code
-  const { sources, sourceCode } = await resolveImports(importedSource, urlToFetch, localSources)
-
-  return { sources, sourceCode }
+  throw lastError || new Error(`Unable to resolve import: ${importPath}`)
 }
 
 /// utility function to handle relative paths
@@ -105,6 +100,37 @@ function resolveImportPath(importPath: string, sourcePath: string) {
 
   // Reconstruct the final path
   return sourceSegments.concat(importSegments).join("/")
+}
+
+function getImportUrl(importPath: string, sourcePath?: string) {
+  let urlToFetch: string
+
+  if (importPath[0] === "." && sourcePath) {
+    urlToFetch = resolveImportPath(importPath, sourcePath)
+  } else if (importPath[0] !== "@") {
+    urlToFetch = importPath
+  } else {
+    urlToFetch = `https://unpkg.com/${importPath}`
+  }
+
+  if (urlToFetch.includes("github.com")) {
+    return urlToFetch.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
+  }
+
+  return urlToFetch
+}
+
+function getImportFallbacks(importPath: string) {
+  const explicitFallbacks = OPENZEPPELIN_IMPORT_FALLBACKS[importPath]
+  if (explicitFallbacks) {
+    return explicitFallbacks
+  }
+
+  if (importPath.includes("/draft-")) {
+    return [importPath.replace("/draft-", "/")]
+  }
+
+  return []
 }
 
 const CONTRACT_NAME_REGEX = /[/\\:*?"<>|.\s]+$/g

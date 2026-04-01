@@ -1,9 +1,9 @@
 "use client"
 
-import { DEPLOYMENT_URL } from "vercel-url"
 import { IconCheck, IconCopy } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { APP_URL } from "@/lib/config"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 
 type CopyAgentUrlButtonProps = {
@@ -18,7 +18,7 @@ export const CopyAgentUrlButton = ({ agentId }: CopyAgentUrlButtonProps) => {
       <TooltipTrigger asChild>
         <Button
           className="h-8 w-8 p-0"
-          onClick={() => copyToClipboard(`${DEPLOYMENT_URL}/?a=${agentId}`)}
+          onClick={() => copyToClipboard(`${APP_URL}/?a=${agentId}`)}
           size="sm"
           type="button"
           variant="ghost"

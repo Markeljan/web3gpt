@@ -6,6 +6,7 @@ import { getChainDetails } from "@/lib/config"
 export const cn = (...inputs: ClassValue[]): string => twMerge(clsx(inputs))
 
 const SECOND_IN_MS = 1000
+const TRAILING_SLASH_REGEX = /\/+$/
 
 export const formatDate = (input: string | number | Date): string => {
   let date: Date
@@ -56,12 +57,14 @@ export function getExplorerUrl({
   type: "tx" | "address"
 }): string {
   const { explorerUrl } = getChainDetails(viemChain)
-  if (!explorerUrl) {
+  const normalizedExplorerUrl = explorerUrl.replace(TRAILING_SLASH_REGEX, "")
+
+  if (!normalizedExplorerUrl) {
     return ""
   }
   if (type === "tx") {
-    return `${explorerUrl}/tx/${hash}`
+    return `${normalizedExplorerUrl}/tx/${hash}`
   }
 
-  return `${explorerUrl}/address/${hash}`
+  return `${normalizedExplorerUrl}/address/${hash}`
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
-import { DEPLOYMENT_URL } from "vercel-url"
+import { APP_URL } from "@/lib/config"
 
-const DYNAMIC_URL = process.env.NODE_ENV === "production" ? DEPLOYMENT_URL : "https://markeljan.a.pinggy.link"
+const DYNAMIC_URL = process.env.NODE_ENV === "production" ? APP_URL : "https://markeljan.a.pinggy.link"
 
 const DYNAMIC_ACCOUNT_ASSOCIATION =
   process.env.NODE_ENV === "production"

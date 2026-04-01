@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { useCallback, useState, useTransition } from "react"
 import { toast } from "sonner"
-import { DEPLOYMENT_URL } from "vercel-url"
 import { IconShare, IconSpinner, IconTrash, IconUsers } from "@/components/icons"
 import {
   AlertDialog,
@@ -27,6 +26,7 @@ import {
 } from "@/components/ui/dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { deleteChatAction, shareChatAction } from "@/lib/actions/chat"
+import { APP_URL } from "@/lib/config"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import type { DbChatListItem } from "@/lib/types"
 import { cn, formatDate } from "@/lib/utils"
@@ -45,7 +45,7 @@ export function SidebarActions({ chat }: SidebarActionsProps) {
   const { copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
   const copyShareLink = useCallback(() => {
-    copyToClipboard(`${DEPLOYMENT_URL}/share/${chat.id}`)
+    copyToClipboard(`${APP_URL}/share/${chat.id}`)
     setShareDialogOpen(false)
     toast.success("Share link copied to clipboard", {
       style: {

@@ -1,7 +1,7 @@
+import { DEPLOYMENT_URL } from "vercel-url"
 import type { Chain } from "viem"
-import { type CreateConnectorFn, cookieStorage, createConfig, createStorage } from "wagmi"
 import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
-import { AGENT_DEPLOY_CHAINS, RPC_URLS, SUPPORTED_CHAINS, viemTransports } from "@/lib/constants"
+import { AGENT_DEPLOY_CHAINS, RPC_URLS } from "@/lib/constants"
 import { ETHERSCAN_V2_URLS } from "@/lib/etherscan"
 import type { ChainDetails, ChainWithIcon } from "@/lib/types"
 
@@ -43,13 +43,5 @@ export function getChainById(chainId: number): ChainWithIcon | null {
   return AGENT_DEPLOY_CHAINS.find((chain) => chain.id === chainId) || null
 }
 
-export const getWagmiConfig = (connectors?: CreateConnectorFn[]) =>
-  createConfig({
-    chains: SUPPORTED_CHAINS,
-    transports: viemTransports,
-    ssr: true,
-    storage: createStorage({
-      storage: cookieStorage,
-    }),
-    connectors,
-  })
+export const APP_URL = DEPLOYMENT_URL
+export const WALLETCONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ""

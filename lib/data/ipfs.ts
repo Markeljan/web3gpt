@@ -4,10 +4,27 @@ import type { SolcOutput } from "solc"
 import type { Abi } from "viem"
 import { IPFS_W3GPT_GROUP_ID } from "@/lib/constants"
 
+const CURRENT_DIR_PREFIX = "./"
+const PARENT_DIR_PREFIX = "../"
+
 const pinata = new PinataSDK({
   pinataJwt: process.env.PINATA_JWT,
   pinataGateway: process.env.NEXT_PUBLIC_IPFS_GATEWAY,
 })
+
+function getSafeIpfsFileName(fileName: string) {
+  const normalizedFileName = fileName.replaceAll("\\", "/")
+
+  if (normalizedFileName.startsWith(CURRENT_DIR_PREFIX)) {
+    return `imports/${normalizedFileName.slice(CURRENT_DIR_PREFIX.length)}`
+  }
+
+  if (normalizedFileName.startsWith(PARENT_DIR_PREFIX)) {
+    return `imports/${normalizedFileName.replaceAll(PARENT_DIR_PREFIX, "up/")}`
+  }
+
+  return normalizedFileName
+}
 
 export async function ipfsUploadDir(
   sources: SolcOutput["sources"],
@@ -19,7 +36,7 @@ export async function ipfsUploadDir(
     const files: FileObject[] = []
 
     for (const [fileName, { content }] of Object.entries(sources)) {
-      files.push(new File([content], fileName))
+      files.push(new File([content], getSafeIpfsFileName(fileName)))
     }
     files.push(new File([JSON.stringify(abi, null, 2)], "abi.json"))
     files.push(new File([bytecode], "bytecode.txt"))
@@ -34,7 +51,8 @@ export async function ipfsUploadDir(
     })
 
     return IpfsHash
-  } catch (_error) {
+  } catch (error) {
+    console.error("ipfsUploadDir failed", error)
     return null
   }
 }
@@ -51,7 +69,8 @@ export async function ipfsUploadFile(fileName: string, fileContent: string): Pro
     })
 
     return IpfsHash
-  } catch (_error) {
+  } catch (error) {
+    console.error("ipfsUploadFile failed", error)
     return null
   }
 }

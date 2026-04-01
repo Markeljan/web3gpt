@@ -1,4 +1,5 @@
 import type { UIMessage } from "ai"
+import type { SolcInputSources } from "solc"
 import type { Abi, Chain, Hash } from "viem"
 
 export type NextPageProps = {
@@ -97,6 +98,14 @@ export type VerifyContractParams = {
   lastCheckedAt?: number
   verifiedAt?: number
   lastVerificationError?: string
+}
+
+export type WalletDeployArtifact = {
+  abi: Abi
+  bytecode: Hash
+  contractName: string
+  sources: SolcInputSources
+  standardJsonInput: string
 }
 
 export type LastDeploymentData = DeployContractResult & {
