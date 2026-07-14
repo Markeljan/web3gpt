@@ -49,7 +49,7 @@ export const generateAgentReply = async ({ agentId, messages, userId }: AgentCha
   const { agent, tools, systemPrompt } = await getAgentRuntime({ agentId, userId })
 
   const result = await generateText({
-    model: openai("gpt-5-mini"),
+    model: openai("gpt-5.4-nano"),
     providerOptions,
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
@@ -64,7 +64,7 @@ export const streamAgentReply = async ({ agentId, messages, onFinish, userId }: 
   const { agent, tools, systemPrompt } = await getAgentRuntime({ agentId, userId })
 
   const result = streamText({
-    model: openai("gpt-5-mini"),
+    model: openai("gpt-5.4-nano"),
     providerOptions,
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
