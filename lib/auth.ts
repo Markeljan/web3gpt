@@ -1,5 +1,6 @@
 import "server-only"
 import { betterAuth } from "better-auth"
+import { APIError } from "better-auth/api"
 import { nextCookies } from "better-auth/next-js"
 import { oAuthProxy } from "better-auth/plugins"
 import { headers } from "next/headers"
@@ -22,6 +23,28 @@ const PROJECT_GITHUB_CLIENT_ID = "Ov23liJPi5FEcJy6kRmj"
 // too. Running locally against a fork's own OAuth app, the callback is already
 // registered on localhost, so it points at the local origin and the proxy
 // short-circuits.
+// GitHub avatar URLs embed the same numeric profile id the account is keyed by.
+const GITHUB_AVATAR_ID = /avatars\.githubusercontent\.com\/u\/(\d+)/
+
+// Every KV key in this app is scoped by the GitHub numeric id that next-auth
+// used as `session.user.id`, so a user record must never be created without one.
+// `mapProfileToUser` supplies it as `githubId`, but that value has been observed
+// missing by the time the create hook runs, and the fallback of letting Better
+// Auth mint a random id silently detaches the account from every chat, agent and
+// deployment it owns. The avatar URL carries the same id, so recover it there.
+function resolveGithubId(user: Record<string, unknown>): string | null {
+  if (typeof user.githubId === "string" && user.githubId.length > 0) {
+    return user.githubId
+  }
+  if (typeof user.image === "string") {
+    const matchedId = user.image.match(GITHUB_AVATAR_ID)?.[1]
+    if (matchedId) {
+      return matchedId
+    }
+  }
+  return null
+}
+
 const isLocalDev = !VERCEL_ENV
 const usesProjectOAuthApp = GITHUB_CLIENT_ID === PROJECT_GITHUB_CLIENT_ID
 const OAUTH_CALLBACK_ORIGIN = isLocalDev && !usesProjectOAuthApp ? APP_URL : PRODUCTION_URL
@@ -40,15 +63,18 @@ export const auth = betterAuth({
             name: user.name,
           })
         },
-        // Every KV key in this app is scoped by the GitHub numeric id that
-        // next-auth used as `session.user.id`. Pinning the id here keeps
-        // existing chats, agents and deployments attached to their owners.
+        // Pinning the id here keeps existing chats, agents and deployments
+        // attached to their owners. See `resolveGithubId`.
         before: (user) => {
-          const githubId = typeof user.githubId === "string" ? user.githubId : null
+          const githubId = resolveGithubId(user)
           if (!githubId) {
-            return Promise.resolve()
+            // Fail the sign-in rather than write a record whose data can never
+            // be found again.
+            throw new APIError("INTERNAL_SERVER_ERROR", {
+              message: "Could not resolve a GitHub id for this account.",
+            })
           }
-          return Promise.resolve({ data: { ...user, id: githubId } })
+          return Promise.resolve({ data: { ...user, githubId, id: githubId } })
         },
       },
     },

@@ -19,7 +19,10 @@ export type DbChat = {
   id: string
   agentId: string
   title: string
+  /** Set once, on the first write. Preserved by `storeChat` on every later turn. */
   createdAt: number
+  /** Last write. Absent on chats stored before this field existed. */
+  updatedAt?: number
   userId: string
   messages: (UIMessage | LegacyMessage)[]
   published: boolean

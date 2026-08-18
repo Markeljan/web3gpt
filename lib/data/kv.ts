@@ -200,16 +200,25 @@ export const storeChat = withUser<
     return
   }
 
+  // Callers rebuild the whole record on every assistant turn and stamp a fresh
+  // createdAt, so the value already in KV is the only surviving record of when
+  // the chat actually started. Keep the first one and track activity separately.
+  const storedCreatedAt = await kv.hget<number>(`chat:${data.id}`, "createdAt")
+  const updatedAt = Date.now()
+
   const payload: DbChat = {
     ...data,
+    createdAt: typeof storedCreatedAt === "number" ? storedCreatedAt : data.createdAt,
+    updatedAt,
     userId,
   }
 
   await Promise.all([
     kv.hmset(`chat:${data.id}`, payload),
+    // The sidebar reads this index newest-first, so it stays scored by activity.
     kv.zadd(`user:chat:${userId}`, {
       member: `chat:${data.id}`,
-      score: data.createdAt,
+      score: updatedAt,
     }),
   ])
 

@@ -37,6 +37,8 @@ export async function POST(request: NextRequest) {
         const chat: DbChat = {
           agentId,
           avatarUrl,
+          // Only used when this is the chat's first write; `storeChat` keeps the
+          // original createdAt for chats that already exist.
           createdAt: Date.now(),
           id: chatId,
           messages: allMessages,
