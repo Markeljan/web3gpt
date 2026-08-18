@@ -1,6 +1,6 @@
 import { track } from "@vercel/analytics/server"
 import { NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { getSession } from "@/lib/auth"
 import { getChainById } from "@/lib/config"
 import { ipfsUploadDir } from "@/lib/data/ipfs"
 import { deleteWalletDeployArtifact, getWalletDeployArtifact, storeDeployment, storeVerification } from "@/lib/data/kv"
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to upload contract artifacts to IPFS" }, { status: 500 })
     }
 
-    const session = await auth()
+    const session = await getSession()
     const userId = session?.user?.id || "anon"
     const explorerUrl = getExplorerUrl({
       viemChain,

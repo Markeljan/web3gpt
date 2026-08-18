@@ -1,9 +1,9 @@
 "use client"
 
-import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { IconGitHub, IconSpinner } from "@/components/icons"
 import { Button, type ButtonProps } from "@/components/ui/button"
+import { signIn } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
 interface LoginButtonProps extends ButtonProps {
@@ -24,7 +24,7 @@ export function LoginButton({
       disabled={isLoading}
       onClick={() => {
         setIsLoading(true)
-        signIn("github")
+        signIn.social({ provider: "github", callbackURL: "/" })
       }}
       variant="outline"
       {...props}

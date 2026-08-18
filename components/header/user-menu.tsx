@@ -2,7 +2,6 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import type { Session } from "next-auth"
 import { useTheme } from "next-themes"
 import { useState, useTransition } from "react"
 import {
@@ -38,6 +37,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { clearChatsAction } from "@/lib/actions/chat"
+import type { AuthUser } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
 function getUserInitials(name: string) {
@@ -47,7 +47,7 @@ function getUserInitials(name: string) {
 }
 
 type UserMenuProps = {
-  user: Session["user"]
+  user: AuthUser
   variant?: "header" | "sidebar" | "collapsed"
   showClearHistory?: boolean
 }

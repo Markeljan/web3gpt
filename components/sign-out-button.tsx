@@ -1,17 +1,22 @@
 "use client"
 
-import { signOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { signOut } from "@/lib/auth-client"
 
-export const SignOutButton = () => (
-  <button
-    className="m-0 flex w-full p-0 text-xs"
-    onClick={() => {
-      signOut({
-        callbackUrl: "/",
-      })
-    }}
-    type="button"
-  >
-    Log out
-  </button>
-)
+export const SignOutButton = () => {
+  const router = useRouter()
+
+  return (
+    <button
+      className="m-0 flex w-full p-0 text-xs"
+      onClick={async () => {
+        await signOut()
+        router.push("/")
+        router.refresh()
+      }}
+      type="button"
+    >
+      Log out
+    </button>
+  )
+}

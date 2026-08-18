@@ -1,14 +1,14 @@
 import type { UIMessage } from "ai"
 import { notFound, redirect } from "next/navigation"
-import { auth } from "@/auth"
 import { Chat } from "@/components/chat/chat"
+import { getSession } from "@/lib/auth"
 import { DEFAULT_AGENT } from "@/lib/constants"
 import { getAgentById } from "@/lib/data/agents"
 import { getChat } from "@/lib/data/kv"
 import type { NextPageProps } from "@/lib/types"
 
 export default async function ChatPage({ params, searchParams }: NextPageProps) {
-  const session = await auth()
+  const session = await getSession()
   const { id } = await params
   const searchParamsResolved = await searchParams
 

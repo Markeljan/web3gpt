@@ -1,6 +1,7 @@
 import { generateId, tool } from "ai"
 import { z } from "zod"
 import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
+import { PRODUCTION_URL } from "@/lib/config"
 import { deployContract } from "@/lib/solidity/deploy"
 import type { ToolName } from "@/lib/types"
 
@@ -134,7 +135,7 @@ const createToolDefinitions = (context: ToolContext = {}) => ({
         toolNames: (toolNames as ToolName[]) || DEFAULT_TOOL_NAMES,
       })
 
-      const agentChatUrl = `${process.env.NEXT_PUBLIC_APP_URL || "https://w3gpt.ai"}/?a=${agentId}`
+      const agentChatUrl = `${PRODUCTION_URL}/?a=${agentId}`
       return `Agent created successfully! Agent chat URL: ${agentChatUrl}`
     },
   }),

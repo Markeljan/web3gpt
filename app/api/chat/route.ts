@@ -1,7 +1,7 @@
 import type { UIMessage } from "ai"
 import { type NextRequest, NextResponse } from "next/server"
-import { auth } from "@/auth"
 import { streamAgentReply } from "@/lib/agent-chat"
+import { getSession } from "@/lib/auth"
 import { buildChatTitle, createTextMessage, getResponseText } from "@/lib/chat-utils"
 import { storeChat } from "@/lib/data/kv"
 import type { DbChat } from "@/lib/types"
@@ -9,7 +9,7 @@ import type { DbChat } from "@/lib/types"
 export const maxDuration = 60
 
 export async function POST(request: NextRequest) {
-  const session = await auth()
+  const session = await getSession()
   const { id: userId, image: avatarUrl } = session?.user || {}
 
   const { messages, chatId, agentId } = (await request.json()) as {

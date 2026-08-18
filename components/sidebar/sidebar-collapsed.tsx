@@ -4,15 +4,15 @@ import { User } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import type { Session } from "next-auth"
 import { UserMenu } from "@/components/header/user-menu"
 import { NAVIGATION_ITEMS } from "@/components/sidebar/constants"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import type { AuthUser } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
 type SidebarCollapsedProps = {
-  user?: Session["user"]
+  user?: AuthUser
 }
 
 export function SidebarCollapsed({ user }: SidebarCollapsedProps) {

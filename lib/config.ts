@@ -1,4 +1,4 @@
-import { DEPLOYMENT_URL } from "vercel-url"
+import { DEPLOYMENT_URL, VERCEL_PROJECT_PRODUCTION_URL } from "vercel-url"
 import type { Chain } from "viem"
 import { BLOCKSCOUT_URLS } from "@/lib/blockscout"
 import { AGENT_DEPLOY_CHAINS, RPC_URLS } from "@/lib/constants"
@@ -44,4 +44,13 @@ export function getChainById(chainId: number): ChainWithIcon | null {
 }
 
 export const APP_URL = DEPLOYMENT_URL
+
+// The canonical origin, resolved server-side. Vercel injects
+// VERCEL_PROJECT_PRODUCTION_URL into every deployment, preview included, so only
+// local dev falls through to the literal. Preview and local sign-in proxy their
+// GitHub OAuth callback through here, since that is the origin registered with
+// the OAuth app.
+export const PRODUCTION_URL = VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${VERCEL_PROJECT_PRODUCTION_URL}`
+  : "https://w3gpt.ai"
 export const WALLETCONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ""
