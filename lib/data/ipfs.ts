@@ -1,5 +1,5 @@
 import "server-only"
-import { type FileObject, PinataSDK } from "pinata"
+import { PinataSDK } from "pinata"
 import type { SolcOutput } from "solc"
 import type { Abi } from "viem"
 import { IPFS_W3GPT_GROUP_ID } from "@/lib/constants"
@@ -7,9 +7,11 @@ import { IPFS_W3GPT_GROUP_ID } from "@/lib/constants"
 const CURRENT_DIR_PREFIX = "./"
 const PARENT_DIR_PREFIX = "../"
 
+// The SDK expects a bare gateway domain, while NEXT_PUBLIC_IPFS_GATEWAY carries the protocol
+// so it can be used directly when building public URLs in getIpfsUrl.
 const pinata = new PinataSDK({
   pinataJwt: process.env.PINATA_JWT,
-  pinataGateway: process.env.NEXT_PUBLIC_IPFS_GATEWAY,
+  pinataGateway: process.env.NEXT_PUBLIC_IPFS_GATEWAY?.replace(/^https?:\/\//, ""),
 })
 
 function getSafeIpfsFileName(fileName: string) {
@@ -33,7 +35,7 @@ export async function ipfsUploadDir(
   standardJsonInput: string
 ): Promise<string | null> {
   try {
-    const files: FileObject[] = []
+    const files: File[] = []
 
     for (const [fileName, { content }] of Object.entries(sources)) {
       files.push(new File([content], getSafeIpfsFileName(fileName)))
@@ -42,15 +44,13 @@ export async function ipfsUploadDir(
     files.push(new File([bytecode], "bytecode.txt"))
     files.push(new File([standardJsonInput], "standardJsonInput.json"))
 
-    const { IpfsHash } = await pinata.upload.fileArray(files, {
-      cidVersion: 1,
-      groupId: IPFS_W3GPT_GROUP_ID,
-      metadata: {
-        name: "contract",
-      },
-    })
+    const { cid } = await pinata.upload.public
+      .fileArray(files)
+      .group(IPFS_W3GPT_GROUP_ID)
+      .name("contract")
+      .cidVersion("v1")
 
-    return IpfsHash
+    return cid
   } catch (error) {
     console.error("ipfsUploadDir failed", error)
     return null
@@ -60,15 +60,9 @@ export async function ipfsUploadDir(
 export async function ipfsUploadFile(fileName: string, fileContent: string): Promise<string | null> {
   try {
     const file = new File([fileContent], fileName)
-    const { IpfsHash } = await pinata.upload.file(file, {
-      cidVersion: 1,
-      groupId: IPFS_W3GPT_GROUP_ID,
-      metadata: {
-        name: fileName,
-      },
-    })
+    const { cid } = await pinata.upload.public.file(file).group(IPFS_W3GPT_GROUP_ID).name(fileName).cidVersion("v1")
 
-    return IpfsHash
+    return cid
   } catch (error) {
     console.error("ipfsUploadFile failed", error)
     return null

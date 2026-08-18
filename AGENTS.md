@@ -53,7 +53,7 @@ Copy from `.env.example`. Important groups:
 - Persistence: `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_REST_API_READ_ONLY_TOKEN`, `KV_URL`
 - Deployment/signing: `DEPLOYER_PRIVATE_KEY`
 - Cron auth: `CRON_SECRET`
-- IPFS uploads: `PINATA_API_KEY`, `PINATA_API_SECRET`, `PINATA_JWT`
+- IPFS uploads: `PINATA_JWT` and `NEXT_PUBLIC_IPFS_GATEWAY` (`PINATA_API_KEY`/`PINATA_API_SECRET` are legacy and unused by the app)
 
 Notes:
 
@@ -103,6 +103,9 @@ Notes:
 - `app/api/skill/route.ts` persists anonymous agent chats in KV by `chatId` and returns simplified responses/history for SDK and skill consumers.
 - Chat history is persisted only when a user is signed in and a `chatId` is present.
 - Contract deployment flow compiles Solidity, deploys with a server-side private key, uploads artifacts to IPFS, stores verification metadata, and later verifies via cron.
+- `lib/data/ipfs.ts` uses the Pinata SDK v2 (`pinata.upload.public.*` builder chain, returns `cid`). Uploads go to the **public** network and the `W3GPT` group; the private network would need signed URLs and must not be used for contract artifacts.
+- `NEXT_PUBLIC_IPFS_GATEWAY` includes the protocol because `getIpfsUrl` builds public links from it; the SDK wants a bare domain, so the protocol is stripped when constructing the client.
+- The dedicated gateway (`ipfs.w3gpt.ai`) must stay free of Gateway Access Controls. Adding a gateway key makes every generated `ipfsUrl` fail with 401 `ERR_ID:00024`, and the key cannot be added to the URLs because those links are shown to end users. Default `restrict: true` (serve only account-pinned CIDs) is correct and fine.
 - Wallet-visible chains live separately from agent deploy chains; Polygon mainnet is agent-only and should not be added to Wagmi connectors.
 - The OpenAI Assistants API is no longer used, and the `openai` package is no longer a dependency. Old `thread_*` chats and `asst_*` agents (full message history, agent instructions, and tool names) were migrated into KV, so they are read/write like any other chat. Legacy `thread_*`/`asst_*` ids are just KV ids now; never reintroduce `openai.beta`.
 
