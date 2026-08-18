@@ -24,15 +24,15 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
-.env.*
+# ignore all env files
+.env*
+# allow example env file
 !.env.example
 
 # turbo
 .turbo
 
 .contentlayer
-.env
 .vercel
 .vscode
 .cursor
