@@ -1,33 +1,47 @@
-import type { UseChatHelpers } from "@ai-sdk/react"
-import type { UIMessage } from "ai"
+"use client"
+
+import { RefreshCw, TriangleAlert } from "lucide-react"
 import { ButtonScrollToBottom } from "@/components/chat/button-scroll-to-bottom"
 import { PromptForm } from "@/components/chat/prompt-form"
-import { IconSpinner } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 
 export type ChatPanelProps = {
-  append: UseChatHelpers<UIMessage>["sendMessage"]
-  stop: UseChatHelpers<UIMessage>["stop"]
-  isLoading: boolean
+  onSubmit: (text: string) => void
+  stop: () => void
   onNewChat: () => void
+  onRetry: () => void
+  isLoading: boolean
+  isEmpty: boolean
+  error?: Error
 }
 
-export function ChatPanel({ isLoading, append, stop, onNewChat }: ChatPanelProps) {
+export function ChatPanel({ isLoading, isEmpty, error, onSubmit, onRetry, stop, onNewChat }: ChatPanelProps) {
   return (
-    <div className="pointer-events-none fixed right-0 bottom-0 left-0 z-50 p-3 transition-all duration-300 ease-in-out sm:p-4 lg:left-80 lg:[html[data-sidebar-collapsed='true']_&]:left-16">
-      <div className="pointer-events-auto mx-auto max-w-4xl">
-        <ButtonScrollToBottom />
-        <div className="mb-2 flex h-10 items-center justify-center">
-          {isLoading ? (
-            <Button className="bg-background shadow-md" onClick={() => stop()} variant="outline">
-              <IconSpinner className="mr-2 animate-spin" />
-              Stop generating
+    <div className="relative shrink-0 bg-background">
+      {/* Fades the last line of the transcript into the composer instead of cutting it off. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 -top-10 h-10 bg-gradient-to-t from-background to-transparent"
+      />
+      <ButtonScrollToBottom />
+      <div className="mx-auto w-full max-w-3xl px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        {error ? (
+          <div
+            className="mb-2 flex items-center gap-3 rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-destructive text-sm"
+            role="alert"
+          >
+            <TriangleAlert aria-hidden="true" className="size-4 shrink-0" />
+            <span className="min-w-0 flex-1">Something went wrong generating that response.</span>
+            <Button className="h-7 shrink-0 gap-1.5 px-2" onClick={() => onRetry()} size="sm" variant="ghost">
+              <RefreshCw aria-hidden="true" className="size-3.5" />
+              Retry
             </Button>
-          ) : null}
-        </div>
-        <div className="rounded-2xl border bg-background/95 px-4 py-3 shadow-xl backdrop-blur-sm">
-          <PromptForm append={append} isLoading={isLoading} onNewChat={onNewChat} />
-        </div>
+          </div>
+        ) : null}
+        <PromptForm isEmpty={isEmpty} isLoading={isLoading} onNewChat={onNewChat} onSubmit={onSubmit} stop={stop} />
+        <p className="mt-2 text-center text-[11px] text-muted-foreground">
+          Web3GPT can make mistakes. Review contracts before deploying.
+        </p>
       </div>
     </div>
   )

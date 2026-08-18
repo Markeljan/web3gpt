@@ -3,11 +3,14 @@
 import type { UIMessage } from "ai"
 import { IconCheck, IconCopy } from "@/components/icons"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import type { LegacyMessage } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
-interface ChatMessageActionsProps extends React.ComponentProps<"div"> {
+const COPY_FEEDBACK_MS = 2000
+
+type ChatMessageActionsProps = React.ComponentProps<"div"> & {
   message: UIMessage | LegacyMessage
 }
 
@@ -40,21 +43,37 @@ function getMessageText(message: UIMessage | LegacyMessage): string {
 }
 
 export function ChatMessageActions({ message, className, ...props }: ChatMessageActionsProps) {
-  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
+  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: COPY_FEEDBACK_MS })
   const messageText = getMessageText(message)
+
+  if (!messageText) {
+    return null
+  }
 
   return (
     <div
       className={cn(
-        "flex items-center justify-end transition-opacity group-hover:opacity-100 md:absolute md:-top-2 md:-right-10 md:opacity-0",
+        // Always visible on touch devices, revealed on hover/focus on pointer devices.
+        "flex items-center gap-1 transition-opacity duration-150",
+        "md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100",
         className
       )}
       {...props}
     >
-      <Button onClick={() => copyToClipboard(messageText)} size="icon" variant="ghost">
-        {isCopied ? <IconCheck /> : <IconCopy />}
-        <span className="sr-only">Copy message</span>
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            aria-label={isCopied ? "Copied to clipboard" : "Copy message"}
+            className="size-8 text-muted-foreground hover:text-foreground"
+            onClick={() => copyToClipboard(messageText)}
+            size="icon"
+            variant="ghost"
+          >
+            {isCopied ? <IconCheck className="size-3.5" /> : <IconCopy className="size-3.5" />}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>{isCopied ? "Copied" : "Copy"}</TooltipContent>
+      </Tooltip>
     </div>
   )
 }

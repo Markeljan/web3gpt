@@ -56,7 +56,8 @@ export function Landing({ userId, disableAnimations }: LandingProps) {
           <CustomLogoText variant="xl">Ready, Set, Deploy</CustomLogoText>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 max-sm:mx-auto max-sm:flex max-sm:w-full max-sm:justify-center md:grid-cols-3">
+        {/* Stacked on phones: three columns in 375px wraps mid-phrase. */}
+        <div className="mx-auto grid w-full max-w-sm grid-cols-1 gap-3 sm:max-w-none sm:grid-cols-3">
           <div className="flex items-center gap-3">
             <Player
               className="size-8 flex-shrink-0"

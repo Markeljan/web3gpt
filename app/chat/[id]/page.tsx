@@ -13,7 +13,9 @@ export default async function ChatPage({ params, searchParams }: NextPageProps) 
   const searchParamsResolved = await searchParams
 
   if (!session?.user.id) {
-    redirect(`/sign-in?next=/chat/${id}`)
+    // There is no /sign-in route; sign-in happens from the header. Sending an
+    // unauthenticated reader to one produced a 404.
+    redirect("/")
   }
 
   const chat = await getChat(id)
@@ -61,6 +63,7 @@ export default async function ChatPage({ params, searchParams }: NextPageProps) 
       avatarUrl={session.user.image}
       initialChatId={chat.id}
       initialMessages={messages}
+      key={chat.id}
       userId={session.user.id}
     />
   )

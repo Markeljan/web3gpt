@@ -11,5 +11,9 @@ export default async function ContractsPage() {
     getAllDeployments(),
   ])
 
-  return <ContractsDashboard allDeployments={allDeployments || []} userDeployments={userDeployments || []} />
+  return (
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      <ContractsDashboard allDeployments={allDeployments || []} userDeployments={userDeployments || []} />
+    </div>
+  )
 }

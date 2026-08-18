@@ -1,39 +1,57 @@
-import type { UIMessage } from "ai"
+import type { ChatStatus, UIMessage } from "ai"
 import { ChatMessage } from "@/components/chat/chat-message"
-import { Separator } from "@/components/ui/separator"
+import { ThinkingIndicator } from "@/components/chat/thinking-indicator"
 import type { LegacyMessage } from "@/lib/types"
 
 export type ChatListProps = {
   messages: (UIMessage | LegacyMessage)[]
   avatarUrl?: string | null
-  isLoading?: boolean
+  agentImageUrl?: string | null
+  agentName?: string
   isStreaming?: boolean
+  status?: ChatStatus
 }
 
-export const ChatList = ({ messages, avatarUrl, isLoading, isStreaming = false }: ChatListProps) => {
-  if (!messages || messages.length === 0) {
+function hasRenderableContent(message: UIMessage | LegacyMessage): boolean {
+  if ("parts" in message && Array.isArray(message.parts)) {
+    return message.parts.some((part) => part.type !== "step-start")
+  }
+  return "content" in message && Boolean(message.content)
+}
+
+export const ChatList = ({
+  messages,
+  avatarUrl,
+  agentImageUrl,
+  agentName,
+  isStreaming = false,
+  status,
+}: ChatListProps) => {
+  const lastMessage = messages.at(-1)
+  // The request is in flight but nothing has come back yet — either no assistant
+  // turn exists, or it exists and is still empty (a tool call about to start).
+  const isAwaitingResponse =
+    status === "submitted" ||
+    (status === "streaming" && lastMessage?.role === "assistant" && !hasRenderableContent(lastMessage))
+
+  if (messages.length === 0 && !isAwaitingResponse) {
     return null
   }
 
-  // const filteredMessages = messages.filter((msg) => msg.role !== "system")
-
   return (
-    <div className="relative mx-auto flex w-full max-w-4xl flex-col p-2 max-md:max-w-2xl md:translate-x-[8%]">
-      {messages.map((message, index) => {
-        const isLastMessage = index === messages.length - 1
-        return (
-          <div className="flex w-full flex-col" key={`${message.id}`}>
-            <ChatMessage
-              avatarUrl={avatarUrl}
-              isLastMessage={isLastMessage}
-              isLoading={isLoading}
-              isStreaming={isStreaming && isLastMessage}
-              message={message}
-            />
-            {index < messages.length - 1 && <Separator className="my-4 md:my-8 md:-translate-x-[5%]" />}
-          </div>
-        )
-      })}
+    <div className="flex w-full flex-col gap-6 py-4">
+      {messages.map((message, index) => (
+        <ChatMessage
+          agentImageUrl={agentImageUrl}
+          agentName={agentName}
+          avatarUrl={avatarUrl}
+          isLastMessage={index === messages.length - 1}
+          isStreaming={isStreaming && index === messages.length - 1}
+          key={message.id}
+          message={message}
+        />
+      ))}
+      {isAwaitingResponse ? <ThinkingIndicator agentImageUrl={agentImageUrl} agentName={agentName} /> : null}
     </div>
   )
 }

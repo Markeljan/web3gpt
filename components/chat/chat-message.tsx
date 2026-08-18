@@ -1,4 +1,5 @@
 import type { UIMessage } from "ai"
+import { Check, CircleDashed, Loader2, X } from "lucide-react"
 import Image from "next/image"
 import { Fragment, memo, type ReactNode } from "react"
 import type { Components } from "react-markdown"
@@ -10,19 +11,22 @@ import {
   ChainOfThoughtHeader,
   ChainOfThoughtStep,
 } from "@/components/ai-elements/chain-of-thought"
+import { AssistantAvatar } from "@/components/chat/assistant-avatar"
 import { ChatMessageActions } from "@/components/chat/chat-message-actions"
 import { CodeBlock } from "@/components/code-block"
-import { IconUser, IconWeb3GPT } from "@/components/icons"
+import { IconUser } from "@/components/icons"
 import { MemoizedReactMarkdown } from "@/components/markdown"
 import { normalizeCodeLanguage } from "@/lib/code-language"
 import type { LegacyMessage } from "@/lib/types"
+import { cn } from "@/lib/utils"
 
 export type ChatMessageProps = {
   message: UIMessage | LegacyMessage
-  isLoading?: boolean
   isStreaming?: boolean
   isLastMessage?: boolean
   avatarUrl?: string | null
+  agentImageUrl?: string | null
+  agentName?: string
 }
 
 type MessageParts = UIMessage["parts"]
@@ -33,6 +37,7 @@ const LANGUAGE_REGEX = /language-([a-z0-9#+-]+)/i
 const NEWLINE_REGEX = /\n$/
 const REASONING_SPLIT_REGEX = /\n{2,}/
 const REASONING_HEADING_REGEX = /^#{1,6}\s*/
+const TOOL_NAME_SEPARATOR_REGEX = /[_-]+/g
 
 function splitReasoningText(text: string): { title: string; details: string } {
   const normalized = text.trim()
@@ -65,35 +70,71 @@ function getToolNameFromPart(part: MessagePart): string {
   return "unknown"
 }
 
-// Tool state icon and class mapping
-function getToolDisplay(state: string | undefined): { icon: string; className: string; isRunning: boolean } {
+// "deploy_contract" / "deploy-contract" -> "Deploy contract"
+function humanizeToolName(toolName: string): string {
+  const spaced = toolName.replace(TOOL_NAME_SEPARATOR_REGEX, " ").trim()
+  if (!spaced) {
+    return "Tool"
+  }
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1)
+}
+
+type ToolDisplay = {
+  icon: ReactNode
+  label: (name: string) => string
+  className: string
+}
+
+function getToolDisplay(state: string | undefined): ToolDisplay {
   const runningStates = ["input-streaming", "input-available", "approval-requested"]
   const completeStates = ["output-available", "approval-responded"]
   const errorStates = ["output-error", "output-denied"]
 
   if (state && runningStates.includes(state)) {
-    return { className: "animate-pulse", icon: "⏳", isRunning: true }
+    return {
+      className: "border-border bg-muted/40 text-foreground",
+      icon: (
+        <Loader2
+          aria-hidden="true"
+          className="size-3.5 animate-spin text-muted-foreground motion-reduce:animate-none"
+        />
+      ),
+      label: (name) => `Running ${name.toLowerCase()}`,
+    }
   }
   if (state && completeStates.includes(state)) {
-    return { className: "text-green-500", icon: "✓", isRunning: false }
+    return {
+      className: "border-border bg-muted/30 text-muted-foreground",
+      icon: <Check aria-hidden="true" className="size-3.5 text-primary" />,
+      label: (name) => name,
+    }
   }
   if (state && errorStates.includes(state)) {
-    return { className: "text-red-500", icon: "✗", isRunning: false }
+    return {
+      className: "border-destructive/40 bg-destructive/10 text-destructive",
+      icon: <X aria-hidden="true" className="size-3.5" />,
+      label: (name) => `${name} failed`,
+    }
   }
-  return { className: "", icon: "○", isRunning: false }
+  return {
+    className: "border-border bg-muted/30 text-muted-foreground",
+    icon: <CircleDashed aria-hidden="true" className="size-3.5" />,
+    label: (name) => name,
+  }
 }
 
 // Component for rendering tool invocation parts
 function ToolInvocationPart({ part }: { part: MessagePart }) {
-  const toolName = getToolNameFromPart(part)
+  const toolName = humanizeToolName(getToolNameFromPart(part))
   const toolState = "state" in part ? (part.state as string | undefined) : undefined
-  const { icon, className, isRunning } = getToolDisplay(toolState)
+  const { icon, label, className } = getToolDisplay(toolState)
 
   return (
-    <div className="my-2 flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2 text-muted-foreground text-sm">
-      <span className={className}>{icon}</span>
-      <span className="font-medium">{toolName}</span>
-      {isRunning && <span className="text-xs">Running...</span>}
+    <div
+      className={cn("my-1 inline-flex max-w-full items-center gap-2 rounded-lg border px-3 py-1.5 text-xs", className)}
+    >
+      {icon}
+      <span className="truncate font-medium">{label(toolName)}</span>
     </div>
   )
 }
@@ -123,12 +164,14 @@ function getMessageParts(message: UIMessage | LegacyMessage): MessageParts {
 function ChatMessageComponent({
   message,
   avatarUrl,
-  isLoading,
+  agentImageUrl,
+  agentName,
   isStreaming = false,
   isLastMessage = false,
 }: ChatMessageProps) {
   // Extract parts from message - handle both v4 (content) and v5 (parts) formats
   const messageParts = getMessageParts(message)
+  const isUser = message.role === "user"
 
   const components: Components = {
     a({ href, children }) {
@@ -178,16 +221,6 @@ function ChatMessageComponent({
     pre({ children }) {
       return <>{children}</>
     },
-  }
-
-  const renderAvatar = () => {
-    if (message.role === "user") {
-      if (avatarUrl) {
-        return <Image alt={"user avatar"} className="rounded-md" fill={true} sizes="32px" src={avatarUrl} />
-      }
-      return <IconUser />
-    }
-    return <IconWeb3GPT />
   }
 
   const getIsPartStreaming = (part: MessagePart, index: number) => {
@@ -342,7 +375,12 @@ function ChatMessageComponent({
       } else if (item.type === "text") {
         content = (
           <MemoizedReactMarkdown
-            className="prose dark:prose-invert flex max-w-full flex-col break-words prose-pre:p-0 prose-p:leading-relaxed"
+            className={cn(
+              "prose prose-pre:my-3 max-w-full break-words prose-pre:bg-transparent prose-pre:p-0 prose-p:leading-relaxed",
+              // The bubble sets its own foreground; force every prose descendant
+              // to inherit it rather than using the (inverted) prose palette.
+              isUser ? "prose-p:my-0 text-inherit [&_*]:text-inherit" : "dark:prose-invert"
+            )}
             components={components}
             remarkPlugins={[remarkGfm, remarkMath]}
           >
@@ -354,7 +392,7 @@ function ChatMessageComponent({
       } else if (item.type === "source-url" && item.part.type === "source-url") {
         content = (
           <a
-            className="my-1 inline-flex items-center gap-1 text-blue-500 text-xs hover:underline"
+            className="my-1 inline-flex items-center gap-1 text-primary text-xs hover:underline"
             href={item.part.url}
             rel="noopener noreferrer"
             target="_blank"
@@ -367,14 +405,38 @@ function ChatMessageComponent({
       return <Fragment key={item.key}>{content}</Fragment>
     })
 
-  return (
-    <div className="group relative mb-4 flex w-full items-start md:-ml-12">
-      <div className="relative flex size-8 shrink-0 select-none items-center justify-center overflow-hidden rounded-md border shadow">
-        {renderAvatar()}
+  // An assistant turn can exist before any content arrives; the list renders a
+  // thinking indicator for that state instead of an empty block.
+  if (renderItems.length === 0) {
+    return null
+  }
+
+  if (isUser) {
+    return (
+      <div className="group flex w-full flex-col items-end gap-1.5">
+        <div className="flex max-w-[85%] items-start gap-3">
+          <div className="min-w-0 overflow-hidden rounded-2xl bg-secondary px-4 py-2.5 text-secondary-foreground">
+            {renderMessageParts()}
+          </div>
+          <div className="relative mt-0.5 flex size-7 shrink-0 select-none items-center justify-center overflow-hidden rounded-full border bg-background">
+            {avatarUrl ? (
+              <Image alt="Your avatar" fill sizes="28px" src={avatarUrl} />
+            ) : (
+              <IconUser className="size-4" />
+            )}
+          </div>
+        </div>
+        <ChatMessageActions className="mr-10" message={message} />
       </div>
-      <div className="ml-1 flex-1 space-y-2 overflow-x-auto md:ml-4">
-        {renderMessageParts()}
-        {isLoading ? null : <ChatMessageActions message={message} />}
+    )
+  }
+
+  return (
+    <div className="group flex w-full items-start gap-3">
+      <AssistantAvatar className="mt-0.5" imageUrl={agentImageUrl} name={agentName} />
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <div className="min-w-0 space-y-2">{renderMessageParts()}</div>
+        <ChatMessageActions message={message} />
       </div>
     </div>
   )

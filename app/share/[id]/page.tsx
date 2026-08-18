@@ -45,19 +45,19 @@ export default async function SharePage({ params, searchParams }: NextPageProps)
   const messages = chat.messages || []
 
   return (
-    <div className="flex-1 space-y-6">
-      <div className="border-b bg-background px-4 py-6 md:px-6 md:py-8">
-        <div className="mx-auto max-w-2xl md:px-6">
-          <div className="space-y-1 md:-mx-8">
-            <h1 className="font-bold text-2xl">{title}</h1>
-            <div className="text-muted-foreground text-sm">
-              {formatDate(createdAt)} · {messages.length} messages
-            </div>
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="border-b bg-background px-4 py-6 md:py-8">
+        <div className="mx-auto w-full max-w-3xl space-y-1">
+          <h1 className="font-bold text-2xl">{title}</h1>
+          <div className="text-muted-foreground text-sm">
+            {formatDate(createdAt)} · {messages.length} messages
           </div>
         </div>
       </div>
-      {agent ? <AgentCard agent={agent} /> : <Landing userId={userId} />}
-      <ChatList avatarUrl={avatarUrl} messages={messages} />
+      <div className="mx-auto flex w-full max-w-3xl flex-col px-4 pt-6 pb-16">
+        {agent ? <AgentCard agent={agent} className="w-full max-w-none" /> : <Landing userId={userId} />}
+        <ChatList agentImageUrl={agent?.imageUrl} agentName={agent?.name} avatarUrl={avatarUrl} messages={messages} />
+      </div>
     </div>
   )
 }

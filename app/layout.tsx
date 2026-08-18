@@ -129,7 +129,8 @@ export default async function Layout({ children }: { children: ReactNode }) {
                 </PermanentSidebar>
                 <div className="flex min-w-0 flex-1 flex-col">
                   <Header />
-                  <main className="flex-1 overflow-auto bg-muted/50">{children}</main>
+                  {/* Routes own their own scroll container so chat can pin to the bottom. */}
+                  <main className="flex min-h-0 flex-1 flex-col overflow-hidden bg-background">{children}</main>
                 </div>
               </div>
               <Toaster

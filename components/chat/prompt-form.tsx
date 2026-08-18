@@ -1,195 +1,189 @@
-import type { UseChatHelpers } from "@ai-sdk/react"
-import type { UIMessage } from "ai"
-import { ArrowUp } from "lucide-react"
-import { type ChangeEvent, useCallback, useEffect, useRef, useState, useTransition } from "react"
+"use client"
+
+import { ArrowUp, Square, X } from "lucide-react"
+import { type ChangeEvent, useCallback, useEffect, useRef, useState } from "react"
 import Textarea from "react-textarea-autosize"
-import { IconClose, IconPlus, IconSpinner } from "@/components/icons"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { IconPlus } from "@/components/icons"
+import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useEnterSubmit } from "@/lib/hooks/use-enter-submit"
 import { useLocalStorage } from "@/lib/hooks/use-local-storage"
-import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom"
 import { cn } from "@/lib/utils"
 
 const GUILD_PROMPT_STORAGE_KEY = "w3gpt-guild-prompt-seen"
+// Only nudge once the reader is actually composing something, never on focus.
+const GUILD_PROMPT_MIN_CHARS = 12
 
-type PromptProps = {
-  append: UseChatHelpers<UIMessage>["sendMessage"]
-  isLoading: boolean
+type PromptFormProps = {
+  onSubmit: (text: string) => void
+  stop: () => void
   onNewChat: () => void
+  isLoading: boolean
+  isEmpty: boolean
 }
 
-export const PromptForm = ({ append, isLoading, onNewChat }: PromptProps) => {
-  const [input, setInput] = useState<string>("")
+export const PromptForm = ({ onSubmit, stop, onNewChat, isLoading, isEmpty }: PromptFormProps) => {
+  const [input, setInput] = useState("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const { formRef, onKeyDown } = useEnterSubmit()
-  const { scrollToBottom } = useScrollToBottom()
-  const [isPendingTransition, startTransition] = useTransition()
-  const isInProgress = isLoading
   const [hasSeenGuildPrompt, setHasSeenGuildPrompt] = useLocalStorage(GUILD_PROMPT_STORAGE_KEY, false)
-  const [isGuildPromptReady, setIsGuildPromptReady] = useState(false)
-  const [shouldOpenGuildPrompt, setShouldOpenGuildPrompt] = useState(false)
-  const [isGuildPromptOpen, setIsGuildPromptOpen] = useState(false)
+  const [isGuildBannerOpen, setIsGuildBannerOpen] = useState(false)
 
-  const markGuildPromptAsSeen = useCallback(() => {
+  const canSend = input.trim().length > 0 && !isLoading
+
+  // Autofocus on pointer devices only; on touch this would open the keyboard
+  // over the conversation before the reader has decided to type.
+  useEffect(() => {
+    if (window.matchMedia("(pointer: fine)").matches) {
+      inputRef.current?.focus()
+    }
+  }, [])
+
+  const dismissGuildBanner = useCallback(() => {
+    setIsGuildBannerOpen(false)
     setHasSeenGuildPrompt(true)
   }, [setHasSeenGuildPrompt])
 
-  const openGuildPrompt = useCallback(() => {
-    setIsGuildPromptOpen(true)
-    setShouldOpenGuildPrompt(false)
-    markGuildPromptAsSeen()
-  }, [markGuildPromptAsSeen])
-
-  const handleGuildPromptTrigger = () => {
-    if (!isGuildPromptReady) {
-      setShouldOpenGuildPrompt(true)
-      return
-    }
-
-    if (hasSeenGuildPrompt) {
-      return
-    }
-
-    setShouldOpenGuildPrompt(true)
-  }
-
   const handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    handleGuildPromptTrigger()
-    event.preventDefault()
-    setInput(event.target.value)
+    const value = event.target.value
+    setInput(value)
+
+    if (!hasSeenGuildPrompt && value.trim().length >= GUILD_PROMPT_MIN_CHARS) {
+      setIsGuildBannerOpen(true)
+    }
   }
 
+  // Return focus to the composer when a response finishes, but only if focus is
+  // still somewhere neutral — never yank it out of a link or button the reader
+  // is using, and never auto-focus on mount (that pops the mobile keyboard).
+  const wasLoading = useRef(false)
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [])
+    const finishedLoading = wasLoading.current && !isLoading
+    wasLoading.current = isLoading
 
-  useEffect(() => {
-    setIsGuildPromptReady(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isGuildPromptReady) {
+    if (!finishedLoading) {
       return
     }
 
-    if (hasSeenGuildPrompt) {
-      setShouldOpenGuildPrompt(false)
+    const active = document.activeElement
+    if (active === null || active === document.body) {
+      inputRef.current?.focus()
+    }
+  }, [isLoading])
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (isLoading) {
       return
     }
 
-    if (!shouldOpenGuildPrompt) {
+    const value = input.trim()
+    if (!value) {
       return
     }
 
-    openGuildPrompt()
-  }, [hasSeenGuildPrompt, isGuildPromptReady, shouldOpenGuildPrompt, openGuildPrompt])
+    setInput("")
+    onSubmit(value)
+  }
 
   return (
-    <>
-      {isGuildPromptOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 px-4 backdrop-blur-sm">
-          <div className="relative mb-24 w-full max-w-md rounded-lg border bg-background p-6 shadow-lg max-sm:mb-8">
-            <button
-              aria-label="Close join guild message"
-              className="absolute top-4 right-4 rounded-full border bg-background/80 p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-              onClick={() => setIsGuildPromptOpen(false)}
-              type="button"
-            >
-              <IconClose className="size-4" />
-            </button>
-            <h3 className="font-semibold text-lg">Join the w3gpt Guild</h3>
-            <p className="mt-2 text-muted-foreground text-sm">
-              Become part of the community to unlock special roles and stay eligible for upcoming rewards.
-            </p>
-            <div className="mt-6 flex justify-end gap-3">
-              <Button onClick={() => setIsGuildPromptOpen(false)} type="button" variant="ghost">
-                Maybe later
-              </Button>
-              <Button asChild>
-                <a
-                  href="https://guild.xyz/w3gpt"
-                  onClick={() => setIsGuildPromptOpen(false)}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  Join the Guild
-                </a>
-              </Button>
-            </div>
-          </div>
+    <div className="flex flex-col gap-2">
+      {isGuildBannerOpen ? (
+        <div className="flex items-center gap-3 rounded-xl border bg-background/95 px-3 py-2 text-sm shadow-sm">
+          <span className="min-w-0 flex-1 text-muted-foreground">
+            Join the w3gpt Guild for special roles and upcoming rewards.
+          </span>
+          <Button asChild className="h-7 shrink-0 px-2" size="sm" variant="secondary">
+            <a href="https://guild.xyz/w3gpt" onClick={dismissGuildBanner} rel="noreferrer" target="_blank">
+              Join
+            </a>
+          </Button>
+          <Button
+            aria-label="Dismiss guild invitation"
+            className="size-7 shrink-0 text-muted-foreground"
+            onClick={dismissGuildBanner}
+            size="icon"
+            variant="ghost"
+          >
+            <X aria-hidden="true" className="size-3.5" />
+          </Button>
         </div>
       ) : null}
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault()
 
-          if (isInProgress) {
-            return
-          }
-
-          const value = input.trim()
-          if (!value) {
-            return
-          }
-
-          setInput("")
-          scrollToBottom()
-          await append({ text: value })
-        }}
-        ref={formRef}
-      >
-        <div className="relative flex w-full grow flex-col overflow-hidden px-4 sm:px-6">
+      <form onSubmit={handleSubmit} ref={formRef}>
+        <div
+          className={cn(
+            "flex items-end gap-2 rounded-2xl border bg-background p-2 shadow-lg transition-colors",
+            "focus-within:border-ring/60 focus-within:ring-1 focus-within:ring-ring/30"
+          )}
+        >
           <Tooltip delayDuration={500}>
             <TooltipTrigger asChild>
               <Button
-                className={cn(
-                  buttonVariants({ size: "sm", variant: "secondary" }),
-                  "absolute top-4 left-0 size-8 rounded-full border p-0 hover:bg-secondary/80 sm:left-2"
-                )}
-                disabled={isPendingTransition || isInProgress}
-                onClick={() => {
-                  startTransition(() => {
-                    onNewChat()
-                  })
-                }}
+                aria-label="Start a new chat"
+                className="size-9 shrink-0 rounded-full text-muted-foreground hover:text-foreground"
+                disabled={isEmpty || isLoading}
+                onClick={onNewChat}
+                size="icon"
                 type="button"
+                variant="ghost"
               >
-                {isPendingTransition ? <IconSpinner /> : <IconPlus />}
-                <span className="sr-only">New Chat</span>
+                <IconPlus className="size-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>New Chat</TooltipContent>
+            <TooltipContent>New chat</TooltipContent>
           </Tooltip>
+
           <Textarea
+            aria-label="Message Web3GPT"
             autoComplete="off"
             autoCorrect="off"
-            autoFocus
-            className="max-h-[200px] min-h-[60px] w-full resize-none overflow-y-auto bg-transparent px-8 py-[1.3rem] focus-within:outline-none sm:text-sm md:min-h-[72px] md:py-[1.5rem]"
+            className="max-h-[240px] min-h-[36px] w-full flex-1 resize-none self-center bg-transparent py-2 text-base outline-none sm:text-sm"
+            maxRows={10}
             onChange={handleInputChange}
-            onFocus={handleGuildPromptTrigger}
             onKeyDown={onKeyDown}
-            placeholder="send a message"
+            placeholder="Ask Web3GPT to build or deploy a contract…"
             ref={inputRef}
             rows={1}
             spellCheck={false}
             value={input}
           />
-          <div className="absolute top-4 right-0 sm:right-2">
+
+          {isLoading ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button disabled={input === "" || isInProgress} size="icon" type="submit">
-                  <ArrowUp className="size-5" />
-                  <span className="sr-only">Send message</span>
+                <Button
+                  aria-label="Stop generating"
+                  className="size-9 shrink-0 rounded-full"
+                  onClick={stop}
+                  size="icon"
+                  type="button"
+                  variant="secondary"
+                >
+                  <Square aria-hidden="true" className="size-3.5 fill-current" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Send message</TooltipContent>
+              <TooltipContent>Stop generating</TooltipContent>
             </Tooltip>
-          </div>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  aria-label="Send message"
+                  className="size-9 shrink-0 rounded-full"
+                  disabled={!canSend}
+                  size="icon"
+                  type="submit"
+                >
+                  <ArrowUp aria-hidden="true" className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Send · Enter</TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </form>
-    </>
+    </div>
   )
 }

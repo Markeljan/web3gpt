@@ -113,6 +113,9 @@ export const CodeBlock = memo(({ language, isStreaming = false, value }: CodeBlo
         customStyle={{
           background: "transparent",
           margin: 0,
+          // Long Solidity lines must scroll inside the block rather than clip,
+          // which matters most on phones. Don't rely on the prism theme for it.
+          overflowX: "auto",
           padding: "1.5rem 1rem",
           width: "100%",
         }}
