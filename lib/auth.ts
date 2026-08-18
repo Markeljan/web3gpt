@@ -3,11 +3,28 @@ import { betterAuth } from "better-auth"
 import { nextCookies } from "better-auth/next-js"
 import { oAuthProxy } from "better-auth/plugins"
 import { headers } from "next/headers"
+import { VERCEL_ENV } from "vercel-url"
 import { APP_URL, PRODUCTION_URL } from "@/lib/config"
 import { storeUser } from "@/lib/data/kv"
 
 const THIRTY_DAYS_IN_SECONDS = 60 * 60 * 24 * 30
 const ONE_DAY_IN_SECONDS = 60 * 60 * 24
+
+const GITHUB_CLIENT_ID = process.env.BETTER_AUTH_GITHUB_ID || process.env.AUTH_GITHUB_ID || ""
+
+// This project's own GitHub OAuth app. Client ids are public — they appear in
+// every authorize URL — and only the client secret is sensitive.
+const PROJECT_GITHUB_CLIENT_ID = "Ov23liJPi5FEcJy6kRmj"
+
+// Which origin the GitHub OAuth app has registered as its callback, and so the
+// origin the callback has to be proxied through when the app is served anywhere
+// else. On Vercel that is always this project's production domain, for forks
+// too. Running locally against a fork's own OAuth app, the callback is already
+// registered on localhost, so it points at the local origin and the proxy
+// short-circuits.
+const isLocalDev = !VERCEL_ENV
+const usesProjectOAuthApp = GITHUB_CLIENT_ID === PROJECT_GITHUB_CLIENT_ID
+const OAUTH_CALLBACK_ORIGIN = isLocalDev && !usesProjectOAuthApp ? APP_URL : PRODUCTION_URL
 
 export const auth = betterAuth({
   appName: "Web3GPT",
@@ -30,7 +47,7 @@ export const auth = betterAuth({
   },
   socialProviders: {
     github: {
-      clientId: process.env.BETTER_AUTH_GITHUB_ID || process.env.AUTH_GITHUB_ID || "",
+      clientId: GITHUB_CLIENT_ID,
       clientSecret: process.env.BETTER_AUTH_GITHUB_SECRET || process.env.AUTH_GITHUB_SECRET || "",
       mapProfileToUser: (profile) => ({
         githubId: String(profile.id),
@@ -64,10 +81,10 @@ export const auth = betterAuth({
       },
     },
   },
-  // Bounces the OAuth callback through the production origin whenever the app is
-  // not served from there, replacing next-auth's AUTH_REDIRECT_PROXY_URL. Inert
-  // in production, where baseURL and productionURL are the same origin.
-  plugins: [oAuthProxy({ productionURL: PRODUCTION_URL }), nextCookies()],
+  // Bounces the OAuth callback through the origin the OAuth app registered,
+  // replacing next-auth's AUTH_REDIRECT_PROXY_URL. Inert whenever the app is
+  // already served from that origin.
+  plugins: [oAuthProxy({ productionURL: OAUTH_CALLBACK_ORIGIN }), nextCookies()],
 })
 
 export async function getSession() {

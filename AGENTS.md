@@ -92,7 +92,11 @@ Notes:
 
 - Auth is Better Auth in stateless mode: there is no auth database, sessions are encrypted into a cookie, and user records are written to KV by `storeUser`.
 - `session.user.id` is pinned to the GitHub numeric profile id (the value next-auth used). `mapProfileToUser` copies it onto the `githubId` additional field and the `user.create.before` database hook forces it as the record id. Every KV key is scoped by this id, so do not let Better Auth generate its own user ids.
-- The `oAuthProxy` plugin routes OAuth callbacks for preview and local origins through `PRODUCTION_URL` (`lib/config.ts`), replacing next-auth's `AUTH_REDIRECT_PROXY_URL`. `PRODUCTION_URL` comes from `VERCEL_PROJECT_PRODUCTION_URL`, which Vercel injects into every deployment, and falls back to the literal production origin for local dev. No env var to manage. The GitHub OAuth app only needs `<production-origin>/api/auth/callback/github` registered.
+- The `oAuthProxy` plugin routes OAuth callbacks through the origin the GitHub OAuth app registered, replacing next-auth's `AUTH_REDIRECT_PROXY_URL`. `OAUTH_CALLBACK_ORIGIN` in `lib/auth.ts` resolves it with no env var to manage:
+  - On Vercel it is `PRODUCTION_URL` (`lib/config.ts`), derived from `VERCEL_PROJECT_PRODUCTION_URL`, which Vercel injects into every deployment including previews. Correct for forks too, since each fork gets its own value.
+  - Locally it is `PRODUCTION_URL` when `AUTH_GITHUB_ID` is this project's OAuth app, so core-team local sign-in proxies through production the way it always has.
+  - Locally it is the local origin for any other `AUTH_GITHUB_ID`, so a fork running its own OAuth app with a `http://localhost:3000/api/auth/callback/github` callback signs in directly, with the proxy short-circuited.
+- Only the client *secret* is sensitive; `PROJECT_GITHUB_CLIENT_ID` in `lib/auth.ts` is public and appears in every authorize URL.
 - `app/layout.tsx` is `force-dynamic` because it resolves the session from request headers on every render.
 - Built-in agents live in `lib/constants.ts`; user-created agents are stored in KV.
 - `app/api/chat/route.ts` builds a system prompt from the selected agent and attaches tools from `lib/tools.ts`.

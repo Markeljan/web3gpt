@@ -48,6 +48,12 @@ bun install
 bun dev
 ```
 
+## Local Sign-In
+
+Create a [GitHub OAuth app](https://github.com/settings/developers) with the callback URL
+`http://localhost:3000/api/auth/callback/github`, then set `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`
+and `AUTH_SECRET` in `.env.local`. Sign-in works locally with no further configuration.
+
 ## Important Environment Variables
 
 - `OPENAI_API_KEY`
