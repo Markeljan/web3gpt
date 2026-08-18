@@ -1,7 +1,7 @@
 "use server"
 import { kv } from "@vercel/kv"
 import { revalidateTag } from "next/cache"
-import { auth } from "@/auth"
+import { getSession } from "@/lib/auth"
 import { withUser } from "@/lib/data/kv"
 import type { DbChatListItem } from "@/lib/types"
 
@@ -28,7 +28,7 @@ export const deleteChatAction = withUser<string, void>(async (id, userId) => {
 export async function storeEmailAction(email: string) {
   await kv.sadd("emails:list", email)
 
-  const session = await auth()
+  const session = await getSession()
   const userId = session?.user.id
 
   if (userId) {

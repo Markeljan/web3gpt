@@ -5,7 +5,6 @@ import { JetBrains_Mono as FontMono, Inter as FontSans } from "next/font/google"
 import { cookies } from "next/headers"
 import { ThemeProvider } from "next-themes"
 import type { ReactNode } from "react"
-import { auth } from "@/auth"
 import { Header } from "@/components/header/header"
 import { MiniAppInitializer } from "@/components/miniapp-initializer"
 import { Web3Provider } from "@/components/providers/web3-provider"
@@ -13,6 +12,7 @@ import { PermanentSidebar } from "@/components/sidebar/permanent-sidebar"
 import { SidebarContent } from "@/components/sidebar/sidebar-content"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { getSession } from "@/lib/auth"
 import { APP_URL } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
@@ -95,6 +95,10 @@ export const metadata: Metadata = {
   },
 }
 
+// The root layout resolves the session from request headers on every render,
+// so no route under it can be prerendered at build time.
+export const dynamic = "force-dynamic"
+
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "white" },
@@ -103,7 +107,7 @@ export const viewport: Viewport = {
 }
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const [session, cookieStore] = await Promise.all([auth(), cookies()])
+  const [session, cookieStore] = await Promise.all([getSession(), cookies()])
   const cookiesValue = cookieStore.get("cookie")?.value
 
   return (

@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { auth } from "@/auth"
 import { AgentCard } from "@/components/agent-card"
 import { ChatList } from "@/components/chat/chat-list"
 import { Landing } from "@/components/landing"
+import { getSession } from "@/lib/auth"
 import { APP_URL } from "@/lib/config"
 import { getAgentById } from "@/lib/data/agents"
 import { getPublishedChat } from "@/lib/data/kv"
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: NextPageProps): Promise<Metad
 export default async function SharePage({ params, searchParams }: NextPageProps) {
   const { id } = await params
   const searchParamsResolved = await searchParams
-  const [session, chat] = await Promise.all([auth(), getPublishedChat(id)])
+  const [session, chat] = await Promise.all([getSession(), getPublishedChat(id)])
   const userId = session?.user.id
 
   if (!chat?.published) {

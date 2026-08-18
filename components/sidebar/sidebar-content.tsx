@@ -1,4 +1,3 @@
-import { auth } from "@/auth"
 import { LoginButton } from "@/components/header/login-button"
 import { W3GPTLogo } from "@/components/header/logo"
 import { Navigation } from "@/components/header/navigation"
@@ -6,10 +5,11 @@ import { UserMenu } from "@/components/header/user-menu"
 import { SidebarAgents } from "@/components/sidebar/sidebar-agents"
 import { SidebarList } from "@/components/sidebar/sidebar-list"
 import { Separator } from "@/components/ui/separator"
+import { getSession } from "@/lib/auth"
 import { getChatList } from "@/lib/data/kv"
 
 export async function SidebarContent() {
-  const session = await auth()
+  const session = await getSession()
   const user = session?.user
   const chatList = await getChatList(user?.id)
 

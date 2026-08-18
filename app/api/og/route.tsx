@@ -3,8 +3,6 @@ import type { NextRequest } from "next/server"
 import { APP_URL } from "@/lib/config"
 import { getPublishedChat } from "@/lib/data/kv"
 
-export const runtime = "edge"
-
 const web3GPTLogoUrl = `${APP_URL}/assets/web3gpt.png`
 
 const DEFAULT_HEIGHT = 630

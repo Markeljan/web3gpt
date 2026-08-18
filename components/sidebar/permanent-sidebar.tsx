@@ -1,16 +1,16 @@
 "use client"
 
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import type { Session } from "next-auth"
 import { useEffect, useState } from "react"
 import { SidebarCollapsed } from "@/components/sidebar/sidebar-collapsed"
 import { Button } from "@/components/ui/button"
+import type { AuthUser } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
 type PermanentSidebarProps = {
   children: React.ReactNode
   className?: string
-  user?: Session["user"]
+  user?: AuthUser
 }
 
 export function PermanentSidebar({ children, className, user }: PermanentSidebarProps) {

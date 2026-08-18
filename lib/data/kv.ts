@@ -1,7 +1,7 @@
 import "server-only"
 import { kv } from "@vercel/kv"
 import { unstable_cache as cache, revalidateTag } from "next/cache"
-import { auth } from "@/auth"
+import { getSession } from "@/lib/auth"
 import type {
   Agent,
   DbChat,
@@ -18,7 +18,7 @@ const WALLET_DEPLOY_ARTIFACT_TTL_SECONDS = 60 * 60
 export const withUser =
   <T, R>(action: ActionWithUser<T, R>) =>
   async (data: T): Promise<R | undefined> => {
-    const session = await auth()
+    const session = await getSession()
     const userId = session?.user?.id
     if (!userId) {
       return
@@ -27,10 +27,12 @@ export const withUser =
     return action(data, userId)
   }
 
-export async function storeUser(user: { id: string }) {
+export async function storeUser(user: { id: string } & Record<string, unknown>) {
   const userKey = `user:details:${user.id}`
+  // KV rejects undefined values, and the auth profile has optional fields.
+  const details = Object.fromEntries(Object.entries(user).filter(([, value]) => value !== undefined))
 
-  await kv.hmset(userKey, user)
+  await kv.hmset(userKey, details)
 
   await kv.sadd("users:list", user.id)
 }
@@ -53,7 +55,7 @@ const getChatListCached = cache(
 )
 
 export async function getChatList(userId?: string): Promise<DbChatListItem[]> {
-  const resolvedUserId = userId ?? (await auth())?.user?.id
+  const resolvedUserId = userId ?? (await getSession())?.user?.id
   if (!resolvedUserId) {
     return []
   }
