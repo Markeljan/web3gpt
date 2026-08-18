@@ -21,8 +21,8 @@ type StreamAgentChatParams = AgentChatParams & {
 
 const providerOptions = {
   openai: {
-    reasoningSummary: "concise",
     reasoningEffort: "medium",
+    reasoningSummary: "concise",
   } satisfies OpenAIResponsesProviderOptions,
 }
 
@@ -40,8 +40,8 @@ const getAgentRuntime = async ({ agentId, userId }: Omit<AgentChatParams, "messa
 
   return {
     agent,
-    tools,
     systemPrompt: buildAgentSystemPrompt(agent.instructions || DEFAULT_AGENT.instructions),
+    tools,
   }
 }
 
@@ -49,12 +49,12 @@ export const generateAgentReply = async ({ agentId, messages, userId }: AgentCha
   const { agent, tools, systemPrompt } = await getAgentRuntime({ agentId, userId })
 
   const result = await generateText({
+    messages: await convertToModelMessages(messages),
     model: openai("gpt-5.4-nano"),
     providerOptions,
-    system: systemPrompt,
-    messages: await convertToModelMessages(messages),
-    tools,
     stopWhen: stepCountIs(5),
+    system: systemPrompt,
+    tools,
   })
 
   return { agent, result }
@@ -64,13 +64,13 @@ export const streamAgentReply = async ({ agentId, messages, onFinish, userId }: 
   const { agent, tools, systemPrompt } = await getAgentRuntime({ agentId, userId })
 
   const result = streamText({
-    model: openai("gpt-5.4-nano"),
-    providerOptions,
-    system: systemPrompt,
     messages: await convertToModelMessages(messages),
-    tools,
-    stopWhen: stepCountIs(5),
+    model: openai("gpt-5.4-nano"),
     onFinish,
+    providerOptions,
+    stopWhen: stepCountIs(5),
+    system: systemPrompt,
+    tools,
   })
 
   return { agent, result }

@@ -27,15 +27,15 @@ export const getChainDetails = (viemChain: Chain): ChainDetails => {
   }
 
   return {
-    rpcUrl: RPC_URLS[chainId] || viemChain.rpcUrls.default.http[0],
-    explorerUrl: blockscoutUrl || etherscan?.explorerUrl || viemChain.blockExplorers?.default.url || "",
-    explorerApiUrl: blockscoutUrl
-      ? buildApiUrl(blockscoutUrl)
-      : etherscan?.apiUrl || viemChain.blockExplorers?.default.apiUrl || "",
     explorerApiKey: isBlockscout
       ? process.env.BLOCKSCOUT_API_KEY || process.env.NEXT_PUBLIC_BLOCKSCOUT_API_KEY || ""
       : process.env.ETHERSCAN_API_KEY || process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY || "",
+    explorerApiUrl: blockscoutUrl
+      ? buildApiUrl(blockscoutUrl)
+      : etherscan?.apiUrl || viemChain.blockExplorers?.default.apiUrl || "",
     explorerType,
+    explorerUrl: blockscoutUrl || etherscan?.explorerUrl || viemChain.blockExplorers?.default.url || "",
+    rpcUrl: RPC_URLS[chainId] || viemChain.rpcUrls.default.http[0],
   }
 }
 

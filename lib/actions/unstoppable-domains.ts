@@ -5,25 +5,25 @@ const INFURA_API_KEY = process.env.NEXT_PUBLIC_INFURA_API_KEY
 
 const resolution = new Resolution({
   sourceConfig: {
+    ens: {
+      network: "mainnet",
+      url: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
+    },
     uns: {
       locations: {
         Layer1: {
-          url: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
           network: "mainnet",
+          url: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
         },
         Layer2: {
-          url: `https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}`,
           network: "polygon-mainnet",
+          url: `https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}`,
         },
       },
     },
-    ens: {
-      url: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
-      network: "mainnet",
-    },
     zns: {
-      url: "https://api.zilliqa.com",
       network: "mainnet",
+      url: "https://api.zilliqa.com",
     },
   },
 })

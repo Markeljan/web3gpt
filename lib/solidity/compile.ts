@@ -23,18 +23,18 @@ export async function compileContractSource({
   const sources = await prepareContractSources(contractName, sourceCode, additionalSources)
   const standardJsonInput = JSON.stringify({
     language: "Solidity",
-    sources,
     settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
       outputSelection: {
         "*": {
           "*": ["*"],
         },
       },
-      optimizer: {
-        enabled: true,
-        runs: 200,
-      },
     },
+    sources,
   } satisfies SolcInput)
 
   const fileName = getContractFileName(contractName)
@@ -55,7 +55,7 @@ export async function compileContractSource({
   return {
     abi: contract.abi,
     bytecode: ensureHashPrefix(contract.evm.bytecode.object),
-    standardJsonInput,
     sources,
+    standardJsonInput,
   }
 }

@@ -11,9 +11,9 @@ type ChatScrollAnchorProps = {
 export function ChatScrollAnchor({ trackVisibility }: ChatScrollAnchorProps) {
   const { isAtBottom } = useScrollToBottom()
   const { ref, entry, inView } = useInView({
-    trackVisibility,
     delay: 100,
     rootMargin: "0px 0px -150px 0px",
+    trackVisibility,
   })
 
   useEffect(() => {

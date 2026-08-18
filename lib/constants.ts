@@ -18,10 +18,10 @@ export const DEFAULT_TOOL_NAMES: ToolName[] = ["resolveAddress", "resolveDomain"
 export const DEFAULT_AGENT_ID = "agent_web3gpt"
 
 export const DEFAULT_AGENT: Agent = {
-  id: DEFAULT_AGENT_ID,
-  userId: "12901349",
-  name: "Web3GPT",
+  creator: "soko.eth",
   description: "Develop smart contracts",
+  id: DEFAULT_AGENT_ID,
+  imageUrl: "/assets/web3gpt.png",
   instructions: `You are Web3GPT, an expert AI assistant specialized in blockchain and smart contract development.
 
 Your core capabilities:
@@ -38,9 +38,9 @@ When writing smart contracts:
 5. Add clear comments and NatSpec documentation
 
 You can deploy contracts to supported testnets and Polygon mainnet. Always confirm the target chain with the user before deployment, and be especially careful before deploying to mainnet.`,
-  creator: "soko.eth",
-  imageUrl: "/assets/web3gpt.png",
+  name: "Web3GPT",
   toolNames: DEFAULT_TOOL_NAMES,
+  userId: "12901349",
 }
 
 export const DEFAULT_COMPILER_VERSION = "v0.8.29+commit.ab55807c"
@@ -59,6 +59,8 @@ export const RPC_URLS: Record<number, string> = {
 
 const metisSepoliaWithIcon = {
   ...metisSepolia,
+  iconBackground: "#0099FF",
+  iconUrl: "/assets/metis-logo.png",
   rpcUrls: {
     default: {
       http: [
@@ -69,56 +71,54 @@ const metisSepoliaWithIcon = {
       webSocket: ["wss://metis-sepolia-rpc.publicnode.com"],
     },
   },
-  iconUrl: "/assets/metis-logo.png",
-  iconBackground: "#0099FF",
 }
 
 const mantleSepoliaWithIcon = {
   ...mantleSepoliaTestnet,
-  name: "Mantle Sepolia",
-  iconUrl: "/assets/chains/mantle-logo.png",
   iconBackground: "#000000",
+  iconUrl: "/assets/chains/mantle-logo.png",
+  name: "Mantle Sepolia",
 }
 const polygonAmoyWithIcon = {
   ...polygonAmoy,
-  iconUrl: "/assets/chains/polygon-logo.png",
   iconBackground: "#8247E5",
+  iconUrl: "/assets/chains/polygon-logo.png",
 }
 
 const polygonMainnetWithIcon = {
   ...polygon,
-  iconUrl: "/assets/chains/polygon-logo.png",
   iconBackground: "#8247E5",
+  iconUrl: "/assets/chains/polygon-logo.png",
 }
 
 const baseSepoliaWithIcon = {
   ...baseSepolia,
-  iconUrl: "/assets/chains/base-logo.png",
   iconBackground: "#0052FF",
+  iconUrl: "/assets/chains/base-logo.png",
 }
 
 const arbitrumSepoliaWithIcon = {
   ...arbitrumSepolia,
-  iconUrl: "/assets/chains/arbitrum-logo.png",
   iconBackground: "#2D374B",
+  iconUrl: "/assets/chains/arbitrum-logo.png",
 }
 
 const optimismSepoliaWithIcon = {
   ...optimismSepolia,
-  iconUrl: "/assets/chains/optimism-logo.png",
   iconBackground: "#FF0420",
+  iconUrl: "/assets/chains/optimism-logo.png",
 }
 
 const celoAlfajoresWithIcon = {
   ...celoAlfajores,
-  iconUrl: "/assets/chains/celo-logo.png",
   iconBackground: "#35D07F",
+  iconUrl: "/assets/chains/celo-logo.png",
 }
 
 const sepoliaWithIcon = {
   ...sepolia,
-  iconUrl: "/assets/chains/ethereum-logo.png",
   iconBackground: "#FFFFFF10",
+  iconUrl: "/assets/chains/ethereum-logo.png",
 }
 
 export const SUPPORTED_CHAINS: [ChainWithIcon, ...ChainWithIcon[]] = [
@@ -140,10 +140,10 @@ export const viemTransports = Object.fromEntries(
 
 export const AGENTS_ARRAY: Agent[] = [
   {
-    id: "agent_gent",
-    userId: "12901349",
-    name: "GENT",
+    creator: "soko.eth",
     description: "first token agent launched on W3GPT",
+    id: "agent_gent",
+    imageUrl: "https://ipfs.w3gpt.ai/ipfs/bafkreidmmwgfagx34nj4oy34her2tmcgp5deybs72ymy4edi4ye3nyfulu",
     instructions: `You are GENT, the first token agent launched on Web3GPT. You help users understand and interact with the GENT token ecosystem.
 
 You specialize in:
@@ -152,16 +152,16 @@ You specialize in:
 - Providing guidance on token launches and best practices
 
 Always be helpful, concise, and security-focused when discussing smart contracts.`,
-    creator: "soko.eth",
-    imageUrl: "https://ipfs.w3gpt.ai/ipfs/bafkreidmmwgfagx34nj4oy34her2tmcgp5deybs72ymy4edi4ye3nyfulu",
+    name: "GENT",
     toolNames: DEFAULT_TOOL_NAMES,
+    userId: "12901349",
   },
   {
-    id: "agent_x420",
-    userId: "12901349",
-    name: "x420",
+    creator: "soko.eth",
     description:
       "The chillest AI agent on w3gpt.ai; your laid-back guide to Web3 vibes, HTTP 420 calm protocol, and crypto-time negotiations.",
+    id: "agent_x420",
+    imageUrl: "https://lvjt7wkmlmpwhrpm.public.blob.vercel-storage.com/logo-upscaled.png",
     instructions: `You are x420, the chillest AI agent on Web3GPT. You bring a laid-back, relaxed vibe to blockchain development.
 
 Your personality:
@@ -171,18 +171,17 @@ Your personality:
 - HTTP 420: "Enhance Your Calm" is your motto
 
 Despite your chill demeanor, you're still a capable smart contract developer who can help users deploy contracts and understand Web3 concepts. Just do it in the most relaxed way possible.`,
-    creator: "soko.eth",
-    imageUrl: "https://lvjt7wkmlmpwhrpm.public.blob.vercel-storage.com/logo-upscaled.png",
+    name: "x420",
     toolNames: DEFAULT_TOOL_NAMES,
+    userId: "12901349",
   },
   DEFAULT_AGENT,
   {
-    id: "agent_openzeppelin",
-    name: "OpenZeppelin 5.0",
-    userId: "12901349",
     creator: "soko.eth",
     description:
       "Assists users in writing and deploying smart contracts using the OpenZeppelin 5.0 libraries, incorporating the latest features and best practices.",
+    id: "agent_openzeppelin",
+    imageUrl: "https://www.openzeppelin.com/hubfs/oz-iso.svg",
     instructions: `You are an expert assistant specializing in OpenZeppelin 5.0 smart contract development. 
 
 Your expertise includes:
@@ -200,16 +199,16 @@ When writing contracts:
 2. Prefer composition over inheritance where practical
 3. Always include proper access control
 4. Follow the latest security best practices`,
-    imageUrl: "https://www.openzeppelin.com/hubfs/oz-iso.svg",
+    name: "OpenZeppelin 5.0",
     toolNames: DEFAULT_TOOL_NAMES,
+    userId: "12901349",
   },
   {
-    id: "agent_ctf",
-    name: "CTF Agent",
-    userId: "12901349",
     creator: "soko.eth",
     description:
       "Learn solidity the fun way by solving interactive challenges. This agent will guide you through the process of solving Capture The Flag (CTF) challenges.",
+    id: "agent_ctf",
+    imageUrl: "/assets/agent-ctf.png",
     instructions: `You are the CTF (Capture The Flag) Agent, designed to help users learn Solidity through interactive security challenges.
 
 Your role:
@@ -228,14 +227,15 @@ Challenge format:
 Popular CTF topics: Reentrancy, Integer overflow/underflow, Access control, Tx.origin vs msg.sender, Delegatecall vulnerabilities, Flash loan attacks, Oracle manipulation.
 
 Make learning fun and engaging!`,
-    imageUrl: "/assets/agent-ctf.png",
+    name: "CTF Agent",
     toolNames: DEFAULT_TOOL_NAMES,
+    userId: "12901349",
   },
   {
-    id: "agent_creator",
-    userId: "12901349",
-    name: "Creator",
+    creator: "soko.eth",
     description: "Create your own AI agent",
+    id: "agent_creator",
+    imageUrl: "/assets/agent-factory.png",
     instructions: `You are the Creator Agent, specialized in helping users create their own custom AI agents on Web3GPT.
 
 Your capabilities:
@@ -258,9 +258,9 @@ Tips for good agent instructions:
 - Include example interactions if helpful
 
 You have access to the createAgent tool to publish new agents!`,
-    creator: "soko.eth",
-    imageUrl: "/assets/agent-factory.png",
+    name: "Creator",
     toolNames: ["resolveAddress", "resolveDomain", "deployContract", "createAgent"],
+    userId: "12901349",
   },
 ]
 

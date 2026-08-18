@@ -12,9 +12,9 @@ type GlobalState = {
 
 export const useGlobalStore = create<GlobalState>((set) => ({
   isDeploying: false,
-  setIsDeploying: (isDeploying: boolean) => set({ isDeploying }),
 
   // last deployment data
   lastDeploymentData: undefined,
+  setIsDeploying: (isDeploying: boolean) => set({ isDeploying }),
   setLastDeploymentData: (lastDeploymentData: LastDeploymentData) => set({ lastDeploymentData }),
 }))

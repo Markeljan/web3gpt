@@ -52,21 +52,21 @@ export const deployContract = async ({
 
   const deployData = encodeDeployData({
     abi,
-    bytecode,
     args: constructorArgs,
+    bytecode,
   })
 
   const deployHash = await walletClient.deployContract({
     abi,
-    bytecode,
     account: DEPLOYER_ACCOUNT,
     args: constructorArgs,
+    bytecode,
   })
 
   const explorerUrl = getExplorerUrl({
-    viemChain,
     hash: contractAddress,
     type: "address",
+    viemChain,
   })
 
   const cid = await ipfsUploadDir(sources, abi, bytecode, standardJsonInput)
@@ -80,39 +80,39 @@ export const deployContract = async ({
   const fileName = getContractFileName(contractName)
 
   const verifyContractConfig: VerifyContractParams = {
-    deployHash,
     contractAddress,
-    standardJsonInput,
+    contractName,
+    deployHash,
     encodedConstructorArgs,
     fileName,
-    contractName,
+    standardJsonInput,
     viemChain,
   }
 
   const deploymentData: DeployContractResult = {
+    abi,
     contractAddress,
-    sourceCode,
     explorerUrl,
     ipfsUrl,
-    verifyContractConfig,
-    abi,
+    sourceCode,
     standardJsonInput,
+    verifyContractConfig,
   }
 
   await Promise.all([
     storeDeploymentAction({
       chainId,
-      deployHash,
-      contractAddress,
       cid,
+      contractAddress,
       contractName,
       deployerAddress,
+      deployHash,
     }),
     storeVerificationAction(verifyContractConfig),
     track("deployed_contract", {
+      contractAddress,
       contractName,
       explorerUrl,
-      contractAddress,
     }),
   ])
 

@@ -169,7 +169,7 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
-              className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-8 w-8")}
+              className={cn(buttonVariants({ size: "icon", variant: "ghost" }), "h-8 w-8")}
               href="https://x.com/w3gptai"
               rel="noopener noreferrer"
               target="_blank"
@@ -183,7 +183,7 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
-              className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-8 w-8")}
+              className={cn(buttonVariants({ size: "icon", variant: "ghost" }), "h-8 w-8")}
               href="https://t.me/w3gptai"
               rel="noopener noreferrer"
               target="_blank"
@@ -197,7 +197,7 @@ export const UserMenu = ({ user, variant = "header", showClearHistory = false }:
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
-              className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-8 w-8")}
+              className={cn(buttonVariants({ size: "icon", variant: "ghost" }), "h-8 w-8")}
               href="https://github.com/markeljan/web3gpt"
               rel="noopener noreferrer"
               target="_blank"

@@ -42,6 +42,7 @@ export const Chat = ({ initialChatId, initialMessages = [], agent, className, us
   const { messages, status, stop, sendMessage, setMessages, id } = useChat({
     experimental_throttle: CHAT_STREAM_THROTTLE_MS,
     id: currentChatId,
+    messages: initialMessages,
     transport: new DefaultChatTransport({
       api: "/api/chat",
       body: {
@@ -49,7 +50,6 @@ export const Chat = ({ initialChatId, initialMessages = [], agent, className, us
         chatId: currentChatId,
       },
     }),
-    messages: initialMessages,
   })
 
   const isStreaming = status === "streaming"

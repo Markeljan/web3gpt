@@ -25,13 +25,13 @@ export function Web3Provider({
       switch (theme) {
         case "system":
           return {
-            lightMode: lightTheme({
-              accentColor: "#21C55E",
-              accentColorForeground: "white",
-            }),
             darkMode: darkTheme({
               accentColor: "#21C55E",
               accentColorForeground: "black",
+            }),
+            lightMode: lightTheme({
+              accentColor: "#21C55E",
+              accentColorForeground: "white",
             }),
           }
         case "dark":

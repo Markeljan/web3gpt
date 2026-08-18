@@ -15,9 +15,9 @@ import type { SkillChat } from "@/lib/types"
 export const maxDuration = 60
 
 const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Origin": "*",
 }
 
 type SkillRequest = {
@@ -53,9 +53,9 @@ const getRequestPayload = async (request: NextRequest): Promise<SkillRequest> =>
   return {
     agentId: body.agentId || searchParams.get("agentId") || undefined,
     chatId: body.chatId || searchParams.get("chatId") || undefined,
-    message: body.message || body.prompt || searchParams.get("message") || searchParams.get("prompt") || undefined,
-    history: parseBoolean(body.history) || parseBoolean(searchParams.get("history")) || parseBoolean(body.full),
     full: parseBoolean(body.full) || parseBoolean(searchParams.get("full")),
+    history: parseBoolean(body.history) || parseBoolean(searchParams.get("history")) || parseBoolean(body.full),
+    message: body.message || body.prompt || searchParams.get("message") || searchParams.get("prompt") || undefined,
   }
 }
 
@@ -85,11 +85,11 @@ async function handleSkillRequest(request: NextRequest) {
   const existingChat = await getSkillChat(chatId)
   const activeAgentId = existingChat?.agentId || requestedAgentId
   const session: SkillChat = existingChat || {
-    id: chatId,
     agentId: activeAgentId,
     createdAt: Date.now(),
-    title: "Skill Chat",
+    id: chatId,
     messages: [],
+    title: "Skill Chat",
   }
 
   if (!message) {
@@ -114,8 +114,8 @@ async function handleSkillRequest(request: NextRequest) {
     })
 
     const assistantText = getResponseText({
-      text: result.text,
       responseMessages: result.response.messages,
+      text: result.text,
       toolResults: result.toolResults,
     })
     const nextMessages = assistantText ? [...messages, createTextMessage("assistant", assistantText)] : messages
@@ -155,7 +155,7 @@ export function POST(request: NextRequest) {
 
 export function OPTIONS() {
   return new NextResponse(null, {
-    status: 200,
     headers: CORS_HEADERS,
+    status: 200,
   })
 }

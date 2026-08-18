@@ -69,8 +69,8 @@ export const getMessageText = (message: Pick<UIMessage, "parts">): string =>
 
 export const createTextMessage = (role: "user" | "assistant", text: string): UIMessage => ({
   id: generateId(),
+  parts: [{ text, type: "text" }],
   role,
-  parts: [{ type: "text", text }],
 })
 
 export const buildChatTitle = (messages: UIMessage[], fallback = "New Chat"): string => {
@@ -84,7 +84,7 @@ export const getAssistantTextFromResponseMessages = (messages: AgentResponseMess
   messages
     .filter((message) => message.role === "assistant")
     .flatMap((message) =>
-      typeof message.content === "string" ? [{ type: "text", text: message.content }] : message.content
+      typeof message.content === "string" ? [{ text: message.content, type: "text" }] : message.content
     )
     .filter((part) => part.type === "text")
     .map((part) => part.text || "")

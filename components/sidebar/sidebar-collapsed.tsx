@@ -85,7 +85,7 @@ export function SidebarCollapsed({ user }: SidebarCollapsedProps) {
         ) : (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button className="h-10 w-10 p-0" size="sm" variant="ghost">
+              <Button aria-label="Sign in" className="h-10 w-10 p-0" size="sm" variant="ghost">
                 <User className="h-5 w-5" />
               </Button>
             </TooltipTrigger>

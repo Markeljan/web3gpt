@@ -15,11 +15,6 @@ import { SUPPORTED_CHAINS, viemTransports } from "@/lib/constants"
 
 export const wagmiConfig = createConfig({
   chains: SUPPORTED_CHAINS,
-  transports: viemTransports,
-  ssr: true,
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
   connectors: connectorsForWallets(
     [
       {
@@ -28,11 +23,16 @@ export const wagmiConfig = createConfig({
       },
     ],
     {
-      appName: "Web3GPT",
       appDescription: "Write and deploy Solidity smart contracts with AI",
-      appUrl: APP_URL,
       appIcon: "/assets/web3gpt.png",
+      appName: "Web3GPT",
+      appUrl: APP_URL,
       projectId: WALLETCONNECT_PROJECT_ID,
     }
   ),
+  ssr: true,
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
+  transports: viemTransports,
 })

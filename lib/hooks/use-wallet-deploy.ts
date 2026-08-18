@@ -33,10 +33,6 @@ export function useWalletDeploy() {
 
       try {
         const prepareResponse = await fetch("/api/wallet-deploy/prepare", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify(
             imports
               ? {
@@ -49,6 +45,10 @@ export function useWalletDeploy() {
                   sourceCode,
                 }
           ),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
         })
         const prepareResult = (await prepareResponse.json()) as {
           abi?: Abi
@@ -89,15 +89,15 @@ export function useWalletDeploy() {
 
         const deployData = encodeDeployData({
           abi,
-          bytecode,
           args: parsedConstructorArgs,
+          bytecode,
         })
 
         const deployHash = await walletClient.deployContract({
           abi,
-          bytecode,
           account: address,
           args: parsedConstructorArgs,
+          bytecode,
           value: 0n,
         })
 
@@ -108,9 +108,9 @@ export function useWalletDeploy() {
 
         const encodedConstructorArgs = deployData.slice(bytecode.length)
         const explorerUrl = getExplorerUrl({
-          viemChain,
           hash: contractAddress,
           type: "address",
+          viemChain,
         })
 
         const transactionReceipt = await walletClient.waitForTransactionReceipt({
@@ -124,18 +124,18 @@ export function useWalletDeploy() {
 
         const finalizeLoadingToast = toast.loading("Uploading to IPFS and queuing verification...")
         const finalizeResponse = await fetch("/api/wallet-deploy/finalize", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             artifactId,
             chainId,
             contractAddress,
-            deployHash,
             deployerAddress: address,
+            deployHash,
             encodedConstructorArgs,
           }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
         })
         const finalizeResult = (await finalizeResponse.json()) as {
           error?: string
@@ -152,16 +152,16 @@ export function useWalletDeploy() {
         toast.success("Uploaded to IPFS successfully!")
 
         const deploymentData: LastDeploymentData = {
-          walletAddress: address,
-          contractAddress,
-          chainId,
-          transactionHash: deployHash,
-          ipfsUrl: finalizeResult.ipfsUrl,
-          explorerUrl: finalizeResult.explorerUrl || explorerUrl,
-          verifyContractConfig: finalizeResult.verifyContractConfig,
-          standardJsonInput,
           abi,
+          chainId,
+          contractAddress,
+          explorerUrl: finalizeResult.explorerUrl || explorerUrl,
+          ipfsUrl: finalizeResult.ipfsUrl,
           sourceCode,
+          standardJsonInput,
+          transactionHash: deployHash,
+          verifyContractConfig: finalizeResult.verifyContractConfig,
+          walletAddress: address,
         }
 
         setLastDeploymentData(deploymentData)

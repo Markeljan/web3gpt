@@ -50,11 +50,11 @@ export const verifyContract = async ({
   params.append("apikey", explorerApiKey)
 
   const response = await fetch(explorerApiUrl, {
-    method: "POST",
+    body: params.toString(),
     headers: {
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
     },
-    body: params.toString(),
+    method: "POST",
   })
 
   if (!response.ok) {
@@ -85,11 +85,11 @@ export const checkVerifyStatus = async (guid: string, viemChain: Chain): Promise
   params.append("guid", guid)
 
   const response = await fetch(explorerApiUrl, {
-    method: "POST",
+    body: params.toString(),
     headers: {
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
     },
-    body: params.toString(),
+    method: "POST",
   })
 
   if (!response.ok) {

@@ -38,14 +38,14 @@ function splitReasoningText(text: string): { title: string; details: string } {
   const normalized = text.trim()
 
   if (!normalized) {
-    return { title: "Thinking", details: "" }
+    return { details: "", title: "Thinking" }
   }
 
   const [headline, ...rest] = normalized.split(REASONING_SPLIT_REGEX)
 
   return {
-    title: headline.replace(REASONING_HEADING_REGEX, "").trim() || "Thinking",
     details: rest.join("\n\n").trim(),
+    title: headline.replace(REASONING_HEADING_REGEX, "").trim() || "Thinking",
   }
 }
 
@@ -72,15 +72,15 @@ function getToolDisplay(state: string | undefined): { icon: string; className: s
   const errorStates = ["output-error", "output-denied"]
 
   if (state && runningStates.includes(state)) {
-    return { icon: "⏳", className: "animate-pulse", isRunning: true }
+    return { className: "animate-pulse", icon: "⏳", isRunning: true }
   }
   if (state && completeStates.includes(state)) {
-    return { icon: "✓", className: "text-green-500", isRunning: false }
+    return { className: "text-green-500", icon: "✓", isRunning: false }
   }
   if (state && errorStates.includes(state)) {
-    return { icon: "✗", className: "text-red-500", isRunning: false }
+    return { className: "text-red-500", icon: "✗", isRunning: false }
   }
-  return { icon: "○", className: "", isRunning: false }
+  return { className: "", icon: "○", isRunning: false }
 }
 
 // Component for rendering tool invocation parts
@@ -110,7 +110,7 @@ function getMessageParts(message: UIMessage | LegacyMessage): MessageParts {
   if ("content" in message && message.content) {
     const content = message.content
     if (typeof content === "string") {
-      return [{ type: "text", text: content }]
+      return [{ text: content, type: "text" }]
     }
     if (Array.isArray(content)) {
       return content as MessageParts
@@ -131,12 +131,6 @@ function ChatMessageComponent({
   const messageParts = getMessageParts(message)
 
   const components: Components = {
-    p({ children }) {
-      return <p className="mb-2 last:mb-0">{children}</p>
-    },
-    pre({ children }) {
-      return <>{children}</>
-    },
     a({ href, children }) {
       return (
         <a href={href} rel="noopener noreferrer" target="_blank">
@@ -178,6 +172,12 @@ function ChatMessageComponent({
         />
       )
     },
+    p({ children }) {
+      return <p className="mb-2 last:mb-0">{children}</p>
+    },
+    pre({ children }) {
+      return <>{children}</>
+    },
   }
 
   const renderAvatar = () => {
@@ -202,8 +202,8 @@ function ChatMessageComponent({
       if (part.type === "reasoning") {
         entries.push({
           index,
-          part: part as ReasoningPart,
           isStreaming: getIsPartStreaming(part, index),
+          part: part as ReasoningPart,
         })
       }
 
@@ -333,8 +333,8 @@ function ChatMessageComponent({
     )
   }
 
-  const renderMessageParts = () => {
-    return renderItems.map((item) => {
+  const renderMessageParts = () =>
+    renderItems.map((item) => {
       let content: ReactNode = null
 
       if (item.type === "reasoning") {
@@ -366,7 +366,6 @@ function ChatMessageComponent({
 
       return <Fragment key={item.key}>{content}</Fragment>
     })
-  }
 
   return (
     <div className="group relative mb-4 flex w-full items-start md:-ml-12">

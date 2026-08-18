@@ -30,6 +30,7 @@ export function PermanentSidebar({ children, className, user }: PermanentSidebar
     >
       {/* Collapse Toggle */}
       <Button
+        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         className="absolute top-6 -right-3 z-10 h-6 w-6 rounded-full border bg-background shadow-md hover:bg-accent"
         onClick={() => setIsCollapsed(!isCollapsed)}
         size="sm"

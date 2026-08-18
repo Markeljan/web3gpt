@@ -10,19 +10,19 @@ type NavigationItem = {
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [
   {
-    name: "Chat",
     href: "/",
     icon: MessagesSquare,
+    name: "Chat",
   },
   {
-    name: "Contracts",
     href: "/contracts",
     icon: Code,
+    name: "Contracts",
   },
   {
-    name: "Docs",
+    external: true,
     href: "https://docs.w3gpt.ai",
     icon: BookText,
-    external: true,
+    name: "Docs",
   },
 ]

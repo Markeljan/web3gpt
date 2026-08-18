@@ -27,71 +27,71 @@ const fontMono = FontMono({
 })
 
 const STRINGIFIED_MINIAPP = JSON.stringify({
-  version: "1",
-  imageUrl: `${APP_URL}/opengraph-image.png`,
   button: {
-    title: "🚀 Launch Web3GPT",
     action: {
-      type: "launch_frame",
       name: "Web3GPT",
-      url: APP_URL,
-      splashImageUrl: `${APP_URL}/assets/web3gpt.png`,
       splashBackgroundColor: "#262626",
+      splashImageUrl: `${APP_URL}/assets/web3gpt.png`,
+      type: "launch_frame",
+      url: APP_URL,
     },
+    title: "🚀 Launch Web3GPT",
   },
+  imageUrl: `${APP_URL}/opengraph-image.png`,
+  version: "1",
 })
 
 export const metadata: Metadata = {
+  authors: [{ name: "Markeljan" }],
+  creator: "Markeljan",
+  description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
+  icons: {
+    apple: "/apple-touch-icon.png",
+    icon: "/assets/web3gpt.png",
+    shortcut: "/favicon-16x16.png",
+  },
+  keywords: ["smart contracts", "AI", "web3", "blockchain", "ethereum", "solidity", "development"],
+  metadataBase: new URL(APP_URL),
+  openGraph: {
+    description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
+    images: [
+      {
+        alt: "Web3GPT",
+        height: 630,
+        url: `${APP_URL}/opengraph-image.png`,
+        width: 1200,
+      },
+    ],
+    locale: "en_US",
+    siteName: "Web3GPT",
+    title: "Web3GPT",
+    type: "website",
+    url: APP_URL,
+  },
+  other: {
+    "fc:frame": STRINGIFIED_MINIAPP,
+    "fc:miniapp": STRINGIFIED_MINIAPP,
+  },
+  publisher: "W3GPT",
+  robots: {
+    follow: true,
+    googleBot: {
+      follow: true,
+      index: true,
+    },
+    index: true,
+  },
   title: {
     default: "Web3GPT",
     template: "%s - Web3GPT",
   },
-  description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
-  keywords: ["smart contracts", "AI", "web3", "blockchain", "ethereum", "solidity", "development"],
-  authors: [{ name: "Markeljan" }],
-  creator: "Markeljan",
-  publisher: "W3GPT",
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
-  },
-  icons: {
-    icon: "/assets/web3gpt.png",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
-  },
-  metadataBase: new URL(APP_URL),
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: APP_URL,
-    title: "Web3GPT",
-    description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
-    siteName: "Web3GPT",
-    images: [
-      {
-        url: `${APP_URL}/opengraph-image.png`,
-        width: 1200,
-        height: 630,
-        alt: "Web3GPT",
-      },
-    ],
-  },
   twitter: {
     card: "summary_large_image",
-    title: "Web3GPT",
-    description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
-    site: "@w3gptai",
     creator: "@soko_eth",
+    description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
     images: [`${APP_URL}/twitter-image.png`],
-  },
-  other: {
-    "fc:miniapp": STRINGIFIED_MINIAPP,
-    "fc:frame": STRINGIFIED_MINIAPP,
+    site: "@w3gptai",
+    title: "Web3GPT",
   },
 }
 
@@ -101,8 +101,8 @@ export const dynamic = "force-dynamic"
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
+    { color: "white", media: "(prefers-color-scheme: light)" },
+    { color: "black", media: "(prefers-color-scheme: dark)" },
   ],
 }
 

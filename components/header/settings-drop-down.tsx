@@ -53,7 +53,7 @@ export function SettingsDropDown() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+                className={cn(buttonVariants({ size: "icon", variant: "ghost" }))}
                 href="https://twitter.com/w3gptai"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -67,7 +67,7 @@ export function SettingsDropDown() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+                className={cn(buttonVariants({ size: "icon", variant: "ghost" }))}
                 href="https://t.me/w3gptai"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -81,7 +81,7 @@ export function SettingsDropDown() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+                className={cn(buttonVariants({ size: "icon", variant: "ghost" }))}
                 href="https://github.com/markeljan/web3gpt"
                 rel="noopener noreferrer"
                 target="_blank"

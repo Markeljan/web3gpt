@@ -28,10 +28,10 @@ const setVerificationFailure = async (
   errorMessage: string
 ) => {
   await updateVerification(deployHash, {
-    verificationAttempts,
-    verificationStatus,
     lastCheckedAt: Date.now(),
     lastVerificationError: errorMessage,
+    verificationAttempts,
+    verificationStatus,
   })
 }
 
@@ -46,12 +46,12 @@ const submitVerification = async (verificationData: VerificationQueueItem) => {
 
   if (submission.status === "1" && submission.message === "OK" && submission.result) {
     await updateVerification(verificationData.deployHash, {
+      lastCheckedAt: Date.now(),
+      lastVerificationError: "",
+      submittedAt: verificationData.submittedAt || Date.now(),
       verificationAttempts,
       verificationGuid: submission.result,
       verificationStatus: "submitted",
-      submittedAt: verificationData.submittedAt || Date.now(),
-      lastCheckedAt: Date.now(),
-      lastVerificationError: "",
     })
     return "submitted" as const
   }
@@ -80,10 +80,10 @@ const checkSubmittedVerification = async (verificationData: VerificationQueueIte
 
   if (isPending(verificationStatus.result)) {
     await updateVerification(verificationData.deployHash, {
-      verificationAttempts,
-      verificationStatus: "submitted",
       lastCheckedAt: Date.now(),
       lastVerificationError: "",
+      verificationAttempts,
+      verificationStatus: "submitted",
     })
     return "pending" as const
   }
@@ -102,13 +102,13 @@ export async function processVerifications() {
   const verifications = await getVerifications()
   const queuedVerifications = verifications.slice(0, VERIFICATION_LIMIT)
   const result = {
-    success: true,
-    verificationCount: verifications.length,
+    failed: 0,
+    pending: 0,
     processed: queuedVerifications.length,
     submitted: 0,
-    pending: 0,
+    success: true,
+    verificationCount: verifications.length,
     verified: 0,
-    failed: 0,
   }
 
   for (const verificationData of queuedVerifications) {

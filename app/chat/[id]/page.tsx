@@ -43,15 +43,15 @@ export default async function ChatPage({ params, searchParams }: NextPageProps) 
     if ("content" in msg && typeof msg.content === "string") {
       return {
         id: msg.id,
+        parts: [{ text: msg.content, type: "text" }],
         role: msg.role,
-        parts: [{ type: "text", text: msg.content }],
       } as UIMessage
     }
     // Fallback: create empty message
     return {
       id: msg.id,
+      parts: [{ text: "", type: "text" }],
       role: msg.role,
-      parts: [{ type: "text", text: "" }],
     } as UIMessage
   })
 

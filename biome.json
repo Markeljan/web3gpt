@@ -26,7 +26,8 @@
       "!**/dist",
       "!**/.next",
       "!next-env.d.ts",
-      "!components/ui"
+      "!components/ui",
+      "!**/*.svg"
     ],
     "maxSize": 5242880
   },
@@ -61,10 +62,14 @@
           "options": {
             "maxAllowedComplexity": 30
           }
-        }
+        },
+        "noUselessCatchBinding": "warn"
       },
       "suspicious": {
-        "noConsole": "off"
+        "noConsole": "off",
+        "noLeakedRender": "warn",
+        "noUnnecessaryConditions": "warn",
+        "noShadow": "warn"
       },
       "style": {
         "useConsistentTypeDefinitions": {
@@ -72,7 +77,14 @@
           "options": {
             "style": "type"
           }
-        }
+        },
+        "useDestructuring": "warn",
+        "noIncrementDecrement": "warn"
+      },
+      "performance": {
+        "noJsxPropsBind": "warn",
+        "noAwaitInLoops": "warn",
+        "noImgElement": "warn"
       }
     }
   },
@@ -83,5 +95,17 @@
     "formatter": {
       "enabled": false
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["app/api/og/route.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnknownAttribute": "off"
+          }
+        }
+      }
+    }
+  ]
 }

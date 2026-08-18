@@ -13,16 +13,16 @@ import { formatDate } from "@/lib/utils"
 export async function generateMetadata({ params }: NextPageProps): Promise<Metadata> {
   const { id } = await params
   const metadata: Metadata = {
-    title: "Shared Chat",
     description: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
     openGraph: {
       images: [`${APP_URL}/api/og?id=${id}&h=630`],
       url: `${APP_URL}/share/${id}`,
     },
+    title: "Shared Chat",
     twitter: {
       card: "summary_large_image",
-      site: "@w3gptai",
       images: [`${APP_URL}/api/og?id=${id}&h=675`],
+      site: "@w3gptai",
     },
   }
   return metadata

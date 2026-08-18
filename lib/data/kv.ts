@@ -78,17 +78,14 @@ export async function getPublishedChat(id: string) {
   return chat
 }
 
-export const getSkillChat = async (id: string): Promise<SkillChat | null> => {
-  return await kv.hgetall<SkillChat>(`skill-chat:${id}`)
-}
+export const getSkillChat = async (id: string): Promise<SkillChat | null> =>
+  await kv.hgetall<SkillChat>(`skill-chat:${id}`)
 
 export async function storeSkillChat(chat: SkillChat) {
   await kv.hmset(`skill-chat:${chat.id}`, chat)
 }
 
-export const getAgent = async (id: string): Promise<Agent | null> => {
-  return await kv.hgetall<Agent>(`agent:${id}`)
-}
+export const getAgent = async (id: string): Promise<Agent | null> => await kv.hgetall<Agent>(`agent:${id}`)
 
 export const getAllAgents = async (): Promise<Agent[]> => {
   const agentIds = await kv.smembers<string[]>("agents:list")
@@ -123,8 +120,8 @@ export const getVerifications = async () => {
   do {
     // Use SCAN instead of KEYS to avoid blocking
     const [nextCursor, keys] = await kv.scan(cursor, {
-      match: "verification:*",
       count: BATCH_SIZE,
+      match: "verification:*",
     })
 
     cursor = Number.parseInt(nextCursor, 10)
@@ -150,11 +147,11 @@ export const deleteVerification = async (deployHash: string) => {
 export const storeVerification = async (data: VerifyContractParams) => {
   await kv.hmset(`verification:${data.deployHash}`, {
     ...data,
+    lastVerificationError: data.lastVerificationError || "",
     queuedAt: data.queuedAt || Date.now(),
     verificationAttempts: data.verificationAttempts || 0,
-    verificationStatus: data.verificationStatus || "queued",
     verificationGuid: data.verificationGuid || "",
-    lastVerificationError: data.lastVerificationError || "",
+    verificationStatus: data.verificationStatus || "queued",
   })
 }
 
@@ -166,8 +163,8 @@ export const storeDeployment = async (data: DeploymentRecord, userId = "anon") =
   await Promise.all([
     kv.hmset(`deployment:${data.cid}`, data),
     kv.zadd(`user:deployments:${userId}`, {
-      score: Date.now(),
       member: `deployment:${data.cid}`,
+      score: Date.now(),
     }),
   ])
 }
@@ -178,9 +175,8 @@ export const storeWalletDeployArtifact = async (artifactId: string, artifact: Wa
   })
 }
 
-export const getWalletDeployArtifact = async (artifactId: string) => {
-  return await kv.get<WalletDeployArtifact>(`wallet-deploy:${artifactId}`)
-}
+export const getWalletDeployArtifact = async (artifactId: string) =>
+  await kv.get<WalletDeployArtifact>(`wallet-deploy:${artifactId}`)
 
 export const deleteWalletDeployArtifact = async (artifactId: string) => {
   await kv.del(`wallet-deploy:${artifactId}`)
@@ -212,8 +208,8 @@ export const storeChat = withUser<
   await Promise.all([
     kv.hmset(`chat:${data.id}`, payload),
     kv.zadd(`user:chat:${userId}`, {
-      score: data.createdAt,
       member: `chat:${data.id}`,
+      score: data.createdAt,
     }),
   ])
 
@@ -244,8 +240,8 @@ export const getAllDeployments = async () => {
 
   // Use SCAN instead of KEYS to avoid blocking
   const [_, keys] = await kv.scan(0, {
-    match: "deployment:*",
     count: BATCH_SIZE,
+    match: "deployment:*",
   })
 
   if (keys && keys.length > 0) {

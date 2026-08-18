@@ -48,13 +48,13 @@ export function SidebarActions({ chat }: SidebarActionsProps) {
     copyToClipboard(`${APP_URL}/share/${chat.id}`)
     setShareDialogOpen(false)
     toast.success("Share link copied to clipboard", {
+      icon: "📋",
       style: {
-        borderRadius: "10px",
         background: "#333",
+        borderRadius: "10px",
         color: "#fff",
         fontSize: "14px",
       },
-      icon: "📋",
     })
   }, [chat.id, copyToClipboard])
 

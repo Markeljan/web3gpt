@@ -24,7 +24,7 @@ export function LoginButton({
       disabled={isLoading}
       onClick={() => {
         setIsLoading(true)
-        signIn.social({ provider: "github", callbackURL: "/" })
+        signIn.social({ callbackURL: "/", provider: "github" })
       }}
       variant="outline"
       {...props}

@@ -57,14 +57,14 @@ export function ContractsDashboard({
   allDeployments: DeploymentRecordBase[]
 }) {
   const [filters, setFilters] = useState<FilterState>({
-    selectedChain: null,
     activeCategory: "my-contracts",
+    selectedChain: null,
   })
 
   const [pagination, setPagination] = useState<PaginationState>({
     currentPage: 1,
-    totalPages: 1,
     totalItems: 0,
+    totalPages: 1,
   })
 
   // Generate unique keys for deployments to avoid duplication
@@ -150,8 +150,8 @@ export function ContractsDashboard({
 
     setPagination((prev) => ({
       currentPage: prev.currentPage > totalPages ? 1 : prev.currentPage,
-      totalPages,
       totalItems,
+      totalPages,
     }))
   }, [filteredDeployments.length, filters.activeCategory])
 
@@ -174,7 +174,7 @@ export function ContractsDashboard({
       activeCategory: category,
       selectedChain: null, // Reset chain filter when changing category
     }))
-    setPagination({ currentPage: 1, totalPages: 1, totalItems: 0 })
+    setPagination({ currentPage: 1, totalItems: 0, totalPages: 1 })
   }, [])
 
   const goToPage = useCallback(
@@ -188,32 +188,32 @@ export function ContractsDashboard({
 
   const categoryButtons = [
     {
-      id: "my-contracts" as const,
-      label: "My Contracts",
-      icon: Users,
       count: deduplicatedUserDeployments.length,
       description: "View and manage your deployed smart contracts",
+      icon: Users,
+      id: "my-contracts" as const,
+      label: "My Contracts",
     },
     {
-      id: "all-contracts" as const,
-      label: "All Contracts",
-      icon: Layers,
       count: deduplicatedAllDeployments.length,
       description: "Explore deployed smart contracts",
+      icon: Layers,
+      id: "all-contracts" as const,
+      label: "All Contracts",
     },
     {
-      id: "leaderboard" as const,
-      label: "Leaderboard",
-      icon: Trophy,
       count: null,
       description: "Track rankings and compete with other builders",
+      icon: Trophy,
+      id: "leaderboard" as const,
+      label: "Leaderboard",
     },
     {
-      id: "rewards" as const,
-      label: "Rewards",
-      icon: Gift,
       count: null,
       description: "Earn rewards for completing deployment challenges",
+      icon: Gift,
+      id: "rewards" as const,
+      label: "Rewards",
     },
   ]
 
@@ -487,9 +487,9 @@ export function ContractsDashboard({
                                     <Link
                                       className="opacity-0 transition-opacity group-hover:opacity-100"
                                       href={getExplorerUrl({
-                                        viemChain: chain,
                                         hash: deployment.contractAddress,
                                         type: "address",
+                                        viemChain: chain,
                                       })}
                                       rel="noopener noreferrer"
                                       target="_blank"
@@ -646,9 +646,9 @@ export function ContractsDashboard({
                               <Link
                                 className="group flex items-center gap-2 rounded-lg bg-muted/50 p-2 transition-colors hover:bg-muted/80"
                                 href={getExplorerUrl({
-                                  viemChain: chain,
                                   hash: deployment.contractAddress,
                                   type: "address",
+                                  viemChain: chain,
                                 })}
                                 rel="noopener noreferrer"
                                 target="_blank"
@@ -673,9 +673,9 @@ export function ContractsDashboard({
                               <Link
                                 className="group flex items-center gap-2 rounded-lg bg-muted/50 p-2 transition-colors hover:bg-muted/80"
                                 href={getExplorerUrl({
-                                  viemChain: chain,
                                   hash: deployment.deployHash,
                                   type: "tx",
+                                  viemChain: chain,
                                 })}
                                 rel="noopener noreferrer"
                                 target="_blank"

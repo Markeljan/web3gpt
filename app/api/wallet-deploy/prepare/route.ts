@@ -30,8 +30,8 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json({
-      artifactId,
       abi: compiledContract.abi,
+      artifactId,
       bytecode: compiledContract.bytecode,
       standardJsonInput: compiledContract.standardJsonInput,
     })

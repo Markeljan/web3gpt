@@ -83,8 +83,8 @@ export async function GET(req: NextRequest) {
       </div>
     </div>,
     {
-      width: 1200,
       height: height ? Number.parseInt(height, 10) : DEFAULT_HEIGHT,
+      width: 1200,
     }
   )
 }

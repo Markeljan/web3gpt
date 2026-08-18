@@ -20,37 +20,37 @@ const DYNAMIC_ACCOUNT_ASSOCIATION =
       }
 export function GET() {
   const manifest = {
-    miniapp: {
-      version: "1",
-      name: "Web3GPT",
-      homeUrl: DYNAMIC_URL,
-      iconUrl: `${DYNAMIC_URL}/assets/web3gpt.png`,
-      splashImageUrl: `${DYNAMIC_URL}/assets/web3gpt.png`,
-      splashBackgroundColor: "#262626",
-      subtitle: "Deploy contracts with AI",
-      description:
-        "Deploy smart contracts, create AI Agents, do more onchain with AI. Build and interact with the blockchain using natural language.",
-      screenshotUrls: [`${DYNAMIC_URL}/opengraph-image.png`],
-      primaryCategory: "developer-tools",
-      tags: ["smart-contracts", "ai", "blockchain", "ethereum", "developer"],
-      heroImageUrl: `${DYNAMIC_URL}/opengraph-image.png`,
-      tagline: "Build onchain with AI",
-      ogTitle: "Web3GPT",
-      ogDescription: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
-      ogImageUrl: `${DYNAMIC_URL}/opengraph-image.png`,
-      noindex: false,
-      canonicalDomain: new URL(DYNAMIC_URL).hostname,
-    },
     accountAssociation: DYNAMIC_ACCOUNT_ASSOCIATION,
     baseBuilder: {
       allowedAddresses: ["0x5511341D9dD0A1891b4251bC8850B2ECF03628aF"],
+    },
+    miniapp: {
+      canonicalDomain: new URL(DYNAMIC_URL).hostname,
+      description:
+        "Deploy smart contracts, create AI Agents, do more onchain with AI. Build and interact with the blockchain using natural language.",
+      heroImageUrl: `${DYNAMIC_URL}/opengraph-image.png`,
+      homeUrl: DYNAMIC_URL,
+      iconUrl: `${DYNAMIC_URL}/assets/web3gpt.png`,
+      name: "Web3GPT",
+      noindex: false,
+      ogDescription: "Deploy smart contracts, create AI Agents, do more onchain with AI.",
+      ogImageUrl: `${DYNAMIC_URL}/opengraph-image.png`,
+      ogTitle: "Web3GPT",
+      primaryCategory: "developer-tools",
+      screenshotUrls: [`${DYNAMIC_URL}/opengraph-image.png`],
+      splashBackgroundColor: "#262626",
+      splashImageUrl: `${DYNAMIC_URL}/assets/web3gpt.png`,
+      subtitle: "Deploy contracts with AI",
+      tagline: "Build onchain with AI",
+      tags: ["smart-contracts", "ai", "blockchain", "ethereum", "developer"],
+      version: "1",
     },
   }
 
   return NextResponse.json(manifest, {
     headers: {
-      "Content-Type": "application/json",
       "Cache-Control": "public, max-age=86400",
+      "Content-Type": "application/json",
     },
   })
 }

@@ -29,37 +29,17 @@ const OAUTH_CALLBACK_ORIGIN = isLocalDev && !usesProjectOAuthApp ? APP_URL : PRO
 export const auth = betterAuth({
   appName: "Web3GPT",
   baseURL: APP_URL,
-  secret: process.env.BETTER_AUTH_SECRET || process.env.AUTH_SECRET,
-  // No database: sessions are signed/encrypted into the cookie, matching the
-  // JWT strategy this app used under next-auth. User records live in KV.
-  session: {
-    expiresIn: THIRTY_DAYS_IN_SECONDS,
-    updateAge: ONE_DAY_IN_SECONDS,
-  },
-  user: {
-    additionalFields: {
-      githubId: {
-        type: "string",
-        required: false,
-        input: true,
-      },
-    },
-  },
-  socialProviders: {
-    github: {
-      clientId: GITHUB_CLIENT_ID,
-      clientSecret: process.env.BETTER_AUTH_GITHUB_SECRET || process.env.AUTH_GITHUB_SECRET || "",
-      mapProfileToUser: (profile) => ({
-        githubId: String(profile.id),
-        // GitHub omits the email when the user keeps it private and the
-        // /user/emails lookup finds nothing public.
-        email: profile.email || `${profile.id}+${profile.login}@users.noreply.github.com`,
-      }),
-    },
-  },
   databaseHooks: {
     user: {
       create: {
+        after: async (user) => {
+          await storeUser({
+            email: user.email,
+            id: user.id,
+            image: user.image ?? null,
+            name: user.name,
+          })
+        },
         // Every KV key in this app is scoped by the GitHub numeric id that
         // next-auth used as `session.user.id`. Pinning the id here keeps
         // existing chats, agents and deployments attached to their owners.
@@ -70,14 +50,6 @@ export const auth = betterAuth({
           }
           return Promise.resolve({ data: { ...user, id: githubId } })
         },
-        after: async (user) => {
-          await storeUser({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            image: user.image ?? null,
-          })
-        },
       },
     },
   },
@@ -85,6 +57,34 @@ export const auth = betterAuth({
   // replacing next-auth's AUTH_REDIRECT_PROXY_URL. Inert whenever the app is
   // already served from that origin.
   plugins: [oAuthProxy({ productionURL: OAUTH_CALLBACK_ORIGIN }), nextCookies()],
+  secret: process.env.BETTER_AUTH_SECRET || process.env.AUTH_SECRET,
+  // No database: sessions are signed/encrypted into the cookie, matching the
+  // JWT strategy this app used under next-auth. User records live in KV.
+  session: {
+    expiresIn: THIRTY_DAYS_IN_SECONDS,
+    updateAge: ONE_DAY_IN_SECONDS,
+  },
+  socialProviders: {
+    github: {
+      clientId: GITHUB_CLIENT_ID,
+      clientSecret: process.env.BETTER_AUTH_GITHUB_SECRET || process.env.AUTH_GITHUB_SECRET || "",
+      mapProfileToUser: (profile) => ({
+        // GitHub omits the email when the user keeps it private and the
+        // /user/emails lookup finds nothing public.
+        email: profile.email || `${profile.id}+${profile.login}@users.noreply.github.com`,
+        githubId: String(profile.id),
+      }),
+    },
+  },
+  user: {
+    additionalFields: {
+      githubId: {
+        input: true,
+        required: false,
+        type: "string",
+      },
+    },
+  },
 })
 
 export async function getSession() {

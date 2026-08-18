@@ -43,25 +43,25 @@ export async function POST(request: Request) {
     const session = await getSession()
     const userId = session?.user?.id || "anon"
     const explorerUrl = getExplorerUrl({
-      viemChain,
       hash: contractAddress,
       type: "address",
+      viemChain,
     })
     const ipfsUrl = getIpfsUrl(cid)
 
     const verifyContractConfig: VerifyContractParams = {
-      deployHash,
       contractAddress,
-      standardJsonInput: artifact.standardJsonInput,
+      contractName: artifact.contractName,
+      deployHash,
       encodedConstructorArgs,
       fileName: getContractFileName(artifact.contractName),
-      contractName: artifact.contractName,
+      standardJsonInput: artifact.standardJsonInput,
       viemChain: {
+        blockExplorers: viemChain.blockExplorers,
         id: viemChain.id,
         name: viemChain.name,
         nativeCurrency: viemChain.nativeCurrency,
         rpcUrls: viemChain.rpcUrls,
-        blockExplorers: viemChain.blockExplorers,
       },
     }
 
@@ -83,8 +83,8 @@ export async function POST(request: Request) {
     await deleteWalletDeployArtifact(artifactId)
     Promise.resolve(
       track("deployed_contract", {
-        contractName: artifact.contractName,
         contractAddress,
+        contractName: artifact.contractName,
         explorerUrl,
       })
     ).catch(() => undefined)

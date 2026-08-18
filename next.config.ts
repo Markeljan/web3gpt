@@ -1,43 +1,9 @@
 import type { NextConfig } from "next"
 
 const config: NextConfig = {
-  // Migrated from webpack config for Turbopack compatibility
-  serverExternalPackages: ["pino-pretty", "lokijs", "encoding"],
-  turbopack: {},
-  // Keep webpack config for fallback when using --webpack flag
-  webpack: (config) => {
-    config.externals.push("pino-pretty", "lokijs", "encoding")
-    // ignore metamask sdk react-native-async-storage errors
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      "@react-native-async-storage/async-storage": false,
-    }
-    return config
-  },
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
-    ],
-  },
-  async rewrites() {
-    return [
-      {
-        source: "/api-docs",
-        destination: "/api/api-docs",
-      },
-      {
-        source: "/.well-known/farcaster.json",
-        destination: "/api/farcaster",
-      },
-    ]
-  },
   async headers() {
     return [
       {
-        source: "/api/:path*",
         headers: [
           {
             key: "Content-Security-Policy",
@@ -56,8 +22,42 @@ const config: NextConfig = {
             value: "X-Requested-With, content-type, Authorization",
           },
         ],
+        source: "/api/:path*",
       },
     ]
+  },
+  images: {
+    remotePatterns: [
+      {
+        hostname: "**",
+        protocol: "https",
+      },
+    ],
+  },
+  async rewrites() {
+    return [
+      {
+        destination: "/api/api-docs",
+        source: "/api-docs",
+      },
+      {
+        destination: "/api/farcaster",
+        source: "/.well-known/farcaster.json",
+      },
+    ]
+  },
+  // Migrated from webpack config for Turbopack compatibility
+  serverExternalPackages: ["pino-pretty", "lokijs", "encoding"],
+  turbopack: {},
+  // Keep webpack config for fallback when using --webpack flag
+  webpack: (config) => {
+    config.externals.push("pino-pretty", "lokijs", "encoding")
+    // ignore metamask sdk react-native-async-storage errors
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      "@react-native-async-storage/async-storage": false,
+    }
+    return config
   },
 }
 

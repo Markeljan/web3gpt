@@ -92,9 +92,9 @@ export const DeployContractButton = ({ sourceCode, disabled = false }: { disable
     const contractName = contractNameMatch ? contractNameMatch[1] : ""
     try {
       const deploymentData = await deployWithWallet({
+        constructorArgs: constructorArgValues,
         contractName,
         sourceCode,
-        constructorArgs: constructorArgValues,
       })
       if (!deploymentData) {
         setIsErrorDeploying(true)

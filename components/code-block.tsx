@@ -13,31 +13,31 @@ import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import { useIsClient } from "@/lib/hooks/use-is-client"
 
 const PROGRAMMING_LANGUAGES: Record<string, string> = {
-  javascript: ".js",
-  python: ".py",
-  java: ".java",
   c: ".c",
-  cpp: ".cpp",
-  "c++": ".cpp",
   "c#": ".cs",
-  ruby: ".rb",
-  php: ".php",
-  swift: ".swift",
-  "objective-c": ".m",
-  kotlin: ".kt",
-  typescript: ".ts",
+  "c++": ".cpp",
+  clarity: ".clar",
+  cpp: ".cpp",
+  css: ".css",
   go: ".go",
+  haskell: ".hs",
+  html: ".html",
+  java: ".java",
+  javascript: ".js",
+  kotlin: ".kt",
+  lua: ".lua",
+  "objective-c": ".m",
   perl: ".pl",
+  php: ".php",
+  python: ".py",
+  ruby: ".rb",
   rust: ".rs",
   scala: ".scala",
-  haskell: ".hs",
-  lua: ".lua",
   shell: ".sh",
-  sql: ".sql",
-  html: ".html",
-  css: ".css",
   solidity: ".sol",
-  clarity: ".clar",
+  sql: ".sql",
+  swift: ".swift",
+  typescript: ".ts",
 }
 
 const HIGHLIGHT_UPDATE_INTERVAL_MS = 150
@@ -92,28 +92,29 @@ export const CodeBlock = memo(({ language, isStreaming = false, value }: CodeBlo
     }
   }, [isStreaming, value])
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (pendingHighlightRef.current) {
         clearTimeout(pendingHighlightRef.current)
       }
-    }
-  }, [])
+    },
+    []
+  )
 
   const memoizedHighlighter = useMemo(
     () => (
       <SyntaxHighlighter
         codeTagProps={{
           style: {
-            fontSize: "0.9rem",
             fontFamily: "var(--font-mono)",
+            fontSize: "0.9rem",
           },
         }}
         customStyle={{
-          margin: 0,
-          width: "100%",
           background: "transparent",
+          margin: 0,
           padding: "1.5rem 1rem",
+          width: "100%",
         }}
         language={normalizedLanguage || undefined}
         PreTag="div"

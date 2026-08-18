@@ -35,14 +35,14 @@ export async function POST(request: NextRequest) {
         const allMessages = [...messages, ...responseMessages]
 
         const chat: DbChat = {
-          id: chatId,
-          userId,
-          title: buildChatTitle(allMessages),
           agentId,
-          createdAt: Date.now(),
           avatarUrl,
-          published: false,
+          createdAt: Date.now(),
+          id: chatId,
           messages: allMessages,
+          published: false,
+          title: buildChatTitle(allMessages),
+          userId,
         }
 
         await storeChat({ data: chat, userId })

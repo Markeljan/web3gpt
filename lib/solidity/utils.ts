@@ -33,7 +33,7 @@ export async function resolveImports(sourceCode: string, sourcePath?: string, lo
     }
     sourceCodeWithImports = sourceCodeWithImports.replace(match[0], `import "${sourceFileName}";`)
   }
-  return { sources, sourceCode: sourceCodeWithImports }
+  return { sourceCode: sourceCodeWithImports, sources }
 }
 
 async function fetchImport(importPath: string, sourcePath?: string, localSources?: Record<string, string>) {
@@ -51,7 +51,7 @@ async function fetchImport(importPath: string, sourcePath?: string, localSources
         localPath,
         localSources
       )
-      return { sources: importedSources, sourceCode: importedSourceCode }
+      return { sourceCode: importedSourceCode, sources: importedSources }
     }
   }
 
@@ -72,7 +72,7 @@ async function fetchImport(importPath: string, sourcePath?: string, localSources
     // Handle any imports within the fetched source code
     const { sources, sourceCode } = await resolveImports(importedSource, urlToFetch, localSources)
 
-    return { sources, sourceCode }
+    return { sourceCode, sources }
   }
 
   throw lastError || new Error(`Unable to resolve import: ${importPath}`)
@@ -107,10 +107,10 @@ function getImportUrl(importPath: string, sourcePath?: string) {
 
   if (importPath[0] === "." && sourcePath) {
     urlToFetch = resolveImportPath(importPath, sourcePath)
-  } else if (importPath[0] !== "@") {
-    urlToFetch = importPath
-  } else {
+  } else if (importPath[0] === "@") {
     urlToFetch = `https://unpkg.com/${importPath}`
+  } else {
+    urlToFetch = importPath
   }
 
   if (urlToFetch.includes("github.com")) {
