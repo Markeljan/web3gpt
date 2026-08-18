@@ -1,6 +1,5 @@
 import "server-only"
 import { kv } from "@vercel/kv"
-import { unstable_cache as cache, revalidateTag } from "next/cache"
 import { getSession } from "@/lib/auth"
 import type {
   Agent,
@@ -37,30 +36,36 @@ export async function storeUser(user: { id: string } & Record<string, unknown>) 
   await kv.sadd("users:list", user.id)
 }
 
-const getChatListCached = cache(
-  async (userId: string) => {
-    const chats: string[] = await kv.zrange(`user:chat:${userId}`, 0, -1, { rev: true })
-    if (!chats.length) {
-      return []
-    }
-    const pipeline = kv.pipeline()
-
-    for (const chat of chats) {
-      pipeline.hmget<DbChatListItem>(chat, "id", "title", "published", "createdAt", "avatarUrl", "userId")
-    }
-    return await pipeline.exec<DbChatListItem[]>()
-  },
-  ["chat-list"],
-  { revalidate: 3600, tags: ["chat-list"] }
-)
-
+// Read live rather than through `unstable_cache`.
+//
+// This was cached for an hour behind a global "chat-list" tag, but the write
+// that matters happens in `storeChat`, which runs from the /api/chat route
+// handler. `revalidateTag` there never produced a fresh read — verified
+// against both the "default" cacheLife profile and `{ expire: 0 }`, neither of
+// which re-executed the cached function on subsequent requests — so a new chat
+// never showed up in the sidebar until the TTL lapsed. The tag was global too,
+// so one user's write would drop every other user's entry anyway.
+//
+// The cost of serving it live is a zrange plus one pipelined hmget, and the
+// root layout is already `force-dynamic`, so it re-renders per request either
+// way.
 export async function getChatList(userId?: string): Promise<DbChatListItem[]> {
   const resolvedUserId = userId ?? (await getSession())?.user?.id
   if (!resolvedUserId) {
     return []
   }
 
-  return getChatListCached(resolvedUserId)
+  const chats: string[] = await kv.zrange(`user:chat:${resolvedUserId}`, 0, -1, { rev: true })
+  if (!chats.length) {
+    return []
+  }
+
+  const pipeline = kv.pipeline()
+  for (const chat of chats) {
+    pipeline.hmget<DbChatListItem>(chat, "id", "title", "published", "createdAt", "avatarUrl", "userId")
+  }
+
+  return await pipeline.exec<DbChatListItem[]>()
 }
 
 export const getChat = withUser<string, DbChat | null>(async (id) => await kv.hgetall<DbChat>(`chat:${id}`))
@@ -221,8 +226,6 @@ export const storeChat = withUser<
       score: updatedAt,
     }),
   ])
-
-  return revalidateTag("chat-list", "default")
 })
 
 export const getUserDeployments = withUser<void, DeploymentRecord[]>(async (_, userId) => {
