@@ -1,7 +1,7 @@
 import { type OpenAIResponsesProviderOptions, openai } from "@ai-sdk/openai"
 import { convertToModelMessages, generateText, stepCountIs, streamText, type UIMessage } from "ai"
 import { AGENT_DEPLOY_CHAINS, DEFAULT_AGENT, DEFAULT_COMPILER_VERSION, DEFAULT_TOOL_NAMES } from "@/lib/constants"
-import { getAgentById } from "@/lib/data/openai"
+import { getAgentById } from "@/lib/data/agents"
 import { getTools } from "@/lib/tools"
 
 type AgentResponseMessage = {

@@ -65,7 +65,7 @@ Notes:
 
 - `app/`
   - `app/page.tsx`: landing chat entry, chooses agent from `?a=...`
-  - `app/chat/[id]/page.tsx`: authenticated saved-chat route, also supports legacy `thread_*` OpenAI thread IDs
+  - `app/chat/[id]/page.tsx`: authenticated saved-chat route (legacy `thread_*` ids are ordinary KV chats)
   - `app/share/[id]/page.tsx`: public published-chat view
   - `app/contracts/page.tsx`: deployments dashboard
   - `app/api/chat/route.ts`: main streaming chat endpoint with tool calling
@@ -81,7 +81,7 @@ Notes:
   - `lib/config.ts`: Wagmi config and chain/explorer helpers
   - `lib/tools.ts`: AI tool definitions exposed to agents
   - `lib/data/kv.ts`: KV persistence and auth-scoped data access
-  - `lib/data/openai.ts`: agent lookup and legacy assistant/thread helpers
+  - `lib/data/agents.ts`: agent lookup
   - `lib/solidity/*`: compile, deploy, verification helpers
   - `lib/actions/*`: server-side actions for chat, deploy, domain resolution, verification
 - `public/openapi.json`: API schema for docs/reference
@@ -95,7 +95,7 @@ Notes:
 - Chat history is persisted only when a user is signed in and a `chatId` is present.
 - Contract deployment flow compiles Solidity, deploys with a server-side private key, uploads artifacts to IPFS, stores verification metadata, and later verifies via cron.
 - Wallet-visible chains live separately from agent deploy chains; Polygon mainnet is agent-only and should not be added to Wagmi connectors.
-- Legacy OpenAI thread support still exists in `app/chat/[id]/page.tsx` and `lib/data/openai.ts`.
+- The OpenAI Assistants API is no longer used, and the `openai` package is no longer a dependency. Old `thread_*` chats and `asst_*` agents (full message history, agent instructions, and tool names) were migrated into KV, so they are read/write like any other chat. Legacy `thread_*`/`asst_*` ids are just KV ids now; never reintroduce `openai.beta`.
 
 ## Working Conventions
 

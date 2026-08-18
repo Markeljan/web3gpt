@@ -22,21 +22,12 @@ type ChatProps = {
   initialMessages?: UIMessage[]
   userId?: string
   avatarUrl?: string | null
-  isDeprecated?: boolean
 }
 
 const SCROLL_TO_BOTTOM_DELAY = 500
 const CHAT_STREAM_THROTTLE_MS = 100
 
-export const Chat = ({
-  initialChatId,
-  initialMessages = [],
-  agent,
-  className,
-  userId,
-  avatarUrl,
-  isDeprecated = false,
-}: ChatProps) => {
+export const Chat = ({ initialChatId, initialMessages = [], agent, className, userId, avatarUrl }: ChatProps) => {
   const chatRef = useRef<HTMLDivElement>(null)
   const previousAgentId = useRef<string | undefined>(undefined)
   const lastSyncedMessageCount = useRef(initialMessages.length)
@@ -51,15 +42,13 @@ export const Chat = ({
   const { messages, status, stop, sendMessage, setMessages, id } = useChat({
     experimental_throttle: CHAT_STREAM_THROTTLE_MS,
     id: currentChatId,
-    transport: isDeprecated
-      ? undefined
-      : new DefaultChatTransport({
-          api: "/api/chat",
-          body: {
-            agentId: agent.id || DEFAULT_AGENT.id,
-            chatId: currentChatId,
-          },
-        }),
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      body: {
+        agentId: agent.id || DEFAULT_AGENT.id,
+        chatId: currentChatId,
+      },
+    }),
     messages: initialMessages,
   })
 
@@ -74,16 +63,16 @@ export const Chat = ({
   }, [setMessages])
 
   useEffect(() => {
-    if (!isDeprecated && id && !isInProgress && messages.length > 0) {
+    if (id && !isInProgress && messages.length > 0) {
       const nextPath = `/chat/${id}`
       if (pathname !== nextPath) {
         router.replace(nextPath)
       }
     }
-  }, [id, isInProgress, messages.length, isDeprecated, pathname, router])
+  }, [id, isInProgress, messages.length, pathname, router])
 
   useEffect(() => {
-    if (isDeprecated || !id || isInProgress || messages.length === 0) {
+    if (!id || isInProgress || messages.length === 0) {
       return
     }
 
@@ -93,7 +82,7 @@ export const Chat = ({
 
     lastSyncedMessageCount.current = messages.length
     router.refresh()
-  }, [id, isDeprecated, isInProgress, messages.length, router])
+  }, [id, isInProgress, messages.length, router])
 
   useEffect(() => {
     if (messages.length === 0 && initialMessages?.length > 0) {
@@ -117,17 +106,6 @@ export const Chat = ({
   return (
     <>
       <div className={cn("px-3 pt-4 pb-32 sm:px-4 md:pt-10", className)} ref={chatRef}>
-        {isDeprecated && (
-          <div className="mb-4 rounded-lg border border-yellow-500/50 bg-yellow-500/10 px-4 py-3 text-sm">
-            <div className="flex items-start gap-2">
-              <span className="font-semibold text-yellow-600 dark:text-yellow-400">⚠️ Deprecated Chat</span>
-            </div>
-            <p className="mt-1 text-muted-foreground">
-              This is an older chat from the previous version of Web3GPT. It is read-only. Start a new chat to continue
-              the conversation.
-            </p>
-          </div>
-        )}
         {showLanding ? (
           <Landing userId={userId} />
         ) : (
@@ -138,13 +116,7 @@ export const Chat = ({
         <ChatList avatarUrl={avatarUrl} isLoading={isInProgress} isStreaming={isStreaming} messages={messages} />
         <ChatScrollAnchor trackVisibility={isInProgress} />
       </div>
-      <ChatPanel
-        append={sendMessage}
-        isDeprecated={isDeprecated}
-        isLoading={isInProgress}
-        onNewChat={handleNewChat}
-        stop={stop}
-      />
+      <ChatPanel append={sendMessage} isLoading={isInProgress} onNewChat={handleNewChat} stop={stop} />
     </>
   )
 }

@@ -17,10 +17,9 @@ type PromptProps = {
   append: UseChatHelpers<UIMessage>["sendMessage"]
   isLoading: boolean
   onNewChat: () => void
-  isDeprecated?: boolean
 }
 
-export const PromptForm = ({ append, isLoading, onNewChat, isDeprecated = false }: PromptProps) => {
+export const PromptForm = ({ append, isLoading, onNewChat }: PromptProps) => {
   const [input, setInput] = useState<string>("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const { formRef, onKeyDown } = useEnterSubmit()
@@ -167,28 +166,26 @@ export const PromptForm = ({ append, isLoading, onNewChat, isDeprecated = false 
           <Textarea
             autoComplete="off"
             autoCorrect="off"
-            autoFocus={!isDeprecated}
+            autoFocus
             className="max-h-[200px] min-h-[60px] w-full resize-none overflow-y-auto bg-transparent px-8 py-[1.3rem] focus-within:outline-none sm:text-sm md:min-h-[72px] md:py-[1.5rem]"
-            disabled={isDeprecated}
             onChange={handleInputChange}
             onFocus={handleGuildPromptTrigger}
             onKeyDown={onKeyDown}
-            placeholder={isDeprecated ? "This chat is read-only. Start a new chat to continue." : "send a message"}
+            placeholder="send a message"
             ref={inputRef}
             rows={1}
             spellCheck={false}
-            tabIndex={isDeprecated ? -1 : 0}
             value={input}
           />
           <div className="absolute top-4 right-0 sm:right-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button disabled={input === "" || isInProgress || isDeprecated} size="icon" type="submit">
+                <Button disabled={input === "" || isInProgress} size="icon" type="submit">
                   <ArrowUp className="size-5" />
                   <span className="sr-only">Send message</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{isDeprecated ? "This chat is read-only" : "Send message"}</TooltipContent>
+              <TooltipContent>Send message</TooltipContent>
             </Tooltip>
           </div>
         </div>
