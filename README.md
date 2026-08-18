@@ -55,7 +55,6 @@ bun dev
 - `AUTH_GITHUB_ID`
 - `AUTH_GITHUB_SECRET`
 - `AUTH_SECRET`
-- `BETTER_AUTH_URL` (optional, non-production only)
 - `CRON_SECRET`
 - `KV_REST_API_URL`
 - `KV_REST_API_TOKEN`

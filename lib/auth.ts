@@ -3,20 +3,11 @@ import { betterAuth } from "better-auth"
 import { nextCookies } from "better-auth/next-js"
 import { oAuthProxy } from "better-auth/plugins"
 import { headers } from "next/headers"
-import { VERCEL_PROJECT_PRODUCTION_URL } from "vercel-url"
-import { APP_URL } from "@/lib/config"
+import { APP_URL, PRODUCTION_URL } from "@/lib/config"
 import { storeUser } from "@/lib/data/kv"
 
 const THIRTY_DAYS_IN_SECONDS = 60 * 60 * 24 * 30
 const ONE_DAY_IN_SECONDS = 60 * 60 * 24
-
-// The production origin is where the GitHub OAuth callback is registered. Preview
-// deployments bounce their callback through it via the oAuthProxy plugin, which
-// replaces next-auth's AUTH_REDIRECT_PROXY_URL.
-const PRODUCTION_URL =
-  process.env.BETTER_AUTH_URL ||
-  (VERCEL_PROJECT_PRODUCTION_URL ? `https://${VERCEL_PROJECT_PRODUCTION_URL}` : undefined) ||
-  APP_URL
 
 export const auth = betterAuth({
   appName: "Web3GPT",
@@ -73,6 +64,9 @@ export const auth = betterAuth({
       },
     },
   },
+  // Bounces the OAuth callback through the production origin whenever the app is
+  // not served from there, replacing next-auth's AUTH_REDIRECT_PROXY_URL. Inert
+  // in production, where baseURL and productionURL are the same origin.
   plugins: [oAuthProxy({ productionURL: PRODUCTION_URL }), nextCookies()],
 })
 

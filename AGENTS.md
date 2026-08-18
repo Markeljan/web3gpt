@@ -48,7 +48,7 @@ Copy from `.env.example`. Important groups:
 
 - RPC and explorer access: `NEXT_PUBLIC_ALCHEMY_API_KEY`, `NEXT_PUBLIC_TENDERLY_API_KEY`, `BLOCKSCOUT_API_KEY`, `ETHERSCAN_API_KEY`
 - Wallet connectivity: `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`
-- Auth: `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `AUTH_SECRET` (Better Auth also accepts `BETTER_AUTH_GITHUB_ID`, `BETTER_AUTH_GITHUB_SECRET`, `BETTER_AUTH_SECRET`); optional `BETTER_AUTH_URL` to point non-production origins at the production OAuth callback
+- Auth: `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `AUTH_SECRET` (Better Auth also accepts `BETTER_AUTH_GITHUB_ID`, `BETTER_AUTH_GITHUB_SECRET`, `BETTER_AUTH_SECRET`)
 - AI providers: `OPENAI_API_KEY`, optional `XAI_API_KEY`, `STABILITY_API_KEY`
 - Persistence: `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_REST_API_READ_ONLY_TOKEN`, `KV_URL`
 - Deployment/signing: `DEPLOYER_PRIVATE_KEY`
@@ -92,7 +92,7 @@ Notes:
 
 - Auth is Better Auth in stateless mode: there is no auth database, sessions are encrypted into a cookie, and user records are written to KV by `storeUser`.
 - `session.user.id` is pinned to the GitHub numeric profile id (the value next-auth used). `mapProfileToUser` copies it onto the `githubId` additional field and the `user.create.before` database hook forces it as the record id. Every KV key is scoped by this id, so do not let Better Auth generate its own user ids.
-- The `oAuthProxy` plugin routes OAuth callbacks for preview/local origins through the production origin, replacing next-auth's `AUTH_REDIRECT_PROXY_URL`. The GitHub OAuth app only needs `<production-origin>/api/auth/callback/github` registered.
+- The `oAuthProxy` plugin routes OAuth callbacks for preview and local origins through `PRODUCTION_URL` (`lib/config.ts`), replacing next-auth's `AUTH_REDIRECT_PROXY_URL`. `PRODUCTION_URL` comes from `VERCEL_PROJECT_PRODUCTION_URL`, which Vercel injects into every deployment, and falls back to the literal production origin for local dev. No env var to manage. The GitHub OAuth app only needs `<production-origin>/api/auth/callback/github` registered.
 - `app/layout.tsx` is `force-dynamic` because it resolves the session from request headers on every render.
 - Built-in agents live in `lib/constants.ts`; user-created agents are stored in KV.
 - `app/api/chat/route.ts` builds a system prompt from the selected agent and attaches tools from `lib/tools.ts`.
