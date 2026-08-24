@@ -3,6 +3,7 @@ import { z } from "zod"
 import { resolveAddress, resolveDomain } from "@/lib/actions/unstoppable-domains"
 import { PRODUCTION_URL } from "@/lib/config"
 import { deployContract } from "@/lib/solidity/deploy"
+import { formatDeploymentToolResult } from "@/lib/solidity/deployment-tool-result"
 import type { ToolName } from "@/lib/types"
 
 // Re-export type for convenience
@@ -116,7 +117,7 @@ const createToolDefinitions = (context: ToolContext = {}) => ({
         contractName,
         sourceCode,
       })
-      return `Contract deployed: ${deployResult.explorerUrl} IPFS repository: ${deployResult.ipfsUrl} Verification queued for explorer verification.`
+      return formatDeploymentToolResult(deployResult)
     },
     inputSchema: schemas.deployContract,
   }),
