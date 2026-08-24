@@ -2,6 +2,7 @@
   "compilerOptions": {
     "lib": ["esnext", "dom", "dom.iterable"],
     "target": "esnext",
+    "types": ["bun"],
     "module": "esnext",
     "moduleDetection": "force",
     "jsx": "react-jsx",

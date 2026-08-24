@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 import { toast } from "sonner"
-import { type Abi, encodeDeployData, getCreateAddress, type Hash, publicActions } from "viem"
+import { type Abi, encodeDeployData, type Hash, publicActions } from "viem"
 import { useAccount, useWalletClient } from "wagmi"
 import { useGlobalStore } from "@/app/state/global-store"
 import type { LastDeploymentData, VerifyContractParams } from "@/lib/types"
@@ -80,13 +80,6 @@ export function useWalletDeploy() {
           }
         })
 
-        const nonce = await walletClient.getTransactionCount({ address })
-
-        const contractAddress = getCreateAddress({
-          from: address,
-          nonce: BigInt(nonce),
-        })
-
         const deployData = encodeDeployData({
           abi,
           args: parsedConstructorArgs,
@@ -107,11 +100,6 @@ export function useWalletDeploy() {
         }
 
         const encodedConstructorArgs = deployData.slice(bytecode.length)
-        const explorerUrl = getExplorerUrl({
-          hash: contractAddress,
-          type: "address",
-          viemChain,
-        })
 
         const transactionReceipt = await walletClient.waitForTransactionReceipt({
           hash: deployHash,
@@ -121,6 +109,22 @@ export function useWalletDeploy() {
           toast.error("Failed to receive enough confirmations")
           return
         }
+
+        const { contractAddress } = transactionReceipt
+        if (!contractAddress) {
+          throw new Error("The transaction succeeded but did not create a contract")
+        }
+
+        const explorerUrl = getExplorerUrl({
+          hash: contractAddress,
+          type: "address",
+          viemChain,
+        })
+        const transactionExplorerUrl = getExplorerUrl({
+          hash: deployHash,
+          type: "tx",
+          viemChain,
+        })
 
         const finalizeLoadingToast = toast.loading("Uploading to IPFS and queuing verification...")
         const finalizeResponse = await fetch("/api/wallet-deploy/finalize", {
@@ -159,6 +163,7 @@ export function useWalletDeploy() {
           ipfsUrl: finalizeResult.ipfsUrl,
           sourceCode,
           standardJsonInput,
+          transactionExplorerUrl,
           transactionHash: deployHash,
           verifyContractConfig: finalizeResult.verifyContractConfig,
           walletAddress: address,

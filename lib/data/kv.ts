@@ -249,22 +249,26 @@ export const getUserDeployments = withUser<void, DeploymentRecord[]>(async (_, u
 export const getAllDeployments = async () => {
   const deployments: DeploymentRecord[] = []
   const BATCH_SIZE = 10_000 // Process up to 10000 keys at a time
+  let cursor = 0
 
   // Use SCAN instead of KEYS to avoid blocking
-  const [_, keys] = await kv.scan(0, {
-    count: BATCH_SIZE,
-    match: "deployment:*",
-  })
+  do {
+    const [nextCursor, keys] = await kv.scan(cursor, {
+      count: BATCH_SIZE,
+      match: "deployment:*",
+    })
 
-  if (keys && keys.length > 0) {
-    // Process in batches to avoid "too many keys" error
-    const pipeline = kv.pipeline()
-    for (const key of keys) {
-      pipeline.hgetall<DeploymentRecord>(key)
+    cursor = Number.parseInt(nextCursor, 10)
+
+    if (keys && keys.length > 0) {
+      const pipeline = kv.pipeline()
+      for (const key of keys) {
+        pipeline.hgetall<DeploymentRecord>(key)
+      }
+      const batchResults = await pipeline.exec<DeploymentRecord[]>()
+      deployments.push(...batchResults.filter(Boolean))
     }
-    const batchResults = await pipeline.exec<DeploymentRecord[]>()
-    deployments.push(...batchResults.filter(Boolean))
-  }
+  } while (cursor !== 0)
 
   return deployments
 }
