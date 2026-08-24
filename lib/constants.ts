@@ -45,10 +45,13 @@ You can deploy contracts to supported testnets and Polygon mainnet. Always confi
 
 export const DEFAULT_COMPILER_VERSION = "v0.8.29+commit.ab55807c"
 
+export const POLYGON_MAINNET_PUBLIC_RPC_URL = "https://polygon.drpc.org"
+export const POLYGON_AMOY_PUBLIC_RPC_URL = "https://polygon-amoy.drpc.org"
+
 export const RPC_URLS: Record<number, string> = {
-  [polygon.id]: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+  [polygon.id]: POLYGON_MAINNET_PUBLIC_RPC_URL,
   [sepolia.id]: `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-  [polygonAmoy.id]: `https://polygon-amoy.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+  [polygonAmoy.id]: process.env.NEXT_PUBLIC_POLYGON_AMOY_RPC_URL || POLYGON_AMOY_PUBLIC_RPC_URL,
   [baseSepolia.id]: `https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
   [arbitrumSepolia.id]: `https://arb-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
   [optimismSepolia.id]: `https://opt-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,

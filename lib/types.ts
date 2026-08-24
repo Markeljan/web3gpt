@@ -76,10 +76,13 @@ export type DeployContractParams = {
 }
 
 export type DeployContractResult = {
+  chainId: number
   contractAddress: Hash
   sourceCode: string
   explorerUrl: string
   ipfsUrl: string
+  transactionExplorerUrl: string
+  transactionHash: Hash
   verifyContractConfig: VerifyContractParams
   abi: Abi
   standardJsonInput: string

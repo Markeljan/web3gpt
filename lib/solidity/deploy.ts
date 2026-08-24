@@ -1,16 +1,19 @@
 import "server-only"
 import { track } from "@vercel/analytics/server"
-import { createWalletClient, encodeDeployData, getCreateAddress, http, publicActions } from "viem"
+import { createWalletClient, encodeDeployData, publicActions } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 import { compileContract } from "@/lib/actions/deploy-contract"
 import { storeDeploymentAction, storeVerificationAction } from "@/lib/actions/verification"
-import { getChainById, getChainDetails } from "@/lib/config"
+import { getChainById } from "@/lib/config"
 import { ipfsUploadDir } from "@/lib/data/ipfs"
+import { getDeployedContractAddress } from "@/lib/solidity/deployment-receipt"
+import { getDeploymentTransport } from "@/lib/solidity/deployment-transport"
 import { getContractFileName } from "@/lib/solidity/utils"
 import type { DeployContractParams, DeployContractResult, VerifyContractParams } from "@/lib/types"
 import { getExplorerUrl, getIpfsUrl } from "@/lib/utils"
 
 const DEPLOYER_ACCOUNT = privateKeyToAccount(`0x${process.env.DEPLOYER_PRIVATE_KEY}`)
+const DEPLOYMENT_RECEIPT_TIMEOUT_MS = 45_000
 
 export const deployContract = async ({
   chainId,
@@ -34,7 +37,7 @@ export const deployContract = async ({
   const walletClient = createWalletClient({
     account: DEPLOYER_ACCOUNT,
     chain: viemChain,
-    transport: http(getChainDetails(viemChain).rpcUrl),
+    transport: getDeploymentTransport(viemChain),
   }).extend(publicActions)
 
   if (!(await walletClient.getAddresses())) {
@@ -43,12 +46,6 @@ export const deployContract = async ({
   }
 
   const deployerAddress = DEPLOYER_ACCOUNT.address
-  const nonce = await walletClient.getTransactionCount({ address: deployerAddress })
-
-  const contractAddress = getCreateAddress({
-    from: deployerAddress,
-    nonce: BigInt(nonce),
-  })
 
   const deployData = encodeDeployData({
     abi,
@@ -63,9 +60,22 @@ export const deployContract = async ({
     bytecode,
   })
 
+  const receipt = await walletClient.waitForTransactionReceipt({
+    confirmations: 1,
+    hash: deployHash,
+    timeout: DEPLOYMENT_RECEIPT_TIMEOUT_MS,
+  })
+
+  const contractAddress = getDeployedContractAddress(receipt, viemChain.name)
+
   const explorerUrl = getExplorerUrl({
     hash: contractAddress,
     type: "address",
+    viemChain,
+  })
+  const transactionExplorerUrl = getExplorerUrl({
+    hash: deployHash,
+    type: "tx",
     viemChain,
   })
 
@@ -91,11 +101,14 @@ export const deployContract = async ({
 
   const deploymentData: DeployContractResult = {
     abi,
+    chainId,
     contractAddress,
     explorerUrl,
     ipfsUrl,
     sourceCode,
     standardJsonInput,
+    transactionExplorerUrl,
+    transactionHash: deployHash,
     verifyContractConfig,
   }
 
@@ -113,6 +126,7 @@ export const deployContract = async ({
       contractAddress,
       contractName,
       explorerUrl,
+      transactionHash: deployHash,
     }),
   ])
 

@@ -3,7 +3,7 @@
   "info": {
     "title": "Web3GPT Skill API",
     "description": "Simple agent-first chat API for Web3GPT. Start a chat with no params, then continue with the returned chatId.",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   "servers": [
     {
@@ -76,6 +76,67 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SkillHistoryItem"
+            }
+          }
+        }
+      },
+      "PublicStats": {
+        "type": "object",
+        "required": [
+          "customAgentsCreated",
+          "definitions",
+          "observedAt",
+          "recordedDeployments"
+        ],
+        "properties": {
+          "customAgentsCreated": {
+            "type": "integer",
+            "description": "Custom agent records. Built-in agents are excluded."
+          },
+          "definitions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recordedDeployments": {
+            "type": "object",
+            "required": ["byChain", "total"],
+            "properties": {
+              "byChain": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "chainId",
+                    "chainName",
+                    "network",
+                    "recordedDeployments"
+                  ],
+                  "properties": {
+                    "chainId": {
+                      "type": "integer"
+                    },
+                    "chainName": {
+                      "type": "string"
+                    },
+                    "network": {
+                      "type": "string",
+                      "enum": ["mainnet", "testnet", "unknown"]
+                    },
+                    "recordedDeployments": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "total": {
+                "type": "integer"
+              }
             }
           }
         }
@@ -207,6 +268,24 @@
         "responses": {
           "200": {
             "description": "CORS headers"
+          }
+        }
+      }
+    },
+    "/stats": {
+      "get": {
+        "summary": "Read public aggregate stats",
+        "description": "Returns timestamped custom-agent and deduplicated deployment-record counts, including per-chain mainnet/testnet labels and metric definitions.",
+        "responses": {
+          "200": {
+            "description": "Public aggregate stats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicStats"
+                }
+              }
+            }
           }
         }
       }

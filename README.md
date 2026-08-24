@@ -6,6 +6,7 @@ The current public integration surface is agent-first:
 
 - browser chat UI at [w3gpt.ai](https://w3gpt.ai)
 - skill endpoint at `https://w3gpt.ai/api/skill`
+- public aggregate stats at `https://w3gpt.ai/api/stats`
 - skill guide at `https://w3gpt.ai/skill.md`
 - API reference at `https://w3gpt.ai/api-docs`
 
@@ -14,6 +15,7 @@ The current public integration surface is agent-first:
 - the old Unkey-backed `/api/v1` endpoints are removed
 - the SDK now targets the skill/chat flow instead of separate completions/deploy APIs
 - Polygon mainnet deployment is available through the agent and skill endpoint
+- server-side deployments are returned and recorded only after a successful contract-creation receipt
 - Polygon mainnet is not exposed through wallet connectors in the UI
 
 ## Core Flows
@@ -65,6 +67,8 @@ and `AUTH_SECRET` in `.env.local`. Sign-in works locally with no further configu
 - `KV_REST_API_URL`
 - `KV_REST_API_TOKEN`
 - `NEXT_PUBLIC_ALCHEMY_API_KEY`
+- optional `NEXT_PUBLIC_POLYGON_AMOY_RPC_URL` wallet-client override
+- optional `POLYGON_AMOY_RPC_URL` and `POLYGON_MAINNET_RPC_URL` server deployment overrides
 - `NEXT_PUBLIC_TENDERLY_API_KEY`
 - `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`
 - `ETHERSCAN_API_KEY`
@@ -94,6 +98,28 @@ curl "https://w3gpt.ai/api/skill?chatId=your-chat-id&history=true"
 ```
 
 The `chatId` is the secret for continuing a thread outside the browser UI.
+
+Successful deployment tool results include `chainId`, `contractAddress`, `transactionHash`,
+`explorerUrl`, and `transactionExplorerUrl`. Polygon mainnet uses chain ID `137`; Polygon
+Amoy uses chain ID `80002`.
+
+## Public Analytics
+
+- all recorded deployments: [w3gpt.ai/contracts](https://w3gpt.ai/contracts)
+- Polygon mainnet filter: [w3gpt.ai/contracts?chain=polygon](https://w3gpt.ai/contracts?chain=polygon)
+- Polygon Amoy filter: [w3gpt.ai/contracts?chain=amoy](https://w3gpt.ai/contracts?chain=amoy)
+- machine-readable aggregate: [w3gpt.ai/api/stats](https://w3gpt.ai/api/stats)
+
+The aggregate reports custom agent records and deduplicated deployment records by chain. It
+includes its definitions and observation time so the values can be cited without treating
+testnet activity as mainnet activity.
+
+Representative public custom agents include:
+
+- [Dapp Creator](https://w3gpt.ai/?a=asst_K4OLY9h6g8Pwq9Vf9jgxr3ko)
+- [CTF Agent](https://w3gpt.ai/?a=asst_GfjkcVcwAXzkNE1JBXNfe89q)
+- [TokenScript GPT Agent](https://w3gpt.ai/?a=asst_Ava303baS9hyZeytRhuQG29v)
+- [Climate Tribe Map Location Saver](https://w3gpt.ai/?a=asst_jot3PNdg8gF638N1IjRIusl6)
 
 ## Development Commands
 

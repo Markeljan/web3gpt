@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getChainById } from "@/lib/config"
 import { AGENT_DEPLOY_CHAINS } from "@/lib/constants"
+import { deduplicateDeployments } from "@/lib/deployment-analytics"
 import type { DeploymentRecordBase } from "@/lib/types"
 import { cn, getExplorerUrl, getIpfsUrl } from "@/lib/utils"
 
@@ -52,13 +53,15 @@ type FilterState = {
 export function ContractsDashboard({
   userDeployments,
   allDeployments,
+  initialChainId = null,
 }: {
   userDeployments: DeploymentRecordBase[]
   allDeployments: DeploymentRecordBase[]
+  initialChainId?: number | null
 }) {
   const [filters, setFilters] = useState<FilterState>({
-    activeCategory: "my-contracts",
-    selectedChain: null,
+    activeCategory: initialChainId ? "all-contracts" : "my-contracts",
+    selectedChain: initialChainId,
   })
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -74,30 +77,10 @@ export function ContractsDashboard({
     []
   )
 
-  // Deduplicate deployments based on contract address and chain ID
-  const deduplicatedUserDeployments = useMemo(() => {
-    const seen = new Set<string>()
-    return userDeployments.filter((deployment) => {
-      const key = `${deployment.chainId}-${deployment.deployHash}-${deployment.cid}`
-      if (seen.has(key)) {
-        return false
-      }
-      seen.add(key)
-      return true
-    })
-  }, [userDeployments])
+  // Match the public analytics identity so dashboard and API totals agree.
+  const deduplicatedUserDeployments = useMemo(() => deduplicateDeployments(userDeployments), [userDeployments])
 
-  const deduplicatedAllDeployments = useMemo(() => {
-    const seen = new Set<string>()
-    return allDeployments.filter((deployment) => {
-      const key = `${deployment.chainId}-${deployment.deployHash}-${deployment.cid}`
-      if (seen.has(key)) {
-        return false
-      }
-      seen.add(key)
-      return true
-    })
-  }, [allDeployments])
+  const deduplicatedAllDeployments = useMemo(() => deduplicateDeployments(allDeployments), [allDeployments])
 
   const currentDeployments = useMemo(
     () => (filters.activeCategory === "my-contracts" ? deduplicatedUserDeployments : deduplicatedAllDeployments),

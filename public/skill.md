@@ -74,3 +74,5 @@ curl "https://w3gpt.ai/api/skill?chatId=generated-chat-id&history=true"
 - If you call the endpoint without a `message`, you still get back a `chatId`.
 - Deployments happen through the agent conversation. Tell the agent which chain to use.
 - Polygon mainnet deployment is available through the agent/skill endpoint, not the wallet UI connectors.
+- Server-side deployment returns only after a successful contract-creation receipt. The tool result includes the chain ID, contract address, transaction hash, contract explorer URL, and transaction explorer URL.
+- Public aggregate deployment and custom-agent counts are available at `https://w3gpt.ai/api/stats`.
